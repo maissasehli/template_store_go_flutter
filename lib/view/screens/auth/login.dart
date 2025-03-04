@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/constants/imageasset.dart';
 import 'package:store_go/controller/auth/logincontroller.dart';
+import 'package:store_go/view/screens/auth/forgetpassword.dart';
 import 'package:store_go/view/widgets/auth/customtextformauth.dart';
 import 'package:store_go/view/widgets/auth/customauthbutton.dart';
 import 'package:store_go/view/widgets/auth/customtextbodyauth .dart';
@@ -37,7 +38,22 @@ class Login extends GetView<LoginController> {
                   hintText: 'Password',
                   obscureText: true,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 10),
+                // Updated Forgot Password link
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: controller.doToForgetPassword, // Using controller method
+                    child: Text(
+                      'Forgot Password?',
+                      style: AppColor.bodySmall.copyWith(
+                        color: Colors.black,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
                 CustomAuthButton(
                   onPressed: controller.login,
                   text: 'Continue',

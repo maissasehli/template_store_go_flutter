@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/view/screens/auth/signup.dart'; // Assurez-vous que ce chemin est correct
+import 'package:store_go/view/screens/auth/forgetpassword.dart';
+import 'package:store_go/view/screens/auth/signup.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
@@ -19,6 +20,11 @@ class LoginController extends GetxController {
   void goToSignup() {
     // Navigation vers la page de signup
     Get.to(() => Signup());
+  }
+
+  // New method to navigate to Forget Password screen
+  void doToForgetPassword() {
+    Get.to(() => ForgetPassword()); // Navigate to ForgetPassword screen
   }
 
   bool _validateInputs() {
