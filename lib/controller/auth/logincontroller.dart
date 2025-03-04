@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/view/screens/auth/signup.dart'; // Assurez-vous que ce chemin est correct
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
@@ -13,6 +14,11 @@ class LoginController extends GetxController {
       // authService.login(email, password)
       print('Login attempt with: ${emailController.text}');
     }
+  }
+
+  void goToSignup() {
+    // Navigation vers la page de signup
+    Get.to(() => Signup());
   }
 
   bool _validateInputs() {

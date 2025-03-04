@@ -76,6 +76,26 @@ class AppColor {
     color: textSecondaryColor,
     fontFamily: 'RedditSans',
   );
+  static final TextStyle titleLarge = TextStyle(
+    fontSize: 28.0,
+    fontWeight: FontWeight.bold,
+    color: textPrimaryColor,
+    fontFamily: 'RedditSans',
+  );
+
+  static final TextStyle titleMedium = TextStyle(
+    fontSize: 24.0,
+    fontWeight: FontWeight.w600,
+    color: textPrimaryColor,
+    fontFamily: 'RedditSans',
+  );
+
+  static final TextStyle titleSmall = TextStyle(
+    fontSize: 20.0,
+    fontWeight: FontWeight.w500,
+    color: textPrimaryColor,
+    fontFamily: 'RedditSans',
+  );
 
   // Spacing constants
   static const double spacingXS = 4.0;

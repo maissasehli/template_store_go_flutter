@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:store_go/core/constants/color.dart';
 
 class CustomTextBodyAuth extends StatelessWidget {
-  final TextEditingController? controller;
+  final TextEditingController controller;
   final String hintText;
   final bool obscureText;
 
   const CustomTextBodyAuth({
-    Key? key,
-    this.controller,
+    Key? key, 
+    required this.controller, 
     required this.hintText,
-    this.obscureText = true,
+    this.obscureText = false,
   }) : super(key: key);
 
   @override
@@ -28,6 +28,7 @@ class CustomTextBodyAuth extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
       ),
+      style: AppColor.bodyMedium,
     );
   }
 }

@@ -3,11 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/constants/imageasset.dart';
-import 'package:store_go/controller/onboarding/auth/logincontroller.dart';
-import 'package:store_go/view/widgets/auth/customtextbodyauth%20.dart';
+import 'package:store_go/controller/auth/logincontroller.dart';
 import 'package:store_go/view/widgets/auth/customtextformauth.dart';
 import 'package:store_go/view/widgets/auth/customauthbutton.dart';
-import 'package:store_go/view/widgets/auth/customtexttitle%20.dart';
+import 'package:store_go/view/widgets/auth/customtextbodyauth .dart';
+import 'package:store_go/view/widgets/auth/customtexttitle .dart';
 
 class Login extends GetView<LoginController> {
   const Login({Key? key}) : super(key: key);
@@ -17,65 +17,74 @@ class Login extends GetView<LoginController> {
     return Scaffold(
       backgroundColor: AppColor.primaryColor,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppColor.spacingM),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Title
-              CustomTextTitle(text: 'log in'),
-              SizedBox(height: AppColor.spacingL),
-
-              // Email TextField
-              CustomTextFormAuth(
-                controller: controller.emailController,
-                hintText: 'Email Address',
-              ),
-              SizedBox(height: AppColor.spacingM),
-
-              // Password TextField
-              CustomTextBodyAuth(
-                controller: controller.passwordController,
-                hintText: 'Password',
-                obscureText: true,
-              ),
-              SizedBox(height: AppColor.spacingL),
-
-              // Continue Button
-              CustomAuthButton(
-                onPressed: controller.login,
-                text: 'Continue',
-              ),
-              SizedBox(height: AppColor.spacingM),
-
-              // Create Account Text
-              Text(
-                "Don't have an Account? Create One",
-                style: AppColor.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppColor.spacingL),
-
-              // Social Login Buttons
-              _buildSocialLoginButton(
-                icon: ImageAsset.appleIcon,
-                text: 'Continue With Apple',
-                onPressed: () {},
-              ),
-              SizedBox(height: AppColor.spacingS),
-              _buildSocialLoginButton(
-                icon: ImageAsset.googleIcon,
-                text: 'Continue With Google',
-                onPressed: () {},
-              ),
-              SizedBox(height: AppColor.spacingS),
-              _buildSocialLoginButton(
-                icon: ImageAsset.facebookIcon,
-                text: 'Continue With Facebook',
-                onPressed: () {},
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppColor.spacingM),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 60),
+                const CustomTextTitle(text: 'log in'),
+                const SizedBox(height: 40),
+                CustomTextFormAuth(
+                  controller: controller.emailController,
+                  hintText: 'Email Address',
+                ),
+                const SizedBox(height: 20),
+                CustomTextBodyAuth(
+                  controller: controller.passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                ),
+                const SizedBox(height: 40),
+                CustomAuthButton(
+                  onPressed: controller.login,
+                  text: 'Continue',
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: controller.goToSignup,
+                  child: Text(
+                    "Don't have an Account? Create One",
+                    style: AppColor.bodyMedium.copyWith(color: Colors.black),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        'or',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                  ],
+                ),
+                const SizedBox(height: 40),
+                _buildSocialLoginButton(
+                  icon: ImageAsset.appleIcon,
+                  text: 'Continue With Apple',
+                  onPressed: () {},
+                ),
+                const SizedBox(height: 20),
+                _buildSocialLoginButton(
+                  icon: ImageAsset.googleIcon,
+                  text: 'Continue With Google',
+                  onPressed: () {},
+                ),
+                const SizedBox(height: 20),
+                _buildSocialLoginButton(
+                  icon: ImageAsset.facebookIcon,
+                  text: 'Continue With Facebook',
+                  onPressed: () {},
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -91,7 +100,7 @@ class Login extends GetView<LoginController> {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: Colors.grey.shade300),
-        padding: EdgeInsets.symmetric(vertical: AppColor.spacingM),
+        padding: const EdgeInsets.symmetric(vertical: 15),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
         ),
@@ -104,10 +113,13 @@ class Login extends GetView<LoginController> {
             width: 24,
             height: 24,
           ),
-          SizedBox(width: AppColor.spacingS),
+          const SizedBox(width: 10),
           Text(
             text,
-            style: AppColor.bodyMedium,
+            style: AppColor.bodyMedium.copyWith(
+              color: Colors.black,
+              fontSize: 16,
+            ),
           ),
         ],
       ),
