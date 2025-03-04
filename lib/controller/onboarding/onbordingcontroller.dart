@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/data/datasource/static/onbording_static.dart';
 
 class OnboardingController extends GetxController {
@@ -24,7 +25,7 @@ class OnboardingController extends GetxController {
 
   void navigateToLogin() {
     // Implement navigation to login screen
-    // For example: Get.offNamed('/login');
+   Get.offNamed(AppRoute.login);
   }
 
   @override
