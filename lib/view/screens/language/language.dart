@@ -1,23 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/color.dart';
+import 'package:store_go/controller/onboarding/onbordingcontroller.dart';
+import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/localization/changelocal.dart';
 import 'package:store_go/view/widgets/Language/custombuttomlang.dart';
+
+class AppColorExtension {
+  // Language Screen Specific Colors
+  static const Color languageCardBackground = Color(0xFFF5F5F5);
+  static const Color languageCardSelectedBorder = Color(0xFF000000);
+  static const Color languageCardUnselectedBorder = Colors.transparent;
+
+  static const Color languageCardTextPrimary = Color(0xFF000000);
+  static const Color languageCardTextSecondary = Color(0xFF666666);
+
+  static const Color languageContinueButtonBackground = Color(0xFF000000);
+  static const Color languageContinueButtonText = Color(0xFFFFFFFF);
+
+  static const Color languageIconBackground = Color(0xFFE0E0E0);
+  static const Color languageIconForeground = Color(0xFF000000);
+}
 
 class Language extends GetView<LocaleController> {
   const Language({super.key});
 
   @override
   Widget build(BuildContext context) {
+    Get.put(OnboardingController());
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColorExtension.languageCardBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(
           'Select Language'.tr,
           style: const TextStyle(
-            color: AppColors.primary,
+            color: AppColorExtension.languageCardTextPrimary,
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
@@ -52,6 +71,7 @@ class Language extends GetView<LocaleController> {
             const Spacer(),
             CustomBottomLanguage(
               text: 'Continue'.tr,
+              onPressed: () => Get.toNamed(AppRoute.onBoarding),
             ),
           ],
         ),
@@ -70,13 +90,16 @@ class Language extends GetView<LocaleController> {
         bool isSelected = controller.language?.languageCode == languageCode;
         return Card(
           elevation: isSelected ? 8 : 2,
-          shadowColor:
-              isSelected ? AppColors.primaryShadow : Colors.black12,
-          color: AppColors.cardBackground,
+          shadowColor: isSelected
+              ? AppColorExtension.languageCardSelectedBorder
+              : Colors.black12,
+          color: AppColorExtension.languageCardBackground,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
             side: BorderSide(
-              color: isSelected ? AppColors.primary : Colors.transparent,
+              color: isSelected
+                  ? AppColorExtension.languageCardSelectedBorder
+                  : AppColorExtension.languageCardUnselectedBorder,
               width: 2,
             ),
           ),
@@ -92,12 +115,12 @@ class Language extends GetView<LocaleController> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryWithOpacity,
+                      color: AppColorExtension.languageIconBackground,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
                       icon,
-                      color: AppColors.primary,
+                      color: AppColorExtension.languageIconForeground,
                       size: 30,
                     ),
                   ),
@@ -111,7 +134,7 @@ class Language extends GetView<LocaleController> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: AppColorExtension.languageCardTextPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -119,7 +142,7 @@ class Language extends GetView<LocaleController> {
                           subtitle,
                           style: const TextStyle(
                             fontSize: 14,
-                            color: AppColors.textSecondary,
+                            color: AppColorExtension.languageCardTextSecondary,
                           ),
                         ),
                       ],
@@ -128,7 +151,7 @@ class Language extends GetView<LocaleController> {
                   if (isSelected)
                     const Icon(
                       Icons.check_circle,
-                      color: AppColors.primary,
+                      color: AppColorExtension.languageContinueButtonBackground,
                       size: 24,
                     ),
                 ],

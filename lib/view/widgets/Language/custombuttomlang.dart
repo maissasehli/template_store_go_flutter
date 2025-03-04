@@ -21,7 +21,7 @@ class CustomBottomLanguage extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        color: AppColors.primary,
+        color: AppColor.backgroundColor,
         elevation: 5,
         onPressed: onPressed,
         child: Text(
@@ -29,7 +29,7 @@ class CustomBottomLanguage extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: AppColors.buttonText,
+            color: AppColor.inputBackgroundColor,
           ),
         ),
       ),
