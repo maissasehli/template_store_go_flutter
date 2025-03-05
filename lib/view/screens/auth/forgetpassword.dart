@@ -40,7 +40,7 @@ class ForgetPassword extends StatelessWidget {
               SizedBox(height: AppColor.spacingXL),
               CustomAuthButton(
                 text: 'Continue',
-                onPressed: () => controller.resetPassword(),
+                onPressed: () => controller.goToEmailSentConfirmation(),
               ),
             ],
           ),

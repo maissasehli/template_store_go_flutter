@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/core/constants/routes.dart';
 
 
 class ForgetPasswordController extends GetxController {
@@ -14,6 +15,10 @@ class ForgetPasswordController extends GetxController {
     // Add password reset logic here
     print('Resetting password for: ${emailController.text}');
     // Typically, you would call a service method to send a password reset link
+  }
+    void goToEmailSentConfirmation() {
+    // Navigation vers la page de signup
+    Get.toNamed(AppRoute.emailsentconfirmation);
   }
 
   @override

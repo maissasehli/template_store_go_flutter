@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.dart';
 import 'package:store_go/view/screens/auth/signup.dart';
 
@@ -19,12 +20,12 @@ class LoginController extends GetxController {
 
   void goToSignup() {
     // Navigation vers la page de signup
-    Get.to(() => Signup());
+    Get.toNamed(AppRoute.signup);
   }
 
   // New method to navigate to Forget Password screen
   void doToForgetPassword() {
-    Get.to(() => ForgetPassword()); // Navigate to ForgetPassword screen
+    Get.toNamed(AppRoute.forgetpassword);
   }
 
   bool _validateInputs() {

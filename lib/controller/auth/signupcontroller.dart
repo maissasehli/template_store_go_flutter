@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/view/screens/onboarding/userprofilesetupscreen.dart';
 
 class SignupController extends GetxController {
@@ -30,7 +31,7 @@ class SignupController extends GetxController {
   }
 
   void goToUserProfileSetup() {
-    Get.to(() => const UserProfileSetupScreen());
+    Get.toNamed(AppRoute.userprofilesetup);
   }
 
   @override
