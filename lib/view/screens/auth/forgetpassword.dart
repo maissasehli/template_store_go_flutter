@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/core/functions/validinput.dart';
 import 'package:store_go/controller/auth/forgetpasswordcontroller.dart';
 import 'package:store_go/view/widgets/auth/customauthbutton.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/view/widgets/auth/customtextformauth.dart';
-
 
 class ForgetPassword extends StatelessWidget {
   final ForgetPasswordController controller = Get.put(ForgetPasswordController());
@@ -22,27 +22,31 @@ class ForgetPassword extends StatelessWidget {
         elevation: 0,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppColor.spacingM),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Forgot Password',
-                style: AppColor.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppColor.spacingL),
-              CustomTextFormAuth(
-                controller: controller.emailController,
-                hintText: 'Enter email address',
-              ),
-              SizedBox(height: AppColor.spacingXL),
-              CustomAuthButton(
-                text: 'Continue',
-                onPressed: () => controller.goToEmailSentConfirmation(),
-              ),
-            ],
+        child: Form( // Add Form widget
+          key: controller.forgetPasswordFormKey, // Add form key
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppColor.spacingM),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Forgot Password',
+                  style: AppColor.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: AppColor.spacingL),
+                CustomTextFormAuth(
+                  controller: controller.emailController,
+                  hintText: 'Enter email address',
+                  validator: (val) => validInput(val!, 5, 100, "email"), // Add validator
+                ),
+                SizedBox(height: AppColor.spacingXL),
+                CustomAuthButton(
+                  text: 'Continue',
+                  onPressed: () => controller.goToEmailSentConfirmation(),
+                ),
+              ],
+            ),
           ),
         ),
       ),

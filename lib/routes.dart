@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
-import 'package:store_go/bindings/onboarging_binding.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/view/screens/auth/emailsentconfirmation.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.dart';
@@ -18,29 +17,29 @@ List<GetPage<dynamic>>? routes = [
    GetPage(
     name: AppRoute.userprofilesetup, 
     page: () => const UserProfileSetupScreen(),
-    binding: UserProfileSetupBinding(), 
+    binding: MyBinding(), 
   ),
   
   // Auth
   GetPage(
     name: AppRoute.login, 
-    page: () => const Login(),
-    binding: AuthBinding(), 
+    page: () =>  Login(),
+    binding: MyBinding(), 
   ),
     GetPage(
     name: AppRoute.signup, 
     page: () => const Signup(),
-    binding: AuthBinding(), // Utilisez le nouveau binding ici
+    binding: MyBinding(), // Utilisez le nouveau binding ici
   ),
 GetPage(
     name: AppRoute.forgetpassword, 
     page: () =>  ForgetPassword(),
-    binding: AuthBinding(), // Utilisez le nouveau binding ici
+    binding: MyBinding(), // Utilisez le nouveau binding ici
   ),
   GetPage(
     name: AppRoute.emailsentconfirmation, 
     page: () =>  EmailSentConfirmation(),
-    binding: AuthBinding(), // Utilisez le nouveau binding ici
+    binding: MyBinding(), // Utilisez le nouveau binding ici
   ),
 
   

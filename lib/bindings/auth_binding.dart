@@ -3,8 +3,9 @@ import 'package:store_go/controller/auth/emailsentcontroller%20.dart';
 import 'package:store_go/controller/auth/forgetpasswordcontroller.dart';
 import 'package:store_go/controller/auth/logincontroller.dart';
 import 'package:store_go/controller/auth/signupcontroller.dart';
+import 'package:store_go/controller/onboarding/userprofilesetupcontroller.dart';
 
-class AuthBinding implements Bindings {
+class MyBinding implements Bindings {
   @override
   void dependencies() {
     // Enregistrez les contrôleurs pour l'authentification
@@ -14,6 +15,8 @@ class AuthBinding implements Bindings {
     Get.lazyPut<SignupController>(() => SignupController());
     Get.lazyPut<ForgetPasswordController>(() => ForgetPasswordController());
         Get.lazyPut<EmailSentController>(() => EmailSentController());
+            Get.lazyPut<UserProfileSetupController>(() => UserProfileSetupController());
+
 
 
   }

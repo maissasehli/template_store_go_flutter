@@ -1,21 +1,36 @@
+// lib/controller/onboardingcontroller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/data/datasource/static/onbording_static.dart';
+import 'package:store_go/core/services/services.dart';
+
 
 class OnboardingController extends GetxController {
-  final PageController pageController = PageController();
+  late PageController pageController;
+  var currentPage = 0.obs;
 
-  RxInt currentPage = 0.obs;
-  RxBool isLastPage = false.obs;
+  MyServices myServices = Get.find();
 
-  void onPageChanged(int index) {
-    currentPage.value = index;
-    isLastPage.value = index == OnboardingStatic.pages.length - 1;
+  final int pageCount = OnboardingStatic.pages.length;
+
+  @override
+  void onInit() {
+    super.onInit();
+    pageController = PageController();
   }
 
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
+
+  bool get isLastPage => currentPage.value == pageCount - 1;
+
   void nextPage() {
-    if (currentPage.value < OnboardingStatic.pages.length - 1) {
+    if (currentPage.value < pageCount - 1) {
+      myServices.sharedPreferences.setString("onboarding", "1");
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -23,14 +38,12 @@ class OnboardingController extends GetxController {
     }
   }
 
-  void navigateToLogin() {
-    // Implement navigation to login screen
-   Get.offNamed(AppRoute.login);
+  void onPageChanged(int page) {
+    currentPage.value = page;
   }
 
-  @override
-  void onClose() {
-    pageController.dispose();
-    super.onClose();
+  void navigateToLogin() {
+    // Implement your navigation logic here
+    Get.offAllNamed(AppRoute.login);
   }
 }

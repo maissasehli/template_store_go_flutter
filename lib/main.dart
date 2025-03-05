@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/core/localization/changelocal.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/localization/translation.dart';
 import 'package:store_go/routes.dart';
-import 'package:store_go/core/services/services.dart'; // Import your services
+import 'package:store_go/core/services/services.dart'; 
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Required for async operations in main
-  
-  // Initialize services before creating the app
-  await initialServices();
-  
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Register MyServices asynchronously before running the app
+  await Get.putAsync(() async => await MyServices().init());
+
+  // Load environment variables
+  await dotenv.load(fileName: ".env");
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    debug: true,
+  );
+
   runApp(const MyApp());
-}
-
-// Create a function to initialize all services
-Future<void> initialServices() async {
-  // Initialize shared preferences service
-  await Get.putAsync(() => MyServices().init());
 }
 
 class MyApp extends StatelessWidget {
@@ -35,6 +44,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      initialBinding:MyBinding() ,
       getPages: routes,
     );
   }

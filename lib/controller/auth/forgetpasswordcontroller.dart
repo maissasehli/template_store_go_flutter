@@ -2,27 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
 
-
 class ForgetPasswordController extends GetxController {
   final TextEditingController emailController = TextEditingController();
+  final GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
 
-  void resetPassword() {
-    if (emailController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter your email');
-      return;
+  void goToEmailSentConfirmation() {
+    if (forgetPasswordFormKey.currentState!.validate()) {
+      // Proceed to email sent confirmation
+      Get.toNamed(AppRoute.emailsentconfirmation);
     }
-    
-    // Add password reset logic here
-    print('Resetting password for: ${emailController.text}');
-    // Typically, you would call a service method to send a password reset link
-  }
-    void goToEmailSentConfirmation() {
-    // Navigation vers la page de signup
-    Get.toNamed(AppRoute.emailsentconfirmation);
   }
 
   @override
   void onClose() {
+    // Dispose controller
     emailController.dispose();
     super.onClose();
   }

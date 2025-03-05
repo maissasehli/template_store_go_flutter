@@ -6,6 +6,7 @@ class CustomTextFormAuth extends StatelessWidget {
   final String hintText;
   final bool? obscureText;
   final TextInputType? keyboardType;
+  final String? Function(String?)? validator; // Add validator parameter
 
   const CustomTextFormAuth({
     Key? key, 
@@ -13,14 +14,16 @@ class CustomTextFormAuth extends StatelessWidget {
     required this.hintText,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
+    this.validator, // Optional validator
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextFormField( // Changed from TextField to TextFormField
       controller: controller,
       obscureText: obscureText ?? false,
       keyboardType: keyboardType,
+      validator: validator, // Add validator
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: AppColor.inputTextColor),
@@ -30,6 +33,15 @@ class CustomTextFormAuth extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
           borderSide: BorderSide.none,
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        errorStyle: TextStyle(color: Colors.red),
       ),
       style: TextStyle(
         color: AppColor.textPrimaryColor,

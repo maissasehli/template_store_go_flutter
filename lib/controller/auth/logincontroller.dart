@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/view/screens/auth/forgetpassword.dart';
-import 'package:store_go/view/screens/auth/signup.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
 
   void login() {
-    // Validate email and password
-    if (_validateInputs()) {
+    if (loginFormKey.currentState!.validate()) {
       // Perform login logic here
       // For example:
       // authService.login(email, password)
@@ -26,19 +24,6 @@ class LoginController extends GetxController {
   // New method to navigate to Forget Password screen
   void doToForgetPassword() {
     Get.toNamed(AppRoute.forgetpassword);
-  }
-
-  bool _validateInputs() {
-    if (emailController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter your email');
-      return false;
-    }
-    if (passwordController.text.isEmpty) {
-      Get.snackbar('Error', 'Please enter your password');
-      return false;
-    }
-    // Add more complex validation if needed
-    return true;
   }
 
   @override
