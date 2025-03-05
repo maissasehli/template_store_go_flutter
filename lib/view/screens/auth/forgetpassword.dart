@@ -32,7 +32,6 @@ class ForgetPassword extends StatelessWidget {
                 Text(
                   'Forgot Password',
                   style: AppColor.titleLarge,
-                  textAlign: TextAlign.center,
                 ),
                 SizedBox(height: AppColor.spacingL),
                 CustomTextFormAuth(

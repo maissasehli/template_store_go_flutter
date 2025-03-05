@@ -57,16 +57,18 @@
                 <string>com.supabase.login</string>
             </array>
 
-	<key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLName</key>
-            <string>supabase-reset-callback</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>io.supabase.flutter</string>
-            </array>
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>io.supabase.flutter</string>
+        </array>
+        <key>CFBundleURLName</key>
+        <string>reset-password</string>
+    </dict>
+</array>
 </dict>
 </plist>

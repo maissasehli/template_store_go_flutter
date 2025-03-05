@@ -9,10 +9,8 @@ class EmailSentConfirmation extends GetView<EmailSentController> {
 
   @override
   Widget build(BuildContext context) {
-        print('🌟 EmailSentConfirmation Build Method Called');
 
      if (Get.isRegistered<EmailSentController>() == false) {
-            print('⚠️ EmailSentController not registered, creating now');
 
       Get.put(EmailSentController());
     }
@@ -28,21 +26,18 @@ class EmailSentConfirmation extends GetView<EmailSentController> {
               // Paper plane icon
  Image.asset(
   'assets/icons/email_sent.png', // Use full path
-  height: 120,
-  width: 120,
-  errorBuilder: (context, error, stackTrace) {
-    print('🚨 Image Load Error Details: $error');
-    return Icon(Icons.error, size: 120, color: Colors.red);
-  },
+  height: 150,
+  width: 150,
+
 ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 5),
 
               // Verification text
               Text(
                 'We Sent you an Email\nto Create your Account',
                 style: AppColor.headingMedium.copyWith(
-                  color: AppColor.textPrimaryColor,
+                  color: AppColor.inputTextColor,
                 ),
                 textAlign: TextAlign.center,
               ),

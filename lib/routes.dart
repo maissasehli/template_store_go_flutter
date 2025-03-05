@@ -2,8 +2,10 @@ import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/view/screens/auth/emailsentconfirmation.dart';
+import 'package:store_go/view/screens/auth/emailsentconfirmation_resetpassword.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.dart';
 import 'package:store_go/view/screens/auth/login.dart';
+import 'package:store_go/view/screens/auth/resetpassword.dart';
 import 'package:store_go/view/screens/auth/signup.dart';
 import 'package:store_go/view/screens/home/home_screen.dart';
 import 'package:store_go/view/screens/language/language.dart';
@@ -41,6 +43,17 @@ GetPage(
   name: AppRoute.emailsentconfirmation, 
   page: () => const EmailSentConfirmation(), // Note the 'const'
   binding: MyBinding(),
+),
+GetPage(
+  name: AppRoute.emailsentconfirmationresetpassword, 
+  page: () => const EmailSentConfirmationResetPassword(), // Note the 'const'
+  binding: MyBinding(),
+),
+GetPage(
+  name: AppRoute.resetPassword,
+  page: () => ResetPasswordPage(),
+    binding: MyBinding(),
+
 ),
   GetPage(
     name: AppRoute.home, 

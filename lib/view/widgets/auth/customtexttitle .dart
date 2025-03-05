@@ -15,9 +15,8 @@ class CustomTextTitle extends StatelessWidget {
       text,
       style: AppColor.titleLarge.copyWith(
         color: Colors.black,
-        fontSize: 24,
+        fontSize: 34,
       ),
-      textAlign: TextAlign.center,
     );
   }
 }

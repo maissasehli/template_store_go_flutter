@@ -6,7 +6,10 @@ static const String signup = "/signup";
 static const String userprofilesetup = "/userprofilesetup";
 static const String forgetpassword = "/forgetpassword";
 static const String emailsentconfirmation = "/emailsentconfirmation";
-static const String home = "/home";
+  static const String resetPassword = '/reset-password';
+
+static const String home = "/home";static const String emailsentconfirmationresetpassword = "/emailsentconfirmationresetpassword";
+
 
 
 

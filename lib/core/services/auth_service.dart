@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/view/screens/auth/resetpassword.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -53,10 +54,7 @@ class AuthService {
       final authResponse = await supabase.auth.signUp(
         email: email,
         password: password,
-        data: {
-          'first_name': firstName,
-          'last_name': lastName,
-        },
+        data: {'first_name': firstName, 'last_name': lastName},
       );
 
       if (authResponse.user != null) {
@@ -75,10 +73,7 @@ class AuthService {
   }
 
   // Comprehensive Sign In Method
-  Future<bool> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> signIn({required String email, required String password}) async {
     try {
       final authResponse = await supabase.auth.signInWithPassword(
         email: email,
@@ -100,8 +95,6 @@ class AuthService {
     }
   }
 
-
-
   // Handle Authentication Exceptions
   void _handleAuthException(AuthException e) {
     if (e.message.contains('User already exists')) {
@@ -115,34 +108,73 @@ class AuthService {
     }
   }
 
-  // Password Reset Method
+Future<bool> handlePasswordRecovery() async {
+  try {
+    final session = supabase.auth.currentSession;
+    
+    if (session != null) {
+      // Utilisez Get.to() pour naviguer vers la page de réinitialisation
+      Get.to(() => ResetPasswordPage());
+      return true;
+    }
+    
+    return false;
+  } catch (e) {
+    // Gestion des erreurs
+    return false;
+  }
+}
+  // Méthode de réinitialisation de mot de passe améliorée
   Future<bool> resetPassword(String email) async {
     try {
       await supabase.auth.resetPasswordForEmail(
         email,
-        redirectTo: 'io.supabase.flutter://reset-callback/',
+        redirectTo: 'io.supabase.flutter://reset-password',
       );
 
-      _showSuccessAlert('Password reset email has been sent');
+      _showSuccessAlert('Email de réinitialisation envoyé');
+      Get.toNamed(AppRoute.emailsentconfirmationresetpassword);
       return true;
     } on AuthException catch (e) {
       _handleAuthException(e);
       return false;
     } catch (e) {
-      _showErrorAlert('An unexpected error occurred');
+      _showErrorAlert('Une erreur est survenue lors de la réinitialisation du mot de passe');
       return false;
     }
   }
 
-  // Sign Out Method
+  // Méthode pour mettre à jour le mot de passe
+  Future<bool> updatePassword(String newPassword) async {
+  try {
+    // Update the password
+    await supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+
+    _showSuccessAlert('Password updated successfully');
+    Get.offAllNamed(AppRoute.login);
+    return true;
+  } on AuthException catch (e) {
+    _handleAuthException(e);
+    return false;
+  } catch (e) {
+    _showErrorAlert('Error updating password');
+    return false;
+  }
+}
+
+  // Déconnexion
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
       await supabase.auth.signOut();
-      _showSuccessAlert('Successfully signed out');
+      _showSuccessAlert('Déconnexion réussie');
       Get.offAllNamed(AppRoute.login);
     } catch (e) {
-      _showErrorAlert('Sign out failed');
+      _showErrorAlert('Échec de la déconnexion');
     }
   }
+
+  // Écouteur d\'événements d\'authentification
 }
