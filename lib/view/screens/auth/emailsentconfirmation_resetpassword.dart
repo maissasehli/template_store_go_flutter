@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/emailsentcontroller%20.dart';
+import 'package:store_go/controller/auth/emailsentcontroller_resetpassword.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/constants/imageasset.dart';
 
-class EmailSentConfirmationResetPassword extends GetView<EmailSentController> {
+class EmailSentConfirmationResetPassword extends GetView<EmailSentControllerResetPassword> {
   const EmailSentConfirmationResetPassword({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
-     if (Get.isRegistered<EmailSentController>() == false) {
+     if (Get.isRegistered<EmailSentControllerResetPassword>() == false) {
 
-      Get.put(EmailSentController());
+      Get.put(EmailSentControllerResetPassword());
     }
     return Scaffold(
       backgroundColor: AppColor.primaryColor,
@@ -48,10 +48,8 @@ class EmailSentConfirmationResetPassword extends GetView<EmailSentController> {
    SizedBox(
   width: double.infinity,
   child: ElevatedButton(
-    onPressed: () {
-      // Add your navigation logic here
-      // For example: Navigator.of(context).pushReplacementNamed('/login');
-    },
+  onPressed: controller.returnToLogin,
+
     style: ElevatedButton.styleFrom(
       backgroundColor: AppColor.secondaryColor, // Black background
       padding: const EdgeInsets.symmetric(vertical: 16),

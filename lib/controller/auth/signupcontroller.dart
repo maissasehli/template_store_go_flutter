@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/services/auth_service.dart';
-import 'package:store_go/view/screens/auth/emailsentconfirmation.dart';
 
 class SignupController extends GetxController {
   final TextEditingController firstNameController = TextEditingController();
@@ -30,37 +29,16 @@ class SignupController extends GetxController {
         );
 
         print('✅ Signup Success: $success');
-
         if (success) {
-          print('🚦 Navigating to email confirmation');
-          _navigateToEmailConfirmation();
+          print('🚦 Navigating to Home');
+          // Directly navigate to home screen or dashboard
+          Get.offNamed(AppRoute.login);
         }
       }
     } catch (e) {
       print('❌ Signup Error: $e');
     } finally {
       isLoading.value = false;
-    }
-  }
-
-  void _navigateToEmailConfirmation() {
-    try {
-      // Preferred method: Named route
-      Get.offNamed(AppRoute.emailsentconfirmation);
-    } catch (navError1) {
-      print('🚨 Navigation Error 1: $navError1');
-
-      try {
-        // Fallback: Direct page navigation
-        Get.to(() => const EmailSentConfirmation());
-      } catch (navError2) {
-        print('🚨 Navigation Error 2: $navError2');
-
-        // Last resort: Context-based navigation
-        Navigator.of(Get.context!).pushReplacement(
-          MaterialPageRoute(builder: (_) => const EmailSentConfirmation())
-        );
-      }
     }
   }
 

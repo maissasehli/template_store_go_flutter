@@ -43,7 +43,7 @@ class AuthService {
     );
   }
 
-  // Comprehensive Sign Up Method
+  // Modified Sign Up Method without Email Confirmation
   Future<bool> signUp({
     required String email,
     required String password,
@@ -51,19 +51,39 @@ class AuthService {
     required String lastName,
   }) async {
     try {
-      final authResponse = await supabase.auth.signUp(
+      // Remove email confirmation by using signInWithPassword
+      final authResponse = await supabase.auth.signInWithPassword(
         email: email,
         password: password,
-        data: {'first_name': firstName, 'last_name': lastName},
       );
 
       if (authResponse.user != null) {
         _showSuccessAlert('Account created successfully');
-        Get.offNamed(AppRoute.emailsentconfirmation);
+        Get.offNamed(AppRoute.home); // Navigate directly to home
         return true;
       }
       return false;
     } on AuthException catch (e) {
+      // If user doesn't exist, create the account
+      if (e.message.contains('Invalid login credentials')) {
+        try {
+          final signupResponse = await supabase.auth.signUp(
+            email: email,
+            password: password,
+            data: {'first_name': firstName, 'last_name': lastName},
+          );
+
+          if (signupResponse.user != null) {
+            _showSuccessAlert('Account created successfully');
+            Get.offNamed(AppRoute.home); // Navigate directly to home
+            return true;
+          }
+        } catch (signupError) {
+          _showErrorAlert('Error creating account');
+          return false;
+        }
+      }
+      
       _handleAuthException(e);
       return false;
     } catch (e) {

@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/view/screens/auth/emailsentconfirmation.dart';
 import 'package:store_go/view/screens/auth/emailsentconfirmation_resetpassword.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.dart';
 import 'package:store_go/view/screens/auth/login.dart';
@@ -39,11 +38,7 @@ GetPage(
     page: () =>  ForgetPassword(),
     binding: MyBinding(), // Utilisez le nouveau binding ici
   ),
-GetPage(
-  name: AppRoute.emailsentconfirmation, 
-  page: () => const EmailSentConfirmation(), // Note the 'const'
-  binding: MyBinding(),
-),
+
 GetPage(
   name: AppRoute.emailsentconfirmationresetpassword, 
   page: () => const EmailSentConfirmationResetPassword(), // Note the 'const'
