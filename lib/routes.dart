@@ -5,6 +5,7 @@ import 'package:store_go/view/screens/auth/emailsentconfirmation.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.dart';
 import 'package:store_go/view/screens/auth/login.dart';
 import 'package:store_go/view/screens/auth/signup.dart';
+import 'package:store_go/view/screens/home/home_screen.dart';
 import 'package:store_go/view/screens/language/language.dart';
 import 'package:store_go/view/screens/onboarding/onbordingScreen.dart';
 import 'package:store_go/view/screens/onboarding/userprofilesetupscreen.dart';
@@ -36,9 +37,14 @@ GetPage(
     page: () =>  ForgetPassword(),
     binding: MyBinding(), // Utilisez le nouveau binding ici
   ),
+GetPage(
+  name: AppRoute.emailsentconfirmation, 
+  page: () => const EmailSentConfirmation(), // Note the 'const'
+  binding: MyBinding(),
+),
   GetPage(
-    name: AppRoute.emailsentconfirmation, 
-    page: () =>  EmailSentConfirmation(),
+    name: AppRoute.home, 
+    page: () =>  HomeScreen(),
     binding: MyBinding(), // Utilisez le nouveau binding ici
   ),
 

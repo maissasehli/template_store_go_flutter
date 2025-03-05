@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/services/auth_service.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  
+  final AuthService _authService = AuthService();
+  final RxBool isLoading = false.obs;
 
-  void login() {
+  void login() async {
     if (loginFormKey.currentState!.validate()) {
-      // Perform login logic here
-      // For example:
-      // authService.login(email, password)
-      print('Login attempt with: ${emailController.text}');
+      isLoading.value = true;
+      
+      final success = await _authService.signIn(
+        email: emailController.text.trim(), 
+        password: passwordController.text.trim()
+      );
+
+      isLoading.value = false;
     }
   }
 
   void goToSignup() {
-    // Navigation vers la page de signup
     Get.toNamed(AppRoute.signup);
   }
 
-  // New method to navigate to Forget Password screen
   void doToForgetPassword() {
     Get.toNamed(AppRoute.forgetpassword);
   }
 
   @override
   void onClose() {
-    // Clean up controllers
     emailController.dispose();
     passwordController.dispose();
     super.onClose();

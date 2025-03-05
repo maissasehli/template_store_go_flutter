@@ -45,5 +45,28 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>supabase-login-callback</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.supabase.login</string>
+            </array>
+
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLName</key>
+            <string>supabase-reset-callback</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>io.supabase.flutter</string>
+            </array>
 </dict>
 </plist>

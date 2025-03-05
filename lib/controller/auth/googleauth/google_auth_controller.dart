@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:store_go/core/constants/routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -49,7 +50,7 @@ class GoogleAuthController extends GetxController {
       
       if (response.user != null) {
         // Successfully signed in
-        Get.offAllNamed('/home'); // Navigate to home screen
+        Get.offAllNamed(AppRoute.home); // Navigate to home screen
       } else {
         throw 'Failed to sign in with Google';
       }
@@ -71,7 +72,7 @@ class GoogleAuthController extends GetxController {
     try {
       await _googleSignIn.signOut();
       await supabase.auth.signOut();
-      Get.offAllNamed('/login'); // Navigate back to login screen
+      Get.offAllNamed(AppRoute.login); // Navigate back to login screen
     } catch (e) {
       Get.snackbar(
         'Error',

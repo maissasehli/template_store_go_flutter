@@ -223,7 +223,6 @@ class _OnboardingState extends State<Onboarding> {
                     ),
 
                     // Bottom spacing
-                    const SizedBox(height: 24.0),
                   ],
                 ),
               ],

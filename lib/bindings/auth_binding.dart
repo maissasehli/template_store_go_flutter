@@ -14,8 +14,8 @@ class MyBinding implements Bindings {
     
     Get.lazyPut<SignupController>(() => SignupController());
     Get.lazyPut<ForgetPasswordController>(() => ForgetPasswordController());
-        Get.lazyPut<EmailSentController>(() => EmailSentController());
-            Get.lazyPut<UserProfileSetupController>(() => UserProfileSetupController());
+    Get.lazyPut<EmailSentController>(() => EmailSentController());
+    Get.lazyPut<UserProfileSetupController>(() => UserProfileSetupController());
 
 
 

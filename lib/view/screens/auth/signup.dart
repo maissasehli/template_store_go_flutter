@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/functions/validinput.dart';
 import 'package:store_go/controller/auth/signupcontroller.dart';
 import 'package:store_go/core/constants/color.dart';
+import 'package:store_go/core/functions/validinput.dart';
 import 'package:store_go/view/widgets/auth/customauthbutton.dart';
 import 'package:store_go/view/widgets/auth/customtextbodyauth%20.dart';
 import 'package:store_go/view/widgets/auth/customtextformauth.dart';
-import 'package:store_go/core/functions/alertexitapp.dart';
 import 'package:store_go/view/widgets/auth/customtexttitle%20.dart';
+import 'package:store_go/core/functions/alertexitapp.dart';
 
 class Signup extends GetView<SignupController> {
   const Signup({Key? key}) : super(key: key);
@@ -15,13 +15,11 @@ class Signup extends GetView<SignupController> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        return await alertExitApp();
-      },
+      onWillPop: () async => await alertExitApp(),
       child: Scaffold(
         backgroundColor: AppColor.primaryColor,
         body: SafeArea(
-          child: Stack(
+          child: Obx(() => Stack(
             children: [
               SingleChildScrollView(
                 child: Form(
@@ -34,24 +32,32 @@ class Signup extends GetView<SignupController> {
                         const SizedBox(height: 60),
                         CustomTextTitle(text: 'Create Account'),
                         const SizedBox(height: 40),
+                        
+                        // First Name Field
                         CustomTextFormAuth(
                           controller: controller.firstNameController,
                           hintText: 'First name',
                           validator: (val) => validInput(val!, 2, 50, "username"),
                         ),
                         const SizedBox(height: 20),
+                        
+                        // Last Name Field
                         CustomTextFormAuth(
                           controller: controller.lastNameController,
                           hintText: 'Last name',
                           validator: (val) => validInput(val!, 2, 50, "username"),
                         ),
                         const SizedBox(height: 20),
+                        
+                        // Email Field
                         CustomTextFormAuth(
                           controller: controller.emailController,
                           hintText: 'Email Address',
                           validator: (val) => validInput(val!, 5, 100, "email"),
                         ),
                         const SizedBox(height: 20),
+                        
+                        // Password Field
                         CustomTextBodyAuth(
                           controller: controller.passwordController,
                           hintText: 'Password',
@@ -59,24 +65,39 @@ class Signup extends GetView<SignupController> {
                           validator: (val) => validInput(val!, 8, 30, "password"),
                         ),
                         const SizedBox(height: 40),
+                        
+                        // Signup Button
                         CustomAuthButton(
-                          onPressed: controller.goToUserProfileSetup,
+                          onPressed: controller.signUp,
                           text: 'Continue',
                         ),
                         const SizedBox(height: 10),
-                        Text(
-                          'Forgot Password? Reset',
-                          style: AppColor.bodySmall.copyWith(
-                            color: Colors.black,
-                            fontSize: 14,
+                        
+                        // Forgot Password Link
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: Implement password reset logic
+                          },
+                          child: Text(
+                            'Forgot Password? Reset',
+                            style: AppColor.bodySmall.copyWith(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
                   ),
                 ),
               ),
+              
+              // Loading Indicator
+              if (controller.isLoading.value)
+                const Center(child: CircularProgressIndicator()),
+              
+              // Back Button
               Positioned(
                 top: 10,
                 left: 10,
@@ -86,7 +107,7 @@ class Signup extends GetView<SignupController> {
                 ),
               ),
             ],
-          ),
+          )),
         ),
       ),
     );
