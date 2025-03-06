@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Store Go</string>
+<string name="facebook_app_id">1414653462852066</string>
+<string name="fb_login_protocol_scheme">fb1414653462852066</string>
+<string name="facebook_client_token">d76e11f5313f1fb463c19c686ca53268</string>
+</resources>

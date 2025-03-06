@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/core/constants/imageasset.dart';
-import 'package:store_go/core/model/onboarding/onboarging_page_model.dart';
+import 'package:store_go/core/model/onboarding/onboarging.model.dart';
 
 class OnboardingStatic {
   // Onboarding page data

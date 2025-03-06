@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/services/authsupabase.service.dart';
-import 'package:store_go/view/screens/onboarding/userprofilesetupscreen.dart';
+import 'package:store_go/view/screens/onboarding/userprofilesetup.screen.dart';
 
 class SignupController extends GetxController {
   final TextEditingController firstNameController = TextEditingController();
@@ -27,7 +27,6 @@ class SignupController extends GetxController {
         );
 
         if (success) {
-          // Naviguer vers la configuration du profil
           Get.offNamed(AppRoute.userprofilesetup);
         }
       }

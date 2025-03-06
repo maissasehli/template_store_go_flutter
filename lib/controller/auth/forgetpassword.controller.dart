@@ -22,7 +22,6 @@ class ForgetPasswordController extends GetxController {
       if (success) {
         Get.toNamed(AppRoute.emailsentconfirmationresetpassword);
       }
-      // Error handling is managed within the AuthService
     }
   }
 

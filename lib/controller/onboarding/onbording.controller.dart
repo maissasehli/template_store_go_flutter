@@ -43,7 +43,6 @@ class OnboardingController extends GetxController {
   }
 
   void navigateToLogin() {
-    // Implement your navigation logic here
     Get.offAllNamed(AppRoute.login);
   }
 }

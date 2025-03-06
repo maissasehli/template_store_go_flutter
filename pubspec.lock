@@ -223,7 +223,7 @@ packages:
     source: hosted
     version: "5.2.1"
   flutter_facebook_auth:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: flutter_facebook_auth
       sha256: d542743aee9571fad59aa4cfb645640dbb49f23b039d07c34b5e21bc3d5857e9
@@ -918,7 +918,7 @@ packages:
     source: hosted
     version: "1.4.0"
   url_launcher:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: url_launcher
       sha256: "9d06212b1362abc2f0f0d78e6f09f726608c74e3b9462e8368bb03314aa8d603"

@@ -11,7 +11,7 @@ class AuthMiddleware extends GetMiddleware {
   RouteSettings? redirect(String? route) {
     final AuthMiddlewareService authService = Get.find<AuthMiddlewareService>();
     
-    // Si l'utilisateur n'a pas terminé son profil, rediriger vers le setup
+    // If the user has not completed their profile, redirect to the setup page
     if (!authService.isProfileCompleted() && 
         route != AppRoute.userprofilesetup && 
         route != AppRoute.login && 
@@ -20,13 +20,13 @@ class AuthMiddleware extends GetMiddleware {
       return const RouteSettings(name: AppRoute.userprofilesetup);
     }
     
-    // Si l'utilisateur est déjà connecté et essaie d'accéder à login/signup
+    // If the user is already logged in and tries to access login/signup
     if (authService.isLoggedIn() && 
         (route == AppRoute.login || route == AppRoute.signup)) {
       return const RouteSettings(name: AppRoute.home);
     }
     
-    // Si l'utilisateur n'est pas connecté et essaie d'accéder à des pages protégées
+    // If the user is not logged in and tries to access protected pages
     if (!authService.isLoggedIn() && 
         route != AppRoute.login && 
         route != AppRoute.signup && 
@@ -37,6 +37,6 @@ class AuthMiddleware extends GetMiddleware {
       return const RouteSettings(name: AppRoute.login);
     }
     
-    return null; // Aucune redirection nécessaire
+    return null; 
   }
 }

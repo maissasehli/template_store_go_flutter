@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/view/screens/auth/resetpassword.dart';
+import 'package:store_go/view/screens/auth/resetpassword.screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -191,6 +191,102 @@ class AuthService {
       return false;
     }
   }
+Future<void> loginWithFacebook({required BuildContext context}) async {
+  try {
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+    );
+    
+    try {
+      // Use a comma-separated string for scopes instead of a list
+      final response = await supabase.auth.signInWithOAuth(
+        OAuthProvider.facebook,
+        redirectTo: 'fb1414653462852066://login-callback',
+        scopes: 'email,public_profile',  // Use comma-separated string format
+      );
+      
+      Get.back();
+      
+      if (response) {
+        _showSuccessAlert('Facebook authentication initiated');
+      } else {
+        _showErrorAlert('Failed to initiate Facebook login');
+      }
+    } catch (e) {
+      Get.back();
+      _showErrorAlert('Facebook login error: ${e.toString()}');
+    }
+  } catch (e) {
+    if (Get.isDialogOpen ?? false) Get.back();
+    _showErrorAlert('Facebook login error: ${e.toString()}');
+  }
+}
+Future<bool> signInWithGoogle() async {
+  try {
+    // Show loading indicator
+    Get.dialog(
+      const Center(
+        child: CircularProgressIndicator(),
+      ),
+      barrierDismissible: false,
+    );
+
+    // Always sign out first to clear any previous sessions
+    await _googleSignIn.signOut();
+
+    // Start the Google Sign In flow
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+    if (googleUser == null) {
+      // User canceled the sign-in process
+      Get.back(); // Close the loading dialog
+      return false;
+    }
+
+    // Get authentication details
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    // Get tokens
+    final idToken = googleAuth.idToken;
+    final accessToken = googleAuth.accessToken;
+
+    if (idToken == null || accessToken == null) {
+      Get.back(); // Close the loading dialog
+      _showErrorAlert('Authentication tokens missing');
+      return false;
+    }
+
+    // Sign in to Supabase with Google OAuth
+    final AuthResponse response = await supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+
+    Get.back(); // Close the loading dialog
+
+    if (response.user != null) {
+      // Save user session
+      await Get.find<AuthMiddlewareService>().saveUserSession(response.user!);
+      _showSuccessAlert('Successfully logged in with Google');
+      Get.offAllNamed(AppRoute.home);
+      return true;
+    } else {
+      _showErrorAlert('Failed to sign in with Google');
+      return false;
+    }
+  } catch (e) {
+    // Make sure dialog is closed in case of error
+    if (Get.isDialogOpen ?? false) Get.back();
+    
+    _showErrorAlert('Google Sign-In Error: ${e.toString()}');
+    return false;
+  }
+}
+
 
   // Déconnexion avec mise à jour de SharedPreferences
   Future<void> signOut() async {

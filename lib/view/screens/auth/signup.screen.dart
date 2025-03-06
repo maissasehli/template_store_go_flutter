@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/signupcontroller.dart';
+import 'package:store_go/controller/auth/signup.controller.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/functions/validinput.dart';
-import 'package:store_go/view/widgets/auth/customauthbutton.dart';
-import 'package:store_go/view/widgets/auth/customtextbodyauth%20.dart';
-import 'package:store_go/view/widgets/auth/customtextformauth.dart';
-import 'package:store_go/view/widgets/auth/customtexttitle%20.dart';
+import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
+import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets%20.dart';
+import 'package:store_go/view/widgets/auth/customtextformauth.widgets.dart';
+import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
 import 'package:store_go/core/functions/alertexitapp.dart';
 
 class Signup extends GetView<SignupController> {

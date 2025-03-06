@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/data/datasource/static/onbording_static.dart';
-import 'package:store_go/view/widgets/onboarding/OnBoardingBgIcon.dart';
-import 'package:store_go/controller/onboarding/onbordingcontroller.dart';
+import 'package:store_go/view/widgets/onboarding/OnboardingbgIcon.widgets.dart';
+import 'package:store_go/controller/onboarding/onbording.controller.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({Key? key}) : super(key: key);

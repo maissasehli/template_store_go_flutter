@@ -11,7 +11,7 @@ class AuthMiddlewareService extends GetxService {
   Future<AuthMiddlewareService> init() async {
     sharedPreferences = await SharedPreferences.getInstance();
     
-    // Vérifier si l'utilisateur est connecté avec Supabase au démarrage
+    // Check if the user is logged in with Supabase at startup
     final session = supabase.auth.currentSession;
     if (session != null) {
       await sharedPreferences.setBool('is_logged_in', true);
@@ -20,13 +20,13 @@ class AuthMiddlewareService extends GetxService {
     return this;
   }
   
-  // Enregistrer les informations du profil utilisateur
+  // Save user profile information
   Future<void> saveUserProfile(String gender, String ageRange) async {
     await sharedPreferences.setString('user_gender', gender);
     await sharedPreferences.setString('user_age_range', ageRange);
     await sharedPreferences.setBool('profile_completed', true);
     
-    // Mettre à jour les métadonnées utilisateur dans Supabase si l'utilisateur est connecté
+    // Update user metadata in Supabase if the user is logged in
     final user = supabase.auth.currentUser;
     if (user != null) {
       await supabase.auth.updateUser(
@@ -40,20 +40,20 @@ class AuthMiddlewareService extends GetxService {
     }
   }
 
-  // Vérifier si le profil est complété
+  // Check if the profile is completed
   bool isProfileCompleted() {
     return sharedPreferences.getBool('profile_completed') ?? false;
   }
 
-  // Vérifier si l'utilisateur est connecté (via SharedPreferences et Supabase)
+  // Check if the user is logged in (via SharedPreferences and Supabase)
   bool isLoggedIn() {
-    // Vérifier d'abord dans SharedPreferences
+    // First, check in SharedPreferences
     bool isLoggedInLocal = sharedPreferences.getBool('is_logged_in') ?? false;
     
-    // Vérifier également avec Supabase
+    // Also check with Supabase
     final session = supabase.auth.currentSession;
     
-    // Mettre à jour SharedPreferences si nécessaire
+    // Update SharedPreferences if necessary
     if (session != null && !isLoggedInLocal) {
       sharedPreferences.setBool('is_logged_in', true);
       return true;
@@ -65,12 +65,12 @@ class AuthMiddlewareService extends GetxService {
     return isLoggedInLocal;
   }
   
-  // Enregistrer la session utilisateur après connexion
+  // Save user session after login
   Future<void> saveUserSession(User user) async {
     await sharedPreferences.setString('user_id', user.id);
     await sharedPreferences.setBool('is_logged_in', true);
     
-    // Facultatif: enregistrer d'autres informations utilisateur
+    // Optional: Save additional user information
     if (user.userMetadata != null) {
       if (user.userMetadata!['first_name'] != null) {
         await sharedPreferences.setString('first_name', user.userMetadata!['first_name']);
@@ -81,7 +81,7 @@ class AuthMiddlewareService extends GetxService {
     }
   }
   
-  // Méthode pour forcer une déconnexion locale (sans déconnecter Supabase)
+  // Method to force a local logout (without logging out from Supabase)
   Future<void> clearLocalSession() async {
     await sharedPreferences.remove('user_id');
     await sharedPreferences.remove('first_name');

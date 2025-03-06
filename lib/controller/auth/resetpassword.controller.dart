@@ -13,7 +13,6 @@ class ResetPasswordController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Vérifiez si la récupération de mot de passe est valide
     _authService.handlePasswordRecovery();
   }
 
@@ -24,7 +23,6 @@ class ResetPasswordController extends GetxController {
       );
 
       if (success) {
-        // La navigation est déjà gérée dans la méthode updatePassword
         Get.offAllNamed(AppRoute.login);
       }
     }

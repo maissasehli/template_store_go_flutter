@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/onboarding/onbordingcontroller.dart';
+import 'package:store_go/controller/onboarding/onbording.controller.dart';
+import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/localization/changelocal.dart';
-import 'package:store_go/view/widgets/Language/custombuttomlang.dart';
+import 'package:store_go/view/widgets/Language/custombuttomlang.widgets.dart';
 
-class AppColorExtension {
-  // Language Screen Specific Colors
-  static const Color languageCardBackground = Color(0xFFF5F5F5);
-  static const Color languageCardSelectedBorder = Color(0xFF000000);
-  static const Color languageCardUnselectedBorder = Colors.transparent;
 
-  static const Color languageCardTextPrimary = Color(0xFF000000);
-  static const Color languageCardTextSecondary = Color(0xFF666666);
-
-  static const Color languageContinueButtonBackground = Color(0xFF000000);
-  static const Color languageContinueButtonText = Color(0xFFFFFFFF);
-
-  static const Color languageIconBackground = Color(0xFFE0E0E0);
-  static const Color languageIconForeground = Color(0xFF000000);
-}
 
 class Language extends GetView<LocaleController> {
   const Language({super.key});

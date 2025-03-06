@@ -34,7 +34,6 @@ class UserProfileSetupController extends GetxController {
       isLoading.value = true;
       
       try {
-        // Utiliser le service approprié pour sauvegarder le profil
         final authMiddlewareService = Get.find<AuthMiddlewareService>();
         await authMiddlewareService.saveUserProfile(
           selectedGender.value!, 
@@ -49,7 +48,6 @@ class UserProfileSetupController extends GetxController {
           colorText: Colors.white,
         );
         
-        // Naviguer vers la page d'accueil
         Get.offAllNamed(AppRoute.home);
       } catch (e) {
         Get.snackbar(

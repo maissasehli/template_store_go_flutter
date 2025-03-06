@@ -21,7 +21,6 @@ class LoginController extends GetxController {
           password: passwordController.text.trim()
         );
         
-        // Navigation handled in AuthService.signIn method
       }
     } finally {
       isLoading.value = false;

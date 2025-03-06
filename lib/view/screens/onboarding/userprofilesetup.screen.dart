@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/onboarding/userprofilesetupcontroller.dart';
+import 'package:store_go/controller/onboarding/userprofilesetup.controller.dart';
 import 'package:store_go/core/constants/color.dart';
 
 class UserProfileSetupScreen extends StatelessWidget {

@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/googleauth/google_auth_controller.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/constants/imageasset.dart';
 import 'package:store_go/core/functions/validinput.dart';
-import 'package:store_go/controller/auth/logincontroller.dart';
-import 'package:store_go/view/screens/auth/forgetpassword.dart';
-import 'package:store_go/view/widgets/auth/customtextformauth.dart';
-import 'package:store_go/view/widgets/auth/customauthbutton.dart';
-import 'package:store_go/view/widgets/auth/customtextbodyauth .dart';
-import 'package:store_go/view/widgets/auth/customtexttitle .dart';
-import 'package:store_go/core/functions/alertexitapp.dart'; // Import the alertExitApp function
+import 'package:store_go/controller/auth/login.controller.dart';
+import 'package:store_go/view/screens/auth/forgetpassword.screen.dart';
+import 'package:store_go/view/widgets/auth/customtextformauth.widgets.dart';
+import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
+import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets%20.dart';
+import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
+import 'package:store_go/core/functions/alertexitapp.dart';
+import 'package:store_go/core/services/authsupabase.service.dart'; // Import AuthService
 
 class Login extends GetView<LoginController> {
   Login({Key? key}) : super(key: key);
 
   // Initialize GoogleAuthController
-  final GoogleAuthController _googleAuthController = Get.put(GoogleAuthController());
+  // Initialize AuthService
+  final AuthService _authService = Get.find<AuthService>();
 
   @override
   Widget build(BuildContext context) {
@@ -97,14 +98,12 @@ class Login extends GetView<LoginController> {
                     ),
                     const SizedBox(height: 40),
                     // Google Sign-In Button with loading state
-                    Obx(() => _buildSocialLoginButton(
+                    _buildSocialLoginButton(
                       icon: ImageAsset.googleIcon,
                       text: 'Continue With Google',
-                      onPressed: _googleAuthController.isLoading.value 
-                        ? null 
-                        : () => _googleAuthController.signInWithGoogle(),
-                      isLoading: _googleAuthController.isLoading.value,
-                    )),
+                      onPressed: () => _authService.signInWithGoogle(),
+
+                    ),
                     const SizedBox(height: 20),
                     _buildSocialLoginButton(
                       icon: ImageAsset.appleIcon,
@@ -115,7 +114,7 @@ class Login extends GetView<LoginController> {
                     _buildSocialLoginButton(
                       icon: ImageAsset.facebookIcon,
                       text: 'Continue With Facebook',
-                      onPressed: () {},
+                      onPressed: () => _authService.loginWithFacebook(context: context),
                     ),
                   ],
                 ),
