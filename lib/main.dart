@@ -3,6 +3,7 @@ import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/core/localization/changelocal.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/localization/translation.dart';
+import 'package:store_go/core/services/authMiddelware.service.dart';
 import 'package:store_go/routes.dart';
 import 'package:store_go/core/services/services.dart'; 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +27,8 @@ Future<void> main() async {
     debug: true,
     
   );
+    await Get.putAsync(() => AuthMiddlewareService().init());
+
 
   runApp(const MyApp());
 }
@@ -45,7 +48,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialBinding:MyBinding() ,
       getPages: routes,
     );
   }

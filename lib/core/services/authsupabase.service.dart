@@ -5,6 +5,7 @@ import 'package:store_go/view/screens/auth/resetpassword.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:store_go/core/services/authMiddelware.service.dart';
 
 class AuthService {
   final supabase = Supabase.instance.client;
@@ -43,7 +44,7 @@ class AuthService {
     );
   }
 
-  // Modified Sign Up Method without Email Confirmation
+  // Modified Sign Up Method without Email Confirmation and without navigation
   Future<bool> signUp({
     required String email,
     required String password,
@@ -51,17 +52,20 @@ class AuthService {
     required String lastName,
   }) async {
     try {
-      // Remove email confirmation by using signInWithPassword
+      // Try to sign in first to check if account exists
       final authResponse = await supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
       if (authResponse.user != null) {
-        _showSuccessAlert('Account created successfully');
-        Get.offNamed(AppRoute.home); // Navigate directly to home
+        // User exists and signed in successfully
+        _showSuccessAlert('Logged in successfully');
+        // Save user session
+        await Get.find<AuthMiddlewareService>().saveUserSession(authResponse.user!);
         return true;
       }
+      
       return false;
     } on AuthException catch (e) {
       // If user doesn't exist, create the account
@@ -75,7 +79,8 @@ class AuthService {
 
           if (signupResponse.user != null) {
             _showSuccessAlert('Account created successfully');
-            Get.offNamed(AppRoute.home); // Navigate directly to home
+            // Save user session
+            await Get.find<AuthMiddlewareService>().saveUserSession(signupResponse.user!);
             return true;
           }
         } catch (signupError) {
@@ -92,7 +97,7 @@ class AuthService {
     }
   }
 
-  // Comprehensive Sign In Method
+  // Comprehensive Sign In Method with session saving
   Future<bool> signIn({required String email, required String password}) async {
     try {
       final authResponse = await supabase.auth.signInWithPassword(
@@ -101,6 +106,8 @@ class AuthService {
       );
 
       if (authResponse.user != null) {
+        // Save user session
+        await Get.find<AuthMiddlewareService>().saveUserSession(authResponse.user!);
         _showSuccessAlert('Successfully logged in');
         Get.offAllNamed(AppRoute.home);
         return true;
@@ -128,22 +135,23 @@ class AuthService {
     }
   }
 
-Future<bool> handlePasswordRecovery() async {
-  try {
-    final session = supabase.auth.currentSession;
-    
-    if (session != null) {
-      // Utilisez Get.to() pour naviguer vers la page de réinitialisation
-      Get.to(() => ResetPasswordPage());
-      return true;
+  Future<bool> handlePasswordRecovery() async {
+    try {
+      final session = supabase.auth.currentSession;
+      
+      if (session != null) {
+        // Utilisez Get.to() pour naviguer vers la page de réinitialisation
+        Get.to(() => ResetPasswordPage());
+        return true;
+      }
+      
+      return false;
+    } catch (e) {
+      // Gestion des erreurs
+      return false;
     }
-    
-    return false;
-  } catch (e) {
-    // Gestion des erreurs
-    return false;
   }
-}
+
   // Méthode de réinitialisation de mot de passe améliorée
   Future<bool> resetPassword(String email) async {
     try {
@@ -166,35 +174,35 @@ Future<bool> handlePasswordRecovery() async {
 
   // Méthode pour mettre à jour le mot de passe
   Future<bool> updatePassword(String newPassword) async {
-  try {
-    // Update the password
-    await supabase.auth.updateUser(
-      UserAttributes(password: newPassword),
-    );
+    try {
+      // Update the password
+      await supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
 
-    _showSuccessAlert('Password updated successfully');
-    Get.offAllNamed(AppRoute.login);
-    return true;
-  } on AuthException catch (e) {
-    _handleAuthException(e);
-    return false;
-  } catch (e) {
-    _showErrorAlert('Error updating password');
-    return false;
+      _showSuccessAlert('Password updated successfully');
+      Get.offAllNamed(AppRoute.login);
+      return true;
+    } on AuthException catch (e) {
+      _handleAuthException(e);
+      return false;
+    } catch (e) {
+      _showErrorAlert('Error updating password');
+      return false;
+    }
   }
-}
 
-  // Déconnexion
+  // Déconnexion avec mise à jour de SharedPreferences
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
       await supabase.auth.signOut();
+      // Clear local session
+      await Get.find<AuthMiddlewareService>().clearLocalSession();
       _showSuccessAlert('Déconnexion réussie');
       Get.offAllNamed(AppRoute.login);
     } catch (e) {
       _showErrorAlert('Échec de la déconnexion');
     }
   }
-
-  // Écouteur d\'événements d\'authentification
 }

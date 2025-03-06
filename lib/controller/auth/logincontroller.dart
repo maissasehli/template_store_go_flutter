@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_service.dart';
+import 'package:store_go/core/services/authsupabase.service.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
@@ -12,14 +12,18 @@ class LoginController extends GetxController {
   final RxBool isLoading = false.obs;
 
   void login() async {
-    if (loginFormKey.currentState!.validate()) {
-      isLoading.value = true;
-      
-      final success = await _authService.signIn(
-        email: emailController.text.trim(), 
-        password: passwordController.text.trim()
-      );
-
+    try {
+      if (loginFormKey.currentState!.validate()) {
+        isLoading.value = true;
+        
+        final success = await _authService.signIn(
+          email: emailController.text.trim(), 
+          password: passwordController.text.trim()
+        );
+        
+        // Navigation handled in AuthService.signIn method
+      }
+    } finally {
       isLoading.value = false;
     }
   }
@@ -28,7 +32,7 @@ class LoginController extends GetxController {
     Get.toNamed(AppRoute.signup);
   }
 
-  void doToForgetPassword() {
+  void goToForgetPassword() {
     Get.toNamed(AppRoute.forgetpassword);
   }
 

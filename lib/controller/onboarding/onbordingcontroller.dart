@@ -5,7 +5,6 @@ import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/data/datasource/static/onbording_static.dart';
 import 'package:store_go/core/services/services.dart';
 
-
 class OnboardingController extends GetxController {
   late PageController pageController;
   var currentPage = 0.obs;
@@ -31,6 +30,7 @@ class OnboardingController extends GetxController {
   void nextPage() {
     if (currentPage.value < pageCount - 1) {
       myServices.sharedPreferences.setString("onboarding", "1");
+      Get.offAllNamed(AppRoute.login);
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/middleware/middleware.dart';
 import 'package:store_go/view/screens/auth/emailsentconfirmation_resetpassword.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.dart';
 import 'package:store_go/view/screens/auth/login.dart';
@@ -12,7 +13,9 @@ import 'package:store_go/view/screens/onboarding/onbordingScreen.dart';
 import 'package:store_go/view/screens/onboarding/userprofilesetupscreen.dart';
 
 List<GetPage<dynamic>>? routes = [
-  GetPage(name: "/", page: () => const Language(), middlewares: []),
+  GetPage(name: "/", page: () => const Language(), middlewares: [
+    Middleware()
+  ]),
   
   // OnBoarding
   GetPage(name: AppRoute.onBoarding, page: () => Onboarding()),
@@ -31,17 +34,17 @@ List<GetPage<dynamic>>? routes = [
     GetPage(
     name: AppRoute.signup, 
     page: () => const Signup(),
-    binding: MyBinding(), // Utilisez le nouveau binding ici
+    binding: MyBinding(), 
   ),
 GetPage(
     name: AppRoute.forgetpassword, 
     page: () =>  ForgetPassword(),
-    binding: MyBinding(), // Utilisez le nouveau binding ici
+    binding: MyBinding(), 
   ),
 
 GetPage(
   name: AppRoute.emailsentconfirmationresetpassword, 
-  page: () => const EmailSentConfirmationResetPassword(), // Note the 'const'
+  page: () => const EmailSentConfirmationResetPassword(), 
   binding: MyBinding(),
 ),
 GetPage(
@@ -53,7 +56,7 @@ GetPage(
   GetPage(
     name: AppRoute.home, 
     page: () =>  HomeScreen(),
-    binding: MyBinding(), // Utilisez le nouveau binding ici
+    binding: MyBinding(), 
   ),
 
   

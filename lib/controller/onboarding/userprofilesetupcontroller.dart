@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/services/authMiddelware.service.dart';
 
 class UserProfileSetupController extends GetxController {
   final RxnString selectedGender = RxnString(null);
   final RxnString selectedAgeRange = RxnString(null);
+  final RxBool isLoading = false.obs;
 
   final List<String> ageRanges = [
     '13-17',
@@ -26,15 +29,39 @@ class UserProfileSetupController extends GetxController {
   bool get isFormValid => 
     selectedGender.value != null && selectedAgeRange.value != null;
 
-  void finishUserProfileSetup() {
+  void finishUserProfileSetup() async {
     if (isFormValid) {
-      Get.snackbar(
-        'Succès', 
-        'Profil configuré',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      // TODO: Add navigation to next screen
-      // Get.to(() => NextScreen());
+      isLoading.value = true;
+      
+      try {
+        // Utiliser le service approprié pour sauvegarder le profil
+        final authMiddlewareService = Get.find<AuthMiddlewareService>();
+        await authMiddlewareService.saveUserProfile(
+          selectedGender.value!, 
+          selectedAgeRange.value!
+        );
+        
+        Get.snackbar(
+          'Succès', 
+          'Profil configuré avec succès',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        
+        // Naviguer vers la page d'accueil
+        Get.offAllNamed(AppRoute.home);
+      } catch (e) {
+        Get.snackbar(
+          'Erreur', 
+          'Impossible de sauvegarder le profil',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      } finally {
+        isLoading.value = false;
+      }
     } else {
       Get.snackbar(
         'Erreur', 

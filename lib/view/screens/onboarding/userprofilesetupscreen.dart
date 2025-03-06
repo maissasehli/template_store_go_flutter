@@ -98,7 +98,7 @@ class UserProfileSetupScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
                     ),
                     child: ElevatedButton(
-                      onPressed: controller.isFormValid 
+                      onPressed: controller.isFormValid && !controller.isLoading.value
                         ? controller.finishUserProfileSetup 
                         : null,
                       style: ElevatedButton.styleFrom(
@@ -109,16 +109,18 @@ class UserProfileSetupScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
                         ),
                       ),
-                      child: Text(
-                        'Finish',
-                        style: TextStyle(
-                          color: controller.isFormValid 
-                            ? Colors.white 
-                            : Colors.grey[500],
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: controller.isLoading.value
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            'Finish',
+                            style: TextStyle(
+                              color: controller.isFormValid 
+                                ? Colors.white 
+                                : Colors.grey[500],
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                     ),
                   )),
                   const SizedBox(height: 20),

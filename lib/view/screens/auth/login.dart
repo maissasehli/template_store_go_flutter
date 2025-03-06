@@ -57,7 +57,7 @@ class Login extends GetView<LoginController> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
-                        onTap: controller.doToForgetPassword,
+                        onTap: controller.goToForgetPassword,
                         child: Text(
                           'Forgot Password?',
                           style: AppColor.bodySmall.copyWith(
