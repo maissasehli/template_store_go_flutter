@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/emailsentresetpassword.controller.dart';
+import 'package:store_go/controller/auth/email_sent_reset_password.controller.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/constants/imageasset.dart';
 

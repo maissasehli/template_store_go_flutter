@@ -8,10 +8,13 @@ import 'package:store_go/controller/auth/login.controller.dart';
 import 'package:store_go/view/screens/auth/forgetpassword.screen.dart';
 import 'package:store_go/view/widgets/auth/customtextformauth.widgets.dart';
 import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets%20.dart';
+import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets.dart';
 import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
 import 'package:store_go/core/functions/alertexitapp.dart';
+import 'package:store_go/view/widgets/extensions/text.extensions.dart';
+import 'package:store_go/view/widgets/ui/theme_toggle.dart';
 import 'package:store_go/core/services/authsupabase.service.dart'; // Import AuthService
+
 
 class Login extends GetView<LoginController> {
   Login({Key? key}) : super(key: key);
@@ -28,7 +31,7 @@ class Login extends GetView<LoginController> {
         return await alertExitApp() ?? false;
       },
       child: Scaffold(
-        backgroundColor: AppColor.primaryColor,
+        appBar: AppBar(actions: const [ThemeToggle()]),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Form(
@@ -40,7 +43,7 @@ class Login extends GetView<LoginController> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const SizedBox(height: 60),
-                    const CustomTextTitle(text: 'log in'),
+                    const Text('log in').heading1(context),
                     const SizedBox(height: 40),
                     CustomTextFormAuth(
                       controller: controller.emailController,
@@ -73,12 +76,15 @@ class Login extends GetView<LoginController> {
                       onPressed: controller.login,
                       text: 'Continue',
                     ),
+
                     const SizedBox(height: 20),
                     GestureDetector(
                       onTap: controller.goToSignup,
                       child: Text(
                         "Don't have an Account? Create One",
-                        style: AppColor.bodyMedium.copyWith(color: Colors.black),
+                        style: AppColor.bodyMedium.copyWith(
+                          color: Colors.black,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -102,7 +108,6 @@ class Login extends GetView<LoginController> {
                       icon: ImageAsset.googleIcon,
                       text: 'Continue With Google',
                       onPressed: () => _authService.signInWithGoogle(),
-
                     ),
                     const SizedBox(height: 20),
                     _buildSocialLoginButton(
@@ -114,7 +119,9 @@ class Login extends GetView<LoginController> {
                     _buildSocialLoginButton(
                       icon: ImageAsset.facebookIcon,
                       text: 'Continue With Facebook',
-                      onPressed: () => _authService.loginWithFacebook(context: context),
+                      onPressed:
+                          () =>
+                              _authService.loginWithFacebook(context: context),
                     ),
                   ],
                 ),
@@ -141,26 +148,23 @@ class Login extends GetView<LoginController> {
           borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
         ),
       ),
-      child: isLoading
-          ? CircularProgressIndicator(color: Colors.black)
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset(
-                  icon,
-                  width: 24,
-                  height: 24,
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  text,
-                  style: AppColor.bodyMedium.copyWith(
-                    color: Colors.black,
-                    fontSize: 16,
+      child:
+          isLoading
+              ? CircularProgressIndicator(color: Colors.black)
+              : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(icon, width: 24, height: 24),
+                  const SizedBox(width: 10),
+                  Text(
+                    text,
+                    style: AppColor.bodyMedium.copyWith(
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
     );
   }
 }

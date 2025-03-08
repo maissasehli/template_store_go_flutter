@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/core/constants/color.dart';
 
-class CustomTextFormAuth extends StatelessWidget {
+class CustomTextBodyAuth extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
-  final bool? obscureText;
-  final TextInputType? keyboardType;
+  final bool obscureText;
   final String? Function(String?)? validator; // Add validator parameter
 
-  const CustomTextFormAuth({
+  const CustomTextBodyAuth({
     Key? key,
     required this.controller,
     required this.hintText,
     this.obscureText = false,
-    this.keyboardType = TextInputType.text,
     this.validator, // Optional validator
   }) : super(key: key);
 
@@ -22,11 +20,9 @@ class CustomTextFormAuth extends StatelessWidget {
     return TextFormField(
       // Changed from TextField to TextFormField
       controller: controller,
-      obscureText: obscureText ?? false,
-      keyboardType: keyboardType,
+      obscureText: obscureText,
       validator: validator, // Add validator
-      decoration: InputDecoration(hintText: hintText, filled: true),
-      style: TextStyle(color: AppColor.textPrimaryColor),
+      decoration: InputDecoration(hintText: hintText),
     );
   }
 }
