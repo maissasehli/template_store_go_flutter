@@ -4,6 +4,7 @@ import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/services/services.dart';
 
 class Middleware extends GetMiddleware{
+  @override
   int? get priority =>  1;
   MyServices myServices = Get.find();
   @override
@@ -11,8 +12,6 @@ class Middleware extends GetMiddleware{
     if(myServices.sharedPreferences.getString("onboarding")=="1"){
       return const RouteSettings(name:AppRoute.login);
     }
-
+    return null;
   }
-
-
 }

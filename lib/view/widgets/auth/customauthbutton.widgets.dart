@@ -6,8 +6,8 @@ class CustomAuthButton extends StatelessWidget {
   final String text;
 
   const CustomAuthButton({
-    Key? key, 
-    required this.onPressed, 
+    Key? key,
+    required this.onPressed,
     required this.text,
   }) : super(key: key);
 
@@ -16,11 +16,7 @@ class CustomAuthButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColor.secondaryColor,
         padding: const EdgeInsets.symmetric(vertical: 15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
-        ),
       ),
       child: Text(
         text,
