@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/resetpassword.controller.dart';
+import 'package:store_go/controller/auth/reset_password.controller.dart';
 import 'package:store_go/core/constants/color.dart';
 import 'package:store_go/core/functions/validinput.dart';
 import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';

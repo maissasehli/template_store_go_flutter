@@ -11,7 +11,7 @@ import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
 import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets%20.dart';
 import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
 import 'package:store_go/core/functions/alertexitapp.dart';
-import 'package:store_go/core/services/authsupabase.service.dart'; // Import AuthService
+import 'package:store_go/core/services/auth_supabase.service.dart';
 
 class Login extends GetView<LoginController> {
   Login({Key? key}) : super(key: key);
