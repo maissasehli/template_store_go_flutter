@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/constants/color.dart';
+import 'package:store_go/core/constants/colors.dart';
 
 class CustomBottomLanguage extends StatelessWidget {
   final void Function()? onPressed;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/services/auth_supabase.service.dart';
-import 'package:store_go/view/screens/onboarding/userprofilesetup.screen.dart';
 
 class SignupController extends GetxController {
   final TextEditingController firstNameController = TextEditingController();

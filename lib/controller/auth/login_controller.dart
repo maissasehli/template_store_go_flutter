@@ -20,7 +20,8 @@ class LoginController extends GetxController {
           email: emailController.text.trim(), 
           password: passwordController.text.trim()
         );
-        
+        // log the success
+        debugPrint(success.toString());
       }
     } finally {
       isLoading.value = false;

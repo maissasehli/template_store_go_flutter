@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/constants/theme_constants.dart';
+import 'package:store_go/core/constants/theme.dart';
 import 'package:store_go/core/theme/color_extension.dart';
-import 'package:store_go/core/constants/ui_constants.dart';
-import 'package:store_go/core/constants/typography_constants.dart';
+import 'package:store_go/core/constants/ui.dart';
+import 'package:store_go/core/constants/typography.dart';
 import 'package:store_go/core/theme/typography_extension.dart';
 
 class AppTheme {

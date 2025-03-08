@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/constants/color.dart';
+import 'package:store_go/core/constants/colors.dart';
 
 class CustomTextTitle extends StatelessWidget {
   final String text;
 
   const CustomTextTitle({
-    Key? key, 
+    super.key, 
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

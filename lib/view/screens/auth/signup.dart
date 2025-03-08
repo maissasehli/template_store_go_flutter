@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/signup.controller.dart';
-import 'package:store_go/core/constants/color.dart';
-import 'package:store_go/core/functions/validinput.dart';
-import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtextformauth.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
-import 'package:store_go/core/functions/alertexitapp.dart';
+import 'package:store_go/controller/auth/signup_controller.dart';
+import 'package:store_go/core/constants/colors.dart';
+import 'package:store_go/core/functions/valid_input.dart';
+import 'package:store_go/view/widgets/auth/custom_auth_button.dart';
+import 'package:store_go/view/widgets/auth/custom_text_body_auth.dart';
+import 'package:store_go/view/widgets/auth/custom_text_form_auth.dart';
+import 'package:store_go/view/widgets/auth/custom_text_title.dart';
+import 'package:store_go/core/functions/alert_exit_app.dart';
 
 class Signup extends GetView<SignupController> {
-  const Signup({Key? key}) : super(key: key);
+  const Signup({super.key});
 
   @override
   Widget build(BuildContext context) {

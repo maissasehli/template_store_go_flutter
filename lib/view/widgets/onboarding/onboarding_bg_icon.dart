@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/constants/imageasset.dart';
+import 'package:store_go/core/constants/assets.dart';
 
 class OnBoardingBgIcon extends StatelessWidget {
   final double? bottom;

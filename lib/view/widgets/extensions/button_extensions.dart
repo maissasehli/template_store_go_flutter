@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/constants/ui_constants.dart';
+import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/theme/color_extension.dart';
 
 /// Extension to create app-styled buttons more easily

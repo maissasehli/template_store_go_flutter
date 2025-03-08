@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:store_go/core/constants/routes.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthMiddlewareService extends GetxService {

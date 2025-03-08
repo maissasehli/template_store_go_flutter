@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/view/screens/auth/resetpassword.screen.dart';
+import 'package:store_go/view/screens/auth/reset_password.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:store_go/core/services/authMiddelware.service.dart';
+import 'package:store_go/core/services/auth_middleware.service.dart';
 
 class AuthService {
   final supabase = Supabase.instance.client;

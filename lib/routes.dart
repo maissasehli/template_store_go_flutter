@@ -2,15 +2,15 @@ import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/core/constants/routes.dart';
 import 'package:store_go/core/middleware/middleware.dart';
-import 'package:store_go/view/screens/auth/emailsentconfirmation.screen.dart';
-import 'package:store_go/view/screens/auth/forgetpassword.screen.dart';
-import 'package:store_go/view/screens/auth/login.screen.dart';
-import 'package:store_go/view/screens/auth/resetpassword.screen.dart';
-import 'package:store_go/view/screens/auth/signup.screen.dart';
-import 'package:store_go/view/screens/home/home.screen.dart';
-import 'package:store_go/view/screens/language/language.screen.dart';
-import 'package:store_go/view/screens/onboarding/onbording.screen.dart';
-import 'package:store_go/view/screens/onboarding/userprofilesetup.screen.dart';
+import 'package:store_go/view/screens/auth/email_confirmation.dart';
+import 'package:store_go/view/screens/auth/forget_password.dart';
+import 'package:store_go/view/screens/auth/login.dart';
+import 'package:store_go/view/screens/auth/reset_password.dart';
+import 'package:store_go/view/screens/auth/signup.dart';
+import 'package:store_go/view/screens/home/home.dart';
+import 'package:store_go/view/screens/language/language.dart';
+import 'package:store_go/view/screens/onboarding/onboarding.dart';
+import 'package:store_go/view/screens/onboarding/profile_setup.dart';
 
 List<GetPage<dynamic>>? routes = [
   GetPage(name: "/", page: () => const Language(), middlewares: [

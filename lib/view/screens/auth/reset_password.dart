@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/reset_password.controller.dart';
-import 'package:store_go/core/constants/color.dart';
-import 'package:store_go/core/functions/validinput.dart';
-import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtextformauth.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
+import 'package:store_go/controller/auth/reset_password.dart';
+import 'package:store_go/core/constants/colors.dart';
+import 'package:store_go/core/functions/valid_input.dart';
+import 'package:store_go/view/widgets/auth/custom_auth_button.dart';
+import 'package:store_go/view/widgets/auth/custom_text_form_auth.dart';
+import 'package:store_go/view/widgets/auth/custom_text_title.dart';
 
 class ResetPasswordPage extends StatelessWidget {
   final ResetPasswordController controller = Get.put(ResetPasswordController());
+
+  ResetPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {

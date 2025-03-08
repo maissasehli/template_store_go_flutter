@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/color.dart';
-import 'package:store_go/core/constants/imageasset.dart';
-import 'package:store_go/core/functions/validinput.dart';
-import 'package:store_go/controller/auth/login.controller.dart';
-import 'package:store_go/view/screens/auth/forgetpassword.screen.dart';
-import 'package:store_go/view/widgets/auth/customtextformauth.widgets.dart';
-import 'package:store_go/view/widgets/auth/customauthbutton.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtextbodyauth.widgets.dart';
-import 'package:store_go/view/widgets/auth/customtexttitle.widgets.dart';
-import 'package:store_go/core/functions/alertexitapp.dart';
-import 'package:store_go/view/widgets/extensions/text.extensions.dart';
+import 'package:store_go/core/constants/colors.dart';
+import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/functions/valid_input.dart';
+import 'package:store_go/controller/auth/login_controller.dart';
+import 'package:store_go/view/widgets/auth/custom_text_form_auth.dart';
+import 'package:store_go/view/widgets/auth/custom_auth_button.dart';
+import 'package:store_go/view/widgets/auth/custom_text_body_auth.dart';
+import 'package:store_go/core/functions/alert_exit_app.dart';
+import 'package:store_go/view/widgets/extensions/text_extensions.dart';
 import 'package:store_go/view/widgets/ui/theme_toggle.dart';
-import 'package:store_go/core/services/authsupabase.service.dart'; // Import AuthService
+import 'package:store_go/core/services/auth_supabase.service.dart'; // Import AuthService
 
 
 class Login extends GetView<LoginController> {
-  Login({Key? key}) : super(key: key);
+  Login({super.key});
 
   // Initialize GoogleAuthController
   // Initialize AuthService
@@ -25,10 +23,11 @@ class Login extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         // Show the exit confirmation dialog when the user presses the back button
-        return await alertExitApp() ?? false;
+        return await alertExitApp();
       },
       child: Scaffold(
         appBar: AppBar(actions: const [ThemeToggle()]),

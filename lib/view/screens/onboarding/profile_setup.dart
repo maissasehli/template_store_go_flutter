@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/onboarding/user_profile_setup.controller.dart';
-import 'package:store_go/core/constants/color.dart';
+import 'package:store_go/controller/onboarding/profile_setup.dart';
+import 'package:store_go/core/constants/colors.dart';
 
 class UserProfileSetupScreen extends StatelessWidget {
-  const UserProfileSetupScreen({Key? key}) : super(key: key);
+  const UserProfileSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

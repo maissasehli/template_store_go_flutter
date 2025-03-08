@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
-import 'package:store_go/controller/auth/email_sent_reset_password.controller.dart';
-import 'package:store_go/controller/auth/forget_password.controller.dart';
-import 'package:store_go/controller/auth/login.controller.dart';
-import 'package:store_go/controller/auth/reset_password.controller.dart';
-import 'package:store_go/controller/auth/signup.controller.dart';
-import 'package:store_go/controller/onboarding/user_profile_setup.controller.dart';
-import 'package:store_go/core/services/authMiddelware.service.dart';
+import 'package:store_go/controller/auth/email_reset_password.dart';
+import 'package:store_go/controller/auth/forget_password.dart';
+import 'package:store_go/controller/auth/login_controller.dart';
+import 'package:store_go/controller/auth/reset_password.dart';
+import 'package:store_go/controller/auth/signup_controller.dart';
+import 'package:store_go/controller/onboarding/profile_setup.dart';
+import 'package:store_go/core/services/auth_middleware.service.dart';
 import 'package:store_go/core/services/auth_supabase.service.dart';
 
 class MyBinding implements Bindings {

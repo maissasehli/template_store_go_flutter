@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/authMiddelware.service.dart';
+import 'package:store_go/core/services/auth_middleware.service.dart';
 
 class UserProfileSetupController extends GetxController {
   final RxnString selectedGender = RxnString(null);
