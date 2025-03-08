@@ -15,6 +15,7 @@ import 'package:store_go/view/widgets/extensions/text.extensions.dart';
 import 'package:store_go/view/widgets/ui/theme_toggle.dart';
 import 'package:store_go/core/services/authsupabase.service.dart'; // Import AuthService
 
+
 class Login extends GetView<LoginController> {
   Login({Key? key}) : super(key: key);
 
