@@ -30,8 +30,8 @@ class AppTheme {
   static const darkColors = AppColorsData(
     background: Color(0xFF121212),
     foreground: Color(0xFFFFFFFF),
-    primary: Color(0xFF0070F3),
-    primaryForeground: Color(0xFFFFFFFF),
+    primary: Color(0xFFFFFFFF),
+    primaryForeground: Color(0xFF000000),
     secondary: Color(0xFF2A2A2A),
     secondaryForeground: Color(0xFFFFFFFF),
     accent: Color(0xFFEC4899),
@@ -298,11 +298,11 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
-          borderSide: BorderSide(color: colors.border),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
-          borderSide: BorderSide(color: colors.border),
+          borderSide: BorderSide(color: colors.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),

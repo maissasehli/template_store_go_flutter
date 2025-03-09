@@ -20,10 +20,7 @@ class CustomAuthButton extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: AppColor.bodyLarge.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        ),
+        style: AppColor.bodyLarge.copyWith(fontWeight: FontWeight.bold),
       ),
     );
   }
