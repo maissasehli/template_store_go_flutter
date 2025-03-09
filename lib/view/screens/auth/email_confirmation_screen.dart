@@ -24,18 +24,20 @@ class EmailSentConfirmationResetPassword extends StatelessWidget {
                   minWidth: constraints.maxWidth,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 40,
+                  ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // Paper plane icon
                       Image.asset(
-                        ImageAsset.emailsent, // Use a constant from ImageAsset
+                        ImageAsset.sendMail, // Use a constant from ImageAsset
                         height: 250,
                         width: 250,
                       ),
-
 
                       // Verification text
                       Text(
@@ -57,7 +59,9 @@ class EmailSentConfirmationResetPassword extends StatelessWidget {
                             backgroundColor: AppColor.secondaryColor,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
+                              borderRadius: BorderRadius.circular(
+                                AppColor.globalBorderRadius,
+                              ),
                             ),
                           ),
                           child: Text(

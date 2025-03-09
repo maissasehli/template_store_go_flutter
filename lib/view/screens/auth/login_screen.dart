@@ -16,11 +16,12 @@ import 'package:store_go/core/services/auth_supabase.service.dart';
 
 class Login extends GetView<LoginController> {
   Login({super.key});
-  
+
   final AuthService _authService = Get.find<AuthService>();
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -83,15 +84,12 @@ class Login extends GetView<LoginController> {
                     const SizedBox(height: 20),
                     Row(
                       children: [
-                        Expanded(child: Divider(color: Colors.grey.shade300)),
+                        Expanded(child: Divider(color: colors.secondary)),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Text(
-                            'or',
-                            style: TextStyle(color: Colors.grey.shade600),
-                          ),
+                          child: Text('or').body(context),
                         ),
-                        Expanded(child: Divider(color: Colors.grey.shade300)),
+                        Expanded(child: Divider(color: colors.secondary)),
                       ],
                     ),
                     const SizedBox(height: 20),
