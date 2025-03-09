@@ -48,7 +48,6 @@ class MyApp extends StatelessWidget {
           theme: themeController.theme,
           darkTheme: themeController.theme, // Let controller determine theme
           themeMode: themeController.themeMode,
-          initialRoute: '/',
           getPages: routes,
         );
       },

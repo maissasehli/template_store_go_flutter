@@ -17,7 +17,7 @@ class ImageAsset {
   static const String appleIcon = '$rootIcons/apple.svg';
   static const String googleIcon = '$rootIcons/google.svg';
   static const String facebookIcon = '$rootIcons/facebook.svg';
-  //emailsent
+  //email sent
   static const String emailsent = '$rootIcons/email_sent.png';
 
 
