@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:store_go/core/theme/theme_controller.dart';
-import 'package:store_go/core/services/image_cache_service.dart';
+import 'package:store_go/core/services/image_cache.dart';
 import 'package:store_go/core/services/image_preloader_manager.dart';
 
 class DependencyInjection {

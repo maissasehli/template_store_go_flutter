@@ -10,7 +10,7 @@ class EmailSentConfirmationResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Use Get.find instead of checking and putting
-    final controller = Get.put(EmailSentControllerResetPassword());
+    final controller = Get.put(ResetPasswordController());
 
     return Scaffold(
       backgroundColor: AppColor.primaryColor,

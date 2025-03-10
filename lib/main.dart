@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:store_go/core/localization/change_local.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/localization/translation.dart';
-import 'package:store_go/core/services/auth_middleware.service.dart';
+import 'package:store_go/core/services/auth_middleware.dart';
 import 'package:store_go/core/theme/theme_controller.dart';
 import 'package:store_go/routes.dart';
 import 'package:store_go/core/services/services.dart';

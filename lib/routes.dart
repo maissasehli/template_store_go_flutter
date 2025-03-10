@@ -13,52 +13,39 @@ import 'package:store_go/view/screens/onboarding/onboarding_screen.dart';
 import 'package:store_go/view/screens/onboarding/profile_setup_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
-  GetPage(name: "/", page: () => const Language(), middlewares: [
-    Middleware()
-  ]),
-  
+  GetPage(name: "/", page: () => const Language(), middlewares: [Middleware()]),
+
   // OnBoarding
   GetPage(name: AppRoute.onBoarding, page: () => Onboarding()),
-   GetPage(
-    name: AppRoute.userprofilesetup, 
-    page: () => const UserProfileSetupScreen(),
-    binding: MyBinding(), 
-  ),
-  
-  // Auth
   GetPage(
-    name: AppRoute.login, 
-    page: () =>  Login(),
-    binding: MyBinding(), 
-  ),
-    GetPage(
-    name: AppRoute.signup, 
-    page: () => const Signup(),
-    binding: MyBinding(), 
-  ),
-GetPage(
-    name: AppRoute.forgetpassword, 
-    page: () =>  ForgetPassword(),
-    binding: MyBinding(), 
-  ),
-
-GetPage(
-  name: AppRoute.emailsentconfirmationresetpassword, 
-  page: () => const EmailSentConfirmationResetPassword(), 
-  binding: MyBinding(),
-),
-GetPage(
-  name: AppRoute.resetPassword,
-  page: () => ResetPasswordPage(),
+    name: AppRoute.profileSetup,
+    page: () => const ProfileSetupScreen(),
     binding: MyBinding(),
-
-),
-//HOME
-  GetPage(
-    name: AppRoute.home, 
-    page: () =>  HomeScreen(),
-    binding: MyBinding(), 
   ),
 
-  
+  // Auth
+  GetPage(name: AppRoute.login, page: () => Login(), binding: MyBinding()),
+  GetPage(
+    name: AppRoute.signup,
+    page: () => const Signup(),
+    binding: MyBinding(),
+  ),
+  GetPage(
+    name: AppRoute.forgetPassword,
+    page: () => ForgetPassword(),
+    binding: MyBinding(),
+  ),
+
+  GetPage(
+    name: AppRoute.emailResetPasswordConfirmation,
+    page: () => const EmailSentConfirmationResetPassword(),
+    binding: MyBinding(),
+  ),
+  GetPage(
+    name: AppRoute.resetPassword,
+    page: () => ResetPasswordPage(),
+    binding: MyBinding(),
+  ),
+  //HOME
+  GetPage(name: AppRoute.home, page: () => HomeScreen(), binding: MyBinding()),
 ];

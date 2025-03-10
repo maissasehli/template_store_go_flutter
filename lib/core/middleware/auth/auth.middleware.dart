@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_middleware.service.dart';
+import 'package:store_go/core/services/auth_middleware.dart';
 
 class AuthMiddleware extends GetMiddleware {
   @override
@@ -13,11 +13,11 @@ class AuthMiddleware extends GetMiddleware {
 
     // If the user has not completed their profile, redirect to the setup page
     if (!authService.isProfileCompleted() &&
-        route != AppRoute.userprofilesetup &&
+        route != AppRoute.profileSetup &&
         route != AppRoute.login &&
         route != AppRoute.signup &&
         route != AppRoute.onBoarding) {
-      return const RouteSettings(name: AppRoute.userprofilesetup);
+      return const RouteSettings(name: AppRoute.profileSetup);
     }
 
     // If the user is already logged in and tries to access login/signup
@@ -30,10 +30,10 @@ class AuthMiddleware extends GetMiddleware {
     if (!authService.isLoggedIn() &&
         route != AppRoute.login &&
         route != AppRoute.signup &&
-        route != AppRoute.userprofilesetup &&
+        route != AppRoute.profileSetup &&
         route != AppRoute.onBoarding &&
-        route != AppRoute.forgetpassword &&
-        route != AppRoute.emailsentconfirmationresetpassword) {
+        route != AppRoute.forgetPassword &&
+        route != AppRoute.emailResetPasswordConfirmation) {
       return const RouteSettings(name: AppRoute.login);
     }
 

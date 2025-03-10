@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_supabase.service.dart';
+import 'package:store_go/core/services/auth_supabase.dart';
 
 class ForgetPasswordController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
-  
+
   // Create an instance of AuthService
   final AuthService _authService = AuthService();
 
@@ -15,12 +15,12 @@ class ForgetPasswordController extends GetxController {
     if (forgetPasswordFormKey.currentState!.validate()) {
       // Call the resetPassword method from AuthService
       bool success = await _authService.resetPassword(
-        emailController.text.trim()
+        emailController.text.trim(),
       );
 
       // If password reset is successful, navigate to email sent confirmation
       if (success) {
-        Get.toNamed(AppRoute.emailsentconfirmationresetpassword);
+        Get.toNamed(AppRoute.emailResetPasswordConfirmation);
       }
     }
   }

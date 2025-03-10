@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/services/image_cache_service.dart';
+import 'package:store_go/core/services/image_cache.dart';
 
 class CachedAssetImage extends StatefulWidget {
   final String imagePath;

@@ -5,7 +5,7 @@ import 'package:store_go/view/screens/auth/reset_password_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:store_go/core/services/auth_middleware.service.dart';
+import 'package:store_go/core/services/auth_middleware.dart';
 
 class AuthService {
   final supabase = Supabase.instance.client;
@@ -62,10 +62,12 @@ class AuthService {
         // User exists and signed in successfully
         _showSuccessAlert('Logged in successfully');
         // Save user session
-        await Get.find<AuthMiddlewareService>().saveUserSession(authResponse.user!);
+        await Get.find<AuthMiddlewareService>().saveUserSession(
+          authResponse.user!,
+        );
         return true;
       }
-      
+
       return false;
     } on AuthException catch (e) {
       // If user doesn't exist, create the account
@@ -80,7 +82,9 @@ class AuthService {
           if (signupResponse.user != null) {
             _showSuccessAlert('Account created successfully');
             // Save user session
-            await Get.find<AuthMiddlewareService>().saveUserSession(signupResponse.user!);
+            await Get.find<AuthMiddlewareService>().saveUserSession(
+              signupResponse.user!,
+            );
             return true;
           }
         } catch (signupError) {
@@ -88,7 +92,7 @@ class AuthService {
           return false;
         }
       }
-      
+
       _handleAuthException(e);
       return false;
     } catch (e) {
@@ -107,7 +111,9 @@ class AuthService {
 
       if (authResponse.user != null) {
         // Save user session
-        await Get.find<AuthMiddlewareService>().saveUserSession(authResponse.user!);
+        await Get.find<AuthMiddlewareService>().saveUserSession(
+          authResponse.user!,
+        );
         _showSuccessAlert('Successfully logged in');
         Get.offAllNamed(AppRoute.home);
         return true;
@@ -138,13 +144,13 @@ class AuthService {
   Future<bool> handlePasswordRecovery() async {
     try {
       final session = supabase.auth.currentSession;
-      
+
       if (session != null) {
         // Utilisez Get.to() pour naviguer vers la page de réinitialisation
         Get.to(() => ResetPasswordPage());
         return true;
       }
-      
+
       return false;
     } catch (e) {
       // Gestion des erreurs
@@ -161,13 +167,15 @@ class AuthService {
       );
 
       _showSuccessAlert('Email de réinitialisation envoyé');
-      Get.toNamed(AppRoute.emailsentconfirmationresetpassword);
+      Get.toNamed(AppRoute.emailResetPasswordConfirmation);
       return true;
     } on AuthException catch (e) {
       _handleAuthException(e);
       return false;
     } catch (e) {
-      _showErrorAlert('Une erreur est survenue lors de la réinitialisation du mot de passe');
+      _showErrorAlert(
+        'Une erreur est survenue lors de la réinitialisation du mot de passe',
+      );
       return false;
     }
   }
@@ -176,9 +184,7 @@ class AuthService {
   Future<bool> updatePassword(String newPassword) async {
     try {
       // Update the password
-      await supabase.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
+      await supabase.auth.updateUser(UserAttributes(password: newPassword));
 
       _showSuccessAlert('Password updated successfully');
       Get.offAllNamed(AppRoute.login);
@@ -191,102 +197,100 @@ class AuthService {
       return false;
     }
   }
-Future<void> loginWithFacebook({required BuildContext context}) async {
-  try {
-    Get.dialog(
-      const Center(
-        child: CircularProgressIndicator(),
-      ),
-      barrierDismissible: false,
-    );
-    
+
+  Future<void> loginWithFacebook({required BuildContext context}) async {
     try {
-      // Use a comma-separated string for scopes instead of a list
-      final response = await supabase.auth.signInWithOAuth(
-        OAuthProvider.facebook,
-        redirectTo: 'fb1414653462852066://login-callback',
-        scopes: 'email,public_profile',  // Use comma-separated string format
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
       );
-      
-      Get.back();
-      
-      if (response) {
-        _showSuccessAlert('Facebook authentication initiated');
-      } else {
-        _showErrorAlert('Failed to initiate Facebook login');
+
+      try {
+        // Use a comma-separated string for scopes instead of a list
+        final response = await supabase.auth.signInWithOAuth(
+          OAuthProvider.facebook,
+          redirectTo: 'fb1414653462852066://login-callback',
+          scopes: 'email,public_profile', // Use comma-separated string format
+        );
+
+        Get.back();
+
+        if (response) {
+          _showSuccessAlert('Facebook authentication initiated');
+        } else {
+          _showErrorAlert('Failed to initiate Facebook login');
+        }
+      } catch (e) {
+        Get.back();
+        _showErrorAlert('Facebook login error: ${e.toString()}');
       }
     } catch (e) {
-      Get.back();
+      if (Get.isDialogOpen ?? false) Get.back();
       _showErrorAlert('Facebook login error: ${e.toString()}');
     }
-  } catch (e) {
-    if (Get.isDialogOpen ?? false) Get.back();
-    _showErrorAlert('Facebook login error: ${e.toString()}');
   }
-}
-Future<bool> signInWithGoogle() async {
-  try {
-    // Show loading indicator
-    Get.dialog(
-      const Center(
-        child: CircularProgressIndicator(),
-      ),
-      barrierDismissible: false,
-    );
 
-    // Always sign out first to clear any previous sessions
-    await _googleSignIn.signOut();
+  Future<bool> signInWithGoogle() async {
+    try {
+      // Show loading indicator
+      Get.dialog(
+        const Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
+      );
 
-    // Start the Google Sign In flow
-    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // Always sign out first to clear any previous sessions
+      await _googleSignIn.signOut();
 
-    if (googleUser == null) {
-      // User canceled the sign-in process
+      // Start the Google Sign In flow
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in process
+        Get.back(); // Close the loading dialog
+        return false;
+      }
+
+      // Get authentication details
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Get tokens
+      final idToken = googleAuth.idToken;
+      final accessToken = googleAuth.accessToken;
+
+      if (idToken == null || accessToken == null) {
+        Get.back(); // Close the loading dialog
+        _showErrorAlert('Authentication tokens missing');
+        return false;
+      }
+
+      // Sign in to Supabase with Google OAuth
+      final AuthResponse response = await supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
       Get.back(); // Close the loading dialog
+
+      if (response.user != null) {
+        // Save user session
+        await Get.find<AuthMiddlewareService>().saveUserSession(response.user!);
+        _showSuccessAlert('Successfully logged in with Google');
+        Get.offAllNamed(AppRoute.home);
+        return true;
+      } else {
+        _showErrorAlert('Failed to sign in with Google');
+        return false;
+      }
+    } catch (e) {
+      // Make sure dialog is closed in case of error
+      if (Get.isDialogOpen ?? false) Get.back();
+
+      _showErrorAlert('Google Sign-In Error: ${e.toString()}');
       return false;
     }
-
-    // Get authentication details
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-    // Get tokens
-    final idToken = googleAuth.idToken;
-    final accessToken = googleAuth.accessToken;
-
-    if (idToken == null || accessToken == null) {
-      Get.back(); // Close the loading dialog
-      _showErrorAlert('Authentication tokens missing');
-      return false;
-    }
-
-    // Sign in to Supabase with Google OAuth
-    final AuthResponse response = await supabase.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-      accessToken: accessToken,
-    );
-
-    Get.back(); // Close the loading dialog
-
-    if (response.user != null) {
-      // Save user session
-      await Get.find<AuthMiddlewareService>().saveUserSession(response.user!);
-      _showSuccessAlert('Successfully logged in with Google');
-      Get.offAllNamed(AppRoute.home);
-      return true;
-    } else {
-      _showErrorAlert('Failed to sign in with Google');
-      return false;
-    }
-  } catch (e) {
-    // Make sure dialog is closed in case of error
-    if (Get.isDialogOpen ?? false) Get.back();
-    
-    _showErrorAlert('Google Sign-In Error: ${e.toString()}');
-    return false;
   }
-}
-
 
   // Déconnexion avec mise à jour de SharedPreferences
   Future<void> signOut() async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/assets.dart';
-import 'package:store_go/core/services/image_cache_service.dart';
+import 'package:store_go/core/services/image_cache.dart';
 
 class ImagePreloaderManager extends GetxService {
   final ImageCacheService _cacheService = Get.find<ImageCacheService>();

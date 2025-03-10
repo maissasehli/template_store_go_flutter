@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_supabase.service.dart';
+import 'package:store_go/core/services/auth_supabase.dart';
 
 class ResetPasswordController extends GetxController {
   final TextEditingController newPasswordController = TextEditingController();

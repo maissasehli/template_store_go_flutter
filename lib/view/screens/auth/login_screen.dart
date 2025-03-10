@@ -11,8 +11,7 @@ import 'package:store_go/view/widgets/extensions/buttons/primary_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/secondary_icon_text_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/text_button.dart';
 import 'package:store_go/view/widgets/extensions/text_extensions.dart';
-import 'package:store_go/view/widgets/ui/theme_toggle.dart';
-import 'package:store_go/core/services/auth_supabase.service.dart';
+import 'package:store_go/core/services/auth_supabase.dart';
 
 class Login extends GetView<LoginController> {
   Login({super.key});
@@ -29,7 +28,6 @@ class Login extends GetView<LoginController> {
         return await alertExitApp();
       },
       child: Scaffold(
-        appBar: AppBar(actions: const [ThemeToggle()]),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Form(
