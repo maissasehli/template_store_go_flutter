@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/core/theme/color_extension.dart';
 import 'package:store_go/view/widgets/ui/cached_asset_image.dart';
 
 class OnboardingCarouselImage extends StatelessWidget {
@@ -17,7 +18,7 @@ class OnboardingCarouselImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = Theme.of(context).extension<AppColorExtension>();
     return Container(
       margin: margin,
       child: ClipRRect(
@@ -31,7 +32,7 @@ class OnboardingCarouselImage extends StatelessWidget {
             width: width,
             height: height,
             decoration: BoxDecoration(
-              color: colors.secondary,
+              color: colors?.muted ?? Colors.white,
               borderRadius: BorderRadius.circular(20.0),
             ),
           ),

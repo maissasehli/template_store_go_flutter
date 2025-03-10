@@ -7,10 +7,10 @@ import 'package:store_go/view/screens/auth/forget_password_screen.dart';
 import 'package:store_go/view/screens/auth/login_screen.dart';
 import 'package:store_go/view/screens/auth/reset_password_screen.dart';
 import 'package:store_go/view/screens/auth/signup_screen.dart';
-import 'package:store_go/view/screens/home/home.dart';
-import 'package:store_go/view/screens/language/language.dart';
-import 'package:store_go/view/screens/onboarding/onboarding.dart';
-import 'package:store_go/view/screens/onboarding/profile_setup.dart';
+import 'package:store_go/view/screens/home/home_screen.dart';
+import 'package:store_go/view/screens/language/language_screen.dart';
+import 'package:store_go/view/screens/onboarding/onboarding_screen.dart';
+import 'package:store_go/view/screens/onboarding/profile_setup_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
   GetPage(name: "/", page: () => const Language(), middlewares: [

@@ -4,8 +4,6 @@ import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/theme/color_extension.dart';
 
 extension StyledButton on Widget {
-
-
   Widget secondaryIconTextButton(
     BuildContext context, {
     required VoidCallback onPressed,
@@ -57,7 +55,7 @@ extension StyledButton on Widget {
           fontSize: UIConstants.fontSizeMedium,
           fontWeight: FontWeight.w400,
         ),
-        backgroundColor: colors?.muted,
+        backgroundColor: colors?.secondary,
         foregroundColor: colors?.foreground,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),

@@ -16,7 +16,7 @@ class AppTheme {
     secondaryForeground: Color(0xFF111111),
     accent: Color(0xFFEC4899),
     accentForeground: Color(0xFFFFFFFF),
-    muted: Color(0xFFF5F5F5),
+    muted: Color.fromARGB(255, 139, 139, 139),
     mutedForeground: Color(0xFF737373),
     card: Color(0xFFFFFFFF),
     cardForeground: Color(0xFF000000),
