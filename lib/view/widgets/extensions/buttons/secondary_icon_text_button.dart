@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/theme/color_extension.dart';
 
@@ -7,7 +6,7 @@ extension StyledButton on Widget {
   Widget secondaryIconTextButton(
     BuildContext context, {
     required VoidCallback onPressed,
-    required String icon,
+    required Widget icon,
     bool isLoading = false,
     bool iconLeading = true,
     double spacing = 16.0,
@@ -37,13 +36,13 @@ extension StyledButton on Widget {
                       : MainAxisAlignment.center,
               children: [
                 if (iconLeading) ...[
-                  SvgPicture.asset(icon, width: 24, height: 24),
+                  icon,
                   SizedBox(width: spacing),
                   this,
                 ] else ...[
                   this,
                   SizedBox(width: spacing),
-                  SvgPicture.asset(icon, width: 24, height: 24),
+                  icon,
                 ],
               ],
             );

@@ -16,7 +16,7 @@ class Signup extends GetView<SignupController> {
   Widget build(BuildContext context) {
     // ignore: deprecated_member_use
     return WillPopScope(
-      onWillPop: () async => await alertExitApp(),
+      onWillPop: () async => await alertExitApp(context),
       child: Scaffold(
         backgroundColor: AppColor.primaryColor,
         body: SafeArea(

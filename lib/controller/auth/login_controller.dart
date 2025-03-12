@@ -15,13 +15,15 @@ class LoginController extends GetxController {
     try {
       if (loginFormKey.currentState!.validate()) {
         isLoading.value = true;
-
+        
         final success = await _authService.signIn(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
-        // log the success
-        debugPrint(success.toString());
+        // if success is true, navigate to home screen
+        if (success) {
+          Get.offAllNamed(AppRoute.home);
+        }
       }
     } finally {
       isLoading.value = false;

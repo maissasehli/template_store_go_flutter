@@ -59,8 +59,8 @@ class AuthService {
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         // Save the access token
-        final token = response.data['session']['accessToken'];
-        await _secureStorage.write(key: 'auth_token', value: token);
+        final accessToken = response.data['session']['accessToken'];
+        await _secureStorage.write(key: 'auth_token', value: accessToken);
         Logger().i('access_token saved');
         // save refresh token
         final refreshToken = response.data['session']['refreshToken'];
@@ -72,7 +72,6 @@ class AuthService {
           value: response.data['session']['expiresAt'],
         );
         Logger().i('expires_at saved');
-
         // Save user ID if needed
         await _secureStorage.write(
           key: 'user_id',
@@ -112,20 +111,26 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        // Save the token
-        final token = response.data['token']['accessToken'];
-        await _secureStorage.write(key: 'auth_token', value: token);
-
-        // Save other user information if needed
-        await _secureStorage.write(
-          key: 'user_id',
-          value: response.data['token']['userId'],
-        );
+        // Save the access token
+        final accessToken = response.data['session']['accessToken'];
+        await _secureStorage.write(key: 'auth_token', value: accessToken);
+        Logger().i('access_token saved');
+        // save refresh token
+        final refreshToken = response.data['session']['refreshToken'];
+        await _secureStorage.write(key: 'refresh_token', value: refreshToken);
+        Logger().i('refresh_token saved');
+        // Save expiration time
         await _secureStorage.write(
           key: 'expires_at',
-          value: response.data['token']['expiresAt'],
+          value: response.data['session']['expiresAt'],
         );
-
+        Logger().i('expires_at saved');
+        // Save user ID if needed
+        await _secureStorage.write(
+          key: 'user_id',
+          value: response.data['session']['userId'],
+        );
+        Logger().i('user_id saved');
         _showSuccessAlert('Successfully logged in');
         return true;
       }

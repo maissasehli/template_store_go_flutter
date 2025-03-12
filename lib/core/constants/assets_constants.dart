@@ -1,6 +1,7 @@
 class ImageAsset {
   static const String rootImages = 'assets/images';
   static const String rootIcons = 'assets/icons';
+  static const String rootSvgIcons = 'assets/icons/svg';
 
   // OnBoarding assets
   static const String onBoardingIconLogo = '$rootIcons/app_icon.png';
@@ -10,9 +11,9 @@ class ImageAsset {
   static const String onBoardingHeaderRight = '$rootImages/fashion.jpg';
 
   // Social Login Icons
-  static const String appleIcon = '$rootIcons/apple.svg';
-  static const String googleIcon = '$rootIcons/google.svg';
-  static const String facebookIcon = '$rootIcons/facebook.svg';
+  static const String appleIcon = '$rootSvgIcons/apple.svg';
+  static const String googleIcon = '$rootSvgIcons/google.svg';
+  static const String facebookIcon = '$rootSvgIcons/facebook.svg';
 
   // Email related
   static const String sendMail = '$rootIcons/email_sent.png';
@@ -31,6 +32,5 @@ class ImageAsset {
     appleIcon,
     googleIcon,
     facebookIcon,
-    sendMail,
   ];
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/constants/colors.dart';
 
 class CustomTextFormAuth extends StatelessWidget {
   final TextEditingController controller;
@@ -26,7 +25,6 @@ class CustomTextFormAuth extends StatelessWidget {
       keyboardType: keyboardType,
       validator: validator, // Add validator
       decoration: InputDecoration(hintText: hintText, filled: true),
-      style: TextStyle(color: AppColor.textPrimaryColor),
     );
   }
 }

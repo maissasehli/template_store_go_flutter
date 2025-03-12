@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/controller/auth/email_reset_password.dart';
 import 'package:store_go/core/constants/colors.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 
 class EmailSentConfirmationResetPassword extends StatelessWidget {
   const EmailSentConfirmationResetPassword({super.key});

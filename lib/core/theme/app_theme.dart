@@ -41,7 +41,7 @@ class AppTheme {
     card: Color(0xFF1E1E1E),
     cardForeground: Color(0xFFFFFFFF),
     border: Color(0xFF333333),
-    input: Color(0xFF333333),
+    input: Color.fromARGB(255, 32, 32, 32),
     destructive: Color(0xFFFF0000),
     destructiveForeground: Color(0xFFFFFFFF),
   );
@@ -314,7 +314,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
           ),
           padding: const EdgeInsets.symmetric(
             vertical: UIConstants.paddingMedium,

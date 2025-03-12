@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/functions/valid_input.dart';
 import 'package:store_go/controller/auth/login_controller.dart';
@@ -11,6 +11,8 @@ import 'package:store_go/view/widgets/extensions/buttons/primary_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/secondary_icon_text_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/text_button.dart';
 import 'package:store_go/view/widgets/extensions/text_extensions.dart';
+import 'package:store_go/view/widgets/ui/theme_aware_svg.dart';
+import 'package:store_go/view/widgets/ui/theme_toggle.dart';
 
 class Login extends GetView<LoginController> {
   const Login({super.key});
@@ -23,9 +25,13 @@ class Login extends GetView<LoginController> {
     return WillPopScope(
       onWillPop: () async {
         // Show the exit confirmation dialog when the user presses the back button
-        return await alertExitApp();
+        return await alertExitApp(context);
       },
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Login'),
+          actions: [ThemeToggle()],
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Form(
@@ -93,7 +99,10 @@ class Login extends GetView<LoginController> {
                     const Text('Continue With Google').secondaryIconTextButton(
                       context,
                       onPressed: () => { debugPrint('google')},
-                      icon: ImageAsset.googleIcon,
+                      icon: ThemeAwareSvg(
+                        assetPath: ImageAsset.googleIcon,
+                        color: colors.primary,
+                      ),
                       alignContentLeft: true,
                     ),
 
@@ -102,7 +111,11 @@ class Login extends GetView<LoginController> {
                     const Text('Continue With Apple').secondaryIconTextButton(
                       context,
                       onPressed: () {},
-                      icon: ImageAsset.appleIcon,
+                      icon: ThemeAwareSvg(
+                        assetPath: ImageAsset.appleIcon,
+                        color: colors.primary,
+                        onlyFill: true,
+                      ),
                       alignContentLeft: true,
                     ),
                     const SizedBox(height: 20),
@@ -112,7 +125,10 @@ class Login extends GetView<LoginController> {
                     ).secondaryIconTextButton(
                       context,
                       onPressed: () {},
-                      icon: ImageAsset.facebookIcon,
+                      icon: ThemeAwareSvg(
+                        assetPath: ImageAsset.facebookIcon,
+                        color: colors.primary,
+                      ),
                       alignContentLeft: true,
                     ),
                   ],

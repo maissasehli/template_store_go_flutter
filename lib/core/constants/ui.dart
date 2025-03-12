@@ -16,6 +16,14 @@ class UIConstants {
   static const double padding2XLarge = 48.0;
   static const double padding3XLarge = 64.0;
 
+  // Common margin values
+  static const double marginSmall = 8.0;
+  static const double marginMedium = 16.0;
+  static const double marginLarge = 24.0;
+  static const double marginXLarge = 32.0;
+  static const double margin2XLarge = 48.0;
+  static const double margin3XLarge = 64.0;
+
   // Font sizes
   static const double fontSizeSmall = 12.0;
   static const double fontSizeRegular = 14.0;

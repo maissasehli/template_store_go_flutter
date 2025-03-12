@@ -39,7 +39,6 @@ dependencies:
   get_storage: ^2.1.1
   path_provider: ^2.1.1
   get: ^4.6.6
-  supabase_flutter: ^2.8.4 
   flutter_svg: ^2.0.17
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.2
@@ -91,8 +90,7 @@ flutter:
 
      - assets/images/
      - assets/icons/
-     - .env
-     - assets/icons/email_sent.png
+     - assets/icons/svg/
 
 
      
