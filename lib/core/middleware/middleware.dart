@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:store_go/core/services/services.dart';
 
 class Middleware extends GetMiddleware{

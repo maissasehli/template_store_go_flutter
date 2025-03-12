@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/onboarding/profile_setup.dart';
+import 'package:store_go/controller/onboarding/profile_setup_controller.dart';
 import 'package:store_go/core/constants/colors.dart';
+import 'package:store_go/view/widgets/extensions/text_extensions.dart';
 
 class ProfileSetupScreen extends StatelessWidget {
   const ProfileSetupScreen({super.key});
@@ -57,6 +58,7 @@ class ProfileSetupScreen extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
+                  const Text("How Old are you?").subtitle1(context),
                   const SizedBox(height: 15),
 
                   Container(

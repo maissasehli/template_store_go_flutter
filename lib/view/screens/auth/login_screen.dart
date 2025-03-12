@@ -11,12 +11,10 @@ import 'package:store_go/view/widgets/extensions/buttons/primary_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/secondary_icon_text_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/text_button.dart';
 import 'package:store_go/view/widgets/extensions/text_extensions.dart';
-import 'package:store_go/core/services/auth_supabase.dart';
 
 class Login extends GetView<LoginController> {
-  Login({super.key});
+  const Login({super.key});
 
-  final AuthService _authService = Get.find<AuthService>();
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +92,7 @@ class Login extends GetView<LoginController> {
                     // Google Sign-In Button with loading state
                     const Text('Continue With Google').secondaryIconTextButton(
                       context,
-                      onPressed: () => _authService.signInWithGoogle(),
+                      onPressed: () => { debugPrint('google')},
                       icon: ImageAsset.googleIcon,
                       alignContentLeft: true,
                     ),

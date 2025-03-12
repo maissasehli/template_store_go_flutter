@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_supabase.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
+import 'package:store_go/core/services/auth_service.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
