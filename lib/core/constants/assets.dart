@@ -17,6 +17,20 @@ class ImageAsset {
   // Email related
   static const String sendMail = '$rootIcons/email_sent.png';
 
+  // Other icons
+  static const String bagIcon = '$rootIcons/bag2.svg';
+  static const String emailSentIcon = '$rootIcons/email_sent.svg';
+  static const String heartIcon = '$rootIcons/heart.svg';
+  static const String homeIcon = '$rootIcons/home2.svg';
+  static const String profileIcon = '$rootIcons/profile.svg';
+  static const String searchIcon = '$rootIcons/searchnormal1.svg';
+  static const String heardIcon = '$rootIcons/heart.svg';
+  static const String vectorIcon = '$rootIcons/Vector.svg';
+  static const String icon = '$rootIcons/icon.svg';
+
+
+
+
   // Get all onboarding images as a list
   static List<String> get allOnboardingImages => [
     onBoardingIconLogo,
@@ -32,5 +46,19 @@ class ImageAsset {
     googleIcon,
     facebookIcon,
     sendMail,
+  ];
+
+  // Get all icons
+  static List<String> get allIcons => [
+    appleIcon,
+    googleIcon,
+    facebookIcon,
+    sendMail,
+    bagIcon,
+    emailSentIcon,
+    heartIcon,
+    homeIcon,
+    profileIcon,
+    searchIcon,
   ];
 }

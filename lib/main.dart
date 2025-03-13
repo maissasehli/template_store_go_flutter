@@ -12,6 +12,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // Initialize dependencies
   await DependencyInjection.init();
   // Register MyServices asynchronously before running the app

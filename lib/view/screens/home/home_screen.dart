@@ -1,307 +1,172 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:store_go/controller/home/home_controller.dart';
+import 'package:store_go/core/constants/ui.dart';
+import 'package:store_go/core/theme/color_extension.dart';
+import 'package:store_go/view/widgets/home/category_filter.dart';
+import 'package:store_go/view/widgets/home/custom_app_bar.dart';
+import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
+import 'package:store_go/view/widgets/home/product_grid.dart';
+import 'package:store_go/view/widgets/home/search_bar.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final HomeController controller = Get.put(HomeController());
+
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorExtension>();
+    
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: _buildBody(),
-      bottomNavigationBar: _buildBottomNavBar(),
-    );
-  }
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Hello, Welcome 👋',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-          const Text(
-            'ShopSync',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+      backgroundColor: colors?.background ?? Colors.white,
+      appBar: CustomAppBar(
+        onSearch: (query) => controller.productController.searchProducts(query),
       ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_outlined),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: const Icon(Icons.shopping_cart_outlined),
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBody() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchBar(),
-            const SizedBox(height: 20),
-            _buildCategoryList(),
-            const SizedBox(height: 20),
-            _buildFeaturedProducts(),
-            const SizedBox(height: 20),
-            _buildNewArrivals(),
+            const SizedBox(height: UIConstants.paddingMedium),
+            
+            // Add CustomSearchBar right after the AppBar
+            CustomSearchBar(
+              onSearch: (query) => controller.productController.searchProducts(query),
+            ),
+            
+            const SizedBox(height: UIConstants.paddingMedium),
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingMedium),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Categories',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Gabarito',
+              
+                    ),
+                  ),
+                TextButton(
+  onPressed: () => controller.onCategoriesSeeAllTap(),
+  child: const Text(
+    'See All',
+    style: TextStyle(
+      fontFamily: 'Poppins',
+      fontSize: 14, 
+    ),
+  ),
+),
+
+                ],
+              ),
+            ),
+            
+            SizedBox(
+              height: 100,
+              child: Obx(() => CategoryFilter(
+                categories: controller.categoryController.categories,
+                selectedCategoryId: controller.categoryController.selectedCategoryId.value,
+                onCategorySelected: (categoryId) => 
+                  controller.onCategoryTap(categoryId),
+              )),
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConstants.paddingMedium,
+                vertical: UIConstants.paddingSmall,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Top Selling',
+                    style: TextStyle(
+                       fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Gabarito',
+                  ),
+                  ),
+                  TextButton(
+                    onPressed: () => controller.onTopSellingSeeAllTap(),
+                    child: const Text(
+                      'See All',
+    style: TextStyle(
+      fontFamily: 'Poppins',
+      fontSize: 14, 
+    ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            Obx(() {
+              if (controller.productController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              
+              if (controller.productController.products.isEmpty) {
+                return const Center(child: Text('No products found.'));
+              }
+              
+              return ProductGrid(
+                products: controller.productController.products,
+                onProductTap: (productId) => controller.onProductTap(productId),
+                onFavoriteTap: (productId) => 
+                  controller.productController.toggleFavorite(productId),
+                isHorizontal: true,
+              );
+            }),
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConstants.paddingMedium,
+                vertical: UIConstants.paddingSmall,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'New In',
+                    style: TextStyle(
+                      fontSize: UIConstants.fontSizeRegular,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => controller.onNewInSeeAllTap(),
+                    child: const Text('See All'),
+                  ),
+                ],
+              ),
+            ),
+            
+            Obx(() {
+              if (controller.productController.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              
+              if (controller.productController.products.isEmpty) {
+                return const Center(child: Text('No products found.'));
+              }
+              
+              return ProductGrid(
+                products: controller.productController.products,
+                onProductTap: (productId) => controller.onProductTap(productId),
+                onFavoriteTap: (productId) => 
+                  controller.productController.toggleFavorite(productId),
+                isHorizontal: true,
+              );
+            }),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-          hintText: 'Search products...',
-          border: InputBorder.none,
-          icon: Icon(Icons.search, color: Colors.grey[600]),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryList() {
-    final categories = [
-      {'icon': Icons.phone_android, 'name': 'Electronics'},
-      {'icon': Icons.chair, 'name': 'Furniture'},
-      {'icon': Icons.checkroom, 'name': 'Fashion'},
-      {'icon': Icons.sports_basketball, 'name': 'Sports'},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Categories',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              return Container(
-                width: 80,
-                margin: const EdgeInsets.only(right: 12),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        categories[index]['icon'] as IconData,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      categories[index]['name'] as String,
-                      style: const TextStyle(fontSize: 12),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFeaturedProducts() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Featured Products',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: const Text('See All'),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return Container(
-                width: 160,
-                margin: const EdgeInsets.only(right: 16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(12),
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.image,
-                          size: 40,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Product Name',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '\$99.99',
-                            style: TextStyle(
-                              color: Colors.green[700],
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNewArrivals() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'New Arrivals',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 12),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: 3,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(8),
-                leading: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(Icons.image, color: Colors.grey[400]),
-                ),
-                title: const Text(
-                  'New Product Name',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text(
-                  '\$129.99',
-                  style: TextStyle(
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.favorite_border),
-                  onPressed: () {},
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: 0,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.category),
-          label: 'Categories',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Wishlist',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
     );
   }
 }
