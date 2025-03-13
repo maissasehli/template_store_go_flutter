@@ -1,37 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_supabase.dart';
+import 'package:store_go/controller/controller_form_field_state.dart';
 
 class ResetPasswordController extends GetxController {
-  final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  late ControllerFormFieldState newPasswordFieldState;
+  late ControllerFormFieldState confirmPasswordFieldState;
   final GlobalKey<FormState> resetPasswordFormKey = GlobalKey<FormState>();
   
-  final AuthService _authService = AuthService();
-
-  @override
-  void onInit() {
-    super.onInit();
-    _authService.handlePasswordRecovery();
-  }
-
   Future<void> resetPassword() async {
     if (resetPasswordFormKey.currentState!.validate()) {
-      bool success = await _authService.updatePassword(
-        newPasswordController.text.trim()
-      );
+      //bool success = await _authService.updatePassword(
+      //  newPasswordController.text.trim()
+      //);
 
-      if (success) {
-        Get.offAllNamed(AppRoute.login);
-      }
+      //if (success) {
+      //  Get.offAllNamed(AppRoute.login);
+      //}
     }
   }
 
   @override
   void onClose() {
-    newPasswordController.dispose();
-    confirmPasswordController.dispose();
+    newPasswordFieldState.controller.dispose();
+    confirmPasswordFieldState.controller.dispose();
     super.onClose();
   }
 }

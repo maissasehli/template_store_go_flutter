@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_middleware.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
 
 class ProfileSetupController extends GetxController {
   final RxnString selectedGender = RxnString(null);
@@ -34,12 +33,7 @@ class ProfileSetupController extends GetxController {
       isLoading.value = true;
 
       try {
-        final authMiddlewareService = Get.find<AuthMiddlewareService>();
-        await authMiddlewareService.saveUserProfile(
-          selectedGender.value!,
-          selectedAgeRange.value!,
-        );
-
+        
         Get.snackbar(
           'Succès',
           'Profil configuré avec succès',

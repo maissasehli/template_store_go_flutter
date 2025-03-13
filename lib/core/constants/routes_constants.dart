@@ -11,4 +11,13 @@ class AppRoute {
   static const String home = "/home";
   static const String emailResetPasswordConfirmation =
       "/email-reset-password-confirmation";
+
+  // public routes
+  static const List<String> publicRoutes = [
+    language,
+    onBoarding,
+    login,
+    signup,
+    forgetPassword,
+  ];
 }

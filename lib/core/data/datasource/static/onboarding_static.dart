@@ -1,5 +1,5 @@
-import 'package:store_go/core/constants/assets.dart';
-import 'package:store_go/core/model/onboarding/onboarging.model.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
+import 'package:store_go/core/model/onboarding/onboarding_model.dart';
 
 class OnboardingStatic {
   // Onboarding page data

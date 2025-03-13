@@ -16,7 +16,7 @@ class AppTheme {
     secondaryForeground: Color(0xFF111111),
     accent: Color(0xFFEC4899),
     accentForeground: Color(0xFFFFFFFF),
-    muted: Color.fromARGB(255, 139, 139, 139),
+    muted: Color(0xFF8B8B8B),
     mutedForeground: Color(0xFF737373),
     card: Color(0xFFFFFFFF),
     cardForeground: Color(0xFF000000),
@@ -36,13 +36,13 @@ class AppTheme {
     secondaryForeground: Color(0xFFFFFFFF),
     accent: Color(0xFFEC4899),
     accentForeground: Color(0xFFFFFFFF),
-    muted: Color(0xFF2A2A2A),
-    mutedForeground: Color(0xFF999999),
+    muted: Color(0xFFaaaaaa),
+    mutedForeground: Color(0xFF686868),
     card: Color(0xFF1E1E1E),
     cardForeground: Color(0xFFFFFFFF),
     border: Color(0xFF333333),
-    input: Color(0xFF333333),
-    destructive: Color(0xFFFF0000),
+    input: Color(0xFF202020),
+    destructive: Color(0xFFff1a1a),
     destructiveForeground: Color(0xFFFFFFFF),
   );
   // Light theme text styles
@@ -314,12 +314,13 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
           ),
           padding: const EdgeInsets.symmetric(
             vertical: UIConstants.paddingMedium,
             horizontal: UIConstants.paddingLarge,
           ),
+          disabledBackgroundColor: colors.muted,
         ),
       ),
 

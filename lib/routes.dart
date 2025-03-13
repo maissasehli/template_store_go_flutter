@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
-import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:store_go/core/middleware/middleware.dart';
 import 'package:store_go/view/screens/auth/email_confirmation_screen.dart';
 import 'package:store_go/view/screens/auth/forget_password_screen.dart';
