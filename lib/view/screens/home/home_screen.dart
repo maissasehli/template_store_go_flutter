@@ -18,13 +18,6 @@ class HomeScreen extends StatelessWidget {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Hello, Welcome 👋',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
           const Text(
             'ShopSync',
             style: TextStyle(

@@ -1,17 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_supabase.service.dart';
+import 'package:store_go/controller/controller_form_field_state.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
+import 'package:store_go/core/functions/valid_input.dart';
+import 'package:store_go/core/services/auth_service.dart';
 
 class SignupController extends GetxController {
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  late ControllerFormFieldState firstNameFieldState;
+  late ControllerFormFieldState lastNameFieldState;
+  late ControllerFormFieldState emailFieldState;
+  late ControllerFormFieldState passwordFieldState;
 
   final GlobalKey<FormState> signupFormKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
   final RxBool isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    firstNameFieldState = ControllerFormFieldState(
+      controller: TextEditingController(),
+      validator: (val) => validInput(val!, 3, 100, "first name"),
+    );
+
+    lastNameFieldState = ControllerFormFieldState(
+      controller: TextEditingController(),
+      validator: (val) => validInput(val!, 3, 100, "last name"),
+    );
+
+    emailFieldState = ControllerFormFieldState(
+      controller: TextEditingController(),
+      validator: (val) => validInput(val!, 5, 100, "email"),
+    );
+
+    passwordFieldState = ControllerFormFieldState(
+      controller: TextEditingController(),
+      validator: (val) => validInput(val!, 8, 30, "password"),
+    );
+  }
+
+  bool validateForm() {
+    // Touch all fields to trigger validation
+    firstNameFieldState.touch();
+    lastNameFieldState.touch();
+    emailFieldState.touch();
+    passwordFieldState.touch();
+    // Check if all fields are valid
+    return firstNameFieldState.error == null &&
+        lastNameFieldState.error == null &&
+        emailFieldState.error == null &&
+        passwordFieldState.error == null;
+  }
 
   void signUp() async {
     try {
@@ -19,14 +59,14 @@ class SignupController extends GetxController {
         isLoading.value = true;
 
         final success = await _authService.signUp(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-          firstName: firstNameController.text.trim(),
-          lastName: lastNameController.text.trim(),
+          email: emailFieldState.controller.text.trim(),
+          password: passwordFieldState.controller.text.trim(),
+          firstName: firstNameFieldState.controller.text.trim(),
+          lastName: lastNameFieldState.controller.text.trim(),
         );
 
         if (success) {
-          Get.offNamed(AppRoute.userprofilesetup);
+          Get.offNamed(AppRoute.profileSetup);
         }
       }
     } finally {
@@ -36,10 +76,10 @@ class SignupController extends GetxController {
 
   @override
   void onClose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    firstNameFieldState.dispose();
+    lastNameFieldState.dispose();
+    emailFieldState.dispose();
+    passwordFieldState.dispose();
     super.onClose();
   }
 }

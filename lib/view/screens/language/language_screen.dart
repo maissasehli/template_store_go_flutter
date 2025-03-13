@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/onboarding/onbording_controller.dart';
+import 'package:store_go/controller/onboarding/onboarding_controller.dart';
 import 'package:store_go/core/constants/colors.dart';
-import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:store_go/core/localization/change_local.dart';
 import 'package:store_go/view/widgets/Language/custombuttomlang.widgets.dart';
 

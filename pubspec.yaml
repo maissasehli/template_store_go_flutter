@@ -39,7 +39,6 @@ dependencies:
   get_storage: ^2.1.1
   path_provider: ^2.1.1
   get: ^4.6.6
-  supabase_flutter: ^2.8.4 
   flutter_svg: ^2.0.17
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.2
@@ -57,6 +56,9 @@ dependencies:
   lottie: ^2.7.0
   app_links: ^6.4.0  
   google_fonts: ^4.0.3
+  dio: ^5.8.0+1
+  flutter_secure_storage: ^9.2.4
+  logger: ^1.1.0 
 
 
 dev_dependencies:
@@ -86,10 +88,9 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
 
-     - assets/onBordingImage/
+     - assets/images/
      - assets/icons/
-     - .env
-     - assets/icons/email_sent.png
+     - assets/icons/svg/
 
 
      

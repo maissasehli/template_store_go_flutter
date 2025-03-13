@@ -16,7 +16,7 @@ class AppTheme {
     secondaryForeground: Color(0xFF111111),
     accent: Color(0xFFEC4899),
     accentForeground: Color(0xFFFFFFFF),
-    muted: Color(0xFFF5F5F5),
+    muted: Color(0xFF8B8B8B),
     mutedForeground: Color(0xFF737373),
     card: Color(0xFFFFFFFF),
     cardForeground: Color(0xFF000000),
@@ -30,19 +30,19 @@ class AppTheme {
   static const darkColors = AppColorsData(
     background: Color(0xFF121212),
     foreground: Color(0xFFFFFFFF),
-    primary: Color(0xFF0070F3),
-    primaryForeground: Color(0xFFFFFFFF),
+    primary: Color(0xFFFFFFFF),
+    primaryForeground: Color(0xFF000000),
     secondary: Color(0xFF2A2A2A),
     secondaryForeground: Color(0xFFFFFFFF),
     accent: Color(0xFFEC4899),
     accentForeground: Color(0xFFFFFFFF),
-    muted: Color(0xFF2A2A2A),
-    mutedForeground: Color(0xFF999999),
+    muted: Color(0xFFaaaaaa),
+    mutedForeground: Color(0xFF686868),
     card: Color(0xFF1E1E1E),
     cardForeground: Color(0xFFFFFFFF),
     border: Color(0xFF333333),
-    input: Color(0xFF333333),
-    destructive: Color(0xFFFF0000),
+    input: Color(0xFF202020),
+    destructive: Color(0xFFff1a1a),
     destructiveForeground: Color(0xFFFFFFFF),
   );
   // Light theme text styles
@@ -298,11 +298,11 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
-          borderSide: BorderSide(color: colors.border),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
-          borderSide: BorderSide(color: colors.border),
+          borderSide: BorderSide(color: colors.primary),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
@@ -314,12 +314,13 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
           ),
           padding: const EdgeInsets.symmetric(
             vertical: UIConstants.paddingMedium,
             horizontal: UIConstants.paddingLarge,
           ),
+          disabledBackgroundColor: colors.muted,
         ),
       ),
 

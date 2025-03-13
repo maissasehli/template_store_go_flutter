@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
-import 'package:store_go/core/services/auth_supabase.service.dart';
+import 'package:store_go/controller/controller_form_field_state.dart';
 
 class ForgetPasswordController extends GetxController {
-  final TextEditingController emailController = TextEditingController();
+  late ControllerFormFieldState emailFieldState;
   final GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
-  
-  // Create an instance of AuthService
-  final AuthService _authService = AuthService();
+
+
 
   // Modified method to handle password reset
   Future<void> goToEmailSentConfirmation() async {
     if (forgetPasswordFormKey.currentState!.validate()) {
       // Call the resetPassword method from AuthService
-      bool success = await _authService.resetPassword(
-        emailController.text.trim()
-      );
+      //bool success = await _authService.resetPassword(
+      //  emailController.text.trim(),
+      //);
 
       // If password reset is successful, navigate to email sent confirmation
-      if (success) {
-        Get.toNamed(AppRoute.emailsentconfirmationresetpassword);
-      }
+      //if (success) {
+      //  Get.toNamed(AppRoute.emailResetPasswordConfirmation);
+      //}
     }
   }
 
   @override
   void onClose() {
-    emailController.dispose();
+    emailFieldState.controller.dispose();
     super.onClose();
   }
 }

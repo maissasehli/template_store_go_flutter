@@ -55,14 +55,13 @@
         <string>Editor</string>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>io.supabase.flutter</string>
+            
         </array>
         <key>CFBundleURLName</key>
         <string>reset-password</string>
     </dict>
 	<key>CFBundleURLTypes</key>
 <array>
-    <!-- Your existing Supabase entry -->
     <dict>
         <key>CFBundleTypeRole</key>
         <string>Editor</string>

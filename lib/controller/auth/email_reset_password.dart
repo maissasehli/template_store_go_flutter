@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/routes.dart';
+import 'package:store_go/core/constants/routes_constants.dart';
 
-class EmailSentControllerResetPassword extends GetxController {
+class ResetPasswordController extends GetxController {
   void returnToLogin() {
-    Get.offAllNamed(AppRoute.login); 
+    Get.offAllNamed(AppRoute.login);
   }
 }

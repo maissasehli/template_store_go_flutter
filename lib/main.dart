@@ -2,31 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:store_go/core/localization/change_local.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/localization/translation.dart';
-import 'package:store_go/core/services/auth_middleware.service.dart';
 import 'package:store_go/core/theme/theme_controller.dart';
 import 'package:store_go/routes.dart';
 import 'package:store_go/core/services/services.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:store_go/core/di/dependency_injection.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize dependencies
+
+  // Initialize services
+  await initialServices(); // This is your MyServices initialization
+
+  // Initialize dependencies after services
   await DependencyInjection.init();
-  // Register MyServices asynchronously before running the app
-  await Get.putAsync(() async => await MyServices().init());
-
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
-
-  // Initialize Supabase
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-    debug: true,
-  );
-  await Get.putAsync(() => AuthMiddlewareService().init());
 
   runApp(const MyApp());
 }
@@ -48,7 +36,6 @@ class MyApp extends StatelessWidget {
           theme: themeController.theme,
           darkTheme: themeController.theme, // Let controller determine theme
           themeMode: themeController.themeMode,
-          initialRoute: '/',
           getPages: routes,
         );
       },

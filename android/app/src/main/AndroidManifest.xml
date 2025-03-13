@@ -56,23 +56,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             
-            <!-- Supabase Deep Linking -->
-            <intent-filter android:autoVerify="true">
+            <!-- Facebook Redirect -->
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data 
-                    android:scheme="io.supabase.flutter"
-                    android:host="reset-password" />
+                <data android:scheme="fb1414653462852066" />
             </intent-filter>
-            
-            <!-- Facebook Redirect -->
-    <intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="fb1414653462852066" />
-</intent-filter>
         </activity>
 
         

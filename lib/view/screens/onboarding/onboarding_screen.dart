@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/data/datasource/static/onboarding_static.dart';
+import 'package:store_go/core/services/image_preloader_manager.dart';
+import 'package:store_go/view/widgets/extensions/text_extensions.dart';
 import 'package:store_go/view/widgets/onboarding/onboarding_bg_icon.dart';
-import 'package:store_go/controller/onboarding/onbording_controller.dart';
+import 'package:store_go/view/widgets/onboarding/onboarding_carousel_image.dart';
+import 'package:store_go/controller/onboarding/onboarding_controller.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
@@ -13,18 +16,67 @@ class Onboarding extends StatefulWidget {
 
 class _OnboardingState extends State<Onboarding> {
   final PageController _pageController = PageController();
+  final ImagePreloaderManager _preloaderManager =
+      Get.find<ImagePreloaderManager>();
   int _currentPage = 0;
+  bool _imagesLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _preloadImages();
+  }
+
+  Future<void> _preloadImages() async {
+    // Gather all image paths from the onboarding pages
+    final List<String> imagePaths = [];
+
+    for (final page in OnboardingStatic.pages) {
+      imagePaths.add(page.mainImage);
+      imagePaths.add(page.leftImage);
+      imagePaths.add(page.rightImage);
+    }
+
+    // Preload all images at once
+    await _preloaderManager.preloadScreenImages(context, imagePaths);
+
+    // Also preload auth images to prepare for the next screens
+    await _preloaderManager.preloadAuthImages(context);
+
+    if (mounted) {
+      setState(() {
+        _imagesLoaded = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(OnboardingController());
-    
+
     // Get the screen width to calculate image dimensions
     double screenWidth = MediaQuery.of(context).size.width;
     double mainImageWidth = screenWidth * 0.80;
     double sideImageWidth = screenWidth * 0.16;
     double sideImageHeight = 210.0;
     double mainImageHeight = 230.0;
+
+    if (!_imagesLoaded) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // You could show your app logo here
+              const CircularProgressIndicator(color: Colors.white),
+              const SizedBox(height: 20),
+              const Text('Getting ready...').heading1(context),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -39,7 +91,7 @@ class _OnboardingState extends State<Onboarding> {
           },
           itemBuilder: (context, index) {
             final page = OnboardingStatic.pages[index];
-            
+
             return Stack(
               children: [
                 // Background "bag" icons with absolute positioning
@@ -78,7 +130,6 @@ class _OnboardingState extends State<Onboarding> {
                 Column(
                   children: [
                     const SizedBox(height: 60.0), // Top spacing
-
                     // Image carousel with three images
                     SizedBox(
                       height: mainImageHeight,
@@ -88,39 +139,27 @@ class _OnboardingState extends State<Onboarding> {
                           // Left image (partially visible)
                           Positioned(
                             left: -screenWidth * 0.1,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Image.asset(
-                                page.leftImage,
-                                width: sideImageWidth,
-                                height: sideImageHeight,
-                                fit: BoxFit.cover,
-                              ),
+                            child: OnboardingCarouselImage(
+                              imagePath: page.leftImage,
+                              width: sideImageWidth,
+                              height: sideImageHeight,
                             ),
                           ),
                           // Right image (partially visible)
                           Positioned(
                             right: -screenWidth * 0.1,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Image.asset(
-                                page.rightImage,
-                                width: sideImageWidth,
-                                height: sideImageHeight,
-                                fit: BoxFit.cover,
-                              ),
+                            child: OnboardingCarouselImage(
+                              imagePath: page.rightImage,
+                              width: sideImageWidth,
+                              height: sideImageHeight,
                             ),
                           ),
                           // Main image (centered)
                           Center(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Image.asset(
-                                page.mainImage,
-                                width: mainImageWidth,
-                                height: mainImageHeight,
-                                fit: BoxFit.cover,
-                              ),
+                            child: OnboardingCarouselImage(
+                              imagePath: page.mainImage,
+                              width: mainImageWidth,
+                              height: mainImageHeight,
                             ),
                           ),
                         ],
@@ -168,7 +207,8 @@ class _OnboardingState extends State<Onboarding> {
                           // Get Started button
                           ElevatedButton(
                             onPressed: () {
-                              if (_currentPage < OnboardingStatic.pages.length - 1) {
+                              if (_currentPage <
+                                  OnboardingStatic.pages.length - 1) {
                                 _pageController.nextPage(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
@@ -186,8 +226,8 @@ class _OnboardingState extends State<Onboarding> {
                               ),
                             ),
                             child: Text(
-                              _currentPage < OnboardingStatic.pages.length - 1 
-                                  ? 'Next' 
+                              _currentPage < OnboardingStatic.pages.length - 1
+                                  ? 'Next'
                                   : 'Get Started',
                               style: const TextStyle(
                                 fontSize: 18,
