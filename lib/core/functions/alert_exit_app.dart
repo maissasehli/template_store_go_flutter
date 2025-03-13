@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/view/widgets/extensions/buttons/outlined_button.dart';
 import 'package:store_go/view/widgets/extensions/buttons/primary_button.dart';
-import 'package:store_go/view/widgets/extensions/full_width.dart';
+import 'package:store_go/view/widgets/extensions/full_width_extension.dart';
 import 'package:store_go/view/widgets/extensions/text_extensions.dart';
 
 Future<bool> alertExitApp(BuildContext context) {

@@ -15,7 +15,7 @@ extension StyledButton on Widget {
       style: TextButton.styleFrom(
         textStyle: const TextStyle(
           fontSize: UIConstants.fontSizeMedium,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         foregroundColor: colors?.primary,
         padding: const EdgeInsets.symmetric(

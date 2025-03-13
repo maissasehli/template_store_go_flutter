@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/controller/auth/reset_password.dart';
 import 'package:store_go/core/constants/colors.dart';
-import 'package:store_go/core/functions/valid_input.dart';
 import 'package:store_go/view/widgets/auth/custom_auth_button.dart';
-import 'package:store_go/view/widgets/auth/custom_text_form_auth.dart';
 import 'package:store_go/view/widgets/auth/custom_text_title.dart';
+import 'package:store_go/view/widgets/extensions/fields/validated_fields.dart';
 
 class ResetPasswordPage extends StatelessWidget {
   final ResetPasswordController controller = Get.put(ResetPasswordController());
@@ -42,25 +41,16 @@ class ResetPasswordPage extends StatelessWidget {
                   SizedBox(height: AppColor.spacingL),
                   
                   // New Password Field
-                  CustomTextFormAuth(
-                    controller: controller.newPasswordController,
-                    hintText: 'New Password',
-                    obscureText: true,
-                    validator: (val) => validInput(val!, 8, 30, "password"),
+                  "New Password".passwordField(
+                    context,
+                    fieldState: controller.newPasswordFieldState,
                   ),
                   SizedBox(height: AppColor.spacingM),
                   
                   // Confirm Password Field
-                  CustomTextFormAuth(
-                    controller: controller.confirmPasswordController,
-                    hintText: 'Confirm New Password',
-                    obscureText: true,
-                    validator: (val) {
-                      if (val != controller.newPasswordController.text) {
-                        return 'Passwords do not match';
-                      }
-                      return null;
-                    },
+                  "Confirm New Password".passwordField(
+                    context,
+                    fieldState: controller.confirmPasswordFieldState,
                   ),
                   SizedBox(height: AppColor.spacingXL),
                   

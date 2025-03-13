@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/functions/valid_input.dart';
 import 'package:store_go/controller/auth/forget_password.dart';
 import 'package:store_go/view/widgets/auth/custom_auth_button.dart';
 import 'package:store_go/core/constants/colors.dart';
-import 'package:store_go/view/widgets/auth/custom_text_form_auth.dart';
+import 'package:store_go/view/widgets/extensions/fields/validated_fields.dart';
+
 
 class ForgetPassword extends StatelessWidget {
   final ForgetPasswordController controller = Get.put(ForgetPasswordController());
@@ -36,10 +36,9 @@ class ForgetPassword extends StatelessWidget {
                   style: AppColor.titleLarge,
                 ),
                 SizedBox(height: AppColor.spacingL),
-                CustomTextFormAuth(
-                  controller: controller.emailController,
-                  hintText: 'Enter email address',
-                  validator: (val) => validInput(val!, 5, 100, "email"), // Add validator
+                "Enter email address".emailField(
+                  context,
+                  fieldState: controller.emailFieldState,
                 ),
                 SizedBox(height: AppColor.spacingXL),
                 CustomAuthButton(

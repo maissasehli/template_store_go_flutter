@@ -1,26 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/controller/controller_form_field_state.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
+import 'package:store_go/core/functions/valid_input.dart';
 import 'package:store_go/core/services/auth_service.dart';
 
 class LoginController extends GetxController {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  late ControllerFormFieldState emailFieldState;
+  late ControllerFormFieldState passwordFieldState;
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
 
   final AuthService _authService = AuthService();
   final RxBool isLoading = false.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    emailFieldState = ControllerFormFieldState(
+      controller: TextEditingController(),
+      validator: (val) => validInput(val!, 5, 100, "email"),
+    );
+
+    passwordFieldState = ControllerFormFieldState(
+      controller: TextEditingController(),
+      validator: (val) => validInput(val!, 8, 30, "password"),
+    );
+  }
+
+  bool validateForm() {
+    // Touch all fields to trigger validation
+    emailFieldState.touch();
+    passwordFieldState.touch();
+
+    // Check if all fields are valid
+    return emailFieldState.error == null && passwordFieldState.error == null;
+  }
+
   void login() async {
     try {
-      if (loginFormKey.currentState!.validate()) {
+      if (validateForm()) {
         isLoading.value = true;
-        
+
         final success = await _authService.signIn(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
+          email: emailFieldState.controller.text.trim(),
+          password: passwordFieldState.controller.text.trim(),
         );
-        // if success is true, navigate to home screen
+
         if (success) {
           Get.offAllNamed(AppRoute.home);
         }
@@ -30,18 +56,14 @@ class LoginController extends GetxController {
     }
   }
 
-  void goToSignup() {
+  void goToSignUp() {
     Get.toNamed(AppRoute.signup);
-  }
-
-  void goToForgetPassword() {
-    Get.toNamed(AppRoute.forgetPassword);
   }
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
+    emailFieldState.dispose();
+    passwordFieldState.dispose();
     super.onClose();
   }
 }

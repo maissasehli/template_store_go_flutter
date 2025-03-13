@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/controller/controller_form_field_state.dart';
 
 class ForgetPasswordController extends GetxController {
-  final TextEditingController emailController = TextEditingController();
+  late ControllerFormFieldState emailFieldState;
   final GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
 
 
@@ -24,7 +25,7 @@ class ForgetPasswordController extends GetxController {
 
   @override
   void onClose() {
-    emailController.dispose();
+    emailFieldState.controller.dispose();
     super.onClose();
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:store_go/controller/controller_form_field_state.dart';
 
 class ResetPasswordController extends GetxController {
-  final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  late ControllerFormFieldState newPasswordFieldState;
+  late ControllerFormFieldState confirmPasswordFieldState;
   final GlobalKey<FormState> resetPasswordFormKey = GlobalKey<FormState>();
   
   Future<void> resetPassword() async {
@@ -21,8 +21,8 @@ class ResetPasswordController extends GetxController {
 
   @override
   void onClose() {
-    newPasswordController.dispose();
-    confirmPasswordController.dispose();
+    newPasswordFieldState.controller.dispose();
+    confirmPasswordFieldState.controller.dispose();
     super.onClose();
   }
 }
