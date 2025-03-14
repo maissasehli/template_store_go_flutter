@@ -4,7 +4,7 @@ import 'package:store_go/controller/categories/category_controller.dart';
 import 'package:store_go/core/model/home/category_model.dart';
 
 class CategoryScreen extends StatelessWidget {
-  const CategoryScreen({Key? key}) : super(key: key);
+  const CategoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +86,10 @@ class CategoryTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const CategoryTile({
-    Key? key,
+    super.key,
     required this.category,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +127,7 @@ class CategoryTile extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  category.name ?? 'Category',
+                  category.name,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 15,

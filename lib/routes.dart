@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/bindings/home_binding.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
-import 'package:store_go/core/middleware/auth/auth.middleware.dart';
 import 'package:store_go/core/middleware/middleware.dart';
 import 'package:store_go/view/screens/auth/email_confirmation_screen.dart';
 import 'package:store_go/view/screens/auth/forget_password_screen.dart';
@@ -28,7 +27,7 @@ List<GetPage<dynamic>>? routes = [
   ),
   
   // Auth
-  GetPage(name: AppRoute.login, page: () => Login(), binding: MyBinding(), middlewares: [AuthMiddleware()]),
+  GetPage(name: AppRoute.login, page: () => Login(), binding: MyBinding()),
   GetPage(
     name: AppRoute.signup,
     page: () => const Signup(),

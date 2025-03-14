@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/model/home/product_model.dart';
 
