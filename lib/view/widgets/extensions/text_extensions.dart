@@ -105,5 +105,6 @@ extension StyledText on Widget {
       child: this,
     );
   }
+  
 
 }
