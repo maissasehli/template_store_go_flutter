@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
+import 'package:store_go/view/widgets/ui/theme_toggle.dart';
 
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -14,11 +15,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
       elevation: 0,
       automaticallyImplyLeading: false,
       title: Row(
         children: [
+          ThemeToggle(),
           // Avatar/profile image
           Container(
             height: 40,

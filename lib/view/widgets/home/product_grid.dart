@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/model/home/product_model.dart';
+import 'package:store_go/core/theme/color_extension.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
@@ -13,14 +14,14 @@ class ProductGrid extends StatelessWidget {
   final bool isHorizontal;
 
   const ProductGrid({
-    Key? key,
+    super.key,
     required this.products,
     required this.onProductTap,
     required this.onFavoriteTap,
     this.title = 'Top Selling',
     this.onSeeAllTap,
     this.isHorizontal = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +32,16 @@ class ProductGrid extends StatelessWidget {
         
         // Products display - either horizontal list or grid
         if (isHorizontal)
-          _buildHorizontalList()
+          _buildHorizontalList(context)
         else
           _buildGrid(),
       ],
     );
   }
 
-  Widget _buildHorizontalList() {
-    return Container(
+  Widget _buildHorizontalList(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorExtension>();
+    return SizedBox(
       height: 281, // Exact height from image 2 (Hug 281px)
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -54,15 +56,15 @@ class ProductGrid extends StatelessWidget {
               width: 159, // Exact width from image 2 (Fixed 159px)
               margin: const EdgeInsets.only(right: 8), // Gap 8px from image 2
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: colors?.productCard ?? Colors.white,
                 borderRadius: BorderRadius.circular(8), // Radius 8px from image 2
-                border: Border.all(color: Color(0xFFF4F4F4), width: 1), // Border color from image 2
+                border: Border.all(color: colors?.border ?? Color(0xFFF4F4F4), width: 1), // Border color from image 2
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Product image with favorite button
-                  Container(
+                  SizedBox(
                     height: 220, // Height for the image container
                     child: Stack(
                       children: [

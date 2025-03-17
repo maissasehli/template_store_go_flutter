@@ -18,7 +18,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
   final Color input;
   final Color destructive;
   final Color destructiveForeground;
-
+  final Color productCard;
   AppColorExtension({
     required this.background,
     required this.foreground,
@@ -36,6 +36,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
     required this.input,
     required this.destructive,
     required this.destructiveForeground,
+    required this.productCard,
   });
 
   @override
@@ -56,6 +57,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
     Color? input,
     Color? destructive,
     Color? destructiveForeground,
+    Color? productCard,
   }) {
     return AppColorExtension(
       background: background ?? this.background,
@@ -75,6 +77,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       destructive: destructive ?? this.destructive,
       destructiveForeground:
           destructiveForeground ?? this.destructiveForeground,
+      productCard: productCard ?? this.productCard,
     );
   }
 
@@ -108,6 +111,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       destructive: Color.lerp(destructive, other.destructive, t)!,
       destructiveForeground:
           Color.lerp(destructiveForeground, other.destructiveForeground, t)!,
+      productCard: Color.lerp(productCard, other.productCard, t)!,
     );
   }
 
@@ -130,6 +134,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       input: colors.input,
       destructive: colors.destructive,
       destructiveForeground: colors.destructiveForeground,
+      productCard: colors.productCard,
     );
   }
 }

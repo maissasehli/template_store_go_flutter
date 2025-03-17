@@ -5,9 +5,9 @@ class ImageGallery extends StatefulWidget {
   final List<String> imageUrls;
 
   const ImageGallery({
-    Key? key,
+    super.key,
     required this.imageUrls,
-  }) : super(key: key);
+  });
 
   @override
   _ImageGalleryState createState() => _ImageGalleryState();
@@ -39,7 +39,7 @@ class _ImageGalleryState extends State<ImageGallery> {
     return Column(
       children: [
         // Main image slider
-        Container(
+        SizedBox(
           height: 300,
           child: PageView.builder(
             controller: _pageController,
@@ -62,7 +62,7 @@ class _ImageGalleryState extends State<ImageGallery> {
         
         // Thumbnail row
         if (widget.imageUrls.length > 1)
-          Container(
+          SizedBox(
             height: 80,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,

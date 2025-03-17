@@ -7,9 +7,9 @@ class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
   
   const CustomSearchBar({
-    Key? key,
+    super.key,
     required this.onSearch,
-  }) : super(key: key);
+  });
   
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();

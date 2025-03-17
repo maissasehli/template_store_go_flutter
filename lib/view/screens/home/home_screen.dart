@@ -12,12 +12,12 @@ import 'package:store_go/view/widgets/home/search_bar.dart';
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
 
-  HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorExtension>();
-    
+
     return Scaffold(
       backgroundColor: colors?.background ?? Colors.white,
       appBar: CustomAppBar(
@@ -28,16 +28,19 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: UIConstants.paddingMedium),
-            
+
             // Add CustomSearchBar right after the AppBar
             CustomSearchBar(
-              onSearch: (query) => controller.productController.searchProducts(query),
+              onSearch:
+                  (query) => controller.productController.searchProducts(query),
             ),
-            
+
             const SizedBox(height: UIConstants.paddingMedium),
-            
+
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingMedium),
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConstants.paddingMedium,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -47,34 +50,32 @@ class HomeScreen extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Gabarito',
-              
                     ),
                   ),
-                TextButton(
-  onPressed: () => controller.onCategoriesSeeAllTap(),
-  child: const Text(
-    'See All',
-    style: TextStyle(
-      fontFamily: 'Poppins',
-      fontSize: 14, 
-    ),
-  ),
-),
-
+                  TextButton(
+                    onPressed: () => controller.onCategoriesSeeAllTap(),
+                    child: const Text(
+                      'See All',
+                      style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                    ),
+                  ),
                 ],
               ),
             ),
-            
+
             SizedBox(
               height: 100,
-              child: Obx(() => CategoryFilter(
-                categories: controller.categoryController.categories,
-                selectedCategoryId: controller.categoryController.selectedCategoryId.value,
-                onCategorySelected: (categoryId) => 
-                  controller.onCategoryTap(categoryId),
-              )),
+              child: Obx(
+                () => CategoryFilter(
+                  categories: controller.categoryController.categories,
+                  selectedCategoryId:
+                      controller.categoryController.selectedCategoryId.value,
+                  onCategorySelected:
+                      (categoryId) => controller.onCategoryTap(categoryId),
+                ),
+              ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: UIConstants.paddingMedium,
@@ -86,43 +87,41 @@ class HomeScreen extends StatelessWidget {
                   const Text(
                     'Top Selling',
                     style: TextStyle(
-                       fontSize: 16,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Gabarito',
-                  ),
+                    ),
                   ),
                   TextButton(
                     onPressed: () => controller.onTopSellingSeeAllTap(),
                     child: const Text(
                       'See All',
-    style: TextStyle(
-      fontFamily: 'Poppins',
-      fontSize: 14, 
-    ),
+                      style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             Obx(() {
               if (controller.productController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (controller.productController.products.isEmpty) {
                 return const Center(child: Text('No products found.'));
               }
-              
+
               return ProductGrid(
                 products: controller.productController.products,
                 onProductTap: (productId) => controller.onProductTap(productId),
-                onFavoriteTap: (productId) => 
-                  controller.productController.toggleFavorite(productId),
+                onFavoriteTap:
+                    (productId) =>
+                        controller.productController.toggleFavorite(productId),
                 isHorizontal: true,
               );
             }),
-            
+
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: UIConstants.paddingMedium,
@@ -145,21 +144,22 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             Obx(() {
               if (controller.productController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (controller.productController.products.isEmpty) {
                 return const Center(child: Text('No products found.'));
               }
-              
+
               return ProductGrid(
                 products: controller.productController.products,
                 onProductTap: (productId) => controller.onProductTap(productId),
-                onFavoriteTap: (productId) => 
-                  controller.productController.toggleFavorite(productId),
+                onFavoriteTap:
+                    (productId) =>
+                        controller.productController.toggleFavorite(productId),
                 isHorizontal: true,
               );
             }),

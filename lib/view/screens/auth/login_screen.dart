@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/controller/auth/oauth_controller.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/controller/auth/login_controller.dart';
@@ -18,6 +19,7 @@ class Login extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final OAuthController _oauthController = OAuthController();
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -93,7 +95,9 @@ class Login extends GetView<LoginController> {
                       // Google Sign-In Button with loading state
                       const Text('Continue With Google').secondaryIconTextButton(
                         context,
-                        onPressed: () => {debugPrint('google')},
+                        onPressed: () => {
+                          _oauthController.signInWithProvider('google')
+                        },
                         icon: ThemeAwareSvg(
                           assetPath: ImageAsset.googleIcon,
                           color: colors.primary,

@@ -24,6 +24,7 @@ class AppTheme {
     input: Color(0xFFF4F4F4),
     destructive: Color(0xFFFF0000),
     destructiveForeground: Color(0xFFFFFFFF),
+    productCard: Color(0xFFF4F4F4),
   );
 
   // Dark theme colors
@@ -44,6 +45,7 @@ class AppTheme {
     input: Color(0xFF202020),
     destructive: Color(0xFFff1a1a),
     destructiveForeground: Color(0xFFFFFFFF),
+    productCard: Color(0xFF1E1E1E),
   );
   // Light theme text styles
   static const lightTextStyles = AppTextStylesData(
