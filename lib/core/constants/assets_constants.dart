@@ -1,12 +1,8 @@
 class ImageAsset {
   static const String rootImages = 'assets/images';
   static const String rootIcons = 'assets/icons';
-<<<<<<< HEAD:lib/core/constants/assets_constants.dart
-  static const String rootSvgIcons = 'assets/icons/svg';
-=======
     static const String rootSvg = 'assets/svg';
 
->>>>>>> dev-maissa:lib/core/constants/assets.dart
 
   // OnBoarding assets
   static const String onBoardingIconLogo = '$rootIcons/app_icon.png';
@@ -16,15 +12,9 @@ class ImageAsset {
   static const String onBoardingHeaderRight = '$rootImages/fashion.jpg';
 
   // Social Login Icons
-<<<<<<< HEAD:lib/core/constants/assets_constants.dart
-  static const String appleIcon = '$rootSvgIcons/apple.svg';
-  static const String googleIcon = '$rootSvgIcons/google.svg';
-  static const String facebookIcon = '$rootSvgIcons/facebook.svg';
-=======
   static const String appleIcon = '$rootSvg/apple.svg';
   static const String googleIcon = '$rootSvg/google.svg';
   static const String facebookIcon = '$rootSvg/facebook.svg';
->>>>>>> dev-maissa:lib/core/constants/assets.dart
 
   // Email related
   static const String sendMail = '$rootIcons/email_sent.png';

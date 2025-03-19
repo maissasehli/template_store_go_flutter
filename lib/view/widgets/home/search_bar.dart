@@ -5,18 +5,9 @@ import 'package:store_go/core/constants/ui.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
-<<<<<<< HEAD
-  
-  const CustomSearchBar({
-    super.key,
-    required this.onSearch,
-  });
-  
-=======
 
   const CustomSearchBar({Key? key, required this.onSearch}) : super(key: key);
 
->>>>>>> dev-maissa
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
 }

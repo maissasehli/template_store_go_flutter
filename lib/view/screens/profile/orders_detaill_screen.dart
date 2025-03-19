@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
 import 'package:store_go/view/screens/profile/orders_screen.dart';
 
 class OrderDetailsPage extends StatelessWidget {
@@ -39,11 +38,11 @@ class OrderDetailsPage extends StatelessWidget {
               // Order Timeline
               _buildOrderTimeline(order),
               const SizedBox(height: 24),
-              
+
               // Order Items
               _buildOrderItems(order),
               const SizedBox(height: 24),
-              
+
               // Shipping Details
               _buildShippingDetails(order),
             ],
@@ -57,15 +56,27 @@ class OrderDetailsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildTimelineItem('Delivered', order.date, isActive: true, isFirst: true),
+        _buildTimelineItem(
+          'Delivered',
+          order.date,
+          isActive: true,
+          isFirst: true,
+        ),
         _buildTimelineItem('Shipped', order.date, isActive: true),
         _buildTimelineItem('Order Confirmed', order.date, isActive: true),
-        _buildTimelineItem('Order Placed', order.date, isActive: true, isLast: true),
+        _buildTimelineItem(
+          'Order Placed',
+          order.date,
+          isActive: true,
+          isLast: true,
+        ),
       ],
     );
   }
 
-  Widget _buildTimelineItem(String status, String date, {
+  Widget _buildTimelineItem(
+    String status,
+    String date, {
     bool isActive = false,
     bool isFirst = false,
     bool isLast = false,
@@ -153,10 +164,7 @@ class OrderDetailsPage extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     '${order.itemCount} items',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
-                    ),
+                    style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
                   ),
                 ],
               ),
@@ -202,18 +210,12 @@ class OrderDetailsPage extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             order.shippingAddress,
-            style: const TextStyle(
-              fontSize: 14,
-              fontFamily: 'Poppins',
-            ),
+            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
           ),
           const SizedBox(height: 8),
           Text(
             order.phoneNumber,
-            style: const TextStyle(
-              fontSize: 14,
-              fontFamily: 'Poppins',
-            ),
+            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
           ),
         ],
       ),

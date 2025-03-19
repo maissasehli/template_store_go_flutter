@@ -32,7 +32,6 @@ class AppRoute {
   static const String profile = "/profile";
   static const String orders = "/orders";
   static const String wishlist = "/wishlist";
-<<<<<<< HEAD:lib/core/constants/routes_constants.dart
 
   // public routes
   static const List<String> publicRoutes = [
@@ -42,7 +41,6 @@ class AppRoute {
     signup,
     forgetPassword,
   ];
-=======
   static const String address = "/address";
           static const String order_details = "/order-details";
 
@@ -54,5 +52,4 @@ class AppRoute {
 
 
 
->>>>>>> dev-maissa:lib/core/constants/routes.dart
 }

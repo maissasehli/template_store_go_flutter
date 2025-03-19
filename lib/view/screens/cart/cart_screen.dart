@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
 
 class CartScreen extends StatefulWidget {
@@ -240,193 +240,193 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-  void onSwipeDelete(int index) {
-  // Show confirmation dialog
-  Get.dialog(
-    AlertDialog(
-      title: const Text('Remove Item'),
-      content: const Text('Are you sure you want to remove this item from your cart?'),
-      actions: [
-        TextButton(
-          onPressed: () => Get.back(),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            Get.back();
-            removeItem(index);
-          },
-          child: const Text('Remove'),
-        ),
-      ],
-    ),
-  );
-}
-Widget _buildCartItemCard(CartItem item, int index) {
-  return Dismissible(
-    key: Key(item.id),
-    direction: DismissDirection.endToStart, // Only allow right to left swipe
-    confirmDismiss: (direction) async {
-      // Don't actually dismiss the item when swiped
-       onSwipeDelete(index);
-      return false;
-    },
-    background: Container(
-      color: Colors.transparent, // Make the background transparent
-    ),
-  secondaryBackground: Container(
-  alignment: Alignment.centerRight,
-  decoration: BoxDecoration(
-    color: Colors.black,
-    borderRadius: BorderRadius.circular(13.76), // Applique un radius similaire à la carte
-  ),
-  child: Padding(
-    padding: const EdgeInsets.only(right: 20.0),
-    child: SvgPicture.asset(
-      ImageAsset.delete,
-      width: 24,
-      height: 24,
-      colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-    ),
-  ),
-),
 
-    child: Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      height: 105.87,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(13.76),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 25.41,
-            spreadRadius: 0,
+  void onSwipeDelete(int index) {
+    // Show confirmation dialog
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Remove Item'),
+        content: const Text(
+          'Are you sure you want to remove this item from your cart?',
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              removeItem(index);
+            },
+            child: const Text('Remove'),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          // Your existing cart item UI...
-          // Product image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(13.76),
-              bottomLeft: Radius.circular(13.76),
-            ),
-            child: Image.asset(
-              item.imageUrl,
-              width: 80,
-              height: double.infinity,
-              fit: BoxFit.cover,
-            ),
+    );
+  }
+
+  Widget _buildCartItemCard(CartItem item, int index) {
+    return Dismissible(
+      key: Key(item.id),
+      direction: DismissDirection.endToStart, // Only allow right to left swipe
+      confirmDismiss: (direction) async {
+        // Don't actually dismiss the item when swiped
+        onSwipeDelete(index);
+        return false;
+      },
+      background: Container(
+        color: Colors.transparent, // Make the background transparent
+      ),
+      secondaryBackground: Container(
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(
+            13.76,
+          ), // Applique un radius similaire à la carte
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 20.0),
+          child: SvgPicture.asset(
+            ImageAsset.delete,
+            width: 24,
+            height: 24,
+            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
           ),
-          
-          // Product details
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+        ),
+      ),
+
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        height: 105.87,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(13.76),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 25.41,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Your existing cart item UI...
+            // Product image
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(13.76),
+                bottomLeft: Radius.circular(13.76),
+              ),
+              child: Image.asset(
+                item.imageUrl,
+                width: 80,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+            // Product details
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      item.name,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    Text(
+                      item.description,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '\$${item.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Quantity controls and delete
+            // Replace the current quantity controls with this new design
+            Container(
+              width: 74.11,
+              height: 31.76,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEEEEEE),
+                borderRadius: BorderRadius.circular(31.76),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Text(
-                    item.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
+                  // Minus button
+                  GestureDetector(
+                    onTap: () => updateQuantity(index, -1),
+                    child: const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(
+                        child: Icon(
+                          Icons.remove,
+                          size: 16,
+                          color: Colors.black,
+                        ),
+                      ),
                     ),
                   ),
-                  Text(
-                    item.description,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                      fontFamily: 'Poppins',
+                  // Quantity
+                  SizedBox(
+                    width: 24,
+                    child: Center(
+                      child: Text(
+                        '${item.quantity}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '\$${item.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
+                  // Plus button
+                  GestureDetector(
+                    onTap: () => updateQuantity(index, 1),
+                    child: const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Center(
+                        child: Icon(Icons.add, size: 16, color: Colors.black),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-          
-// Quantity controls and delete
-// Replace the current quantity controls with this new design
-Container(
-  width: 74.11,
-  height: 31.76,
-  decoration: BoxDecoration(
-    color: const Color(0xFFEEEEEE),
-    borderRadius: BorderRadius.circular(31.76),
-  ),
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    children: [
-      // Minus button
-      GestureDetector(
-        onTap: () => updateQuantity(index, -1),
-        child: const SizedBox(
-          width: 24,
-          height: 24,
-          child: Center(
-            child: Icon(
-              Icons.remove,
-              size: 16,
-              color: Colors.black,
-            ),
-          ),
+          ],
         ),
       ),
-      // Quantity
-      SizedBox(
-        width: 24,
-        child: Center(
-          child: Text(
-            '${item.quantity}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ),
-      // Plus button
-      GestureDetector(
-        onTap: () => updateQuantity(index, 1),
-        child: const SizedBox(
-          width: 24,
-          height: 24,
-          child: Center(
-            child: Icon(
-              Icons.add,
-              size: 16,
-              color: Colors.black,
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-        ],
-      ),
-    ),
-    onDismissed: (_) {
-      // This won't be called due to confirmDismiss returning false
-    },
-  );
-}
+      onDismissed: (_) {
+        // This won't be called due to confirmDismiss returning false
+      },
+    );
+  }
+
   Widget _buildCartSummary() {
     return Container(
       margin: const EdgeInsets.only(top: 16),
@@ -512,23 +512,23 @@ Container(
               ),
             ),
           ),
-Container(
-  width: 40,
-  height: 40,
-  decoration: const BoxDecoration(
-    color: Colors.black,
-    shape: BoxShape.circle,
-  ),
-  child: Padding(
-    padding: const EdgeInsets.all(10), // Ajuste selon tes besoins
-    child: SvgPicture.asset(
-      ImageAsset.arrowright2,
-      width: 20,
-      height: 20,
-    ),
-  ),
-),
-      const SizedBox(width: 8),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              shape: BoxShape.circle,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10), // Ajuste selon tes besoins
+              child: SvgPicture.asset(
+                ImageAsset.arrowright2,
+                width: 20,
+                height: 20,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
     );

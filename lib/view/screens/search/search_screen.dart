@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/controller/product/product_controller.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -66,10 +66,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   const Text(
                     'Filter',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -80,40 +77,28 @@ class _SearchScreenState extends State<SearchScreen> {
               const SizedBox(height: 16),
               const Text(
                 'Categories',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _buildCategoryFilterChips(),
               const SizedBox(height: 16),
               const Text(
                 'Price Range',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _buildPriceRangeSlider(),
               const SizedBox(height: 16),
               const Text(
                 'Sort By',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _buildSortOptions(),
               const SizedBox(height: 16),
               const Text(
                 'Rating',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _buildRatingFilter(),
@@ -142,7 +127,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         productController.filterProducts(
-                          category: selectedCategory.value != 'All' ? selectedCategory.value : null,
+                          category:
+                              selectedCategory.value != 'All'
+                                  ? selectedCategory.value
+                                  : null,
                           minPrice: minPrice.value,
                           maxPrice: maxPrice.value,
                           sortBy: sortBy.value,
@@ -216,28 +204,28 @@ class _SearchScreenState extends State<SearchScreen> {
                 IconButton(
                   icon: const Icon(Icons.filter_list),
                   onPressed: _showFilterBottomSheet,
-                )
+                ),
               ],
             ),
           ),
-          
+
           // Filter chips
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildFilterChips(),
           ),
-          
+
           // Products grid or no results
           Expanded(
             child: Obx(() {
               if (productController.isLoading.value) {
                 return const Center(child: CircularProgressIndicator());
               }
-              
+
               if (productController.products.isEmpty) {
                 return _buildNoResultsFound();
               }
-              
+
               return _buildProductsGrid();
             }),
           ),
@@ -264,33 +252,36 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildFilterChip(String label) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: Obx(() => GestureDetector(
-        onTap: () => selectedCategory.value = label,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: selectedCategory.value == label 
-                ? Colors.black 
-                : Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: selectedCategory.value == label
-                  ? Colors.black
-                  : Colors.grey.shade300,
+      child: Obx(
+        () => GestureDetector(
+          onTap: () => selectedCategory.value = label,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color:
+                  selectedCategory.value == label ? Colors.black : Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color:
+                    selectedCategory.value == label
+                        ? Colors.black
+                        : Colors.grey.shade300,
+              ),
             ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: selectedCategory.value == label
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+            child: Text(
+              label,
+              style: TextStyle(
+                color:
+                    selectedCategory.value == label
+                        ? Colors.white
+                        : Colors.black,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
-      )),
+      ),
     );
   }
 
@@ -303,7 +294,10 @@ class _SearchScreenState extends State<SearchScreen> {
             ImageAsset.searchIcon,
             height: 70,
             width: 70,
-            colorFilter: ColorFilter.mode(Colors.grey.shade300, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(
+              Colors.grey.shade300,
+              BlendMode.srcIn,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
@@ -318,10 +312,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Text(
             'Try adjusting your search or filter to find what you\'re looking for',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
         ],
       ),
@@ -377,7 +368,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           top: 8,
                           right: 8,
                           child: GestureDetector(
-                            onTap: () => productController.toggleFavorite(product.id),
+                            onTap:
+                                () => productController.toggleFavorite(
+                                  product.id,
+                                ),
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
@@ -395,9 +389,10 @@ class _SearchScreenState extends State<SearchScreen> {
                                 product.isFavorite
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color: product.isFavorite
-                                    ? Colors.red
-                                    : Colors.grey.shade600,
+                                color:
+                                    product.isFavorite
+                                        ? Colors.red
+                                        : Colors.grey.shade600,
                                 size: 18,
                               ),
                             ),
@@ -425,11 +420,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 16,
-                          ),
+                          const Icon(Icons.star, color: Colors.amber, size: 16),
                           const SizedBox(width: 2),
                           Text(
                             product.rating.toString(),
@@ -467,79 +458,100 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildCategoryFilterChips() {
-    List<String> categories = ['All', 'Clothing', 'Care', 'Decoration', 'Tops', 'Shorts', 'Coats'];
-    
+    List<String> categories = [
+      'All',
+      'Clothing',
+      'Care',
+      'Decoration',
+      'Tops',
+      'Shorts',
+      'Coats',
+    ];
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: categories.map((category) => Obx(() => GestureDetector(
-        onTap: () => selectedCategory.value = category,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: selectedCategory.value == category 
-                ? Colors.black 
-                : Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: selectedCategory.value == category
-                  ? Colors.black
-                  : Colors.grey.shade300,
-            ),
-          ),
-          child: Text(
-            category,
-            style: TextStyle(
-              color: selectedCategory.value == category
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ))).toList(),
+      children:
+          categories
+              .map(
+                (category) => Obx(
+                  () => GestureDetector(
+                    onTap: () => selectedCategory.value = category,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            selectedCategory.value == category
+                                ? Colors.black
+                                : Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color:
+                              selectedCategory.value == category
+                                  ? Colors.black
+                                  : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Text(
+                        category,
+                        style: TextStyle(
+                          color:
+                              selectedCategory.value == category
+                                  ? Colors.white
+                                  : Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
     );
   }
 
   Widget _buildPriceRangeSlider() {
     return Column(
       children: [
-        Obx(() => RangeSlider(
-          values: RangeValues(minPrice.value, maxPrice.value),
-          min: 0,
-          max: 500,
-          divisions: 50,
-          activeColor: Colors.black,
-          inactiveColor: Colors.grey.shade200,
-          labels: RangeLabels(
-            '\$${minPrice.value.toInt()}',
-            '\$${maxPrice.value.toInt()}',
+        Obx(
+          () => RangeSlider(
+            values: RangeValues(minPrice.value, maxPrice.value),
+            min: 0,
+            max: 500,
+            divisions: 50,
+            activeColor: Colors.black,
+            inactiveColor: Colors.grey.shade200,
+            labels: RangeLabels(
+              '\$${minPrice.value.toInt()}',
+              '\$${maxPrice.value.toInt()}',
+            ),
+            onChanged: (RangeValues values) {
+              minPrice.value = values.start;
+              maxPrice.value = values.end;
+            },
           ),
-          onChanged: (RangeValues values) {
-            minPrice.value = values.start;
-            maxPrice.value = values.end;
-          },
-        )),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Obx(() => Text(
-                '\$${minPrice.value.toInt()}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              Obx(
+                () => Text(
+                  '\$${minPrice.value.toInt()}',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
-              )),
-              Obx(() => Text(
-                '\$${maxPrice.value.toInt()}',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+              ),
+              Obx(
+                () => Text(
+                  '\$${maxPrice.value.toInt()}',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
-              )),
+              ),
             ],
           ),
         ),
@@ -549,37 +561,50 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSortOptions() {
     List<String> sortOptions = ['New Today', 'Top Sellers', 'New collection'];
-    
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: sortOptions.map((option) => Obx(() => GestureDetector(
-        onTap: () => sortBy.value = option,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: sortBy.value == option 
-                ? Colors.black 
-                : Colors.white,
-borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: sortBy.value == option
-                  ? Colors.black
-                  : Colors.grey.shade300,
-            ),
-          ),
-          child: Text(
-            option,
-            style: TextStyle(
-              color: sortBy.value == option
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ))).toList(),
+      children:
+          sortOptions
+              .map(
+                (option) => Obx(
+                  () => GestureDetector(
+                    onTap: () => sortBy.value = option,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            sortBy.value == option
+                                ? Colors.black
+                                : Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color:
+                              sortBy.value == option
+                                  ? Colors.black
+                                  : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Text(
+                        option,
+                        style: TextStyle(
+                          color:
+                              sortBy.value == option
+                                  ? Colors.white
+                                  : Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -589,44 +614,48 @@ borderRadius: BorderRadius.circular(18),
       children: [
         for (int i = 5; i >= 1; i--)
           GestureDetector(
-            onTap: () => selectedRating.value = selectedRating.value == i ? 0 : i,
+            onTap:
+                () => selectedRating.value = selectedRating.value == i ? 0 : i,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 children: [
-                  Obx(() => Container(
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                      border: Border.all(
-                        color: selectedRating.value == i ? Colors.black : Colors.grey.shade300,
-                        width: 2,
+                  Obx(
+                    () => Container(
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.transparent,
+                        border: Border.all(
+                          color:
+                              selectedRating.value == i
+                                  ? Colors.black
+                                  : Colors.grey.shade300,
+                          width: 2,
+                        ),
                       ),
+                      child:
+                          selectedRating.value == i
+                              ? Center(
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              )
+                              : null,
                     ),
-                    child: selectedRating.value == i
-                        ? Center(
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.black,
-                              ),
-                            ),
-                          )
-                        : null,
-                  )),
+                  ),
                   const SizedBox(width: 8),
                   Row(
                     children: List.generate(
                       i,
-                      (index) => Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 16,
-                      ),
+                      (index) =>
+                          Icon(Icons.star, color: Colors.amber, size: 16),
                     ),
                   ),
                 ],

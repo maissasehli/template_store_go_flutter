@@ -13,14 +13,10 @@ import 'package:store_go/view/widgets/home/search_bar.dart';
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
 
-<<<<<<< HEAD
-  HomeScreen({super.key});
-=======
 final CategoryController categoryController = Get.find<CategoryController>();
 
 
   HomeScreen({Key? key}) : super(key: key);
->>>>>>> dev-maissa
 
   @override
   Widget build(BuildContext context) {
@@ -70,22 +66,6 @@ final CategoryController categoryController = Get.find<CategoryController>();
                 ],
               ),
             ),
-<<<<<<< HEAD
-
-            SizedBox(
-              height: 100,
-              child: Obx(
-                () => CategoryFilter(
-                  categories: controller.categoryController.categories,
-                  selectedCategoryId:
-                      controller.categoryController.selectedCategoryId.value,
-                  onCategorySelected:
-                      (categoryId) => controller.onCategoryTap(categoryId),
-                ),
-              ),
-            ),
-
-=======
             
 SizedBox(
   height: 100,
@@ -95,7 +75,6 @@ SizedBox(
     onCategorySelected: (categoryId) => controller.categoryController.selectCategory(categoryId),
   )),
 ),         
->>>>>>> dev-maissa
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: UIConstants.paddingMedium,
@@ -122,28 +101,6 @@ SizedBox(
                 ],
               ),
             ),
-<<<<<<< HEAD
-
-            Obx(() {
-              if (controller.productController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (controller.productController.products.isEmpty) {
-                return const Center(child: Text('No products found.'));
-              }
-
-              return ProductGrid(
-                products: controller.productController.products,
-                onProductTap: (productId) => controller.onProductTap(productId),
-                onFavoriteTap:
-                    (productId) =>
-                        controller.productController.toggleFavorite(productId),
-                isHorizontal: true,
-              );
-            }),
-
-=======
             
          Obx(() {
   if (controller.productController.isLoading.value) {
@@ -163,7 +120,6 @@ SizedBox(
   );
 }),
             
->>>>>>> dev-maissa
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: UIConstants.paddingMedium,

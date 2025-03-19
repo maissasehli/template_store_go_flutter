@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({Key? key}) : super(key: key);
@@ -39,11 +39,8 @@ class NotificationsPage extends StatelessWidget {
         height: 60,
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Color(0xFFE0E0E0), width: 1),
-          ),
+          border: Border(top: BorderSide(color: Color(0xFFE0E0E0), width: 1)),
         ),
-      
       ),
     );
   }
@@ -116,11 +113,7 @@ class NotificationsPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.notifications_outlined,
-            size: 20,
-            color: Colors.grey[700],
-          ),
+          Icon(Icons.notifications_outlined, size: 20, color: Colors.grey[700]),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -137,7 +130,6 @@ class NotificationsPage extends StatelessWidget {
       ),
     );
   }
-
 }
 
 // Controller for managing notifications state
@@ -152,7 +144,8 @@ class NotificationsController extends GetxController {
     notifications.addAll([
       NotificationModel(
         id: '1',
-        message: 'Gilbert, you placed an order. check your order history for full details',
+        message:
+            'Gilbert, you placed an order. check your order history for full details',
         timestamp: DateTime.now(),
       ),
       NotificationModel(

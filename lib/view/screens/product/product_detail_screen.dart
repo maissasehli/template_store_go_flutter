@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/cart/cart_controller.dart';
 import 'package:store_go/controller/product/product_controller.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/core/model/home/product_model.dart';

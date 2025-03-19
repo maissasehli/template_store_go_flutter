@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool isOrderPlaced = false;
   String? shippingAddress;
   String? paymentMethod;
-  
+
   // These values would normally come from your cart
   final double subtotal = 200.0;
   final double shippingCost = 8.0;
@@ -33,9 +33,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: isOrderPlaced 
-            ? _buildOrderConfirmation() 
-            : _buildCheckoutForm(),
+        child: isOrderPlaced ? _buildOrderConfirmation() : _buildCheckoutForm(),
       ),
     );
   }
@@ -47,7 +45,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          
+
           // Back button and title
           Row(
             children: [
@@ -83,9 +81,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               const SizedBox(width: 40), // Balance the layout
             ],
           ),
-          
+
           const SizedBox(height: 30),
-          
+
           // Shipping Address
           Container(
             width: 342,
@@ -106,10 +104,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               subtitle: Text(
                 shippingAddress ?? 'Add Shipping Address',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
@@ -120,9 +115,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               },
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Payment Method
           Container(
             width: 342,
@@ -143,10 +138,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
               subtitle: Text(
                 paymentMethod ?? 'Add Payment Method',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
               onTap: () {
@@ -157,40 +149,48 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               },
             ),
           ),
-          
+
           const Spacer(),
-          
+
           // Order Summary
           Container(
             width: 342,
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(
-                  color: Colors.grey.withOpacity(0.3),
-                  width: 1,
-                ),
+                top: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
               ),
             ),
             child: Column(
               children: [
-                _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(0)}'),
-                _buildSummaryRow('Shipping Cost', '\$${shippingCost.toStringAsFixed(2)}'),
+                _buildSummaryRow(
+                  'Subtotal',
+                  '\$${subtotal.toStringAsFixed(0)}',
+                ),
+                _buildSummaryRow(
+                  'Shipping Cost',
+                  '\$${shippingCost.toStringAsFixed(2)}',
+                ),
                 _buildSummaryRow('Tax', '\$${tax.toStringAsFixed(2)}'),
-                _buildSummaryRow('Total', '\$${total.toStringAsFixed(0)}', isTotal: true),
+                _buildSummaryRow(
+                  'Total',
+                  '\$${total.toStringAsFixed(0)}',
+                  isTotal: true,
+                ),
               ],
             ),
           ),
-          
+
           // Place Order Button
           Container(
             width: double.infinity,
             height: 55,
             margin: const EdgeInsets.only(top: 24, bottom: 24),
             child: ElevatedButton(
-              onPressed: shippingAddress != null && paymentMethod != null 
-                  ? placeOrder 
-                  : null,
+              onPressed:
+                  shippingAddress != null && paymentMethod != null
+                      ? placeOrder
+                      : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 disabledBackgroundColor: Colors.grey,
@@ -229,200 +229,194 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
-Widget _buildOrderConfirmation() {
-  return Scaffold(
-    body: Stack(
-      children: [
-        // Background circles
-        Positioned(
-          top: 140,
-          left: 120,
-          child: Container(
-            width: 15.42,
-            height: 15.65,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        Positioned(
-          top: 150,
-          right: 140,
-          child: Container(
-            width: 7.82,
-            height: 8.61,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        Positioned(
-          top: 220,
-          left: 150,
-          child: Container(
-            width: 7.82,
-            height: 8.61,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        Positioned(
-          top: 250,
-          right: 160,
-          child: Container(
-            width: 5,
-            height:5,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
-        
-        // Main content
-        SafeArea(
-          child: Center(
-            child: Column(
-              children: [
-                const Spacer(flex: 2),
-                
-                // Checkmark icon in a circle
-                Container(
-                     child: SvgPicture.asset(
-                ImageAsset.Success,
-              
-               
+
+  Widget _buildOrderConfirmation() {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background circles
+          Positioned(
+            top: 140,
+            left: 120,
+            child: Container(
+              width: 15.42,
+              height: 15.65,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
               ),
-                ),
-                
-                
-                // Success message
-                const Text(
-                  'Order Placed\nSuccessfully',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Poppins',
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                
-                const SizedBox(height: 12),
-                
-                // Email confirmation text
-                const Text(
-                  'You will recieve an email\nconfirmation',
-                  style: TextStyle(
-                    color: Color(0xFF9E9E9E),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Poppins',
-                    height: 1.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // Leave a comment button
-                Container(
-                  width: 342,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: const Color(0xFFE0E0E0),
-                      width: 1,
+            ),
+          ),
+          Positioned(
+            top: 150,
+            right: 140,
+            child: Container(
+              width: 7.82,
+              height: 8.61,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 220,
+            left: 150,
+            child: Container(
+              width: 7.82,
+              height: 8.61,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Positioned(
+            top: 250,
+            right: 160,
+            child: Container(
+              width: 5,
+              height: 5,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+
+          // Main content
+          SafeArea(
+            child: Center(
+              child: Column(
+                children: [
+                  const Spacer(flex: 2),
+
+                  // Checkmark icon in a circle
+                  Container(child: SvgPicture.asset(ImageAsset.Success)),
+
+                  // Success message
+                  const Text(
+                    'Order Placed\nSuccessfully',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Poppins',
+                      height: 1.5,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      // Show comment dialog
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: Colors.green[700],
-                      size: 20,
+
+                  const SizedBox(height: 12),
+
+                  // Email confirmation text
+                  const Text(
+                    'You will recieve an email\nconfirmation',
+                    style: TextStyle(
+                      color: Color(0xFF9E9E9E),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Poppins',
+                      height: 1.5,
                     ),
-                    label: Text(
-                      'Laissez un commentaire',
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Poppins',
+                    textAlign: TextAlign.center,
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Leave a comment button
+                  Container(
+                    width: 342,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFE0E0E0),
+                        width: 1,
                       ),
                     ),
-                    style: TextButton.styleFrom(
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                  ),
-                ),
-                
-                const Spacer(flex: 3),
-                
-                // See Order Details button
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 55,
-                    child: ElevatedButton(
+                    child: TextButton.icon(
                       onPressed: () {
-                        // Navigate to order details
-                        Get.toNamed('/order-details');
+                        // Show comment dialog
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        elevation: 0,
+                      icon: Icon(
+                        Icons.edit,
+                        color: Colors.green[700],
+                        size: 20,
                       ),
-                      child: const Text(
-                        'See Order details',
+                      label: Text(
+                        'Laissez un commentaire',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
+                          color: Colors.grey[400],
+                          fontSize: 16,
                           fontWeight: FontWeight.w400,
                           fontFamily: 'Poppins',
                         ),
                       ),
+                      style: TextButton.styleFrom(
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
                     ),
                   ),
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Bottom indicator
-                Container(
-                  width: 134,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(100),
+
+                  const Spacer(flex: 3),
+
+                  // See Order Details button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Navigate to order details
+                          Get.toNamed('/order-details');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'See Order details',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                
-                const SizedBox(height: 8),
-              ],
+
+                  const SizedBox(height: 16),
+
+                  // Bottom indicator
+                  Container(
+                    width: 134,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
     return Padding(

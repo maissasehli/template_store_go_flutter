@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
 
 // Model for order data
 class OrderModel {
@@ -104,9 +103,12 @@ class OrdersPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Order Status Tabs
-          Obx(() => controller.hasOrders.value
-              ? _buildOrderStatusTabs(controller)
-              : const SizedBox.shrink()),
+          Obx(
+            () =>
+                controller.hasOrders.value
+                    ? _buildOrderStatusTabs(controller)
+                    : const SizedBox.shrink(),
+          ),
           // Order List or Empty State
           Expanded(
             child: Obx(() {
@@ -121,11 +123,8 @@ class OrdersPage extends StatelessWidget {
         height: 60,
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Color(0xFFE0E0E0), width: 1),
-          ),
+          border: Border(top: BorderSide(color: Color(0xFFE0E0E0), width: 1)),
         ),
-     
       ),
     );
   }
@@ -136,18 +135,34 @@ class OrdersPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          _buildStatusTab('Processing', controller.selectedStatus.value == 'Processing', () {
-            controller.selectedStatus.value = 'Processing';
-          }),
-          _buildStatusTab('Shipped', controller.selectedStatus.value == 'Shipped', () {
-            controller.selectedStatus.value = 'Shipped';
-          }),
-          _buildStatusTab('Delivered', controller.selectedStatus.value == 'Delivered', () {
-            controller.selectedStatus.value = 'Delivered';
-          }),
-          _buildStatusTab('Returns', controller.selectedStatus.value == 'Returns', () {
-            controller.selectedStatus.value = 'Returns';
-          }),
+          _buildStatusTab(
+            'Processing',
+            controller.selectedStatus.value == 'Processing',
+            () {
+              controller.selectedStatus.value = 'Processing';
+            },
+          ),
+          _buildStatusTab(
+            'Shipped',
+            controller.selectedStatus.value == 'Shipped',
+            () {
+              controller.selectedStatus.value = 'Shipped';
+            },
+          ),
+          _buildStatusTab(
+            'Delivered',
+            controller.selectedStatus.value == 'Delivered',
+            () {
+              controller.selectedStatus.value = 'Delivered';
+            },
+          ),
+          _buildStatusTab(
+            'Returns',
+            controller.selectedStatus.value == 'Returns',
+            () {
+              controller.selectedStatus.value = 'Returns';
+            },
+          ),
         ],
       ),
     );
@@ -185,11 +200,7 @@ class OrdersPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 80,
-            color: Colors.grey[300],
-          ),
+          Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey[300]),
           const SizedBox(height: 16),
           const Text(
             'No Orders yet',
@@ -248,11 +259,7 @@ class OrdersPage extends StatelessWidget {
         onTap: () => Get.toNamed('/order-details', arguments: order),
         child: Row(
           children: [
-            Icon(
-              Icons.receipt_outlined,
-              size: 24,
-              color: Colors.grey[700],
-            ),
+            Icon(Icons.receipt_outlined, size: 24, color: Colors.grey[700]),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -278,15 +285,10 @@ class OrdersPage extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right,
-              color: Colors.black,
-            ),
+            const Icon(Icons.chevron_right, color: Colors.black),
           ],
         ),
       ),
     );
   }
-
-
 }

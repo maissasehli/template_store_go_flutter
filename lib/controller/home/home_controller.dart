@@ -45,11 +45,8 @@ class HomeController extends GetxController {
     Get.toNamed('/products/featured', arguments: {'title': 'Top Selling'});
   }
 
-<<<<<<< HEAD
   
   
-=======
->>>>>>> dev-maissa
   // Handle See All button click for New In products
   void onNewInSeeAllTap() {
     currentSection.value = 'newIn';

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
-import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/view/widgets/home/search_bar.dart';
 
 // Import your existing CustomSearchBar

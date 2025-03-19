@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/constants/assets.dart';
+import 'package:store_go/core/constants/assets_constants.dart';
 import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -57,7 +57,6 @@ class ProfilePage extends StatelessWidget {
               fontSize: 22,
               fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',
-
             ),
           ),
         ),
@@ -99,7 +98,10 @@ class ProfilePage extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 7,
+                      ),
                       minimumSize: const Size(0, 30),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(66.3),
@@ -153,7 +155,6 @@ class ProfilePage extends StatelessWidget {
           icon: ImageAsset.location,
           title: 'Address',
           onTap: () => Get.toNamed('/address'),
-          
         ),
         _buildMenuOption(
           icon: ImageAsset.receipt,
@@ -205,15 +206,9 @@ class ProfilePage extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
-        trailing: const Icon(
-          Icons.chevron_right,
-          color: Colors.black,
-        ),
+        trailing: const Icon(Icons.chevron_right, color: Colors.black),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),
     );
@@ -225,26 +220,17 @@ class ProfilePage extends StatelessWidget {
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
               // Implement logout functionality
               Get.offAllNamed('/login');
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-            ),
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.white),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            child: const Text('Logout', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
 }
-
