@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 
 class ControllerFormFieldState {
   final FocusNode focusNode = FocusNode();
@@ -16,7 +15,6 @@ class ControllerFormFieldState {
     focusNode.addListener(() {
       if (!focusNode.hasFocus) {
         touch();
-        Logger().d("Field lost focus, touched: $touched");
       }
     });
   }

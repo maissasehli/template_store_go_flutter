@@ -7,9 +7,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String)? onSearch;
   
   const CustomAppBar({
-    Key? key,
+    super.key,
     this.onSearch,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {

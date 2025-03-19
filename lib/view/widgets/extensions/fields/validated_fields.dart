@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
 import 'package:store_go/controller/controller_form_field_state.dart';
 
 extension FormFieldExtensions on String {
@@ -25,12 +24,6 @@ extension FormFieldExtensions on String {
           suffixIcon: suffixIcon,
         ),
         onChanged: (value) {
-          Logger().d(
-            "onChanged fired with value: $value",
-          );
-          Logger().d(
-            "touched: ${fieldState.touched.value}",
-          );
           if (fieldState.touched.value) {
             fieldState
                 .validateNow(); // Assuming you implement validateNow as shown earlier

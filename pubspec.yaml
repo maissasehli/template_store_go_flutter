@@ -60,6 +60,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   logger: ^1.1.0 
   flutter_web_auth_2: ^4.1.0
+  google_nav_bar: ^5.0.7
 
 dev_dependencies:
   flutter_test:
@@ -91,12 +92,9 @@ flutter:
      - assets/images/
      - assets/products/
      - assets/icons/
-<<<<<<< HEAD
      - assets/icons/svg/
-=======
      - .env
      - assets/svg/
->>>>>>> dev-maissa
      - assets/categories/
      
 
