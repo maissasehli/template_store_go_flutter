@@ -90,7 +90,7 @@ flutter:
      - assets/products/
      - assets/icons/
      - .env
-     - assets/icons/email_sent.png
+     - assets/svg/
      - assets/categories/
      
 

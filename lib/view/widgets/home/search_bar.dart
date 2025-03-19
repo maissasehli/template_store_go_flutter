@@ -5,30 +5,28 @@ import 'package:store_go/core/constants/assets.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
-  
-  const CustomSearchBar({
-    Key? key,
-    required this.onSearch,
-  }) : super(key: key);
-  
+
+  const CustomSearchBar({Key? key, required this.onSearch}) : super(key: key);
+
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
 }
 
 class _CustomSearchBarState extends State<CustomSearchBar> {
   final TextEditingController _controller = TextEditingController();
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingMedium),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.paddingMedium,
+      ),
       child: Container(
         height: 36,
         decoration: BoxDecoration(
@@ -41,10 +39,13 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: SvgPicture.asset(
                 ImageAsset.searchIcon,
-                colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                colorFilter: const ColorFilter.mode(
+                  Colors.black,
+                  BlendMode.srcIn,
+                ),
                 height: 16,
                 width: 16,
-              )
+              ),
             ),
             Expanded(
               child: TextField(
@@ -60,10 +61,12 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 ),
                 onSubmitted: widget.onSearch,
+                onChanged: (value) {
+                  // Perform search on each text change
+                  widget.onSearch(value);
+                },
                 textInputAction: TextInputAction.search,
-                style: const TextStyle(
-                  fontSize: 14,
-                ),
+                style: const TextStyle(fontSize: 14),
               ),
             ),
             // Add clear button
@@ -80,7 +83,11 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: Icon(Icons.clear, size: 16, color: Colors.grey.shade600),
+                    child: Icon(
+                      Icons.clear,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
                   ),
                 ),
               ),

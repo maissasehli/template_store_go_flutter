@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/controller/categories/category_controller.dart';
 import 'package:store_go/controller/home/home_controller.dart';
 import 'package:store_go/core/constants/ui.dart';
 import 'package:store_go/core/theme/color_extension.dart';
@@ -11,6 +12,9 @@ import 'package:store_go/view/widgets/home/search_bar.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+
+final CategoryController categoryController = Get.find<CategoryController>();
+
 
   HomeScreen({Key? key}) : super(key: key);
 
@@ -65,16 +69,14 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             
-            SizedBox(
-              height: 100,
-              child: Obx(() => CategoryFilter(
-                categories: controller.categoryController.categories,
-                selectedCategoryId: controller.categoryController.selectedCategoryId.value,
-                onCategorySelected: (categoryId) => 
-                  controller.onCategoryTap(categoryId),
-              )),
-            ),
-            
+SizedBox(
+  height: 100,
+  child: Obx(() => CategoryFilter(
+    categories: controller.categoryController.categories,
+    selectedCategoryId: controller.categoryController.selectedCategoryId.value,
+    onCategorySelected: (categoryId) => controller.categoryController.selectCategory(categoryId),
+  )),
+),         
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: UIConstants.paddingMedium,
@@ -105,23 +107,23 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             
-            Obx(() {
-              if (controller.productController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              
-              if (controller.productController.products.isEmpty) {
-                return const Center(child: Text('No products found.'));
-              }
-              
-              return ProductGrid(
-                products: controller.productController.products,
-                onProductTap: (productId) => controller.onProductTap(productId),
-                onFavoriteTap: (productId) => 
-                  controller.productController.toggleFavorite(productId),
-                isHorizontal: true,
-              );
-            }),
+         Obx(() {
+  if (controller.productController.isLoading.value) {
+    return const Center(child: CircularProgressIndicator());
+  }
+  
+  if (controller.productController.products.isEmpty) {
+    return const SizedBox.shrink(); 
+  }
+  
+  return ProductGrid(
+    products: controller.productController.products,
+    onProductTap: (productId) => controller.onProductTap(productId),
+    onFavoriteTap: (productId) => 
+      controller.productController.toggleFavorite(productId),
+    isHorizontal: true,
+  );
+}),
             
             Padding(
               padding: const EdgeInsets.symmetric(

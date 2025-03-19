@@ -52,7 +52,6 @@ class ProductController extends GetxController {
     }
   }
   
-
   // Fetch products by category
   Future<void> fetchProductsByCategory(String categoryId) async {
     isLoading(true);
@@ -68,17 +67,28 @@ class ProductController extends GetxController {
   }
   
   // Search products
-  void searchProducts(String query) {
-    searchQuery.value = query;
+// Search products
+Future<void> searchProducts(String query) async {
+  searchQuery.value = query;
+  isLoading(true);
+  
+  try {
     if (query.isEmpty) {
-      fetchProducts();
+      await fetchProducts();
     } else {
-      products.value = products.where((product) => 
+      // Call the API for search or filter locally
+      final allProducts = await _productService.getProducts();
+      products.value = allProducts.where((product) => 
         product.name.toLowerCase().contains(query.toLowerCase()) ||
         product.description.toLowerCase().contains(query.toLowerCase())
       ).toList();
     }
+  } catch (e) {
+    Get.snackbar('Error', 'Failed to search products: $e');
+  } finally {
+    isLoading(false);
   }
+}
   
   // Toggle favorite status
   void toggleFavorite(String productId) {
@@ -115,6 +125,98 @@ class ProductController extends GetxController {
       Get.snackbar('Error', 'Failed to load product details: $e');
     } finally {
       isLoading(false);
+    }
+  }
+
+  // Filter products based on criteria
+  void filterProducts({
+    String? category,
+    double? minPrice,
+    double? maxPrice,
+    String? sortBy,
+    int? rating
+  }) {
+    isLoading(true);
+    
+    try {
+      // Start with all products
+      fetchProducts().then((_) {
+        List<Product> filteredProducts = List.from(products);
+        
+        // Filter by search query if exists
+        if (searchQuery.isNotEmpty) {
+          filteredProducts = filteredProducts.where((product) => 
+            product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+            product.description.toLowerCase().contains(searchQuery.toLowerCase())
+          ).toList();
+        }
+        
+        // Filter by category
+        if (category != null && category != 'All') {
+          filteredProducts = filteredProducts.where((product) => 
+            product.category.toLowerCase() == category.toLowerCase()
+          ).toList();
+        }
+        
+        // Filter by price range
+        if (minPrice != null && maxPrice != null) {
+          filteredProducts = filteredProducts.where((product) => 
+            product.price >= minPrice && product.price <= maxPrice
+          ).toList();
+        }
+        
+        // Filter by rating
+        if (rating != null && rating > 0) {
+          filteredProducts = filteredProducts.where((product) => 
+            product.rating >= rating
+          ).toList();
+        }
+        
+        // Sort products
+        if (sortBy != null) {
+          switch (sortBy) {
+            case 'New Today':
+              // Since we don't have createdAt field, we'll just sort by id for demo
+              filteredProducts.sort((a, b) => b.id.compareTo(a.id));
+              break;
+            case 'Top Sellers':
+              // Since we don't have salesCount field, we'll sort by rating for demo
+              filteredProducts.sort((a, b) => b.rating.compareTo(a.rating));
+              break;
+            case 'New collection':
+              // Since we don't have isNewCollection field, we'll filter those with higher ids
+              filteredProducts = filteredProducts.where((product) => 
+                int.tryParse(product.id) != null && int.parse(product.id) > 5
+              ).toList();
+              break;
+            default:
+              break;
+          }
+        }
+        
+        // Update products list
+        products.value = filteredProducts;
+        isLoading(false);
+      });
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to filter products: $e');
+      isLoading(false);
+    }
+  }
+
+  // Get products that match the current search and filter criteria
+  List<Product> getFilteredProducts() {
+    return products;
+  }
+
+  // Clear all filters
+  void clearFilters() {
+    if (searchQuery.isNotEmpty) {
+      // If there's a search query, just reapply the search
+      searchProducts(searchQuery.value);
+    } else {
+      // Otherwise, get all products
+      fetchProducts();
     }
   }
 }
