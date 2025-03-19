@@ -5,12 +5,12 @@ import 'package:store_go/core/constants/assets_constants.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
-
+  
   const CustomBottomNavBar({
     Key? key,
     this.currentIndex = 0,
   }) : super(key: key);
-
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,8 +29,8 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // Home Button (Active)
-          _buildActiveNavItem(
+          // Home Button
+          _buildNavItem(
             iconPath: ImageAsset.homeIcon,
             label: 'Home',
             isActive: currentIndex == 0,
@@ -38,91 +38,89 @@ class CustomBottomNavBar extends StatelessWidget {
               if (currentIndex != 0) Get.offAllNamed('/home');
             },
           ),
-
+          
           // Wishlist Button
           _buildNavItem(
             iconPath: ImageAsset.heartIcon,
+            label: 'Wishlist',
             isActive: currentIndex == 1,
             onTap: () {
-              Get.toNamed('/wishlist');
+              if (currentIndex != 1) Get.offAllNamed('/wishlist');
             },
           ),
-
+          
           // Cart Button
           _buildNavItem(
             iconPath: ImageAsset.bagIcon,
+            label: 'Cart',
             isActive: currentIndex == 2,
             onTap: () {
-              Get.toNamed('/cart');
+              if (currentIndex != 2) Get.offAllNamed('/cart');
             },
           ),
-
+          
           // Profile Button
           _buildNavItem(
             iconPath: ImageAsset.profileIcon,
+            label: 'Profile',
             isActive: currentIndex == 3,
             onTap: () {
-              Get.toNamed('/profile');
+              if (currentIndex != 3) Get.offAllNamed('/profile');
             },
           ),
         ],
       ),
     );
   }
-
-  Widget _buildActiveNavItem({
+  
+  Widget _buildNavItem({
     required String iconPath,
     required String label,
     required bool isActive,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              iconPath,
-              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
-              width: 24,
-              height: 24,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
+    // For active items: black pill with icon and text
+    if (isActive) {
+      return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                iconPath,
+                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                width: 20,
+                height: 20,
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem({
-    required String iconPath,
-    required bool isActive,
-    required VoidCallback onTap,
-  }) {
+      );
+    }
+    
+    // For inactive items: just the icon
     return IconButton(
+      onPressed: onTap,
       icon: SvgPicture.asset(
         iconPath,
-        colorFilter: ColorFilter.mode(
-          isActive ? Colors.black : Colors.grey,
-          BlendMode.srcIn,
-        ),
-        width: 28,
-        height: 28,
+        colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+        width: 24,
+        height: 24,
       ),
-      onPressed: onTap,
     );
   }
 }

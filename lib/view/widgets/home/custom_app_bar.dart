@@ -19,8 +19,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
+<<<<<<< HEAD
           ThemeToggle(),
           // Avatar/profile image
+=======
+    
+>>>>>>> dev-maissa
           Container(
             height: 40,
             width: 40,
@@ -50,7 +54,7 @@ Container(
     color: Colors.black,
     shape: BoxShape.circle,
   ),
-  child: Center(  // Center the icon in the container
+  child: Center(  
     child: SvgPicture.asset(
       ImageAsset.bagIcon,
       color: Colors.white,
@@ -63,7 +67,7 @@ Container(
     );
   }
   
-  
+    
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

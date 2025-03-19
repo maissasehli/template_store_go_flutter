@@ -91,7 +91,12 @@ flutter:
      - assets/images/
      - assets/products/
      - assets/icons/
+<<<<<<< HEAD
      - assets/icons/svg/
+=======
+     - .env
+     - assets/svg/
+>>>>>>> dev-maissa
      - assets/categories/
      
 

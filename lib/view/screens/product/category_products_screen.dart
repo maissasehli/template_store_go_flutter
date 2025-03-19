@@ -3,22 +3,17 @@ import 'package:get/get.dart';
 import 'package:store_go/controller/product/product_controller.dart';
 import 'package:store_go/core/model/home/category_model.dart';
 import 'package:store_go/core/model/home/product_model.dart';
+import 'package:store_go/view/widgets/home/search_bar.dart';
 
-/// A screen that displays products filtered by category
-/// Uses GetX for state management and navigation
 class CategoryProductsScreen extends StatelessWidget {
   const CategoryProductsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Get the category passed as argument from the previous screen
     final Category category = Get.arguments;
-    // Find the ProductController instance
     final ProductController productController = Get.find<ProductController>();
-    // Observable string to track the selected subcategory filter
     final RxString selectedSubcategory = ''.obs;
 
-    // Fetch products for this category when screen is built
     productController.fetchProductsByCategory(category.id);
 
     return Scaffold(
@@ -26,47 +21,55 @@ class CategoryProductsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        automaticallyImplyLeading: false, // Disable default back button
-        title: Padding(
-          padding: const EdgeInsets.only(left: 27, top: 10),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF4F4F4),
-              shape: BoxShape.circle,
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            // Back button
+            Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF4F4F4),
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+                onPressed: () => Get.back(),
+                padding: EdgeInsets.zero,
+              ),
             ),
-            // Custom back button with circular background
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-              onPressed: () => Get.back(),
-              padding: EdgeInsets.zero,
+            const SizedBox(width: 12),
+            // Search bar
+            Expanded(
+              child: CustomSearchBar(
+                onSearch: (value) {
+                  productController.searchProducts(value);
+                },
+              ),
             ),
-          ),
+          ],
         ),
-        toolbarHeight: 63 + 40, // Custom height for app bar
+        toolbarHeight: 70,
       ),
+      // Rest of your original code remains the same
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Category title with product count
           Padding(
             padding: const EdgeInsets.only(left: 27),
-            child: Container(
-              width: 99,
-              height: 19,
-              child: Text(
-                '${category.name} (${category.productCount ?? 0})',
-                style: const TextStyle(
-                  fontFamily: 'Gabarito',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  height: 1.0,
-                  letterSpacing: 0,
-                  color: Colors.black,
-                ),
+            child: Text(
+              '${category.name} (${category.productCount ?? 0})',
+              style: const TextStyle(
+                fontFamily: 'Gabarito',
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                height: 1.0,
+                letterSpacing: 0,
+                color: Colors.black,
               ),
             ),
+        
           ),
           
           // Subcategory filter chips - horizontal scrollable row

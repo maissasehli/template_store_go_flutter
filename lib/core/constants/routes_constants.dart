@@ -23,12 +23,16 @@ class AppRoute {
   
   // Cart and checkout
   static const String cart = "/cart";
+    static const String add_cart = "/add-cart";
+
   static const String checkout = "/checkout";
   
   // User profile
+  static const String edit_profile = "/edit-profile";
   static const String profile = "/profile";
   static const String orders = "/orders";
   static const String wishlist = "/wishlist";
+<<<<<<< HEAD:lib/core/constants/routes_constants.dart
 
   // public routes
   static const List<String> publicRoutes = [
@@ -38,4 +42,17 @@ class AppRoute {
     signup,
     forgetPassword,
   ];
+=======
+  static const String address = "/address";
+          static const String order_details = "/order-details";
+
+    static const String add_address = "/add-address";
+        static const String payments = "/payments";
+        static const String notifications = "/notifications";
+
+
+
+
+
+>>>>>>> dev-maissa:lib/core/constants/routes.dart
 }

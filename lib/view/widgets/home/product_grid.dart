@@ -78,7 +78,7 @@ class ProductGrid extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () => onFavoriteTap(product.id),
                             child: SvgPicture.asset(
-                              ImageAsset.heardIcon,
+                              ImageAsset.heartIcon,
                               colorFilter: ColorFilter.mode(
                                 product.isFavorite ? Colors.red : Colors.grey,
                                 BlendMode.srcIn,
@@ -197,7 +197,7 @@ class ProductGrid extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () => onFavoriteTap(product.id),
                             child: SvgPicture.asset(
-                              ImageAsset.heardIcon,
+                              ImageAsset.heartIcon,
                               colorFilter: ColorFilter.mode(
                                 product.isFavorite ? Colors.red : Colors.black,
                                 BlendMode.srcIn,
