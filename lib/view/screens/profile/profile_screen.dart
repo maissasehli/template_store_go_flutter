@@ -2,34 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
-import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
+
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-                // Profile Header Section - Updated to match new design
-                _buildProfileHeaderSimple(),
-                const SizedBox(height: 24),
-                // Menu Options
-                _buildMenuOptions(),
-              ],
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 24),
+                  // Profile Header Section - Updated to match new design
+                  _buildProfileHeaderSimple(),
+                  const SizedBox(height: 24),
+                  // Menu Options
+                  _buildMenuOptions(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 3),
-    );
+      );
   }
 
   // Simple profile header matching the new screenshots

@@ -154,11 +154,8 @@ class ApiClient {
 
   Future<dio.Response> post(String path, {dynamic data}) async {
     try {
-      final fullUrl = _dio.options.baseUrl + path;
-      Logger().i('Making POST request to: $fullUrl');
       return await _dio.post(path, data: data);
     } catch (e) {
-      Logger().e('POST request failed: $e');
       rethrow;
     }
   }

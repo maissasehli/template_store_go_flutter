@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
-import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
+
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -66,13 +66,12 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: cartItems.isEmpty ? _buildEmptyCart() : _buildCartWithItems(),
-      ),
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
-    );
+    return  Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: cartItems.isEmpty ? _buildEmptyCart() : _buildCartWithItems(),
+        ),
+      );
   }
 
   Widget _buildEmptyCart() {

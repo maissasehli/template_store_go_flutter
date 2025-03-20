@@ -1,19 +1,20 @@
 // For HomeController.dart
 import 'package:get/get.dart';
 import 'package:store_go/controller/categories/category_controller.dart';
+import 'package:store_go/controller/other/navigation_controller.dart';
 import 'package:store_go/controller/product/product_controller.dart';
 import 'package:store_go/core/model/home/category_model.dart';
 
 class HomeController extends GetxController {
   final CategoryController categoryController = Get.find<CategoryController>();
   final ProductController productController = Get.find<ProductController>();
+  final NavigationController navigationController = Get.find<NavigationController>();
 
   // Track which section's "See All" was clicked
   final RxString currentSection = ''.obs;
 
   @override
   void onInit() {
-
     super.onInit();
     // Initialize data when controller is created
     productController.fetchProducts();
@@ -45,8 +46,6 @@ class HomeController extends GetxController {
     Get.toNamed('/products/featured', arguments: {'title': 'Top Selling'});
   }
 
-  
-  
   // Handle See All button click for New In products
   void onNewInSeeAllTap() {
     currentSection.value = 'newIn';

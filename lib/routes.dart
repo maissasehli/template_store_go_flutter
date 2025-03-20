@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:store_go/bindings/auth_binding.dart';
 import 'package:store_go/bindings/home_binding.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
-import 'package:store_go/core/middleware/middleware.dart';
 import 'package:store_go/view/screens/auth/email_confirmation_screen.dart';
 import 'package:store_go/view/screens/auth/forget_password_screen.dart';
 import 'package:store_go/view/screens/auth/login_screen.dart';
@@ -25,10 +24,20 @@ import 'package:store_go/view/screens/profile/orders_detaill_screen.dart';
 import 'package:store_go/view/screens/profile/orders_screen.dart';
 import 'package:store_go/view/screens/profile/payment_screen.dart';
 import 'package:store_go/view/screens/profile/profile_screen.dart';
+import 'package:store_go/view/screens/shared/main_container_screen.dart';
+import 'package:store_go/view/screens/shared/splash_screen.dart';
 import 'package:store_go/view/screens/wishlist/wishlist_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
-  GetPage(name: "/", page: () => const Language(), middlewares: [Middleware()]),
+  GetPage(name: '/', page: () => const SplashScreen()),
+
+  GetPage(
+    name: AppRoute.mainContainer,
+    page: () => MainContainerScreen(),
+    binding: HomeBindings(),
+  ),
+  
+  GetPage(name: AppRoute.language, page: () => const Language()),
   
   // OnBoarding
   GetPage(name: AppRoute.onBoarding, page: () => Onboarding()),

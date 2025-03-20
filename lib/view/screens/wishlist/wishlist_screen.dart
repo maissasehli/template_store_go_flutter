@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:store_go/controller/other/navigation_controller.dart';
 import 'package:store_go/core/constants/assets_constants.dart';
-import 'package:store_go/view/widgets/home/custom_button_nav_bar.dart';
 import 'package:store_go/view/widgets/home/search_bar.dart';
 
-// Import your existing CustomSearchBar
-// import 'package:store_go/your_path_to/custom_search_bar.dart';
-
 class WishlistPage extends StatefulWidget {
-  const WishlistPage({Key? key}) : super(key: key);
+
+  const WishlistPage({super.key});
 
   @override
   State<WishlistPage> createState() => _WishlistPageState();
@@ -99,7 +97,6 @@ class _WishlistPageState extends State<WishlistPage> {
     });
   }
 
-  // Method to remove item from wishlist
   // Method to remove item from wishlist - completely reworked
   void _removeItem(int index) {
     // First, validate the index is in range
@@ -158,7 +155,6 @@ class _WishlistPageState extends State<WishlistPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Force update _hasWishlistItems based on actual list content
     _hasWishlistItems = _allWishlistItems.isNotEmpty;
 
     return Scaffold(
@@ -174,7 +170,6 @@ class _WishlistPageState extends State<WishlistPage> {
       ),
       body:
           _hasWishlistItems ? _buildWishlistWithItems() : _buildEmptyWishlist(),
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
     );
   }
 
@@ -413,8 +408,10 @@ class _WishlistPageState extends State<WishlistPage> {
           // Explore Categories button
           ElevatedButton(
             onPressed: () {
-              // Navigate to categories page
-              Get.toNamed('/categories');
+              // Get the navigation controller and navigate to categories
+              final navController = Get.find<NavigationController>();
+              navController.changeTab(0); // Go to home tab first
+              Get.toNamed('/categories'); // Then navigate to categories
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/controller_form_field_state.dart';
+import 'package:store_go/controller/other/controller_form_field_state.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:store_go/core/functions/valid_input.dart';
 import 'package:store_go/core/services/auth_service.dart';

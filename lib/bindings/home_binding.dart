@@ -10,6 +10,5 @@ class HomeBindings extends Bindings {
     Get.put(CategoryController());
     Get.put(ProductController());
     Get.put(HomeController());
-
   }
 }

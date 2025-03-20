@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/controller/controller_form_field_state.dart';
+import 'package:store_go/controller/other/controller_form_field_state.dart';
 
 class ForgetPasswordController extends GetxController {
   late ControllerFormFieldState emailFieldState;
