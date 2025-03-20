@@ -48,7 +48,7 @@ class LoginController extends GetxController {
         );
 
         if (success) {
-          Get.offAllNamed(AppRoute.home);
+          Get.offAllNamed(AppRoute.mainContainer);
         }
       }
     } finally {

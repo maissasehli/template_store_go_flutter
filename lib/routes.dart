@@ -34,7 +34,7 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.mainContainer,
     page: () => MainContainerScreen(),
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   
   GetPage(name: AppRoute.language, page: () => const Language()),
@@ -44,51 +44,51 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.profileSetup,
     page: () => const ProfileSetupScreen(),
-    binding: MyBinding(),
+    binding: AuthBinding(),
   ),
   
   // Auth
-  GetPage(name: AppRoute.login, page: () => Login(), binding: MyBinding()),
+  GetPage(name: AppRoute.login, page: () => Login(), binding: AuthBinding()),
   GetPage(
     name: AppRoute.signup,
     page: () => const Signup(),
-    binding: MyBinding(),
+    binding: AuthBinding(),
   ),
   GetPage(
     name: AppRoute.forgetPassword,
     page: () => ForgetPassword(),
-    binding: MyBinding(),
+    binding: AuthBinding(),
   ),
   GetPage(
     name: AppRoute.emailResetPasswordConfirmation,
     page: () => const EmailSentConfirmationResetPassword(),
-    binding: MyBinding(),
+    binding: AuthBinding(),
   ),
   GetPage(
     name: AppRoute.resetPassword,
     page: () => ResetPasswordPage(),
-    binding: MyBinding(),
+    binding: AuthBinding(),
   ),
   
   // HOME
   GetPage(
     name: AppRoute.home, 
     page: () => HomeScreen(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   
   // Categories
   GetPage(
     name: AppRoute.categories, 
     page: () => CategoryScreen(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   GetPage(
     name: AppRoute.categoryDetail, 
     page: () {
       return CategoryScreen();
     }, 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   
   // Products
@@ -98,52 +98,52 @@ List<GetPage<dynamic>>? routes = [
       final id = Get.parameters['id'] ?? '';
       return ProductDetailScreen(productId: id);
     }, 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.wishlist, 
     page: () => WishlistPage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.cart, 
     page: () => CartScreen(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.profile, 
     page: () => ProfilePage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.edit_profile, 
     page: () => EditProfilePage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   GetPage(
     name: AppRoute.checkout, 
     page: () => CheckoutScreen(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.address, 
     page: () => AddressPage (), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   GetPage(
     name: AppRoute.add_address, 
     page: () => AddAddressPage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.payments, 
     page: () => PaymentPage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
   GetPage(
     name: AppRoute.add_cart, 
     page: () => AddCardPage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.orders, 
@@ -153,12 +153,12 @@ List<GetPage<dynamic>>? routes = [
    GetPage(
     name: AppRoute.order_details, 
     page: () => OrderDetailsPage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
    GetPage(
     name: AppRoute.notifications, 
     page: () => NotificationsPage(), 
-    binding: HomeBindings(),
+    binding: HomeBinding(),
   ),
 
 

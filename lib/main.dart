@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/core/di/initializer.dart';
 import 'package:store_go/core/localization/change_local.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/localization/translation.dart';
 import 'package:store_go/core/theme/theme_controller.dart';
 import 'package:store_go/routes.dart';
-import 'package:store_go/core/services/services.dart';
-import 'package:store_go/core/di/dependency_injection.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize services
-  await initialServices(); // This is your MyServices initialization
-
-  // Initialize dependencies after services
-  await DependencyInjection.init();
+  await AppInitializer.init();
 
   runApp(const MyApp());
 }

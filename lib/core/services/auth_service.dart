@@ -4,7 +4,7 @@ import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:store_go/core/constants/api_constants.dart';
-import 'package:store_go/core/services/api_client.dart';
+import 'package:store_go/core/services/api/api_client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 
@@ -61,7 +61,7 @@ class AuthService {
       if (response.statusCode == 201 || response.statusCode == 200) {
         // Save the access token
         final accessToken = response.data['session']['accessToken'];
-        await _secureStorage.write(key: 'auth_token', value: accessToken);
+        await _secureStorage.write(key: 'access_token', value: accessToken);
         Logger().i('access_token saved');
         // save refresh token
         final refreshToken = response.data['session']['refreshToken'];
@@ -114,7 +114,7 @@ class AuthService {
       if (response.statusCode == 200) {
         // Save the access token
         final accessToken = response.data['session']['accessToken'];
-        await _secureStorage.write(key: 'auth_token', value: accessToken);
+        await _secureStorage.write(key: 'access_token', value: accessToken);
         Logger().i('access_token saved');
         // save refresh token
         final refreshToken = response.data['session']['refreshToken'];
@@ -153,14 +153,14 @@ class AuthService {
   // Token refresh method
   Future<bool> refreshToken() async {
     try {
-      final token = await _secureStorage.read(key: 'auth_token');
+      final token = await _secureStorage.read(key: 'access_token');
       if (token == null) return false;
 
       final response = await _apiClient.post('/auth/refresh');
 
       if (response.statusCode == 200) {
         final newToken = response.data['token']['accessToken'];
-        await _secureStorage.write(key: 'auth_token', value: newToken);
+        await _secureStorage.write(key: 'access_token', value: newToken);
         await _secureStorage.write(
           key: 'expires_at',
           value: response.data['token']['expiresAt'],
@@ -208,11 +208,11 @@ class AuthService {
 
   // Check if user is authenticated
   Future<bool> isAuthenticated() async {
-    final token = await _secureStorage.read(key: 'auth_token');
+    final token = await _secureStorage.read(key: 'access_token');
     return token != null;
   }
 
-   /// Initiates OAuth flow for the given provider
+  /// Initiates OAuth flow for the given provider
   /// Returns the URL to be opened in a WebView or browser
   Future<String?> initiateOAuth({
     required String provider,
@@ -336,7 +336,7 @@ class AuthService {
         }
 
         // If we have both tokens, we can directly save them
-        await _secureStorage.write(key: 'auth_token', value: accessToken);
+        await _secureStorage.write(key: 'access_token', value: accessToken);
         Logger().i('access_token saved');
 
         if (refreshToken != null) {
@@ -383,6 +383,7 @@ class AuthService {
       return false;
     }
   }
+
   // Helper method to calculate expiration time
   String _calculateExpiresAt(String? expiresInStr) {
     final expiresIn = int.tryParse(expiresInStr ?? '3600') ?? 3600;
@@ -397,7 +398,7 @@ class AuthService {
     final expiresAt = session['expiresAt'];
     final userId = session['userId'];
 
-    await _secureStorage.write(key: 'auth_token', value: accessToken);
+    await _secureStorage.write(key: 'access_token', value: accessToken);
     Logger().i('access_token saved');
 
     await _secureStorage.write(key: 'refresh_token', value: refreshToken);
@@ -411,6 +412,7 @@ class AuthService {
       Logger().i('user_id saved');
     }
   }
+
   /// Direct sign-in with OAuth provider token
   /// This is useful when you already have a token from a native SDK
   Future<bool> signInWithProviderToken({
@@ -436,7 +438,7 @@ class AuthService {
         final expiresAt = response.data['session']['expiresAt'];
         final userId = response.data['session']['userId'];
 
-        await _secureStorage.write(key: 'auth_token', value: accessToken);
+        await _secureStorage.write(key: 'access_token', value: accessToken);
         Logger().i('access_token saved');
 
         await _secureStorage.write(key: 'refresh_token', value: refreshToken);

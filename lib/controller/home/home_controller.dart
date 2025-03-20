@@ -1,14 +1,17 @@
 // For HomeController.dart
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:store_go/controller/categories/category_controller.dart';
 import 'package:store_go/controller/other/navigation_controller.dart';
 import 'package:store_go/controller/product/product_controller.dart';
 import 'package:store_go/core/model/home/category_model.dart';
+import 'package:store_go/core/services/api/category_api_service.dart';
 
 class HomeController extends GetxController {
   final CategoryController categoryController = Get.find<CategoryController>();
   final ProductController productController = Get.find<ProductController>();
   final NavigationController navigationController = Get.find<NavigationController>();
+  final CategoryApiService categoryApiService = Get.find<CategoryApiService>();
 
   // Track which section's "See All" was clicked
   final RxString currentSection = ''.obs;
@@ -38,6 +41,8 @@ class HomeController extends GetxController {
   void onCategoriesSeeAllTap() {
     currentSection.value = 'categories';
     Get.toNamed('/categories');
+    final categories = categoryApiService.getCategories();
+    Logger().i("Found categories : $categories");
   }
 
   // Handle See All button click for Top Selling products

@@ -4,6 +4,7 @@ import 'package:store_go/core/constants/api_constants.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:logger/logger.dart';
+import 'package:synchronized/synchronized.dart';
 
 class ApiClient {
   late dio.Dio _dio;
@@ -38,7 +39,7 @@ class ApiClient {
           }
 
           // Get the token and check if it exists
-          final token = await _secureStorage.read(key: 'auth_token');
+          final token = await _secureStorage.read(key: 'access_token');
           if (token == null) {
             Logger().w('Interceptor onRequest: No auth token found');
             Get.offAllNamed(AppRoute.login);
@@ -80,7 +81,7 @@ class ApiClient {
               }
 
               // Get the new token after refresh
-              final newToken = await _secureStorage.read(key: 'auth_token');
+              final newToken = await _secureStorage.read(key: 'access_token');
               options.headers['Authorization'] = 'Bearer $newToken';
             } else {
               // Token is valid, add it to request
@@ -109,7 +110,7 @@ class ApiClient {
             if (refreshed) {
               // If refresh was successful, retry the original request
               final originalRequest = error.requestOptions;
-              final token = await _secureStorage.read(key: 'auth_token');
+              final token = await _secureStorage.read(key: 'access_token');
 
               // Create a new request with the same data but new token
               final response = await _dio.request(
@@ -176,52 +177,72 @@ class ApiClient {
     }
   }
 
+  final _refreshLock = Lock();
   // Add this method to your ApiClient class to handle token refreshing
   Future<bool> _refreshToken() async {
-    try {
-      // Don't use the intercepted client for refresh to avoid infinite loops
-      final refreshToken = await _secureStorage.read(key: 'refresh_token');
-      if (refreshToken == null) return false;
+    // Use the lock to prevent concurrent refresh attempts
+    return _refreshLock.synchronized(() async {
+      try {
+        // Get the CURRENT refresh token (it might have changed since we started)
+        final refreshToken = await _secureStorage.read(key: 'refresh_token');
+        Logger().i('Refresh token: $refreshToken');
 
-      // Create a clean Dio instance for the refresh request
-      final refreshDio = dio.Dio(
-        dio.BaseOptions(
-          baseUrl: ApiConstants.baseUrl,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-Store-ID': ApiConstants.storeId,
-          },
-        ),
-      );
+        if (refreshToken == null) return false;
 
-      // Make the refresh request
-      final response = await refreshDio.post(
-        '/auth/refresh',
-        data: {'refreshToken': refreshToken},
-      );
-
-      if (response.statusCode == 200) {
-        // Save the new tokens
-        final accessToken = response.data['session']['accessToken'];
-        final newRefreshToken = response.data['session']['refreshToken'];
-        final expiresAt = response.data['session']['expiresAt'];
-
-        // Store the new tokens
-        await _secureStorage.write(key: 'auth_token', value: accessToken);
-        await _secureStorage.write(
-          key: 'refresh_token',
-          value: newRefreshToken,
+        // Create a clean Dio instance for the refresh request
+        final refreshDio = dio.Dio(
+          dio.BaseOptions(
+            baseUrl: ApiConstants.baseUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-Store-ID': ApiConstants.storeId,
+            },
+          ),
         );
-        await _secureStorage.write(key: 'expires_at', value: expiresAt);
 
-        Logger().i('Token refreshed successfully');
-        return true;
+        // Make the refresh request
+        final response = await refreshDio.post(
+          '/auth/refresh',
+          data: {'refreshToken': refreshToken},
+        );
+
+        if (response.statusCode == 200) {
+          final accessToken = response.data['session']['accessToken'];
+          final newRefreshToken = response.data['session']['refreshToken'];
+          final expiresAt = response.data['session']['expiresAt'];
+
+          // Store all tokens atomically
+          await Future.wait([
+            _secureStorage.write(key: 'access_token', value: accessToken),
+            _secureStorage.write(key: 'refresh_token', value: newRefreshToken),
+            _secureStorage.write(key: 'expires_at', value: expiresAt),
+          ]);
+
+          Logger().i('Token refreshed successfully');
+          return true;
+        }
+        return false;
+      } catch (e) {
+        Logger().e('Error refreshing token: $e');
+
+        // If error is 'refresh_token_already_used', it means another refresh happened
+        // In this case, just check if we have valid tokens
+        if (e.toString().contains('refresh_token_already_used')) {
+          final expiresAtStr = await _secureStorage.read(key: 'expires_at');
+          final token = await _secureStorage.read(key: 'access_token');
+
+          if (expiresAtStr != null && token != null) {
+            final expiresAt = DateTime.parse(expiresAtStr);
+            if (DateTime.now().isBefore(expiresAt)) {
+              // We already have valid tokens from another refresh
+              return true;
+            }
+          }
+        }
+
+        return false;
       }
-      return false;
-    } catch (e) {
-      Logger().e('Error refreshing token: $e');
-      return false;
-    }
+    });
   }
 }

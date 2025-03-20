@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/core/constants/routes_constants.dart';
 import 'package:store_go/core/services/auth_service.dart';
-import 'package:store_go/core/services/services.dart';
 import 'package:store_go/view/widgets/extensions/text_extensions.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -14,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  final MyServices myServices = Get.find();
   final AuthService authService = Get.find<AuthService>();
 
   @override
@@ -33,12 +31,9 @@ class SplashScreenState extends State<SplashScreen> {
     if (isAuthenticated) {
       // If authenticated, redirect to main container screen instead of home directly
       Get.offAllNamed(AppRoute.mainContainer);
-    } else if (myServices.sharedPreferences.getString("onboarding") == "1") {
-      // If onboarding is completed but not authenticated, redirect to login
-      Get.offAllNamed(AppRoute.login);
     } else {
-      // If neither, redirect to language selection
-      Get.offAllNamed('/');
+      // If neither, redirect to login selection
+      Get.offAllNamed(AppRoute.login);
     }
   }
 

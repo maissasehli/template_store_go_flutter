@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:store_go/core/services/api_client.dart';
+import 'package:store_go/core/services/api/api_client.dart';
 
 class UserApiService {
   final ApiClient _apiClient;

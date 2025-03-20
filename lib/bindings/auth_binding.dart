@@ -3,19 +3,20 @@ import 'package:store_go/controller/auth/forget_password.dart';
 import 'package:store_go/controller/auth/login_controller.dart';
 import 'package:store_go/controller/auth/reset_password.dart';
 import 'package:store_go/controller/auth/signup_controller.dart';
-import 'package:store_go/controller/onboarding/profile_setup_controller.dart';
 
-class MyBinding implements Bindings {
+class AuthBinding implements Bindings {
   @override
   void dependencies() {
-    // Register controllers
-    Get.lazyPut<LoginController>(() => LoginController());
-    Get.lazyPut<SignupController>(() => SignupController());
-    Get.lazyPut<ForgetPasswordController>(() => ForgetPasswordController());
-    Get.lazyPut<ResetPasswordController>(() => ResetPasswordController());
-    Get.lazyPut<ProfileSetupController>(() => ProfileSetupController());
-
-    // Note: We removed the registrations for services that are now handled
-    // in DependencyInjection.init() to avoid duplicate registrations
+    // Controllers only needed when on auth screens, can be recreated if needed
+    Get.lazyPut<LoginController>(() => LoginController(), fenix: true);
+    Get.lazyPut<SignupController>(() => SignupController(), fenix: true);
+    Get.lazyPut<ForgetPasswordController>(
+      () => ForgetPasswordController(),
+      fenix: true,
+    );
+    Get.lazyPut<ResetPasswordController>(
+      () => ResetPasswordController(),
+      fenix: true,
+    );
   }
 }
