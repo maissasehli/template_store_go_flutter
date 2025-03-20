@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/core/di/initializer.dart';
-import 'package:store_go/core/localization/change_local.dart';
+import 'package:store_go/app/di/initializer.dart';
+import 'package:store_go/app/core/localization/change_local.dart';
 import 'package:get/get.dart';
-import 'package:store_go/core/localization/translation.dart';
-import 'package:store_go/core/theme/theme_controller.dart';
-import 'package:store_go/routes.dart';
+import 'package:store_go/app/core/localization/translation.dart';
+import 'package:store_go/app/core/controllers/theme_controller.dart';
+import 'package:store_go/app/core/config/routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

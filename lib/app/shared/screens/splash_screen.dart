@@ -1,0 +1,56 @@
+// lib/view/screens/splash/splash_screen.dart
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:store_go/app/core/config/routes_constants.dart';
+import 'package:store_go/features/auth/services/auth_service.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  SplashScreenState createState() => SplashScreenState();
+}
+
+class SplashScreenState extends State<SplashScreen> {
+  final AuthService authService = Get.find<AuthService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkNavigation();
+  }
+
+  Future<void> _checkNavigation() async {
+    // Give the splash screen time to display
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Check if the user is authenticated
+    final isAuthenticated = await authService.isAuthenticated();
+
+    if (isAuthenticated) {
+      // If authenticated, redirect to main container screen instead of home directly
+      Get.offAllNamed(AppRoute.mainContainer);
+    } else {
+      // If neither, redirect to login selection
+      Get.offAllNamed(AppRoute.login);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Your splash screen logo or animation
+            const Text("Splash Screen").heading1(context),
+            const SizedBox(height: 20),
+            const CircularProgressIndicator(),
+          ],
+        ),
+      ),
+    );
+  }
+}
