@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 import 'package:store_go/app/shared/widgets/cached_asset_image.dart';
 
 class OnboardingCarouselImage extends StatelessWidget {

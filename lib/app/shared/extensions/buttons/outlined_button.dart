@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 
 extension StyledButton on Widget {
   Widget outlinedButton(
@@ -13,17 +13,15 @@ extension StyledButton on Widget {
       onPressed: isLoading ? null : onPressed,
       style: OutlinedButton.styleFrom(
         textStyle: const TextStyle(
-          fontSize: UIConstants.fontSizeMedium,
+          fontSize: UIConfig.fontSizeMedium,
           fontWeight: FontWeight.w500,
         ),
         foregroundColor: colors?.primary,
         side: BorderSide(color: colors?.primary ?? Colors.white),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
-        padding: const EdgeInsets.symmetric(
-          vertical: UIConstants.paddingMedium,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
       ),
       child:
           isLoading

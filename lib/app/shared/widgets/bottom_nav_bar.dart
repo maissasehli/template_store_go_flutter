@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTabChange;
 
-  const CustomBottomNavBar({
+  const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTabChange,

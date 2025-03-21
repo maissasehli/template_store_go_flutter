@@ -3,8 +3,8 @@ import 'package:store_go/app/di/initializer.dart';
 import 'package:store_go/app/core/localization/change_local.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/localization/translation.dart';
-import 'package:store_go/app/core/controllers/theme_controller.dart';
-import 'package:store_go/app/core/config/routes.dart';
+import 'package:store_go/app/shared/controllers/theme_controller.dart';
+import 'package:store_go/app/core/config/main_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

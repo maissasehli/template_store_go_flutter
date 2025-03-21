@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/onBoarding/controllers/onboarding_controller.dart';
 import 'package:store_go/app/core/config/theme/colors.dart';
-import 'package:store_go/app/core/config/routes_constants.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/localization/change_local.dart';
 import 'package:store_go/features/language/views/widgets/custombuttomlang.widgets.dart';
 

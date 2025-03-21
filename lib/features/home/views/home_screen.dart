@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 import 'package:store_go/features/home/views/widgets/category_filter.dart';
 import 'package:store_go/features/home/views/widgets/custom_app_bar.dart';
 import 'package:store_go/features/home/views/widgets/product_grid.dart';
@@ -34,18 +34,18 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: UIConstants.paddingMedium),
+          const SizedBox(height: UIConfig.paddingMedium),
           // Add CustomSearchBar right after the AppBar
           CustomSearchBar(
             onSearch:
                 (query) => controller.productController.searchProducts(query),
           ),
 
-          const SizedBox(height: UIConstants.paddingMedium),
+          const SizedBox(height: UIConfig.paddingMedium),
 
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: UIConstants.paddingMedium,
+              horizontal: UIConfig.paddingMedium,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,8 +84,8 @@ class HomeScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: UIConstants.paddingMedium,
-              vertical: UIConstants.paddingSmall,
+              horizontal: UIConfig.paddingMedium,
+              vertical: UIConfig.paddingSmall,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,8 +130,8 @@ class HomeScreen extends StatelessWidget {
 
           Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: UIConstants.paddingMedium,
-              vertical: UIConstants.paddingSmall,
+              horizontal: UIConfig.paddingMedium,
+              vertical: UIConfig.paddingSmall,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,7 +139,7 @@ class HomeScreen extends StatelessWidget {
                 const Text(
                   'New In',
                   style: TextStyle(
-                    fontSize: UIConstants.fontSizeRegular,
+                    fontSize: UIConfig.fontSizeRegular,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

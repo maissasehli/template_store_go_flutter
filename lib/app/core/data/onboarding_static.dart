@@ -1,4 +1,4 @@
-import 'package:store_go/app/core/config/assets_constants.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/onBoarding/models/onboarding_model.dart';
 
 class OnboardingStatic {

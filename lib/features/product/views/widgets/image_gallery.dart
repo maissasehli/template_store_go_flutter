@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 
 class ImageGallery extends StatefulWidget {
   final List<String> imageUrls;
 
-  const ImageGallery({
-    super.key,
-    required this.imageUrls,
-  });
+  const ImageGallery({super.key, required this.imageUrls});
 
   @override
   _ImageGalleryState createState() => _ImageGalleryState();
@@ -47,7 +44,9 @@ class _ImageGalleryState extends State<ImageGallery> {
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(UIConstants.borderRadiusSmall),
+                  borderRadius: BorderRadius.circular(
+                    UIConfig.borderRadiusSmall,
+                  ),
                   image: DecorationImage(
                     image: NetworkImage(widget.imageUrls[index]),
                     fit: BoxFit.cover,
@@ -57,9 +56,9 @@ class _ImageGalleryState extends State<ImageGallery> {
             },
           ),
         ),
-        
-        const SizedBox(height: UIConstants.paddingMedium),
-        
+
+        const SizedBox(height: UIConfig.paddingMedium),
+
         // Thumbnail row
         if (widget.imageUrls.length > 1)
           SizedBox(
@@ -69,7 +68,7 @@ class _ImageGalleryState extends State<ImageGallery> {
               itemCount: widget.imageUrls.length,
               itemBuilder: (context, index) {
                 final isSelected = index == _currentPage;
-                
+
                 return GestureDetector(
                   onTap: () {
                     _pageController.animateToPage(
@@ -80,13 +79,18 @@ class _ImageGalleryState extends State<ImageGallery> {
                   },
                   child: Container(
                     width: 80,
-                    margin: EdgeInsets.only(right: UIConstants.paddingSmall),
+                    margin: EdgeInsets.only(right: UIConfig.paddingSmall),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
+                        color:
+                            isSelected
+                                ? Theme.of(context).primaryColor
+                                : Colors.transparent,
                         width: 2,
                       ),
-                      borderRadius: BorderRadius.circular(UIConstants.borderRadiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        UIConfig.borderRadiusSmall,
+                      ),
                       image: DecorationImage(
                         image: NetworkImage(widget.imageUrls[index]),
                         fit: BoxFit.cover,
@@ -97,11 +101,11 @@ class _ImageGalleryState extends State<ImageGallery> {
               },
             ),
           ),
-          
+
         // Page indicator
         if (widget.imageUrls.length > 1)
           Container(
-            padding: EdgeInsets.symmetric(vertical: UIConstants.paddingMedium),
+            padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
@@ -112,9 +116,10 @@ class _ImageGalleryState extends State<ImageGallery> {
                   margin: EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: index == _currentPage
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey.shade300,
+                    color:
+                        index == _currentPage
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey.shade300,
                   ),
                 ),
               ),

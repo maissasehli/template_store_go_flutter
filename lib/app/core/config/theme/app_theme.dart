@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/theme.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
-import 'package:store_go/app/core/config/theme/typography.dart';
-import 'package:store_go/app/core/config/theme/typography_extension.dart';
+import 'package:store_go/app/core/config/theme/app_colors_data.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/config/theme/app_typography.dart';
+import 'package:store_go/app/core/config/theme/app_typography_extension.dart';
 
 class AppTheme {
   // Light theme colors
@@ -51,56 +51,56 @@ class AppTheme {
   static const lightTextStyles = AppTextStylesData(
     h1: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSize3XLarge,
+      fontSize: UIConfig.fontSize3XLarge,
       fontWeight: AppTypography.bold,
       letterSpacing: AppTypography.letterSpacingTight,
       color: Color(0xFF000000),
     ),
     h2: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSize2XLarge,
+      fontSize: UIConfig.fontSize2XLarge,
       fontWeight: AppTypography.bold,
       letterSpacing: AppTypography.letterSpacingTight,
       color: Color(0xFF000000),
     ),
     h3: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeXLarge,
+      fontSize: UIConfig.fontSizeXLarge,
       fontWeight: AppTypography.semiBold,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFF000000),
     ),
     h4: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeLarge,
+      fontSize: UIConfig.fontSizeLarge,
       fontWeight: AppTypography.semiBold,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFF000000),
     ),
     h5: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeMedium,
+      fontSize: UIConfig.fontSizeMedium,
       fontWeight: AppTypography.semiBold,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFF000000),
     ),
     subtitle1: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeMedium,
+      fontSize: UIConfig.fontSizeMedium,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFF000000),
     ),
     subtitle2: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeRegular,
+      fontSize: UIConfig.fontSizeRegular,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFF000000),
     ),
     bodyLarge: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeMedium,
+      fontSize: UIConfig.fontSizeMedium,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       height: AppTypography.lineHeightNormal,
@@ -108,7 +108,7 @@ class AppTheme {
     ),
     bodyMedium: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeRegular,
+      fontSize: UIConfig.fontSizeRegular,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       height: AppTypography.lineHeightNormal,
@@ -116,7 +116,7 @@ class AppTheme {
     ),
     bodySmall: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeSmall,
+      fontSize: UIConfig.fontSizeSmall,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       height: AppTypography.lineHeightNormal,
@@ -124,21 +124,21 @@ class AppTheme {
     ),
     buttonText: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeRegular,
+      fontSize: UIConfig.fontSizeRegular,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingWide,
       color: Color(0xFF000000),
     ),
     caption: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeSmall,
+      fontSize: UIConfig.fontSizeSmall,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFF737373),
     ),
     overline: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeSmall,
+      fontSize: UIConfig.fontSizeSmall,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingWide,
       color: Color(0xFF737373),
@@ -149,56 +149,56 @@ class AppTheme {
   static const darkTextStyles = AppTextStylesData(
     h1: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSize3XLarge,
+      fontSize: UIConfig.fontSize3XLarge,
       fontWeight: AppTypography.bold,
       letterSpacing: AppTypography.letterSpacingTight,
       color: Color(0xFFFFFFFF),
     ),
     h2: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSize2XLarge,
+      fontSize: UIConfig.fontSize2XLarge,
       fontWeight: AppTypography.bold,
       letterSpacing: AppTypography.letterSpacingTight,
       color: Color(0xFFFFFFFF),
     ),
     h3: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeXLarge,
+      fontSize: UIConfig.fontSizeXLarge,
       fontWeight: AppTypography.semiBold,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFFFFFFFF),
     ),
     h4: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeLarge,
+      fontSize: UIConfig.fontSizeLarge,
       fontWeight: AppTypography.semiBold,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFFFFFFFF),
     ),
     h5: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeMedium,
+      fontSize: UIConfig.fontSizeMedium,
       fontWeight: AppTypography.semiBold,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFFFFFFFF),
     ),
     subtitle1: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeMedium,
+      fontSize: UIConfig.fontSizeMedium,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFFFFFFFF),
     ),
     subtitle2: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeRegular,
+      fontSize: UIConfig.fontSizeRegular,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFFFFFFFF),
     ),
     bodyLarge: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeMedium,
+      fontSize: UIConfig.fontSizeMedium,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       height: AppTypography.lineHeightNormal,
@@ -206,7 +206,7 @@ class AppTheme {
     ),
     bodyMedium: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeRegular,
+      fontSize: UIConfig.fontSizeRegular,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       height: AppTypography.lineHeightNormal,
@@ -214,7 +214,7 @@ class AppTheme {
     ),
     bodySmall: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeSmall,
+      fontSize: UIConfig.fontSizeSmall,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       height: AppTypography.lineHeightNormal,
@@ -222,21 +222,21 @@ class AppTheme {
     ),
     buttonText: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeRegular,
+      fontSize: UIConfig.fontSizeRegular,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingWide,
       color: Color(0xFFFFFFFF),
     ),
     caption: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeSmall,
+      fontSize: UIConfig.fontSizeSmall,
       fontWeight: AppTypography.regular,
       letterSpacing: AppTypography.letterSpacingNormal,
       color: Color(0xFFB3B3B3),
     ),
     overline: TextStyle(
       fontFamily: AppTypography.primaryFont,
-      fontSize: UIConstants.fontSizeSmall,
+      fontSize: UIConfig.fontSizeSmall,
       fontWeight: AppTypography.medium,
       letterSpacing: AppTypography.letterSpacingWide,
       color: Color(0xFF999999),
@@ -286,8 +286,8 @@ class AppTheme {
       // global input decoration theme
       inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: UIConstants.paddingLarge,
-          vertical: UIConstants.paddingSmall,
+          horizontal: UIConfig.paddingLarge,
+          vertical: UIConfig.paddingSmall,
         ),
         hintStyle: textStyles.bodyMedium.copyWith(
           color: colors.mutedForeground,
@@ -295,19 +295,19 @@ class AppTheme {
         fillColor: colors.input,
         filled: true,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           borderSide: BorderSide(color: colors.primary),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           borderSide: BorderSide(color: colors.destructive),
         ),
       ),
@@ -316,11 +316,11 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           ),
           padding: const EdgeInsets.symmetric(
-            vertical: UIConstants.paddingMedium,
-            horizontal: UIConstants.paddingLarge,
+            vertical: UIConfig.paddingMedium,
+            horizontal: UIConfig.paddingLarge,
           ),
           disabledBackgroundColor: colors.muted,
         ),
@@ -329,7 +329,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
           ),
         ),
       ),
@@ -337,11 +337,11 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConstants.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
           ),
           padding: const EdgeInsets.symmetric(
-            vertical: UIConstants.paddingMedium,
-            horizontal: UIConstants.paddingLarge,
+            vertical: UIConfig.paddingMedium,
+            horizontal: UIConfig.paddingLarge,
           ),
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/routes_constants.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 
 class ProfileSetupController extends GetxController {
   final RxnString selectedGender = RxnString(null);

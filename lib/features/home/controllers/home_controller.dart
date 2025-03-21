@@ -2,7 +2,7 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/app/core/controllers/navigation_controller.dart';
+import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/home/models/category_model.dart';
 import 'package:store_go/features/category/services/category_api_service.dart';

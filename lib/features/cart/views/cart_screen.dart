@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 
 
 class CartScreen extends StatefulWidget {

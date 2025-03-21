@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/auth/controllers/oauth_controller.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 import 'package:store_go/features/auth/controllers/login_controller.dart';
 import 'package:store_go/app/core/utils/alert_exit_app.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
@@ -36,7 +36,7 @@ class Login extends GetView<LoginController> {
                 key: controller.loginFormKey,
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: UIConstants.paddingLarge,
+                    horizontal: UIConfig.paddingLarge,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -70,14 +70,15 @@ class Login extends GetView<LoginController> {
                           isLoading: controller.isLoading.value,
                         ),
                       ),
-                        const SizedBox(height: 20),
-                        Row(
+                      const SizedBox(height: 20),
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text('Dont have an Account?'),
-                          const Text(
-                            'Create One',
-                          ).textButton(context, onPressed: controller.goToSignUp),
+                          const Text('Create One').textButton(
+                            context,
+                            onPressed: controller.goToSignUp,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -93,18 +94,21 @@ class Login extends GetView<LoginController> {
                       ),
                       const SizedBox(height: 20),
                       // Google Sign-In Button with loading state
-                      const Text('Continue With Google').secondaryIconTextButton(
+                      const Text(
+                        'Continue With Google',
+                      ).secondaryIconTextButton(
                         context,
-                        onPressed: () => {
-                          _oauthController.signInWithProvider('google')
-                        },
+                        onPressed:
+                            () => {
+                              _oauthController.signInWithProvider('google'),
+                            },
                         icon: ThemeAwareSvg(
                           assetPath: ImageAsset.googleIcon,
                           color: colors.primary,
                         ),
                         alignContentLeft: true,
                       ),
-                        const SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       // Apple Sign-In Button with loading state
                       const Text('Continue With Apple').secondaryIconTextButton(
                         context,
@@ -136,7 +140,7 @@ class Login extends GetView<LoginController> {
             ),
           ),
         ),
-          
-      ));
+      ),
+    );
   }
 }

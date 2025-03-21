@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 import 'package:store_go/app/shared/extensions/buttons/outlined_button.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/extensions/full_width_extension.dart';
@@ -11,17 +11,17 @@ Future<bool> alertExitApp(BuildContext context) {
   Get.defaultDialog(
     title: '',
     titlePadding: const EdgeInsets.all(0),
-    radius: UIConstants.borderRadiusMedium,
-    contentPadding: const EdgeInsets.all(UIConstants.paddingMedium),
+    radius: UIConfig.borderRadiusMedium,
+    contentPadding: const EdgeInsets.all(UIConfig.paddingMedium),
     content: SizedBox(
       width: Get.width * 0.8,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text('Exit App').heading4(context),
-          const SizedBox(height: UIConstants.marginSmall),
+          const SizedBox(height: UIConfig.marginSmall),
           const Text('Do you want to exit the application?').body(context),
-          const SizedBox(height: UIConstants.marginLarge),
+          const SizedBox(height: UIConfig.marginLarge),
           const Text('Cancel')
               .primaryButton(
                 context,
@@ -30,7 +30,7 @@ Future<bool> alertExitApp(BuildContext context) {
                 },
               )
               .fullWidth(),
-          const SizedBox(height: UIConstants.marginSmall),
+          const SizedBox(height: UIConfig.marginSmall),
           const Text('Exit')
               .outlinedButton(
                 context,

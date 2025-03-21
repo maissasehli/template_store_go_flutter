@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/typography.dart';
+import 'package:store_go/app/core/config/theme/app_typography.dart';
 
 class AppTypographyExtension extends ThemeExtension<AppTypographyExtension> {
   final TextStyle h1;

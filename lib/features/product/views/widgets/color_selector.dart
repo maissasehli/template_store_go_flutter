@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 import 'package:store_go/features/home/models/color_variant_model.dart';
 
 class ColorSelector extends StatelessWidget {
@@ -22,7 +22,7 @@ class ColorSelector extends StatelessWidget {
         Text(
           'Color',
           style: TextStyle(
-            fontSize: UIConstants.fontSizeMedium,
+            fontSize: UIConfig.fontSizeMedium,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -30,39 +30,49 @@ class ColorSelector extends StatelessWidget {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: colors.map((color) {
-              final isSelected = color.id == selectedColorId;
-              
-              return GestureDetector(
-                onTap: () => onColorSelected(color.id),
-                child: Container(
-                  margin: const EdgeInsets.only(right: UIConstants.paddingSmall),
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
-                      width: 2,
+            children:
+                colors.map((color) {
+                  final isSelected = color.id == selectedColorId;
+
+                  return GestureDetector(
+                    onTap: () => onColorSelected(color.id),
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        right: UIConfig.paddingSmall,
+                      ),
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color:
+                              isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Color(int.parse('0xFF${color.hexCode}')),
+                          shape: BoxShape.circle,
+                        ),
+                        child:
+                            isSelected
+                                ? Icon(
+                                  Icons.check,
+                                  color:
+                                      _isDarkColor(color.hexCode)
+                                          ? Colors.white
+                                          : Colors.black,
+                                  size: 16,
+                                )
+                                : null,
+                      ),
                     ),
-                  ),
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Color(int.parse('0xFF${color.hexCode}')),
-                      shape: BoxShape.circle,
-                    ),
-                    child: isSelected
-                        ? Icon(
-                            Icons.check,
-                            color: _isDarkColor(color.hexCode) ? Colors.white : Colors.black,
-                            size: 16,
-                          )
-                        : null,
-                  ),
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         ),
       ],
@@ -74,11 +84,11 @@ class ColorSelector extends StatelessWidget {
     final r = int.parse(hexColor.substring(0, 2), radix: 16);
     final g = int.parse(hexColor.substring(2, 4), radix: 16);
     final b = int.parse(hexColor.substring(4, 6), radix: 16);
-    
+
     // Calculate perceived brightness
     // Formula: (R * 299 + G * 587 + B * 114) / 1000
     final brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    
+
     return brightness < 128; // If brightness < 128, it's a dark color
   }
 }

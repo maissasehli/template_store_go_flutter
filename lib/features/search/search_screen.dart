@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 
 class SearchScreen extends StatefulWidget {

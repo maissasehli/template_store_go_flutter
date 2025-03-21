@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 
 extension StyledButton on Widget {
   Widget secondaryIconTextButton(
@@ -51,17 +51,17 @@ extension StyledButton on Widget {
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(
-          fontSize: UIConstants.fontSizeMedium,
+          fontSize: UIConfig.fontSizeMedium,
           fontWeight: FontWeight.w400,
         ),
         backgroundColor: colors?.secondary,
         foregroundColor: colors?.foreground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
         padding: const EdgeInsets.symmetric(
-          vertical: UIConstants.paddingMedium,
-          horizontal: UIConstants.paddingLarge,
+          vertical: UIConfig.paddingMedium,
+          horizontal: UIConfig.paddingLarge,
         ),
         // This alignment property affects the internal alignment of the button's child
         alignment: alignContentLeft ? Alignment.centerLeft : Alignment.center,

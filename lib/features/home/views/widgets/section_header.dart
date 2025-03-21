@@ -1,6 +1,6 @@
 // lib/view/widgets/home/section_header.dart
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -16,8 +16,8 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: UIConstants.paddingMedium,
-        vertical: UIConstants.paddingSmall,
+        horizontal: UIConfig.paddingMedium,
+        vertical: UIConfig.paddingSmall,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -25,14 +25,11 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-              fontSize: UIConstants.fontSizeRegular,
+              fontSize: UIConfig.fontSizeRegular,
               fontWeight: FontWeight.bold,
             ),
           ),
-          TextButton(
-            onPressed: onSeeAllTap,
-            child: const Text('See All'),
-          ),
+          TextButton(onPressed: onSeeAllTap, child: const Text('See All')),
         ],
       ),
     );

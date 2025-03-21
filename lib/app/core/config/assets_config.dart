@@ -29,7 +29,7 @@ class ImageAsset {
   static const String icon = '$rootSvg/icon.svg';
   static const String discountshape = '$rootSvg/discountshape.svg';
   static const String delete = '$rootSvg/delete.svg';
- static const String arrowright2 = '$rootSvg/arrowright2.svg';
+  static const String arrowright2 = '$rootSvg/arrowright2.svg';
 
  static const String setting = '$rootSvg/setting-2.svg';
 static const String receipt = '$rootSvg/receipt1.svg';

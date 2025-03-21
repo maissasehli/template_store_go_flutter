@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
@@ -24,9 +24,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: UIConstants.paddingMedium,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
       child: Container(
         height: 36,
         decoration: BoxDecoration(

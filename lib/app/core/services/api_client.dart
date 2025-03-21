@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:store_go/app/core/config/api_constants.dart';
+import 'package:store_go/app/core/config/app_config.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/routes_constants.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:logger/logger.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -13,13 +13,13 @@ class ApiClient {
   ApiClient() {
     _dio = dio.Dio(
       dio.BaseOptions(
-        baseUrl: ApiConstants.baseUrl,
+        baseUrl: AppConfig.baseUrl,
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-Store-ID': ApiConstants.storeId,
+          'X-Store-ID': AppConfig.storeId,
         },
       ),
     );
@@ -192,11 +192,11 @@ class ApiClient {
         // Create a clean Dio instance for the refresh request
         final refreshDio = dio.Dio(
           dio.BaseOptions(
-            baseUrl: ApiConstants.baseUrl,
+            baseUrl: AppConfig.baseUrl,
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              'X-Store-ID': ApiConstants.storeId,
+              'X-Store-ID': AppConfig.storeId,
             },
           ),
         );

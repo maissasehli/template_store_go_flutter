@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:store_go/app/core/controllers/navigation_controller.dart';
+import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/features/category/services/category_api_service.dart';
-import 'package:store_go/app/core/controllers/theme_controller.dart';
+import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/core/services/image_cache.dart';
 import 'package:store_go/app/core/services/image_preloader_manager.dart';
 import 'package:store_go/app/core/services/api_client.dart';

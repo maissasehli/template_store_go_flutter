@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 
 extension StyledButton on Widget {
-
   Widget textButton(
     BuildContext context, {
     required VoidCallback onPressed,
@@ -14,13 +13,11 @@ extension StyledButton on Widget {
       onPressed: isLoading ? null : onPressed,
       style: TextButton.styleFrom(
         textStyle: const TextStyle(
-          fontSize: UIConstants.fontSizeMedium,
+          fontSize: UIConfig.fontSizeMedium,
           fontWeight: FontWeight.w400,
         ),
         foregroundColor: colors?.primary,
-        padding: const EdgeInsets.symmetric(
-          horizontal: UIConstants.paddingSmall,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall),
       ),
       child:
           isLoading

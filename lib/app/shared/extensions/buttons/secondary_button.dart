@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 
-extension StyledButton   on Widget {
+extension StyledButton on Widget {
   Widget secondaryButton(
     BuildContext context, {
     required VoidCallback onPressed,
@@ -13,17 +13,15 @@ extension StyledButton   on Widget {
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         textStyle: const TextStyle(
-          fontSize: UIConstants.fontSizeMedium,
+          fontSize: UIConfig.fontSizeMedium,
           fontWeight: FontWeight.bold,
         ),
         backgroundColor: colors?.secondary,
         foregroundColor: colors?.secondaryForeground,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
-        padding: const EdgeInsets.symmetric(
-          vertical: UIConstants.paddingMedium,
-        ),
+        padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
       ),
       child:
           isLoading

@@ -1,7 +1,7 @@
 // lib/view/screens/splash/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/routes_constants.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 

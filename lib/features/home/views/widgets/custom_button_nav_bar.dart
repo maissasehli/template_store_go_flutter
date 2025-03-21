@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class BottomNavBar extends StatelessWidget {
   final int currentIndex;
-  
-  const CustomBottomNavBar({
-    Key? key,
-    this.currentIndex = 0,
-  }) : super(key: key);
-  
+
+  const BottomNavBar({Key? key, this.currentIndex = 0}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,7 +35,7 @@ class CustomBottomNavBar extends StatelessWidget {
               if (currentIndex != 0) Get.offAllNamed('/home');
             },
           ),
-          
+
           // Wishlist Button
           _buildNavItem(
             iconPath: ImageAsset.heartIcon,
@@ -48,7 +45,7 @@ class CustomBottomNavBar extends StatelessWidget {
               if (currentIndex != 1) Get.offAllNamed('/wishlist');
             },
           ),
-          
+
           // Cart Button
           _buildNavItem(
             iconPath: ImageAsset.bagIcon,
@@ -58,7 +55,7 @@ class CustomBottomNavBar extends StatelessWidget {
               if (currentIndex != 2) Get.offAllNamed('/cart');
             },
           ),
-          
+
           // Profile Button
           _buildNavItem(
             iconPath: ImageAsset.profileIcon,
@@ -72,7 +69,7 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildNavItem({
     required String iconPath,
     required String label,
@@ -93,7 +90,10 @@ class CustomBottomNavBar extends StatelessWidget {
             children: [
               SvgPicture.asset(
                 iconPath,
-                colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
                 width: 20,
                 height: 20,
               ),
@@ -111,7 +111,7 @@ class CustomBottomNavBar extends StatelessWidget {
         ),
       );
     }
-    
+
     // For inactive items: just the icon
     return IconButton(
       onPressed: onTap,

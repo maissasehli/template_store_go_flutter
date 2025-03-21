@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/features/home/views/widgets/bottom_nav_bar.dart';
-import 'package:store_go/app/core/controllers/navigation_controller.dart';
+import 'package:store_go/app/shared/widgets/bottom_nav_bar.dart';
+import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/features/home/views/home_screen.dart';
 import 'package:store_go/features/wishlist/wishlist_screen.dart';
 import 'package:store_go/features/cart/views/cart_screen.dart';
@@ -27,7 +27,7 @@ class MainContainerScreen extends StatelessWidget {
 
       return Scaffold(
         body: IndexedStack(index: currentIndex, children: _screens),
-        bottomNavigationBar: CustomBottomNavBar(
+        bottomNavigationBar: BottomNavBar(
           currentIndex: currentIndex,
           onTabChange: navigationController.changeTab,
         ),

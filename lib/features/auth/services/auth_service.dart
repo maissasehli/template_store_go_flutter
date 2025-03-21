@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/routes_constants.dart';
-import 'package:store_go/app/core/config/api_constants.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
+import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
@@ -54,7 +54,7 @@ class AuthService {
           'email': email,
           'password': password,
           'name': '$firstName $lastName',
-          'storeId': ApiConstants.storeId,
+          'storeId': AppConfig.storeId,
         },
       );
 
@@ -107,7 +107,7 @@ class AuthService {
         data: {
           'email': email,
           'password': password,
-          'storeId': ApiConstants.storeId,
+          'storeId': AppConfig.storeId,
         },
       );
 
@@ -225,7 +225,7 @@ class AuthService {
         '/auth/oauth/initiate',
         data: {
           'provider': provider,
-          'storeId': ApiConstants.storeId,
+          'storeId': AppConfig.storeId,
           'redirectUrl': redirectUrl,
         },
       );
@@ -291,7 +291,7 @@ class AuthService {
         // Exchange code for tokens
         final response = await _apiClient.post(
           '/auth/oauth/callback',
-          data: {'code': code, 'storeId': ApiConstants.storeId},
+          data: {'code': code, 'storeId': AppConfig.storeId},
         );
 
         if (response.statusCode == 200) {
@@ -427,7 +427,7 @@ class AuthService {
         data: {
           'provider': provider,
           'providerToken': providerToken,
-          'storeId': ApiConstants.storeId,
+          'storeId': AppConfig.storeId,
         },
       );
 
@@ -491,7 +491,7 @@ class AuthService {
           'userId': userId,
           'provider': provider,
           'providerToken': providerToken,
-          'storeId': ApiConstants.storeId,
+          'storeId': AppConfig.storeId,
         },
       );
 

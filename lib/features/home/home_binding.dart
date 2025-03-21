@@ -1,4 +1,3 @@
-// lib/bindings/home_bindings.dart
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';

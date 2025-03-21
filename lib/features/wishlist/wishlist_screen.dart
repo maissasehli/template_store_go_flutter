@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/controllers/navigation_controller.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
+import 'package:store_go/app/shared/controllers/navigation_controller.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
 class WishlistPage extends StatefulWidget {

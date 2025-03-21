@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:store_go/app/core/config/assets_constants.dart';
-import 'package:store_go/app/core/config/theme/ui.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/config/theme/ui_config.dart';
 import 'package:store_go/features/home/models/product_model.dart';
-import 'package:store_go/app/core/config/theme/color_extension.dart';
+import 'package:store_go/app/core/config/theme/app_color_extension.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
@@ -29,12 +29,9 @@ class ProductGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title is handled in the parent HomeScreen
-        
+
         // Products display - either horizontal list or grid
-        if (isHorizontal)
-          _buildHorizontalList(context)
-        else
-          _buildGrid(),
+        if (isHorizontal) _buildHorizontalList(context) else _buildGrid(),
       ],
     );
   }
@@ -45,11 +42,11 @@ class ProductGrid extends StatelessWidget {
       height: 281, // Exact height from image 2 (Hug 281px)
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: UIConstants.paddingMedium),
+        padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-          
+
           return GestureDetector(
             onTap: () => onProductTap(product.id),
             child: Container(
@@ -57,8 +54,13 @@ class ProductGrid extends StatelessWidget {
               margin: const EdgeInsets.only(right: 8), // Gap 8px from image 2
               decoration: BoxDecoration(
                 color: colors?.productCard ?? Colors.white,
-                borderRadius: BorderRadius.circular(8), // Radius 8px from image 2
-                border: Border.all(color: colors?.border ?? Color(0xFFF4F4F4), width: 1), // Border color from image 2
+                borderRadius: BorderRadius.circular(
+                  8,
+                ), // Radius 8px from image 2
+                border: Border.all(
+                  color: colors?.border ?? Color(0xFFF4F4F4),
+                  width: 1,
+                ), // Border color from image 2
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +72,7 @@ class ProductGrid extends StatelessWidget {
                       children: [
                         // Product image
                         _buildProductImage(product),
-                        
+
                         // Favorite button using SVG
                         Positioned(
                           top: 8,
@@ -91,7 +93,7 @@ class ProductGrid extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Product details
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -111,7 +113,7 @@ class ProductGrid extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        
+
                         // Product price - show current price and strikethrough if applicable
                         Row(
                           children: [
@@ -124,7 +126,7 @@ class ProductGrid extends StatelessWidget {
                                 color: Colors.black,
                               ),
                             ),
-                            
+
                             // Example of how to show a strikethrough price for specific products
                             if (product.id == '2') // For Max Cirro Slides
                               Padding(
@@ -156,29 +158,36 @@ class ProductGrid extends StatelessWidget {
   Widget _buildGrid() {
     return Padding(
       padding: const EdgeInsets.only(
-        left: UIConstants.paddingMedium,
-        right: UIConstants.paddingMedium,
+        left: UIConfig.paddingMedium,
+        right: UIConfig.paddingMedium,
       ),
       child: GridView.builder(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.7, // Adjusted to match the height/width ratio in images
+          childAspectRatio:
+              0.7, // Adjusted to match the height/width ratio in images
           crossAxisSpacing: 8, // Gap 8px from image 2
           mainAxisSpacing: 8, // Gap 8px from image 2
         ),
-        itemCount: products.length > 4 ? 4 : products.length, // Limit to 4 items
+        itemCount:
+            products.length > 4 ? 4 : products.length, // Limit to 4 items
         itemBuilder: (context, index) {
           final product = products[index];
-          
+
           return GestureDetector(
             onTap: () => onProductTap(product.id),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(8), // Radius 8px from image 2
-                border: Border.all(color: Color(0xFFF4F4F4), width: 1), // Border color from image 2
+                borderRadius: BorderRadius.circular(
+                  8,
+                ), // Radius 8px from image 2
+                border: Border.all(
+                  color: Color(0xFFF4F4F4),
+                  width: 1,
+                ), // Border color from image 2
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +198,7 @@ class ProductGrid extends StatelessWidget {
                       children: [
                         // Product image
                         _buildProductImage(product),
-                        
+
                         // Favorite button using SVG
                         Positioned(
                           top: 8,
@@ -210,7 +219,7 @@ class ProductGrid extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Product details
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -230,7 +239,7 @@ class ProductGrid extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        
+
                         // Product price - show current price and strikethrough if applicable
                         Row(
                           children: [
@@ -243,8 +252,8 @@ class ProductGrid extends StatelessWidget {
                                 color: Colors.black,
                               ),
                             ),
-                            
-                            if (product.id == '2') 
+
+                            if (product.id == '2')
                               Padding(
                                 padding: const EdgeInsets.only(left: 4.0),
                                 child: Text(
@@ -282,7 +291,7 @@ class ProductGrid extends StatelessWidget {
     }
 
     String imageUrl = product.images[0];
-    
+
     // Handle asset images
     if (imageUrl.startsWith('asset://')) {
       final assetPath = imageUrl.replaceFirst('asset://', '');

@@ -1,4 +1,4 @@
-class UIConstants {
+class UIConfig {
   // Border radius values
   static const double borderRadiusSmall = 4.0;
   static const double borderRadiusMedium = 8.0;
@@ -34,7 +34,6 @@ class UIConstants {
   static const double fontSize3XLarge = 40.0;
   static const double fontSize4XLarge = 48.0;
 
-  
   // Elevation values
   static const double elevationSmall = 2.0;
   static const double elevationMedium = 4.0;
