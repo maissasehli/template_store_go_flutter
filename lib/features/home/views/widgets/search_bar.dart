@@ -36,7 +36,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: SvgPicture.asset(
-                ImageAsset.searchIcon,
+                AssetConfig.searchIcon,
                 colorFilter: const ColorFilter.mode(
                   Colors.black,
                   BlendMode.srcIn,

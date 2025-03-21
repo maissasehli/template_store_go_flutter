@@ -51,7 +51,7 @@ class NotificationsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
-            ImageAsset.bell,
+            AssetConfig.bell,
             width: 80,
             height: 80,
             color: Colors.grey[300],

@@ -3,32 +3,31 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 
-
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
-                  // Profile Header Section - Updated to match new design
-                  _buildProfileHeaderSimple(),
-                  const SizedBox(height: 24),
-                  // Menu Options
-                  _buildMenuOptions(),
-                ],
-              ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                // Profile Header Section - Updated to match new design
+                _buildProfileHeaderSimple(),
+                const SizedBox(height: 24),
+                // Menu Options
+                _buildMenuOptions(),
+              ],
             ),
           ),
         ),
-      );
+      ),
+    );
   }
 
   // Simple profile header matching the new screenshots
@@ -151,32 +150,32 @@ class ProfilePage extends StatelessWidget {
     return Column(
       children: [
         _buildMenuOption(
-          icon: ImageAsset.location,
+          icon: AssetConfig.location,
           title: 'Address',
           onTap: () => Get.toNamed('/address'),
         ),
         _buildMenuOption(
-          icon: ImageAsset.receipt,
+          icon: AssetConfig.receipt,
           title: 'My orders',
           onTap: () => Get.toNamed('/orders'),
         ),
         _buildMenuOption(
-          icon: ImageAsset.receipt,
+          icon: AssetConfig.receipt,
           title: 'Payments',
           onTap: () => Get.toNamed('/payments'),
         ),
         _buildMenuOption(
-          icon: ImageAsset.notification,
+          icon: AssetConfig.notification,
           title: 'Notifications',
           onTap: () => Get.toNamed('/notifications'),
         ),
         _buildMenuOption(
-          icon: ImageAsset.setting,
+          icon: AssetConfig.setting,
           title: 'Settings',
           onTap: () => Get.toNamed('/settings'),
         ),
         _buildMenuOption(
-          icon: ImageAsset.Logout,
+          icon: AssetConfig.Logout,
           title: 'Logout',
           onTap: () => _showLogoutDialog(),
         ),

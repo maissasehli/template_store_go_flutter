@@ -6,7 +6,6 @@ import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
 class WishlistPage extends StatefulWidget {
-
   const WishlistPage({super.key});
 
   @override
@@ -383,7 +382,7 @@ class _WishlistPageState extends State<WishlistPage> {
             ),
             child: Center(
               child: SvgPicture.asset(
-                ImageAsset.heartIcon,
+                AssetConfig.heartIcon,
                 width: 47,
                 height: 44.65,
                 colorFilter: const ColorFilter.mode(

@@ -28,7 +28,7 @@ class BottomNavBar extends StatelessWidget {
         children: [
           // Home Button
           _buildNavItem(
-            iconPath: ImageAsset.homeIcon,
+            iconPath: AssetConfig.homeIcon,
             label: 'Home',
             isActive: currentIndex == 0,
             onTap: () {
@@ -38,7 +38,7 @@ class BottomNavBar extends StatelessWidget {
 
           // Wishlist Button
           _buildNavItem(
-            iconPath: ImageAsset.heartIcon,
+            iconPath: AssetConfig.heartIcon,
             label: 'Wishlist',
             isActive: currentIndex == 1,
             onTap: () {
@@ -48,7 +48,7 @@ class BottomNavBar extends StatelessWidget {
 
           // Cart Button
           _buildNavItem(
-            iconPath: ImageAsset.bagIcon,
+            iconPath: AssetConfig.bagIcon,
             label: 'Cart',
             isActive: currentIndex == 2,
             onTap: () {
@@ -58,7 +58,7 @@ class BottomNavBar extends StatelessWidget {
 
           // Profile Button
           _buildNavItem(
-            iconPath: ImageAsset.profileIcon,
+            iconPath: AssetConfig.profileIcon,
             label: 'Profile',
             isActive: currentIndex == 3,
             onTap: () {

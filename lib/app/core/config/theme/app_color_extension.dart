@@ -137,4 +137,6 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       productCard: colors.productCard,
     );
   }
+  
 }
+

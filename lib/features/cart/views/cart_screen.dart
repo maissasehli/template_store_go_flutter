@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 
-
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -66,12 +65,12 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-          child: cartItems.isEmpty ? _buildEmptyCart() : _buildCartWithItems(),
-        ),
-      );
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: cartItems.isEmpty ? _buildEmptyCart() : _buildCartWithItems(),
+      ),
+    );
   }
 
   Widget _buildEmptyCart() {
@@ -97,7 +96,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             child: Center(
               child: SvgPicture.asset(
-                ImageAsset.bagIcon,
+                AssetConfig.bagIcon,
                 width: 48,
                 height: 48,
                 colorFilter: const ColorFilter.mode(
@@ -285,7 +284,7 @@ class _CartScreenState extends State<CartScreen> {
         child: Padding(
           padding: const EdgeInsets.only(right: 20.0),
           child: SvgPicture.asset(
-            ImageAsset.delete,
+            AssetConfig.delete,
             width: 24,
             height: 24,
             colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
@@ -487,7 +486,7 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           const SizedBox(width: 16),
           SvgPicture.asset(
-            ImageAsset.discountshape, // Create this asset
+            AssetConfig.discountshape, // Create this asset
             width: 20,
             height: 20,
             colorFilter: ColorFilter.mode(Colors.green[400]!, BlendMode.srcIn),
@@ -521,7 +520,7 @@ class _CartScreenState extends State<CartScreen> {
             child: Padding(
               padding: const EdgeInsets.all(10), // Ajuste selon tes besoins
               child: SvgPicture.asset(
-                ImageAsset.arrowright2,
+                AssetConfig.arrowright2,
                 width: 20,
                 height: 20,
               ),

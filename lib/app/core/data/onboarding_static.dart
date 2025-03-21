@@ -8,9 +8,9 @@ class OnboardingStatic {
       mainTitle: 'Discover Seamless',
       boldTitle: 'Shopping!',
       subtitle: 'Fast Delivery, Easy Returns, And Endless Choices Await You',
-      mainImage: ImageAsset.onBoardingHeaderMain,
-      leftImage: ImageAsset.onBoardingHeaderLeft,
-      rightImage: ImageAsset.onBoardingHeaderRight,
+      mainImage: AssetConfig.onBoardingHeaderMain,
+      leftImage: AssetConfig.onBoardingHeaderLeft,
+      rightImage: AssetConfig.onBoardingHeaderRight,
     ),
     // You can add more onboarding pages here if needed
   ];

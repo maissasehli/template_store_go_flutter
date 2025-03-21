@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/shared/widgets/cached_asset_image.dart';
 
-
 class OnBoardingBgIcon extends StatelessWidget {
   final double? bottom;
   final double? top;
@@ -31,7 +30,7 @@ class OnBoardingBgIcon extends StatelessWidget {
       child: Transform.rotate(
         angle: rotationAngle * 3.14159 / 180,
         child: CachedAssetImage(
-          imagePath: ImageAsset.onBoardingIconBag,
+          imagePath: AssetConfig.onBoardingIconBag,
           width: size,
           height: size,
           color: Colors.white,

@@ -93,7 +93,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           child: Center(
                             // Center the icon in the container
                             child: SvgPicture.asset(
-                              ImageAsset.icon,
+                              AssetConfig.panierIcon,
                               width: 16,
                               height: 16,
                             ),
@@ -520,7 +520,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   children: [
                                     // Use 'children' instead of 'child'
                                     SvgPicture.asset(
-                                      ImageAsset.bagIcon,
+                                      AssetConfig.bagIcon,
                                       color: Colors.white,
                                       width: 16,
                                       height: 16,

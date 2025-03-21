@@ -9,11 +9,11 @@ class ImagePreloaderManager extends GetxService {
   // Preload onboarding images
   Future<void> preloadOnboardingImages(BuildContext context) async {
     final imagesToPreload = [
-      ImageAsset.onBoardingHeaderMain,
-      ImageAsset.onBoardingHeaderLeft,
-      ImageAsset.onBoardingHeaderRight,
-      ImageAsset.onBoardingIconLogo,
-      ImageAsset.onBoardingIconBag,
+      AssetConfig.onBoardingHeaderMain,
+      AssetConfig.onBoardingHeaderLeft,
+      AssetConfig.onBoardingHeaderRight,
+      AssetConfig.onBoardingIconLogo,
+      AssetConfig.onBoardingIconBag,
     ];
 
     await _cacheService.precacheImages(context, imagesToPreload);
@@ -22,10 +22,10 @@ class ImagePreloaderManager extends GetxService {
   // Preload auth-related images
   Future<void> preloadAuthImages(BuildContext context) async {
     final imagesToPreload = [
-      ImageAsset.appleIcon,
-      ImageAsset.googleIcon,
-      ImageAsset.facebookIcon,
-      ImageAsset.sendMail,
+      AssetConfig.appleIcon,
+      AssetConfig.googleIcon,
+      AssetConfig.facebookIcon,
+      AssetConfig.sendMail,
     ];
 
     await _cacheService.precacheImages(context, imagesToPreload);

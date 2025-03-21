@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/theme/app_color_utils.dart';
 import 'package:store_go/features/auth/controllers/oauth_controller.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/config/theme/ui_config.dart';
@@ -103,8 +104,9 @@ class Login extends GetView<LoginController> {
                               _oauthController.signInWithProvider('google'),
                             },
                         icon: ThemeAwareSvg(
-                          assetPath: ImageAsset.googleIcon,
-                          color: colors.primary,
+                          onlyFill: false,
+                          assetPath: AssetConfig.googleIcon,
+                          colorName: AppColorName.primary,
                         ),
                         alignContentLeft: true,
                       ),
@@ -114,9 +116,8 @@ class Login extends GetView<LoginController> {
                         context,
                         onPressed: () {},
                         icon: ThemeAwareSvg(
-                          assetPath: ImageAsset.appleIcon,
-                          color: colors.primary,
-                          onlyFill: true,
+                          assetPath: AssetConfig.appleIcon,
+                          colorName: AppColorName.primary,
                         ),
                         alignContentLeft: true,
                       ),
@@ -128,8 +129,9 @@ class Login extends GetView<LoginController> {
                         context,
                         onPressed: () {},
                         icon: ThemeAwareSvg(
-                          assetPath: ImageAsset.facebookIcon,
-                          color: colors.primary,
+                          onlyFill: false,
+                          assetPath: AssetConfig.facebookIcon,
+                          colorName: AppColorName.primary,
                         ),
                         alignContentLeft: true,
                       ),

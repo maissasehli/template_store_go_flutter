@@ -291,7 +291,7 @@ class _SearchScreenState extends State<SearchScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SvgPicture.asset(
-            ImageAsset.searchIcon,
+            AssetConfig.searchIcon,
             height: 70,
             width: 70,
             colorFilter: ColorFilter.mode(

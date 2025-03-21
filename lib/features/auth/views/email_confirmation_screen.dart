@@ -34,7 +34,7 @@ class EmailSentConfirmationResetPassword extends StatelessWidget {
                     children: [
                       // Paper plane icon
                       Image.asset(
-                        ImageAsset.sendMail, // Use a constant from ImageAsset
+                        AssetConfig.sendMail, // Use a constant from AssetConfig
                         height: 250,
                         width: 250,
                       ),
