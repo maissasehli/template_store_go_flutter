@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../core/config/theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
 
 class ThemeController extends GetxController {
   // Storage for theme settings

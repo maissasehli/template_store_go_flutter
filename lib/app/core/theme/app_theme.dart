@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/app_colors_data.dart';
-import 'package:store_go/app/core/config/theme/app_color_extension.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
-import 'package:store_go/app/core/config/theme/app_typography.dart';
-import 'package:store_go/app/core/config/theme/app_typography_extension.dart';
+import 'package:store_go/app/core/theme/app_colors_data.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_typography.dart';
+import 'package:store_go/app/core/theme/app_typography_extension.dart';
 
 class AppTheme {
   // Light theme colors

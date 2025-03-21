@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/app_typography_extension.dart';
+import 'package:store_go/app/core/theme/app_typography_extension.dart';
 
 extension StyledText on Widget {
   Widget heading1(BuildContext context, {TextStyle? style}) {

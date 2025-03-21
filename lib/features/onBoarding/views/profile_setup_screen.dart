@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/onBoarding/controllers/profile_setup_controller.dart';
-import 'package:store_go/app/core/config/theme/colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 
 class ProfileSetupScreen extends StatelessWidget {

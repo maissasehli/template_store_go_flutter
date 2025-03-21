@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
-import 'package:store_go/app/core/config/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
 
 extension StyledButton on Widget {
   Widget primaryIconTextButton(

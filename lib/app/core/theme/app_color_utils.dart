@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
 
 /// Enum that corresponds to all available colors in AppColorExtension
 /// This provides type safety and better IDE completion when selecting colors

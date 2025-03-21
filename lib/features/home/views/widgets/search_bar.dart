@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;

@@ -1,6 +1,6 @@
 // lib/view/widgets/home/section_header.dart
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;

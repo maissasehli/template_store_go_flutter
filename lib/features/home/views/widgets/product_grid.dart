@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/home/models/product_model.dart';
-import 'package:store_go/app/core/config/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<Product> products;

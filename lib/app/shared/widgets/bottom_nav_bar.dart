@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:store_go/app/core/config/theme/app_color_utils.dart';
+import 'package:store_go/app/core/theme/app_color_utils.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 
 class BottomNavBar extends StatelessWidget {

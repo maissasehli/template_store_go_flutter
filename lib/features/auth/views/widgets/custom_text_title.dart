@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 
 class CustomTextTitle extends StatelessWidget {
   final String text;

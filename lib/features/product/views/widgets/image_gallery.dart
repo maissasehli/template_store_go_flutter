@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class ImageGallery extends StatefulWidget {
   final List<String> imageUrls;

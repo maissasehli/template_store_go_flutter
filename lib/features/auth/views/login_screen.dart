@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/theme/app_color_utils.dart';
+import 'package:store_go/app/core/theme/app_color_utils.dart';
 import 'package:store_go/features/auth/controllers/oauth_controller.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/auth/controllers/login_controller.dart';
 import 'package:store_go/app/core/utils/alert_exit_app.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';

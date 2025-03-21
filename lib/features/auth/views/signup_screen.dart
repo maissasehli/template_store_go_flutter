@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/auth/controllers/signup_controller.dart';
-import 'package:store_go/app/core/config/theme/colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/core/utils/alert_exit_app.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/extensions/fields/validated_fields.dart';

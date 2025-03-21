@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/home/models/size_variant_model.dart';
 
 class SizeSelector extends StatelessWidget {

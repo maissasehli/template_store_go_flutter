@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:store_go/app/core/config/theme/app_color_utils.dart';
+import 'package:store_go/app/core/theme/app_color_utils.dart';
 
 class ThemeAwareSvg extends StatelessWidget {
   /// The asset path to the SVG file

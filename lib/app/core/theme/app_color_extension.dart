@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/config/theme/app_colors_data.dart';
+import 'package:store_go/app/core/theme/app_colors_data.dart';
 
 class AppColorExtension extends ThemeExtension<AppColorExtension> {
   final Color background;

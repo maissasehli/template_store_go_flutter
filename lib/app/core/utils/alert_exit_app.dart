@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/extensions/buttons/outlined_button.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/extensions/full_width_extension.dart';

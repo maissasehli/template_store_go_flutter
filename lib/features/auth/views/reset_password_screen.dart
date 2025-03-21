@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/auth/controllers/reset_password.dart';
-import 'package:store_go/app/core/config/theme/colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/features/auth/views/widgets/custom_auth_button.dart';
 import 'package:store_go/features/auth/views/widgets/custom_text_title.dart';
 import 'package:store_go/app/shared/extensions/fields/validated_fields.dart';
