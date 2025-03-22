@@ -1,0 +1,36 @@
+{
+    "common": {
+        "select_language": "اختر اللغة",
+        "continue": "متابعة",
+        "english": "الإنجليزية",
+        "arabic": "العربية",
+        "french": "الفرنسية",
+        "language": "اللغة"
+    },
+    "auth": {
+        "login": "تسجيل الدخول",
+        "signup": "إنشاء حساب",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "forgot_password": "نسيت كلمة المرور؟",
+        "dont_have_account": "ليس لديك حساب؟",
+        "create_one": "أنشئ حسابًا",
+        "already_have_account": "لديك حساب بالفعل؟",
+        "sign_in": "سجل دخولك",
+        "continue_with_google": "واصل باستخدام جوجل",
+        "continue_with_apple": "واصل باستخدام آبل",
+        "continue_with_facebook": "واصل باستخدام فيسبوك"
+    },
+    "nav": {
+        "home": "الرئيسية",
+        "categories": "الفئات",
+        "cart": "عربة التسوق",
+        "wishlist": "المفضلة",
+        "profile": "الملف الشخصي"
+    },
+    "onboarding": {
+        "discover_shopping": "اكتشف تجربة تسوق سلسة!",
+        "fast_delivery": "توصيل سريع وإرجاع سهل وخيارات لا حصر لها في انتظارك",
+        "get_started": "ابدأ الآن"
+    }
+}

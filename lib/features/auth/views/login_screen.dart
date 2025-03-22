@@ -20,7 +20,7 @@ class Login extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final OAuthController _oauthController = OAuthController();
+    final OAuthController oauthController = OAuthController();
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -101,7 +101,7 @@ class Login extends GetView<LoginController> {
                         context,
                         onPressed:
                             () => {
-                              _oauthController.signInWithProvider('google'),
+                              oauthController.signInWithProvider('google'),
                             },
                         icon: ThemeAwareSvg(
                           onlyFill: false,

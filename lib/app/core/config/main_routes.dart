@@ -12,6 +12,7 @@ import 'package:store_go/features/cart/views/cart_screen.dart';
 import 'package:store_go/features/cart/views/chekout_screen.dart';
 import 'package:store_go/features/category/views/category_screen.dart';
 import 'package:store_go/features/home/views/home_screen.dart';
+import 'package:store_go/features/language/language_binding.dart';
 import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
@@ -36,9 +37,13 @@ List<GetPage<dynamic>>? routes = [
     page: () => MainContainerScreen(),
     binding: HomeBinding(),
   ),
-  
-  GetPage(name: AppRoute.language, page: () => const Language()),
-  
+
+  GetPage(
+    name: AppRoute.language,
+    page: () => const LanguageScreen(),
+    binding: LanguageBinding(),
+  ),
+
   // OnBoarding
   GetPage(name: AppRoute.onBoarding, page: () => Onboarding()),
   GetPage(
@@ -46,7 +51,7 @@ List<GetPage<dynamic>>? routes = [
     page: () => const ProfileSetupScreen(),
     binding: AuthBinding(),
   ),
-  
+
   // Auth
   GetPage(name: AppRoute.login, page: () => Login(), binding: AuthBinding()),
   GetPage(
@@ -69,100 +74,91 @@ List<GetPage<dynamic>>? routes = [
     page: () => ResetPasswordPage(),
     binding: AuthBinding(),
   ),
-  
+
   // HOME
   GetPage(
-    name: AppRoute.home, 
-    page: () => HomeScreen(), 
+    name: AppRoute.home,
+    page: () => HomeScreen(),
     binding: HomeBinding(),
   ),
-  
+
   // Categories
   GetPage(
-    name: AppRoute.categories, 
-    page: () => CategoryScreen(), 
+    name: AppRoute.categories,
+    page: () => CategoryScreen(),
     binding: HomeBinding(),
   ),
   GetPage(
-    name: AppRoute.categoryDetail, 
+    name: AppRoute.categoryDetail,
     page: () {
       return CategoryScreen();
-    }, 
+    },
     binding: HomeBinding(),
   ),
-  
+
   // Products
   GetPage(
-    name: AppRoute.productDetail, 
+    name: AppRoute.productDetail,
     page: () {
       final id = Get.parameters['id'] ?? '';
       return ProductDetailScreen(productId: id);
-    }, 
-    binding: HomeBinding(),
-  ),
-   GetPage(
-    name: AppRoute.wishlist, 
-    page: () => WishlistPage(), 
-    binding: HomeBinding(),
-  ),
-   GetPage(
-    name: AppRoute.cart, 
-    page: () => CartScreen(), 
-    binding: HomeBinding(),
-  ),
-   GetPage(
-    name: AppRoute.profile, 
-    page: () => ProfilePage(), 
-    binding: HomeBinding(),
-  ),
-   GetPage(
-    name: AppRoute.edit_profile, 
-    page: () => EditProfilePage(), 
+    },
     binding: HomeBinding(),
   ),
   GetPage(
-    name: AppRoute.checkout, 
-    page: () => CheckoutScreen(), 
-    binding: HomeBinding(),
-  ),
-   GetPage(
-    name: AppRoute.address, 
-    page: () => AddressPage (), 
+    name: AppRoute.wishlist,
+    page: () => WishlistPage(),
     binding: HomeBinding(),
   ),
   GetPage(
-    name: AppRoute.add_address, 
-    page: () => AddAddressPage(), 
-    binding: HomeBinding(),
-  ),
-   GetPage(
-    name: AppRoute.payments, 
-    page: () => PaymentPage(), 
+    name: AppRoute.cart,
+    page: () => CartScreen(),
     binding: HomeBinding(),
   ),
   GetPage(
-    name: AppRoute.add_cart, 
-    page: () => AddCardPage(), 
+    name: AppRoute.profile,
+    page: () => ProfilePage(),
     binding: HomeBinding(),
   ),
-   GetPage(
-    name: AppRoute.orders, 
-    page: () => OrdersPage(), 
-    
-  ),
-   GetPage(
-    name: AppRoute.order_details, 
-    page: () => OrderDetailsPage(), 
+  GetPage(
+    name: AppRoute.edit_profile,
+    page: () => EditProfilePage(),
     binding: HomeBinding(),
   ),
-   GetPage(
-    name: AppRoute.notifications, 
-    page: () => NotificationsPage(), 
+  GetPage(
+    name: AppRoute.checkout,
+    page: () => CheckoutScreen(),
     binding: HomeBinding(),
   ),
-
-
-  
-  // Generic product list (if you need it)
- 
+  GetPage(
+    name: AppRoute.address,
+    page: () => AddressPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.add_address,
+    page: () => AddAddressPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.payments,
+    page: () => PaymentPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.add_cart,
+    page: () => AddCardPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(name: AppRoute.orders, page: () => OrdersPage()),
+  GetPage(
+    name: AppRoute.order_details,
+    page: () => OrderDetailsPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.notifications,
+    page: () => NotificationsPage(),
+    binding: HomeBinding(),
+  ),
 ];

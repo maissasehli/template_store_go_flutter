@@ -1,0 +1,36 @@
+{
+    "common": {
+        "select_language": "Choisir la langue",
+        "continue": "Continuer",
+        "english": "Anglais",
+        "arabic": "Arabe",
+        "french": "Français",
+        "language": "Langue"
+    },
+    "auth": {
+        "login": "Connexion",
+        "signup": "S'inscrire",
+        "email": "E-mail",
+        "password": "Mot de passe",
+        "forgot_password": "Mot de passe oublié?",
+        "dont_have_account": "Vous n'avez pas de compte?",
+        "create_one": "Créer un compte",
+        "already_have_account": "Vous avez déjà un compte?",
+        "sign_in": "Connectez-vous",
+        "continue_with_google": "Continuer avec Google",
+        "continue_with_apple": "Continuer avec Apple",
+        "continue_with_facebook": "Continuer avec Facebook"
+    },
+    "nav": {
+        "home": "Accueil",
+        "categories": "Catégories",
+        "cart": "Panier",
+        "wishlist": "Favoris",
+        "profile": "Profil"
+    },
+    "onboarding": {
+        "discover_shopping": "Découvrez un shopping fluide !",
+        "fast_delivery": "Livraison rapide, retours faciles et un choix infini vous attendent",
+        "get_started": "Commencer"
+    }
+}

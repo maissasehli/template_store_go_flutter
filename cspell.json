@@ -1,0 +1,12 @@
+{
+    "version": "0.2",
+    "ignorePaths": [
+        "lib/app/core/localization/app_translation.dart",
+        "assets/translations/"
+    ],
+    "dictionaryDefinitions": [],
+    "dictionaries": [],
+    "words": [],
+    "ignoreWords": [],
+    "import": []
+}
