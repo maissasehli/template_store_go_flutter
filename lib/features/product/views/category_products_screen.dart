@@ -6,7 +6,7 @@ import 'package:store_go/features/home/models/product_model.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
 class CategoryProductsScreen extends StatelessWidget {
-  const CategoryProductsScreen({Key? key}) : super(key: key);
+  const CategoryProductsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class CategoryProductsScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 27),
             child: Text(
-              '${category.name} (${category.productCount ?? 0})',
+              '${category.name} (${category})',
               style: const TextStyle(
                 fontFamily: 'Gabarito',
                 fontSize: 16,
@@ -75,7 +75,7 @@ class CategoryProductsScreen extends StatelessWidget {
           // Subcategory filter chips - horizontal scrollable row
           Padding(
             padding: const EdgeInsets.only(left: 25, top: 15),
-            child: Container(
+            child: SizedBox(
               height: 30,
               width: double.infinity,
               child: SingleChildScrollView(

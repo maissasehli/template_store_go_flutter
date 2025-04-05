@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:store_go/app/di/initializer.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/di/lifecycle_observer.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/core/config/main_routes.dart';
 
@@ -11,6 +12,9 @@ Future<void> main() async {
   await EasyLocalization.ensureInitialized();
 
   await AppInitializer.init();
+
+  // Initialize lifecycle observer
+  Get.put(LifecycleObserver());
 
   runApp(
     EasyLocalization(

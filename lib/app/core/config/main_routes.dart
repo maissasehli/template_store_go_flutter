@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:store_go/app/core/middlewares/auth_middleware.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
 import 'package:store_go/features/category/category_binding.dart';
 import 'package:store_go/features/home/home_binding.dart';
@@ -33,10 +34,12 @@ import 'package:store_go/features/wishlist/wishlist_screen.dart';
 List<GetPage<dynamic>>? routes = [
   GetPage(name: '/', page: () => const SplashScreen()),
 
+  // Protected routes with middleware
   GetPage(
     name: AppRoute.mainContainer,
     page: () => MainContainerScreen(),
     binding: HomeBinding(),
+    middlewares: [AuthMiddleware()],
   ),
 
   GetPage(

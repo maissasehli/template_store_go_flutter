@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
@@ -196,21 +197,40 @@ class AuthService {
   }
 
   // Check if token needs refresh
+  // Check if token needs refresh and refresh if needed
   Future<bool> checkAndRefreshTokenIfNeeded() async {
     try {
+      final token = await _secureStorage.read(key: 'access_token');
+      if (token == null) {
+        Logger().w('No access token found');
+        return false;
+      }
+
       final expiresAtStr = await _secureStorage.read(key: 'expires_at');
-      if (expiresAtStr == null) return false;
+      if (expiresAtStr == null) {
+        Logger().w('No token expiration info found');
+        return false;
+      }
 
       final expiresAt = DateTime.parse(expiresAtStr);
       final now = DateTime.now();
 
-      // Refresh if less than 5 minutes until expiration
-      if (expiresAt.difference(now).inMinutes < 5) {
-        return await refreshToken();
+      // If token is already expired, try to refresh it
+      if (now.isAfter(expiresAt)) {
+        Logger().i('Token expired, attempting refresh');
+        return await _refreshToken();
       }
 
+      // Refresh if less than 5 minutes until expiration
+      if (expiresAt.difference(now).inMinutes < 5) {
+        Logger().i('Token expiring soon, attempting refresh');
+        return await _refreshToken();
+      }
+
+      Logger().i('Token is valid');
       return true;
     } catch (e) {
+      Logger().e('Error checking token expiration: $e');
       return false;
     }
   }
@@ -529,6 +549,80 @@ class AuthService {
     } catch (e) {
       Logger().e('Error linking OAuth provider: $e');
       _showErrorAlert('Failed to link account');
+      return false;
+    }
+  }
+
+  // Handle app resume - check if the token is still valid
+ Future<void> handleAppResume() async {
+    try {
+      // Check if user is authenticated first
+      final userAuthenticated = await isAuthenticated();
+      if (!userAuthenticated) {
+        // If not authenticated, nothing to do
+        return;
+      }
+
+      // Check if token is still valid or can be refreshed
+      final hasValidToken = await checkAndRefreshTokenIfNeeded();
+      if (!hasValidToken) {
+        // If token is invalid and can't be refreshed, log out
+        await _secureStorage.deleteAll();
+        // If user is on a protected route, redirect to login
+        if (!AppRoute.publicRoutes.contains(Get.currentRoute)) {
+          Get.offAllNamed(AppRoute.login);
+        }
+      }
+    } catch (e) {
+      Logger().e('Error in handleAppResume: $e');
+    }
+  }
+  // Add this method to AuthService class
+  Future<bool> _refreshToken() async {
+    try {
+      // Get the refresh token
+      final refreshToken = await _secureStorage.read(key: 'refresh_token');
+      if (refreshToken == null) {
+        Logger().w('No refresh token found');
+        return false;
+      }
+
+      // Create a clean Dio instance for the refresh request
+      final refreshDio = dio.Dio(
+        dio.BaseOptions(
+          baseUrl: AppConfig.baseUrl,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Store-ID': AppConfig.storeId,
+          },
+        ),
+      );
+
+      // Make the refresh request
+      final response = await refreshDio.post(
+        '/auth/refresh',
+        data: {'refreshToken': refreshToken},
+      );
+
+      if (response.statusCode == 200) {
+        final accessToken = response.data['session']['accessToken'];
+        final newRefreshToken = response.data['session']['refreshToken'];
+        final expiresAt = response.data['session']['expiresAt'];
+
+        // Store all tokens atomically
+        await Future.wait([
+          _secureStorage.write(key: 'access_token', value: accessToken),
+          _secureStorage.write(key: 'refresh_token', value: newRefreshToken),
+          _secureStorage.write(key: 'expires_at', value: expiresAt),
+        ]);
+
+        Logger().i('Token refreshed successfully');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      Logger().e('Error refreshing token: $e');
       return false;
     }
   }

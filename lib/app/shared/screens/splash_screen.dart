@@ -28,41 +28,59 @@ class SplashScreenState extends State<SplashScreen> {
       // Give the splash screen time to display
       await Future.delayed(const Duration(seconds: 1));
 
+      // Check if user is authenticated AND token is still valid
+      final isAuthenticated = await authService.isAuthenticated();
+      Logger().i("Checking if user is authenticated: $isAuthenticated");
+
+      if (isAuthenticated) {
+        // If authenticated, check if token is valid
+        final hasValidToken = await authService.checkAndRefreshTokenIfNeeded();
+        Logger().i("Checking if token is valid: $hasValidToken");
+
+        if (hasValidToken) {
+          // User is authenticated with valid token, go to main app
+          Logger().i(
+            "User is authenticated with valid token, going to main container",
+          );
+          return Get.offAllNamed(AppRoute.mainContainer);
+        } else {
+          // Token is invalid and couldn't be refreshed
+          Logger().i("Token invalid and couldn't be refreshed, going to login");
+          return Get.offAllNamed(AppRoute.login);
+        }
+      }
+
+      // Continue with normal flow for non-authenticated users
+
       // Check if user has selected language before
       final hasSelectedLanguage = await StorageService.hasSelectedLanguage();
-
       if (!hasSelectedLanguage) {
         // First-time user, show language selection
+        Logger().i("First-time user, showing language selection");
         return Get.offAllNamed(AppRoute.language);
       }
 
       // Check if user has seen onboarding
       final hasSeenOnboarding = await StorageService.hasSeenOnboarding();
-
       if (!hasSeenOnboarding) {
         // User has selected language but not completed onboarding
+        Logger().i("User needs to complete onboarding");
         return Get.offAllNamed(AppRoute.onBoarding);
       }
 
-      // Check if the user is authenticated
-      final isAuthenticated = await authService.isAuthenticated();
-
-      if (isAuthenticated) {
-        // User is authenticated, go to main app
-        return Get.offAllNamed(AppRoute.mainContainer);
-      } else {
-        // User has completed onboarding but not authenticated
-        return Get.offAllNamed(AppRoute.login);
-      }
+      // If we reach here, user is not authenticated but has completed onboarding
+      Logger().i("User not authenticated, going to login");
+      return Get.offAllNamed(AppRoute.login);
     } catch (e, stackTrace) {
       Logger().e("Error in _checkNavigation: $e");
       Logger().e(stackTrace.toString());
       // Fallback navigation in case of error
       Get.offAllNamed(AppRoute.login);
     }
-  }
-
+  } 
+  
   // function that logs all storage properties to the console using Logger()
+
   void _logStorageProperties() async {
     Logger().i("Storage properties:");
     Logger().i(
