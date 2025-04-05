@@ -1,5 +1,7 @@
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:store_go/app/core/services/storage_service.dart';
 
 class LocalizationService {
@@ -32,7 +34,12 @@ class LocalizationService {
   ) async {
     final locale = Locale(langCode);
     await StorageService.saveLocale(langCode);
+
+    // The proper way to change locale with EasyLocalization
     await context.setLocale(locale);
+
+    // This forces the entire app to rebuild with the new locale
+    Get.updateLocale(locale);
   }
 
   // Check if current locale is RTL

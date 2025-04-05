@@ -7,7 +7,6 @@ import 'package:store_go/app/shared/extensions/full_width_extension.dart';
 import 'package:store_go/app/shared/widgets/theme_toggle.dart';
 import 'package:store_go/features/language/controllers/language_controller.dart';
 import 'package:store_go/features/language/views/widgets/language_card.dart';
-import 'package:store_go/app/core/config/routes_config.dart';
 
 class LanguageScreen extends GetView<LanguageController> {
   const LanguageScreen({super.key});
@@ -19,7 +18,7 @@ class LanguageScreen extends GetView<LanguageController> {
       appBar: AppBar(
         elevation: 0,
         title: Text(
-          'Select Language'.tr,
+          'language.select_a_language'.translate(),
           style: TextStyle(
             color: AppColors.foreground(context),
             fontSize: 24,
@@ -61,7 +60,7 @@ class LanguageScreen extends GetView<LanguageController> {
             Text("common.continue".translate())
                 .primaryButton(
                   context,
-                  onPressed: () => Get.offAllNamed(AppRoute.onBoarding),
+                  onPressed: () => controller.onSaveLanguage(context),
                 )
                 .fullWidth(),
           ],

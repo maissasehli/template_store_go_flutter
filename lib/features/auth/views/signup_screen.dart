@@ -33,7 +33,7 @@ class Signup extends GetView<SignupController> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             const SizedBox(height: 70),
-                            const Text('Create Account').heading2(context),
+                            const Text('Create Account').heading3(context),
                             const SizedBox(height: 40),
                             // First Name Field
                             "First name".textField(

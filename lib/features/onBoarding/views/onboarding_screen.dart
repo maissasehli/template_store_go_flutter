@@ -243,7 +243,7 @@ class _OnboardingState extends State<Onboarding> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Already have account?'.tr,
+                                'Already have account?',
                                 style: TextStyle(color: Colors.white60),
                               ),
                               TextButton(

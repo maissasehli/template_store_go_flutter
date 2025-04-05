@@ -28,6 +28,9 @@
         "wishlist": "Wishlist",
         "profile": "Profile"
     },
+    "language": {
+        "select_a_language": "Select a language"
+    },
     "onboarding": {
         "discover_shopping": "Discover Seamless Shopping!",
         "fast_delivery": "Fast Delivery, Easy Returns, And Endless Choices Await You",

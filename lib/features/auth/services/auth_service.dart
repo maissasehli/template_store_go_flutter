@@ -79,18 +79,40 @@ class AuthService {
           value: response.data['session']['userId'],
         );
         Logger().i('user_id saved');
-        _showSuccessAlert('Account created successfully');
         return true;
       }
       return false;
     } catch (e) {
       Logger().e(e.toString());
       if (e is DioException) {
+        // Extract specific error message from response when available
+        String errorMessage = 'An unexpected error occurred';
+
+        if (e.response != null && e.response!.data != null) {
+          // Check different formats the error might come in
+          if (e.response!.data is Map) {
+            // Try to extract error message from common fields
+            errorMessage =
+                e.response!.data['error'] ??
+                e.response!.data['message'] ??
+                e.response!.data['errorMessage'] ??
+                'Error ${e.response!.statusCode}';
+
+            Logger().e("API error: $errorMessage");
+          } else if (e.response!.data is String) {
+            errorMessage = e.response!.data;
+            Logger().e("API error: $errorMessage");
+          }
+        }
+
+        // Handle specific status codes
         if (e.response?.statusCode == 400) {
-          Logger().e("error during signup : ${e.response?.data['error']}");
-          _showErrorAlert(e.response?.data['error'] ?? 'Invalid input');
+          _showErrorAlert(errorMessage);
+        } else if (e.response?.statusCode == 404) {
+          // Specifically handle 404 errors
+          _showErrorAlert(errorMessage);
         } else {
-          _showErrorAlert('An unexpected error occurred: ${e.toString()}');
+          _showErrorAlert(errorMessage);
         }
       } else {
         _showErrorAlert('An unexpected error occurred');

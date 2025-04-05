@@ -28,6 +28,9 @@
         "wishlist": "المفضلة",
         "profile": "الملف الشخصي"
     },
+    "language": {
+        "select_a_language": "إختر لغتك"
+    },
     "onboarding": {
         "discover_shopping": "اكتشف تجربة تسوق سلسة!",
         "fast_delivery": "توصيل سريع وإرجاع سهل وخيارات لا حصر لها في انتظارك",

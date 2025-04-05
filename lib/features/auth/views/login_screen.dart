@@ -44,7 +44,7 @@ class Login extends GetView<LoginController> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 60),
-                      const Text('log in').heading1(context),
+                      const Text('log in').heading2(context),
                       const SizedBox(height: 40),
                       "Email Address".emailField(
                         context,

@@ -63,6 +63,7 @@ dependencies:
   google_nav_bar: ^5.0.7
   synchronized: ^3.3.1
   easy_localization: ^3.0.7+1
+  flutter_native_splash: ^2.4.4
 
 dev_dependencies:
   flutter_test:
@@ -100,8 +101,9 @@ flutter:
      - assets/categories/
      
 
+  
+    
 
-     
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/features/onBoarding/controllers/profile_setup_controller.dart';
 import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
@@ -24,21 +25,15 @@ class ProfileSetupScreen extends StatelessWidget {
                   const SizedBox(height: 60),
                   Text(
                     'Tell us About yourself',
-                    style: AppColor.titleLarge.copyWith(
-                      color: AppColor.textPrimaryColor,
-                      fontSize: 24,
-                    ),
                     textAlign: TextAlign.center,
-                  ),
+                  ).heading3(context),
+
                   const SizedBox(height: 40),
 
                   Text(
                     'Who do you shop for?',
-                    style: AppColor.bodyMedium.copyWith(
-                      color: AppColor.textSecondaryColor,
-                      fontSize: 16,
-                    ),
-                  ),
+                    
+                  ).body(context),
                   const SizedBox(height: 15),
 
                   Row(
@@ -51,14 +46,8 @@ class ProfileSetupScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  Text(
-                    'How Old are you?',
-                    style: AppColor.bodyMedium.copyWith(
-                      color: AppColor.textSecondaryColor,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const Text("How Old are you?").subtitle1(context),
+                
+                  const Text("How Old are you?").body(context),
                   const SizedBox(height: 15),
 
                   Container(
@@ -99,51 +88,18 @@ class ProfileSetupScreen extends StatelessWidget {
                   const Spacer(),
 
                   Obx(
-                    () => Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color:
-                            controller.isFormValid
-                                ? AppColor.secondaryColor
-                                : Colors.grey[300],
-                        borderRadius: BorderRadius.circular(
-                          AppColor.globalBorderRadius,
-                        ),
-                      ),
-                      child: ElevatedButton(
-                        onPressed:
-                            controller.isFormValid &&
-                                    !controller.isLoading.value
-                                ? controller.finishUserProfileSetup
-                                : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppColor.globalBorderRadius,
-                            ),
-                          ),
-                        ),
-                        child:
-                            controller.isLoading.value
-                                ? CircularProgressIndicator(color: Colors.white)
-                                : Text(
-                                  'Finish',
-                                  style: TextStyle(
-                                    color:
-                                        controller.isFormValid
-                                            ? Colors.white
-                                            : Colors.grey[500],
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                      ),
+                    () => Text(
+                      'Finish',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ).primaryButton(
+                      context,
+                      onPressed:
+                          controller.isFormValid
+                              ? controller.finishUserProfileSetup
+                              : () {},
+                      isLoading: controller.isLoading.value,
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                  ),                 const SizedBox(height: 20),
                 ],
               ),
             ),
