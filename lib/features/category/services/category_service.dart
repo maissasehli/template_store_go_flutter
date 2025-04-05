@@ -1,56 +1,59 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart' as dio;
+import 'package:store_go/features/category/services/category_api_service.dart';
 import 'package:store_go/features/home/models/category_model.dart';
+import 'package:logger/logger.dart';
 
 class CategoryService {
-  final String baseUrl = 'https://your-api-endpoint.com/api';
+  final CategoryApiService _categoryApiService;
+  final Logger _logger = Logger();
+
+  // Dependency injection through constructor
+  CategoryService(this._categoryApiService);
 
   // Get all categories
-  Future<List<Category>> getCategories() async {
+Future<List<Category>> getCategories() async {
     try {
-      final response = await http.get(Uri.parse('$baseUrl/categories'));
+      // Use the API service to get categories
+      final dio.Response response = await _categoryApiService.getCategories();
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        return data.map((json) => Category.fromJson(json)).toList();
+        _logger.d("Categories fetched successfully");
+
+        // The response.data is a Map with a "data" key containing the list of categories
+        final Map<String, dynamic> responseMap = response.data;
+
+        // Extract the categories list from the "data" key
+        final List<dynamic> categoriesJson = responseMap['data'];
+
+        return categoriesJson.map((json) => Category.fromJson(json)).toList();
       } else {
+        _logger.e("Failed to load categories: ${response.statusCode}");
         throw Exception('Failed to load categories: ${response.statusCode}');
       }
     } catch (e) {
-      // For demo, return dummy categories
-      return _getDummyCategories();
+      _logger.e("Error fetching categories: $e");
+      throw Exception('Error fetching categories: $e');
     }
   }
 
-  // Dummy categories for demo - updated to match reference image
-  List<Category> _getDummyCategories() {
-    return [
-      Category(
-        id: 'hoodies',
-        name: 'Hoodies',
-        icon: 'assets/categories/category_hoodies.png', 
-      ),
-      Category(
-        id: 'shorts',
-        name: 'Shorts',
-        icon: 'assets/categories/category_shorts.png', 
-      ),
-      Category(
-        id: 'shoes',
-        name: 'Shoes',
-        icon: 'assets/categories/category_shoes.png', 
-      ),
-      Category(
-        id: 'bag',
-        name: 'Bag',
-        icon: 'assets/categories/category_bag.png', 
-      ),
-      Category(
-        id: 'accessories',
-        name: 'Accessories',
-        icon:
-            'assets/categories/category_accessories.png', 
-      ),
-    ];
+  // Get category by ID
+  Future<Category> getCategoryById(String id) async {
+    try {
+      // Use the API service to get a category by ID
+      final dio.Response response = await _categoryApiService.getCategoryById(
+        int.parse(id),
+      );
+
+      if (response.statusCode == 200) {
+        _logger.d("Category with ID $id fetched successfully");
+        return Category.fromJson(response.data);
+      } else {
+        _logger.e("Failed to load category: ${response.statusCode}");
+        throw Exception('Failed to load category: ${response.statusCode}');
+      }
+    } catch (e) {
+      _logger.e("Error fetching category with ID $id: $e");
+      throw Exception('Error fetching category with ID $id: $e');
+    }
   }
 }

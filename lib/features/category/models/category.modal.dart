@@ -1,7 +1,7 @@
 class Category {
   final String id;
   final String name;
-  final String? imageUrl; // Changed from icon to imageUrl
+  final String? imageUrl;
   final String? description;
   final String? userId;
   final String? storeId;

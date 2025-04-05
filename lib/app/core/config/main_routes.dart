@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
+import 'package:store_go/features/category/category_binding.dart';
 import 'package:store_go/features/home/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/auth/views/email_confirmation_screen.dart';
@@ -86,7 +87,7 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.categories,
     page: () => CategoryScreen(),
-    binding: HomeBinding(),
+    binding: CategoryBinding(),
   ),
   GetPage(
     name: AppRoute.categoryDetail,

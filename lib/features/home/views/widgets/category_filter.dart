@@ -39,7 +39,7 @@ class CategoryFilter extends StatelessWidget {
                             : Colors.grey.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: _buildCategoryIcon(category.icon, isSelected, context),
+                      child: _buildCategoryIcon(category.imageUrl, isSelected, context),
                     ),
                     const SizedBox(height: 8),
                     Text(
