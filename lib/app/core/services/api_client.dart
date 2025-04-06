@@ -153,9 +153,13 @@ class ApiClient {
     }
   }
 
-  Future<dio.Response> post(String path, {dynamic data}) async {
+  Future<dio.Response> post(
+    String path, {
+    dynamic data,
+    dio.Options? options,
+  }) async {
     try {
-      return await _dio.post(path, data: data);
+      return await _dio.post(path, data: data, options: options);
     } catch (e) {
       rethrow;
     }

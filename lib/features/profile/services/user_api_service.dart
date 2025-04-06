@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart' as dio;
+import 'package:http_parser/http_parser.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -40,5 +43,43 @@ class UserApiService {
       logger.e("Error getting current user: $e");
       rethrow;
     }
+  }
+
+  // Add this method for uploading avatar
+  Future<dio.Response> uploadAvatar(String userId, File imageFile) async {
+    try {
+      logger.d("Uploading avatar for user: $userId");
+
+      // Create form data
+      final formData = dio.FormData.fromMap({
+        'avatar': await dio.MultipartFile.fromFile(
+          imageFile.path,
+          filename: 'avatar_${DateTime.now().millisecondsSinceEpoch}.png',
+          contentType: MediaType('image', 'png'),
+        ),
+      });
+
+      // Send the request
+      final response = await _apiClient.post(
+        "/users/$userId/avatar",
+        data: formData,
+        options: dio.Options(contentType: 'multipart/form-data'),
+      );
+
+      logger.d("Avatar upload response: ${response.data}");
+      return response;
+    } catch (e) {
+      logger.e("Error uploading avatar: $e");
+      rethrow;
+    }
+  }
+
+  // Get current user's ID method
+  Future<String> getCurrentUserId() async {
+    final userId = await _secureStorage.read(key: 'user_id');
+    if (userId == null) {
+      throw Exception('User ID not found in storage');
+    }
+    return userId;
   }
 }

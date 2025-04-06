@@ -19,7 +19,8 @@ import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
 import 'package:store_go/features/product/views/product_detail_screen.dart';
-import 'package:store_go/features/profile/profile_binding.dart';
+import 'package:store_go/features/profile/bindings/edit_profile_binding.dart';
+import 'package:store_go/features/profile/bindings/profile_binding.dart';
 import 'package:store_go/features/profile/views/add_adress.dart';
 import 'package:store_go/features/profile/views/adress_screen.dart';
 import 'package:store_go/features/profile/views/edit_profile_screen.dart';
@@ -131,12 +132,12 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoute.profile,
     page: () => const ProfilePage(),
     binding: ProfileBinding(),
-    middlewares: [AuthMiddleware()], // Assuming you want to protect this route
+    middlewares: [AuthMiddleware()],
   ),
   GetPage(
     name: AppRoute.edit_profile,
     page: () => EditProfilePage(),
-    binding: HomeBinding(),
+    binding: EditProfileBinding(),
   ),
   GetPage(
     name: AppRoute.checkout,
