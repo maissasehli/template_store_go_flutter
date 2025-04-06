@@ -63,7 +63,11 @@ class CategoryFilter extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryIcon(String? iconPath, bool isSelected, BuildContext context) {
+ Widget _buildCategoryIcon(
+    String? iconPath,
+    bool isSelected,
+    BuildContext context,
+  ) {
     if (iconPath == null || iconPath.isEmpty) {
       return Icon(
         Icons.category,
@@ -72,19 +76,64 @@ class CategoryFilter extends StatelessWidget {
       );
     }
 
-    final String path = iconPath.startsWith('asset://') ? iconPath.replaceFirst('asset://', '') : iconPath;
-
-    return Image.asset(
-      path,
-      width: 28,
-      height: 28,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(
-          Icons.category,
-          color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-          size: 28,
-        );
-      },
-    );
+    // Handle asset:// protocol
+    if (iconPath.startsWith('asset://')) {
+      final String path = iconPath.replaceFirst('asset://', '');
+      return Image.asset(
+        path,
+        width: 28,
+        height: 28,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.category,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+            size: 28,
+          );
+        },
+      );
+    }
+    // Handle http:// or https:// URLs
+    else if (iconPath.startsWith('http://') ||
+        iconPath.startsWith('https://')) {
+      return Image.network(
+        iconPath,
+        width: 28,
+        height: 28,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.category,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+            size: 28,
+          );
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return CircularProgressIndicator(
+            value:
+                loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+            color: Theme.of(context).primaryColor,
+            strokeWidth: 2.0,
+          );
+        },
+      );
+    }
+    // For other formats, try asset
+    else {
+      return Image.asset(
+        iconPath,
+        width: 28,
+        height: 28,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.category,
+            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+            size: 28,
+          );
+        },
+      );
+    }
   }
 }

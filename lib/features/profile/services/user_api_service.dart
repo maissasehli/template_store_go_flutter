@@ -1,47 +1,43 @@
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/api_client.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserApiService {
   final ApiClient _apiClient;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final logger = Logger();
 
   // Dependency injection through constructor
   UserApiService(this._apiClient);
 
-  // Update user profile method
-  Future<Response> updateUserProfile({
-    required String userId,
-    String? gender,
-    int? age,
-    String? name,
-    // Add other profile fields as needed
-  }) async {
-    // Filter out null values to only send fields that are being updated
-    final Map<String, dynamic> updateData = {
-      if (gender != null) 'gender': gender,
-      if (age != null) 'age': age,
-      if (name != null) 'name': name,
-      // Add other fields as needed
-    };
-
-    // Only make the API call if we have data to update
-    if (updateData.isEmpty) {
-      throw Exception('No update data provided');
-    }
-
+  // Get user by ID method
+  Future<dio.Response> getUserById(String id) async {
     try {
-      // Use your existing ApiClient for the PUT request
-      return await _apiClient.put('/users/$userId', data: updateData);
+      logger.d("Getting user by ID: $id");
+      final user = await _apiClient.get("/users/$id");
+      logger.d("User data retrieved: ${user.data}");
+      return user;
     } catch (e) {
-      // You can add specific error handling for user update operations
+      logger.e("Error getting user by ID: $id, $e");
       rethrow;
     }
   }
 
-  // Get user profile method
-  Future<Response> getUserProfile(String userId) async {
+  // Get current user method (uses stored user ID)
+  Future<dio.Response> getCurrentUser() async {
     try {
-      return await _apiClient.get('/users/$userId');
+      // Get the current user ID from secure storage
+      final userId = await _secureStorage.read(key: 'user_id');
+
+      if (userId == null) {
+        throw Exception('User ID not found in storage');
+      }
+
+      logger.d("Getting current user with ID: $userId");
+      return await getUserById(userId);
     } catch (e) {
+      logger.e("Error getting current user: $e");
       rethrow;
     }
   }

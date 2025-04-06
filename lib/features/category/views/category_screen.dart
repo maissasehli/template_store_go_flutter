@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/home/models/category_model.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
@@ -12,7 +13,7 @@ class CategoryScreen extends StatelessWidget {
     final CategoryController controller = Get.find<CategoryController>();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,13 +28,13 @@ class CategoryScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Color(0xFFF4F4F4),
+                      color: AppColors.muted(context),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.black,
+                        color: AppColors.foreground(context),
                         size: 20,
                       ),
                       onPressed: () => Get.back(),
@@ -64,13 +65,13 @@ class CategoryScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 'Shop by Categories',
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   height: 1.0,
                   letterSpacing: 0,
-                  color: Colors.black,
+                  color: AppColors.foreground(context),
                 ),
               ),
             ),
@@ -84,7 +85,11 @@ class CategoryScreen extends StatelessWidget {
                 child: Obx(() {
                   // Show loading indicator while fetching data
                   if (controller.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary(context),
+                      ),
+                    );
                   }
                   // Show error message if there's an error
                   else if (controller.errorMessage.value != null) {
@@ -94,11 +99,19 @@ class CategoryScreen extends StatelessWidget {
                         children: [
                           Text(
                             controller.errorMessage.value!,
-                            style: TextStyle(color: Colors.red),
+                            style: TextStyle(
+                              color: AppColors.destructive(context),
+                            ),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 16),
                           ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary(context),
+                              foregroundColor: AppColors.primaryForeground(
+                                context,
+                              ),
+                            ),
                             onPressed: controller.fetchCategories,
                             child: Text('Retry'),
                           ),
@@ -108,7 +121,14 @@ class CategoryScreen extends StatelessWidget {
                   }
                   // Show empty state message if no categories found
                   else if (controller.categories.isEmpty) {
-                    return const Center(child: Text('No categories found'));
+                    return Center(
+                      child: Text(
+                        'No categories found',
+                        style: TextStyle(
+                          color: AppColors.mutedForeground(context),
+                        ),
+                      ),
+                    );
                   }
                   // Show the list of categories
                   return ListView.builder(
@@ -147,7 +167,7 @@ class CategoryTile extends StatelessWidget {
       width: double.infinity,
       height: 64,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: AppColors.muted(context),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Material(
@@ -164,20 +184,20 @@ class CategoryTile extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white,
+                    color: AppColors.card(context),
                   ),
-                  child: _buildCategoryIcon(category),
+                  child: _buildCategoryIcon(category, context),
                 ),
                 const SizedBox(width: 16),
                 Text(
                   category.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 15,
                     fontWeight: FontWeight.w400,
                     height: 1.0,
                     letterSpacing: 0,
-                    color: Colors.black87,
+                    color: AppColors.foreground(context),
                   ),
                 ),
               ],
@@ -188,7 +208,7 @@ class CategoryTile extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryIcon(Category category) {
+  Widget _buildCategoryIcon(Category category, BuildContext context) {
     // Check if the icon is a network URL
     if (category.imageUrl != null && category.imageUrl!.startsWith('http')) {
       return ClipOval(
@@ -197,7 +217,11 @@ class CategoryTile extends StatelessWidget {
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
             // Fallback to default icon if image fails to load
-            return const Icon(Icons.category, size: 24, color: Colors.grey);
+            return Icon(
+              Icons.category,
+              size: 24,
+              color: AppColors.mutedForeground(context),
+            );
           },
         ),
       );
@@ -210,14 +234,22 @@ class CategoryTile extends StatelessWidget {
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
             // Fallback to default icon if asset fails to load
-            return const Icon(Icons.category, size: 24, color: Colors.grey);
+            return Icon(
+              Icons.category,
+              size: 24,
+              color: AppColors.mutedForeground(context),
+            );
           },
         ),
       );
     }
     // Use default icon if no icon is provided
     else {
-      return const Icon(Icons.category, size: 24, color: Colors.grey);
+      return Icon(
+        Icons.category,
+        size: 24,
+        color: AppColors.mutedForeground(context),
+      );
     }
   }
 }

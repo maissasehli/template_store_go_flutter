@@ -3,13 +3,12 @@ import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/home/views/widgets/category_filter.dart';
 import 'package:store_go/features/home/views/widgets/custom_app_bar.dart';
 import 'package:store_go/features/home/views/widgets/product_grid.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
-// Example for HomeScreen
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
   final CategoryController categoryController = Get.find<CategoryController>();
@@ -18,18 +17,16 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorExtension>();
-
     return Scaffold(
-      backgroundColor: colors?.background ?? Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: CustomAppBar(
         onSearch: (query) => controller.productController.searchProducts(query),
       ),
-      body: _buildContent(context, colors),
+      body: _buildContent(context),
     );
   }
 
-  Widget _buildContent(BuildContext context, AppColorExtension? colors) {
+  Widget _buildContent(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,19 +47,24 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Categories',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Gabarito',
+                    color: AppColors.foreground(context),
                   ),
                 ),
                 TextButton(
                   onPressed: () => controller.onCategoriesSeeAllTap(),
-                  child: const Text(
+                  child: Text(
                     'See All',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      color: AppColors.primary(context),
+                    ),
                   ),
                 ),
               ],
@@ -90,19 +92,24 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Top Selling',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Gabarito',
+                    color: AppColors.foreground(context),
                   ),
                 ),
                 TextButton(
                   onPressed: () => controller.onTopSellingSeeAllTap(),
-                  child: const Text(
+                  child: Text(
                     'See All',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      color: AppColors.primary(context),
+                    ),
                   ),
                 ),
               ],
@@ -111,7 +118,11 @@ class HomeScreen extends StatelessWidget {
 
           Obx(() {
             if (controller.productController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primary(context),
+                ),
+              );
             }
 
             if (controller.productController.products.isEmpty) {
@@ -136,16 +147,20 @@ class HomeScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'New In',
                   style: TextStyle(
                     fontSize: UIConfig.fontSizeRegular,
                     fontWeight: FontWeight.bold,
+                    color: AppColors.foreground(context),
                   ),
                 ),
                 TextButton(
                   onPressed: () => controller.onNewInSeeAllTap(),
-                  child: const Text('See All'),
+                  child: Text(
+                    'See All',
+                    style: TextStyle(color: AppColors.primary(context)),
+                  ),
                 ),
               ],
             ),
@@ -153,11 +168,20 @@ class HomeScreen extends StatelessWidget {
 
           Obx(() {
             if (controller.productController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: AppColors.primary(context),
+                ),
+              );
             }
 
             if (controller.productController.products.isEmpty) {
-              return const Center(child: Text('No products found.'));
+              return Center(
+                child: Text(
+                  'No products found.',
+                  style: TextStyle(color: AppColors.mutedForeground(context)),
+                ),
+              );
             }
 
             return ProductGrid(

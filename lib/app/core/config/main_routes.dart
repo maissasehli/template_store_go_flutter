@@ -19,16 +19,18 @@ import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
 import 'package:store_go/features/product/views/product_detail_screen.dart';
-import 'package:store_go/features/profile/add_adress.dart';
-import 'package:store_go/features/profile/adress_screen.dart';
-import 'package:store_go/features/profile/edit_profile_screen.dart';
-import 'package:store_go/features/profile/notification_screen.dart';
-import 'package:store_go/features/profile/orders_detaill_screen.dart';
-import 'package:store_go/features/profile/orders_screen.dart';
-import 'package:store_go/features/profile/payment_screen.dart';
-import 'package:store_go/features/profile/profile_screen.dart';
+import 'package:store_go/features/profile/profile_binding.dart';
+import 'package:store_go/features/profile/views/add_adress.dart';
+import 'package:store_go/features/profile/views/adress_screen.dart';
+import 'package:store_go/features/profile/views/edit_profile_screen.dart';
+import 'package:store_go/features/profile/views/notification_screen.dart';
+import 'package:store_go/features/profile/views/orders_detaill_screen.dart';
+import 'package:store_go/features/profile/views/orders_screen.dart';
+import 'package:store_go/features/profile/views/payment_screen.dart';
+import 'package:store_go/features/profile/views/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
+import 'package:store_go/features/setting/views/setting_screen.dart';
 import 'package:store_go/features/wishlist/wishlist_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
@@ -46,6 +48,12 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoute.language,
     page: () => const LanguageScreen(),
     binding: LanguageBinding(),
+  ),
+
+  GetPage(
+    name: AppRoute.settings,
+    page: () => const SettingsScreen(),
+    binding: HomeBinding(),
   ),
 
   // OnBoarding
@@ -121,8 +129,9 @@ List<GetPage<dynamic>>? routes = [
   ),
   GetPage(
     name: AppRoute.profile,
-    page: () => ProfilePage(),
-    binding: HomeBinding(),
+    page: () => const ProfilePage(),
+    binding: ProfileBinding(),
+    middlewares: [AuthMiddleware()], // Assuming you want to protect this route
   ),
   GetPage(
     name: AppRoute.edit_profile,

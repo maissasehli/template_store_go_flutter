@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/home/models/product_model.dart';
-import 'package:store_go/app/core/theme/app_color_extension.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
@@ -31,13 +31,15 @@ class ProductGrid extends StatelessWidget {
         // Title is handled in the parent HomeScreen
 
         // Products display - either horizontal list or grid
-        if (isHorizontal) _buildHorizontalList(context) else _buildGrid(),
+        if (isHorizontal)
+          _buildHorizontalList(context)
+        else
+          _buildGrid(context),
       ],
     );
   }
 
   Widget _buildHorizontalList(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorExtension>();
     return SizedBox(
       height: 281, // Exact height from image 2 (Hug 281px)
       child: ListView.builder(
@@ -53,14 +55,14 @@ class ProductGrid extends StatelessWidget {
               width: 159, // Exact width from image 2 (Fixed 159px)
               margin: const EdgeInsets.only(right: 8), // Gap 8px from image 2
               decoration: BoxDecoration(
-                color: colors?.productCard ?? Colors.white,
+                color: AppColors.productCard(context),
                 borderRadius: BorderRadius.circular(
                   8,
                 ), // Radius 8px from image 2
                 border: Border.all(
-                  color: colors?.border ?? Color(0xFFF4F4F4),
+                  color: AppColors.border(context),
                   width: 1,
-                ), // Border color from image 2
+                ), // Theme-aware border color
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +73,7 @@ class ProductGrid extends StatelessWidget {
                     child: Stack(
                       children: [
                         // Product image
-                        _buildProductImage(product),
+                        _buildProductImage(product, context),
 
                         // Favorite button using SVG
                         Positioned(
@@ -82,7 +84,9 @@ class ProductGrid extends StatelessWidget {
                             child: SvgPicture.asset(
                               AssetConfig.heartIcon,
                               colorFilter: ColorFilter.mode(
-                                product.isFavorite ? Colors.red : Colors.grey,
+                                product.isFavorite
+                                    ? AppColors.destructive(context)
+                                    : AppColors.mutedForeground(context),
                                 BlendMode.srcIn,
                               ),
                               height: 24,
@@ -105,11 +109,11 @@ class ProductGrid extends StatelessWidget {
                           product.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            color: AppColors.foreground(context),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -119,11 +123,11 @@ class ProductGrid extends StatelessWidget {
                           children: [
                             Text(
                               '\$${product.price.toStringAsFixed(2)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: Colors.black,
+                                color: AppColors.foreground(context),
                               ),
                             ),
 
@@ -135,7 +139,7 @@ class ProductGrid extends StatelessWidget {
                                   '\$100.00',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    color: Colors.grey[500],
+                                    color: AppColors.mutedForeground(context),
                                     decoration: TextDecoration.lineThrough,
                                     fontSize: 12,
                                   ),
@@ -155,7 +159,7 @@ class ProductGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildGrid() {
+  Widget _buildGrid(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
         left: UIConfig.paddingMedium,
@@ -180,14 +184,14 @@ class ProductGrid extends StatelessWidget {
             onTap: () => onProductTap(product.id),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.productCard(context),
                 borderRadius: BorderRadius.circular(
                   8,
                 ), // Radius 8px from image 2
                 border: Border.all(
-                  color: Color(0xFFF4F4F4),
+                  color: AppColors.border(context),
                   width: 1,
-                ), // Border color from image 2
+                ), // Theme-aware border color
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,7 +201,7 @@ class ProductGrid extends StatelessWidget {
                     child: Stack(
                       children: [
                         // Product image
-                        _buildProductImage(product),
+                        _buildProductImage(product, context),
 
                         // Favorite button using SVG
                         Positioned(
@@ -208,7 +212,9 @@ class ProductGrid extends StatelessWidget {
                             child: SvgPicture.asset(
                               AssetConfig.heartIcon,
                               colorFilter: ColorFilter.mode(
-                                product.isFavorite ? Colors.red : Colors.black,
+                                product.isFavorite
+                                    ? AppColors.destructive(context)
+                                    : AppColors.foreground(context),
                                 BlendMode.srcIn,
                               ),
                               height: 24,
@@ -231,11 +237,11 @@ class ProductGrid extends StatelessWidget {
                           product.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            color: AppColors.foreground(context),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -245,11 +251,11 @@ class ProductGrid extends StatelessWidget {
                           children: [
                             Text(
                               '\$${product.price.toStringAsFixed(2)}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: Colors.black,
+                                color: AppColors.foreground(context),
                               ),
                             ),
 
@@ -260,7 +266,7 @@ class ProductGrid extends StatelessWidget {
                                   '\$100.00',
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
-                                    color: Colors.grey[500],
+                                    color: AppColors.mutedForeground(context),
                                     decoration: TextDecoration.lineThrough,
                                     fontSize: 12,
                                   ),
@@ -280,12 +286,16 @@ class ProductGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildProductImage(Product product) {
+  Widget _buildProductImage(Product product, BuildContext context) {
     if (product.images.isEmpty) {
       return Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.image, size: 40, color: Colors.grey),
+        color: AppColors.muted(context),
+        child: Center(
+          child: Icon(
+            Icons.image,
+            size: 40,
+            color: AppColors.mutedForeground(context),
+          ),
         ),
       );
     }
@@ -307,9 +317,13 @@ class ProductGrid extends StatelessWidget {
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
             return Container(
-              color: Colors.grey[200],
-              child: const Center(
-                child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+              color: AppColors.muted(context),
+              child: Center(
+                child: Icon(
+                  Icons.broken_image,
+                  size: 40,
+                  color: AppColors.mutedForeground(context),
+                ),
               ),
             );
           },
@@ -317,9 +331,13 @@ class ProductGrid extends StatelessWidget {
       );
     } else {
       return Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+        color: AppColors.muted(context),
+        child: Center(
+          child: Icon(
+            Icons.image_not_supported,
+            size: 40,
+            color: AppColors.mutedForeground(context),
+          ),
         ),
       );
     }

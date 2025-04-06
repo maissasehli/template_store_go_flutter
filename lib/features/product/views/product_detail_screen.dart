@@ -5,6 +5,7 @@ import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/home/models/product_model.dart';
 import 'package:store_go/app/shared/widgets/rating_stars.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -32,12 +33,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.background(context),
       body: Obx(() {
         final product = productController.selectedProduct.value;
 
         if (product == null) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.primary(context)),
+          );
         }
 
         // Set initial selected size if not already set
@@ -53,7 +56,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             Container(
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.6,
-              color: Colors.grey[200],
+              color: AppColors.muted(context),
               child: _buildProductImage(product),
             ),
 
@@ -72,12 +75,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Container(
                           width: 40,
                           height: 40,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
+                          decoration: BoxDecoration(
+                            color: AppColors.card(context),
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.chevron_left, size: 24),
+                            icon: Icon(
+                              Icons.chevron_left,
+                              size: 24,
+                              color: AppColors.foreground(context),
+                            ),
                             padding: EdgeInsets.zero,
                             onPressed: () => Navigator.pop(context),
                           ),
@@ -86,8 +93,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Container(
                           width: 40,
                           height: 40,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
+                          decoration: BoxDecoration(
+                            color: AppColors.card(context),
                             shape: BoxShape.circle,
                           ),
                           child: Center(
@@ -96,6 +103,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               AssetConfig.panierIcon,
                               width: 16,
                               height: 16,
+                              colorFilter: ColorFilter.mode(
+                                AppColors.foreground(context),
+                                BlendMode.srcIn,
+                              ),
                             ),
                           ),
                         ),
@@ -113,9 +124,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.card(context),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey[300]!, width: 1),
+                        border: Border.all(
+                          color: AppColors.border(context),
+                          width: 1,
+                        ),
                       ),
                       child: InkWell(
                         onTap: () {
@@ -128,7 +142,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 : Icons.favorite_border,
                             size: 20,
                             color:
-                                product.isFavorite ? Colors.red : Colors.black,
+                                product.isFavorite
+                                    ? AppColors.destructive(context)
+                                    : AppColors.foreground(context),
                           ),
                         ),
                       ),
@@ -151,7 +167,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color:
-                                  index == 0 ? Colors.black : Colors.grey[300],
+                                  index == 0
+                                      ? AppColors.foreground(context)
+                                      : AppColors.border(context),
                             ),
                           ),
                         ),
@@ -168,9 +186,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               maxChildSize: 0.8,
               builder: (context, scrollController) {
                 return Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: AppColors.card(context),
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
@@ -186,12 +204,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             // Title
-                            const Text(
+                            Text(
                               'Roller Rabbit',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
+                                color: AppColors.foreground(context),
                               ),
                             ),
 
@@ -202,7 +221,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 horizontal: 5,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.grey[200],
+                                color: AppColors.muted(context),
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Row(
@@ -217,8 +236,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         });
                                       }
                                     },
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
                                         horizontal: 8,
                                       ),
                                       child: Text(
@@ -226,6 +245,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
+                                          color: AppColors.foreground(context),
                                         ),
                                       ),
                                     ),
@@ -233,9 +253,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   // Quantity display
                                   Text(
                                     '$quantity',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
+                                      color: AppColors.foreground(context),
                                     ),
                                   ),
                                   // Plus button
@@ -245,8 +266,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         quantity++;
                                       });
                                     },
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
                                         horizontal: 8,
                                       ),
                                       child: Text(
@@ -254,6 +275,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
+                                          color: AppColors.foreground(context),
                                         ),
                                       ),
                                     ),
@@ -269,7 +291,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Text(
                           'Vado Odelle Dress',
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: AppColors.mutedForeground(context),
                             fontSize: 11,
                             fontFamily: 'Poppins',
                           ),
@@ -287,7 +309,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Text(
                                   '(${product.reviewCount} Reviews)',
                                   style: TextStyle(
-                                    color: Colors.grey[600],
+                                    color: AppColors.mutedForeground(context),
                                     fontSize: 11,
                                     fontFamily: 'Poppins',
                                   ),
@@ -302,6 +324,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
+                                color: AppColors.foreground(context),
                               ),
                             ),
                           ],
@@ -313,7 +336,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           child: Stack(
                             clipBehavior: Clip.none,
                             children: [
-                              const Positioned(
+                              Positioned(
                                 top: 0,
                                 left: 0,
                                 child: Text(
@@ -322,6 +345,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     fontFamily: 'Poppins',
+                                    color: AppColors.foreground(context),
                                   ),
                                 ),
                               ),
@@ -346,11 +370,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.card(context),
                                     borderRadius: BorderRadius.circular(20),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.grey.withOpacity(0.2),
+                                        color: AppColors.border(
+                                          context,
+                                        ).withOpacity(0.2),
                                         spreadRadius: 1,
                                         blurRadius: 5,
                                       ),
@@ -374,16 +400,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             shape: BoxShape.circle,
                                             color: Colors.white,
                                             border: Border.all(
-                                              color: Colors.grey[300]!,
+                                              color: AppColors.border(context),
                                             ),
                                           ),
                                           child:
                                               selectedColor == 'White'
-                                                  ? const Center(
+                                                  ? Center(
                                                     child: Icon(
                                                       Icons.check,
                                                       size: 16,
-                                                      color: Colors.black,
+                                                      color:
+                                                          AppColors.foreground(
+                                                            context,
+                                                          ),
                                                     ),
                                                   )
                                                   : null,
@@ -455,19 +484,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                         // Description section
                         const SizedBox(height: 20),
-                        const Text(
+                        Text(
                           'Description',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'Poppins',
+                            color: AppColors.foreground(context),
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           "Get a little lift from these Sam Edelman sandals featuring ruched straps and leather lace-up ties, while a braided jute sole makes a fresh statement for summer.",
                           style: TextStyle(
-                            color: Colors.grey[700],
+                            color: AppColors.mutedForeground(context),
                             height: 1.5,
                             fontSize: 11,
                             fontWeight: FontWeight.w400,
@@ -480,11 +510,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Row(
                           children: [
                             // Price
-                            const Text(
+                            Text(
                               '\$198.00',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
+                                color: AppColors.foreground(context),
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -507,7 +538,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.black,
+                                  backgroundColor: AppColors.primary(context),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
                                   ),
@@ -518,10 +549,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    // Use 'children' instead of 'child'
                                     SvgPicture.asset(
                                       AssetConfig.bagIcon,
-                                      color: Colors.white,
+                                      color: AppColors.primaryForeground(
+                                        context,
+                                      ),
                                       width: 16,
                                       height: 16,
                                     ),
@@ -531,7 +563,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                                        color: AppColors.primaryForeground(
+                                          context,
+                                        ),
                                         fontFamily: 'Poppins',
                                       ),
                                     ),
@@ -549,7 +583,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             width: 50,
                             height: 5,
                             decoration: BoxDecoration(
-                              color: Colors.grey[300],
+                              color: AppColors.border(context),
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
@@ -579,14 +613,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: selectedSize == size ? Colors.black : Colors.white,
-          border: Border.all(color: Colors.grey[300]!),
+          color:
+              selectedSize == size
+                  ? AppColors.primary(context)
+                  : AppColors.card(context),
+          border: Border.all(color: AppColors.border(context)),
         ),
         child: Center(
           child: Text(
             size,
             style: TextStyle(
-              color: selectedSize == size ? Colors.white : Colors.black,
+              color:
+                  selectedSize == size
+                      ? AppColors.primaryForeground(context)
+                      : AppColors.foreground(context),
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),
@@ -599,9 +639,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget _buildProductImage(Product product) {
     if (product.images.isEmpty) {
       return Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+        color: AppColors.muted(context),
+        child: Center(
+          child: Icon(
+            Icons.image_not_supported,
+            size: 50,
+            color: AppColors.mutedForeground(context),
+          ),
         ),
       );
     }
@@ -617,9 +661,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Container(
-                color: Colors.grey[200],
-                child: const Center(
-                  child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                color: AppColors.muted(context),
+                child: Center(
+                  child: Icon(
+                    Icons.broken_image,
+                    size: 40,
+                    color: AppColors.mutedForeground(context),
+                  ),
                 ),
               );
             },
@@ -630,9 +678,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Container(
-                color: Colors.grey[200],
-                child: const Center(
-                  child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                color: AppColors.muted(context),
+                child: Center(
+                  child: Icon(
+                    Icons.broken_image,
+                    size: 40,
+                    color: AppColors.mutedForeground(context),
+                  ),
                 ),
               );
             },

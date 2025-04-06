@@ -12,7 +12,6 @@ import 'package:store_go/app/shared/extensions/buttons/text_button.dart';
 import 'package:store_go/app/shared/extensions/fields/validated_fields.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
-import 'package:store_go/app/shared/widgets/theme_toggle.dart';
 
 class Login extends GetView<LoginController> {
   const Login({super.key});
@@ -30,7 +29,7 @@ class Login extends GetView<LoginController> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-          appBar: AppBar(actions: [ThemeToggle()]),
+         
           body: SafeArea(
             child: SingleChildScrollView(
               child: Form(
