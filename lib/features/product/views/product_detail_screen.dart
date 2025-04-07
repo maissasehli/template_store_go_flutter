@@ -16,7 +16,6 @@ import 'package:store_go/features/product/views/widgets/draggable_info_sheet.dar
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
-
   const ProductDetailScreen({super.key, required this.productId});
 
   @override
@@ -40,18 +39,19 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.background(context),
       body: Obx(() {
-        if (detailController.isLoading.value) {
+        // Access state properties through the controller's state object
+        if (detailController.state.isLoading.value) {
           return Center(
             child: CircularProgressIndicator(color: AppColors.primary(context)),
           );
-        } else if (detailController.hasError.value) {
+        } else if (detailController.state.hasError.value) {
           return Center(
-            child: Text('Error: ${detailController.errorMessage.value}'),
+            child: Text('Error: ${detailController.state.errorMessage.value}'),
           );
-        } else if (detailController.selectedProduct.value == null) {
+        } else if (detailController.state.product.value == null) {
           return Center(child: Text('Product not found'));
         } else {
-          final product = detailController.selectedProduct.value!;
+          final product = detailController.state.product.value!;
           return Stack(
             children: [
               // Main product image area
@@ -93,7 +93,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: Obx(
                           () => ImagePageIndicator(
                             currentIndex:
-                                detailController.currentImageIndex.value,
+                                detailController.state.currentImageIndex.value,
                             totalImages:
                                 product.images.length > 0
                                     ? product.images.length
@@ -128,11 +128,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                         ),
-
                         // Quantity selector
                         Obx(
                           () => QuantitySelector(
-                            quantity: detailController.quantity.value,
+                            quantity: detailController.state.quantity.value,
                             onQuantityChanged: (value) {
                               detailController.updateQuantity(value);
                             },
@@ -143,8 +142,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
 
                     // Product info
                     ProductInfo(product: product),
-
                     const SizedBox(height: 16),
+
                     SizedBox(
                       height: 70,
                       child: Stack(
@@ -164,14 +163,13 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                             ),
                           ),
-
                           Positioned(
                             top: 40,
                             left: 0,
                             child: Obx(
                               () => SizeSelector(
                                 selectedSize:
-                                    detailController.selectedSize.value,
+                                    detailController.state.selectedSize.value,
                                 onSizeSelected: (size) {
                                   detailController.updateSize(size);
                                 },
@@ -186,7 +184,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: Obx(
                               () => ColorSelector(
                                 selectedColor:
-                                    detailController.selectedColor.value,
+                                    detailController.state.selectedColor.value,
                                 onColorSelected: (color) {
                                   detailController.updateColor(color);
                                 },
