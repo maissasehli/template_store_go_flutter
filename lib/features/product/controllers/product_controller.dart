@@ -6,17 +6,14 @@ import 'package:store_go/features/product/services/product_service.dart';
 class ProductController extends GetxController {
   final ProductService _productService = Get.find<ProductService>();
 
-  // Observable states
+  // Observable states for product listing
   final RxList<Product> products = <Product>[].obs;
   final RxList<Product> featuredProducts = <Product>[].obs;
   final RxList<Product> newProducts = <Product>[].obs;
   final RxList<Product> searchResults = <Product>[].obs;
-  final Rx<Product?> selectedProduct = Rx<Product?>(null);
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
-  final RxBool isDetailsLoading = false.obs; // New for details
-  final RxString detailsError = ''.obs; // New for details
 
   @override
   void onInit() {
@@ -26,26 +23,7 @@ class ProductController extends GetxController {
     fetchNewProducts();
   }
 
-  // Add this new method to fetch product details
-  Future<void> fetchProductDetails(String productId) async {
-    try {
-      isDetailsLoading.value = true;
-      detailsError.value = '';
-      selectedProduct.value = null; // Clear previous product
-
-      final product = await _productService.getProductById(productId);
-      Logger().i('Fetched product: ${product.toJson()}');
-      selectedProduct.value = product;
-    } catch (e) {
-      selectedProduct.value = null;
-      detailsError.value = e.toString();
-      Logger().e('Error fetching product details: $e');
-    } finally {
-      isDetailsLoading.value = false;
-    }
-  }
-
-  // Existing methods remain unchanged...
+  // Fetch all products
   Future<void> fetchAllProducts() async {
     try {
       isLoading.value = true;
@@ -57,7 +35,7 @@ class ProductController extends GetxController {
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      print('Error fetching products: $e');
+      Logger().e('Error fetching products: $e');
     } finally {
       isLoading.value = false;
     }
@@ -82,6 +60,7 @@ class ProductController extends GetxController {
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
+      Logger().e('Error fetching products by category: $e');
     } finally {
       isLoading.value = false;
     }
@@ -93,7 +72,7 @@ class ProductController extends GetxController {
       final featured = await _productService.getFeaturedProducts();
       featuredProducts.assignAll(featured);
     } catch (e) {
-      print('Error fetching featured products: $e');
+      Logger().e('Error fetching featured products: $e');
       // If featured fails, we can still show other sections
     }
   }
@@ -104,7 +83,7 @@ class ProductController extends GetxController {
       final newItems = await _productService.getNewProducts();
       newProducts.assignAll(newItems);
     } catch (e) {
-      print('Error fetching new products: $e');
+      Logger().e('Error fetching new products: $e');
       // If new products fail, we can still show other sections
     }
   }
@@ -121,65 +100,31 @@ class ProductController extends GetxController {
       final results = await _productService.searchProducts(query);
       searchResults.assignAll(results);
     } catch (e) {
-      print('Error searching products: $e');
+      Logger().e('Error searching products: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Toggle favorite status (optimistic update)
+  // Toggle favorite status across all product lists
   Future<void> toggleFavorite(String productId) async {
-    // Find product in all lists
-    final productIndex = products.indexWhere((p) => p.id == productId);
-    final featuredIndex = featuredProducts.indexWhere((p) => p.id == productId);
-    final newIndex = newProducts.indexWhere((p) => p.id == productId);
-
-    // Update state optimistically (before API confirms)
-    if (productIndex != -1) {
-      final product = products[productIndex];
-      final updatedProduct = product.copyWith(isFavorite: !product.isFavorite);
-      products[productIndex] = updatedProduct;
-    }
-
-    if (featuredIndex != -1) {
-      final product = featuredProducts[featuredIndex];
-      final updatedProduct = product.copyWith(isFavorite: !product.isFavorite);
-      featuredProducts[featuredIndex] = updatedProduct;
-    }
-
-    if (newIndex != -1) {
-      final product = newProducts[newIndex];
-      final updatedProduct = product.copyWith(isFavorite: !product.isFavorite);
-      newProducts[newIndex] = updatedProduct;
-    }
-
-    // Update in search results if present
-    final searchIndex = searchResults.indexWhere((p) => p.id == productId);
-    if (searchIndex != -1) {
-      final product = searchResults[searchIndex];
-      final updatedProduct = product.copyWith(isFavorite: !product.isFavorite);
-      searchResults[searchIndex] = updatedProduct;
-    }
-
-    // Update selected product if it's the same one
-    if (selectedProduct.value?.id == productId) {
-      final currentProduct = selectedProduct.value!;
-      selectedProduct.value = currentProduct.copyWith(
-        isFavorite: !currentProduct.isFavorite,
-      );
-    }
+    _toggleFavoriteInList(products, productId);
+    _toggleFavoriteInList(featuredProducts, productId);
+    _toggleFavoriteInList(newProducts, productId);
+    _toggleFavoriteInList(searchResults, productId);
 
     // Get the new favorite status from any of the updated products
-    bool newFavoriteStatus = false;
-    if (productIndex != -1) {
-      newFavoriteStatus = products[productIndex].isFavorite;
-    } else if (featuredIndex != -1) {
-      newFavoriteStatus = featuredProducts[featuredIndex].isFavorite;
-    } else if (newIndex != -1) {
-      newFavoriteStatus = newProducts[newIndex].isFavorite;
-    } else if (selectedProduct.value?.id == productId) {
-      newFavoriteStatus = selectedProduct.value!.isFavorite;
+    bool? newFavoriteStatus;
+    for (var list in [products, featuredProducts, newProducts, searchResults]) {
+      final index = list.indexWhere((p) => p.id == productId);
+      if (index != -1) {
+        newFavoriteStatus = list[index].isFavorite;
+        break;
+      }
     }
+
+    // If we couldn't find the product in any list, we can't proceed
+    if (newFavoriteStatus == null) return;
 
     try {
       // Send update to API
@@ -195,45 +140,27 @@ class ProductController extends GetxController {
     } catch (e) {
       // If there was an error, revert the changes
       _revertFavoriteChange(productId, !newFavoriteStatus);
-      print('Error updating favorite status: $e');
+      Logger().e('Error updating favorite status: $e');
+    }
+  }
+
+  // Helper method to toggle favorite status in a specific list
+  void _toggleFavoriteInList(RxList<Product> productList, String productId) {
+    final index = productList.indexWhere((p) => p.id == productId);
+    if (index != -1) {
+      final product = productList[index];
+      productList[index] = product.copyWith(isFavorite: !product.isFavorite);
     }
   }
 
   // Helper method to revert favorite state if API call fails
   void _revertFavoriteChange(String productId, bool originalState) {
-    // Find and update in all lists
-    final productIndex = products.indexWhere((p) => p.id == productId);
-    if (productIndex != -1) {
-      final product = products[productIndex];
-      products[productIndex] = product.copyWith(isFavorite: originalState);
-    }
-
-    final featuredIndex = featuredProducts.indexWhere((p) => p.id == productId);
-    if (featuredIndex != -1) {
-      final product = featuredProducts[featuredIndex];
-      featuredProducts[featuredIndex] = product.copyWith(
-        isFavorite: originalState,
-      );
-    }
-
-    final newIndex = newProducts.indexWhere((p) => p.id == productId);
-    if (newIndex != -1) {
-      final product = newProducts[newIndex];
-      newProducts[newIndex] = product.copyWith(isFavorite: originalState);
-    }
-
-    final searchIndex = searchResults.indexWhere((p) => p.id == productId);
-    if (searchIndex != -1) {
-      final product = searchResults[searchIndex];
-      searchResults[searchIndex] = product.copyWith(isFavorite: originalState);
-    }
-
-    // Update selected product if it's the same one
-    if (selectedProduct.value?.id == productId) {
-      final currentProduct = selectedProduct.value!;
-      selectedProduct.value = currentProduct.copyWith(
-        isFavorite: originalState,
-      );
+    for (var list in [products, featuredProducts, newProducts, searchResults]) {
+      final index = list.indexWhere((p) => p.id == productId);
+      if (index != -1) {
+        final product = list[index];
+        list[index] = product.copyWith(isFavorite: originalState);
+      }
     }
   }
 
@@ -245,13 +172,10 @@ class ProductController extends GetxController {
 
       // Fetch all products without filters
       await fetchAllProducts();
-
-      // You might want to reset the UI state in the SearchScreen after this
-      // But that would be handled in the UI side
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      print('Error clearing filters: $e');
+      Logger().e('Error clearing filters: $e');
     } finally {
       isLoading.value = false;
     }
@@ -304,7 +228,6 @@ class ProductController extends GetxController {
         switch (sortBy) {
           case 'New Today':
             // Assuming newer products have higher IDs or another property
-            // You might need to adjust this based on your actual data structure
             filteredProducts.sort((a, b) => b.id.compareTo(a.id));
             break;
           case 'Top Sellers':
@@ -313,7 +236,6 @@ class ProductController extends GetxController {
             break;
           case 'New collection':
             // This might be based on a specific category or tag
-            // For now, similar to New Today
             filteredProducts.sort((a, b) => b.id.compareTo(a.id));
             break;
         }
@@ -324,7 +246,7 @@ class ProductController extends GetxController {
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      print('Error applying filters: $e');
+      Logger().e('Error applying filters: $e');
     } finally {
       isLoading.value = false;
     }

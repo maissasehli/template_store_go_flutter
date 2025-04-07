@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/features/product/controllers/product_controller.dart';
+import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/product/views/widgets/product_image_gallery.dart';
 import 'package:store_go/features/product/views/widgets/top_navigation_bar.dart';
@@ -24,18 +24,15 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class ProductDetailScreenState extends State<ProductDetailScreen> {
-  final ProductController productController = Get.find<ProductController>();
-
-  int quantity = 1;
-  String? selectedSize;
-  String? selectedColor = "Black"; 
-  int currentImageIndex = 0;
+  // Use the new dedicated controller
+  final ProductDetailController detailController =
+      Get.find<ProductDetailController>();
 
   @override
   void initState() {
     super.initState();
-    print('Navigated to product ID: ${widget.productId}');
-    productController.fetchProductDetails(widget.productId);
+    // Fetch product details using the dedicated controller
+    detailController.fetchProductDetails(widget.productId);
   }
 
   @override
@@ -43,18 +40,18 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.background(context),
       body: Obx(() {
-        if (productController.isLoading.value) {
+        if (detailController.isLoading.value) {
           return Center(
             child: CircularProgressIndicator(color: AppColors.primary(context)),
           );
-        } else if (productController.hasError.value) {
+        } else if (detailController.hasError.value) {
           return Center(
-            child: Text('Error: ${productController.errorMessage.value}'),
+            child: Text('Error: ${detailController.errorMessage.value}'),
           );
-        } else if (productController.selectedProduct.value == null) {
+        } else if (detailController.selectedProduct.value == null) {
           return Center(child: Text('Product not found'));
         } else {
-          final product = productController.selectedProduct.value!;
+          final product = detailController.selectedProduct.value!;
           return Stack(
             children: [
               // Main product image area
@@ -82,7 +79,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: FavoriteButton(
                         isFavorite: product.isFavorite,
                         onToggleFavorite: () {
-                          productController.toggleFavorite(widget.productId);
+                          // Use the controller's method directly
+                          detailController.toggleFavorite();
                         },
                       ),
                     ),
@@ -92,12 +90,15 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                       alignment: Alignment.bottomCenter,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
-                        child: ImagePageIndicator(
-                          currentIndex: currentImageIndex,
-                          totalImages:
-                              product.images.length > 0
-                                  ? product.images.length
-                                  : 3,
+                        child: Obx(
+                          () => ImagePageIndicator(
+                            currentIndex:
+                                detailController.currentImageIndex.value,
+                            totalImages:
+                                product.images.length > 0
+                                    ? product.images.length
+                                    : 3,
+                          ),
                         ),
                       ),
                     ),
@@ -118,7 +119,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         // Title - will be replaced with actual product name
                         Expanded(
                           child: Text(
-                            'Roller Rabbit',
+                            product.name,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -129,13 +130,13 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
 
                         // Quantity selector
-                        QuantitySelector(
-                          quantity: quantity,
-                          onQuantityChanged: (value) {
-                            setState(() {
-                              quantity = value;
-                            });
-                          },
+                        Obx(
+                          () => QuantitySelector(
+                            quantity: detailController.quantity.value,
+                            onQuantityChanged: (value) {
+                              detailController.updateQuantity(value);
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -167,13 +168,14 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                           Positioned(
                             top: 40,
                             left: 0,
-                            child: SizeSelector(
-                              selectedSize: selectedSize,
-                              onSizeSelected: (size) {
-                                setState(() {
-                                  selectedSize = size;
-                                });
-                              },
+                            child: Obx(
+                              () => SizeSelector(
+                                selectedSize:
+                                    detailController.selectedSize.value,
+                                onSizeSelected: (size) {
+                                  detailController.updateSize(size);
+                                },
+                              ),
                             ),
                           ),
 
@@ -181,13 +183,14 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                           Positioned(
                             top: 0,
                             right: 0,
-                            child: ColorSelector(
-                              selectedColor: selectedColor,
-                              onColorSelected: (color) {
-                                setState(() {
-                                  selectedColor = color;
-                                });
-                              },
+                            child: Obx(
+                              () => ColorSelector(
+                                selectedColor:
+                                    detailController.selectedColor.value,
+                                onColorSelected: (color) {
+                                  detailController.updateColor(color);
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -196,29 +199,14 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
 
                     // Product description
                     const SizedBox(height: 20),
-                    ProductDescription(
-                      description:
-                          "Get a little lift from these Sam Edelman sandals featuring ruched straps and leather lace-up ties, while a braided jute sole makes a fresh statement for summer.",
-                    ),
+                    ProductDescription(description: product.description),
 
                     // Price and add to cart button
                     const SizedBox(height: 24),
                     AddToCartButton(
                       price: product.price,
                       onPressed: () {
-                        Map<String, String> variants = {};
-                        if (selectedSize != null) {
-                          variants['size'] = selectedSize!;
-                        }
-                        if (selectedColor != null) {
-                          variants['color'] = selectedColor!;
-                        }
-
-                        Get.snackbar(
-                          'Success',
-                          'Added to cart',
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
+                        detailController.addToCart();
                       },
                     ),
                   ],
