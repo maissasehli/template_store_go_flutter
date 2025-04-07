@@ -10,14 +10,13 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
 
-  const ProductDetailScreen({Key? key, required this.productId})
-    : super(key: key);
+  const ProductDetailScreen({super.key, required this.productId});
 
   @override
-  _ProductDetailScreenState createState() => _ProductDetailScreenState();
+  ProductDetailScreenState createState() => ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
+class ProductDetailScreenState extends State<ProductDetailScreen> {
   final ProductController productController = Get.find<ProductController>();
 
   int quantity = 1;

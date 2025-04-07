@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/home/views/widgets/card_comps/favorite_button.dart';
+import 'package:store_go/features/home/views/widgets/card_comps/product_image.dart';
+import 'package:store_go/features/home/views/widgets/card_comps/price_display.dart';
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+  final Function(String) onProductTap;
+  final Function(String) onFavoriteTap;
+  final double width;
+  final double height;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.onProductTap,
+    required this.onFavoriteTap,
+    this.width = double.infinity,
+    this.height = double.infinity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => onProductTap(product.id),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: AppColors.productCard(context),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border(context), width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product image with favorite button
+            Expanded(
+              child: Stack(
+                children: [
+                  // Product image
+                  ProductImage(product: product),
+
+                  // Favorite button
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: FavoriteButton(
+                      isFavorite: product.isFavorite,
+                      onTap: () => onFavoriteTap(product.id),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Product details
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product name
+                  Text(
+                    product.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.foreground(context),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Product price
+                  PriceDisplay(
+                    price: product.price,
+                    // Only show special strikethrough price for product with ID '2'
+                    hasDiscount: product.id == '2',
+                    originalPrice: 100.00,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

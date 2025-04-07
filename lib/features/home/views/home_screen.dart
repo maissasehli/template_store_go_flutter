@@ -1,3 +1,5 @@
+// lib/features/home/views/home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
@@ -8,6 +10,7 @@ import 'package:store_go/features/home/views/widgets/category_filter.dart';
 import 'package:store_go/features/home/views/widgets/custom_app_bar.dart';
 import 'package:store_go/features/home/views/widgets/product_grid.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
+import 'package:store_go/features/home/views/widgets/section_header.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -32,7 +35,8 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: UIConfig.paddingMedium),
-          // Add CustomSearchBar right after the AppBar
+
+          // Search bar
           CustomSearchBar(
             onSearch:
                 (query) => controller.productController.searchProducts(query),
@@ -40,35 +44,10 @@ class HomeScreen extends StatelessWidget {
 
           const SizedBox(height: UIConfig.paddingMedium),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConfig.paddingMedium,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Gabarito',
-                    color: AppColors.foreground(context),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => controller.onCategoriesSeeAllTap(),
-                  child: Text(
-                    'See All',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 14,
-                      color: AppColors.primary(context),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          // Categories section
+          SectionHeader(
+            title: 'Categories',
+            onSeeAllTap: () => controller.onCategoriesSeeAllTap(),
           ),
 
           SizedBox(
@@ -84,36 +63,11 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConfig.paddingMedium,
-              vertical: UIConfig.paddingSmall,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Top Selling',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Gabarito',
-                    color: AppColors.foreground(context),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => controller.onTopSellingSeeAllTap(),
-                  child: Text(
-                    'See All',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 14,
-                      color: AppColors.primary(context),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+
+          // Top Selling section
+          SectionHeader(
+            title: 'Top Selling',
+            onSeeAllTap: () => controller.onTopSellingSeeAllTap(),
           ),
 
           Obx(() {
@@ -139,31 +93,10 @@ class HomeScreen extends StatelessWidget {
             );
           }),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConfig.paddingMedium,
-              vertical: UIConfig.paddingSmall,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'New In',
-                  style: TextStyle(
-                    fontSize: UIConfig.fontSizeRegular,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.foreground(context),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => controller.onNewInSeeAllTap(),
-                  child: Text(
-                    'See All',
-                    style: TextStyle(color: AppColors.primary(context)),
-                  ),
-                ),
-              ],
-            ),
+          // New In section
+          SectionHeader(
+            title: 'New In',
+            onSeeAllTap: () => controller.onNewInSeeAllTap(),
           ),
 
           Obx(() {

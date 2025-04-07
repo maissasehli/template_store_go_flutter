@@ -521,31 +521,6 @@ class AuthService {
     return true;
   }
 
-  // Extract user ID from JWT token
-  String? _extractUserId(Map<String, String> fragmentParams) {
-    try {
-      final accessToken = fragmentParams['access_token'];
-      if (accessToken == null) return null;
-
-      // JWT tokens consist of three parts separated by dots
-      final parts = accessToken.split('.');
-      if (parts.length != 3) return null;
-
-      // Decode the payload (middle part)
-      final payload = parts[1];
-      // Add padding if needed
-      final normalized = base64Url.normalize(payload);
-      final decodedPayload = utf8.decode(base64Url.decode(normalized));
-      final payloadJson = jsonDecode(decodedPayload) as Map<String, dynamic>;
-
-      // Extract user ID - could be 'sub', 'user_id', etc.
-      return payloadJson['sub'] ?? payloadJson['user_id'];
-    } catch (e) {
-      Logger().e('Error extracting user ID from token: $e');
-      return null;
-    }
-  }
-
   // Helper method to calculate expiration time
   String _calculateExpiresAt(String? expiresInStr) {
     final expiresIn = int.tryParse(expiresInStr ?? '3600') ?? 3600;

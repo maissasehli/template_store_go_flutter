@@ -15,7 +15,7 @@ class OAuthController extends GetxController {
   Future<void> signInWithProvider(String provider) async {
     try {
       _logger.i('Starting OAuth sign-in with provider: $provider');
-      isLoading.value = true; // Set loading to true when starting
+      isLoading.value = true; 
 
       // Complete the full OAuth flow with WebView
       final success = await _authService.completeOAuthFlow(

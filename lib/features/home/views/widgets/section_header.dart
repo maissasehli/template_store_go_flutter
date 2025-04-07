@@ -1,16 +1,13 @@
-// lib/view/widgets/home/section_header.dart
+
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  final VoidCallback onSeeAllTap;
+  final VoidCallback? onSeeAllTap;
 
-  const SectionHeader({
-    Key? key,
-    required this.title,
-    required this.onSeeAllTap,
-  }) : super(key: key);
+  const SectionHeader({super.key, required this.title, this.onSeeAllTap});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +21,25 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: UIConfig.fontSizeRegular,
+            style: TextStyle(
+              fontSize: 16,
               fontWeight: FontWeight.bold,
+              fontFamily: 'Gabarito',
+              color: AppColors.foreground(context),
             ),
           ),
-          TextButton(onPressed: onSeeAllTap, child: const Text('See All')),
+          if (onSeeAllTap != null)
+            TextButton(
+              onPressed: onSeeAllTap,
+              child: Text(
+                'See All',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 14,
+                  color: AppColors.primary(context),
+                ),
+              ),
+            ),
         ],
       ),
     );
