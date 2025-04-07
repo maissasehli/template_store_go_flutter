@@ -8,6 +8,7 @@ import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
+import 'dart:convert';
 
 class AuthService {
   final ApiClient _apiClient = ApiClient();
@@ -241,10 +242,10 @@ class AuthService {
       await _apiClient.post('/auth/sign-out');
       // Clear local storage
       await _secureStorage.deleteAll();
-      _showSuccessAlert('Successfully logged out');
+      Logger().i('Log out successful');
       Get.offAllNamed(AppRoute.login);
     } catch (e) {
-      _showErrorAlert('Failed to log out');
+      Logger().e('Failed to log out: $e');
     }
   }
 
@@ -328,93 +329,10 @@ class AuthService {
 
       if (code != null) {
         // Handle authorization code flow
-        Logger().i('OAuth code received, exchanging for tokens');
-
-        // Exchange code for tokens
-        final response = await _apiClient.post(
-          '/auth/oauth/callback',
-          data: {'code': code, 'storeId': AppConfig.storeId},
-        );
-
-        if (response.statusCode == 200) {
-          // Save tokens from response
-          await _saveTokensFromResponse(response.data['session']);
-          _showSuccessAlert('Successfully signed in');
-          return true;
-        } else {
-          Logger().e(
-            'Failed to exchange code for tokens: ${response.statusCode}',
-          );
-          _showErrorAlert('Authentication failed');
-          return false;
-        }
+        return await _handleAuthorizationCode(code, provider);
       } else {
         // Handle implicit flow (token in URL fragment)
-        Logger().i('No code parameter found, checking for tokens in fragment');
-
-        // Extract and parse the fragment properly
-        final fragment = uri.fragment;
-        if (fragment.isEmpty) {
-          Logger().e('No fragment found in callback URL');
-          _showErrorAlert('Authentication failed');
-          return false;
-        }
-
-        // Parse fragment parameters correctly
-        final fragmentParams = Uri.splitQueryString(fragment);
-        final accessToken = fragmentParams['access_token'];
-        final refreshToken = fragmentParams['refresh_token'];
-        final expiresIn = fragmentParams['expires_in'];
-        final providerToken = fragmentParams['provider_token'];
-
-        Logger().i(
-          'Fragment parsed, access token found: ${accessToken != null}',
-        );
-
-        if (accessToken == null) {
-          Logger().e('No access token found in callback URL fragment');
-          _showErrorAlert('Authentication failed');
-          return false;
-        }
-
-        // If we have both tokens, we can directly save them
-        await _secureStorage.write(key: 'access_token', value: accessToken);
-        Logger().i('access_token saved');
-
-        if (refreshToken != null) {
-          await _secureStorage.write(key: 'refresh_token', value: refreshToken);
-          Logger().i('refresh_token saved');
-        }
-
-        // Calculate and save expiration time
-        final expiresAt = _calculateExpiresAt(expiresIn);
-        await _secureStorage.write(key: 'expires_at', value: expiresAt);
-        Logger().i('expires_at saved');
-
-        // If we have a provider token, we can use it to get user details from the backend
-        if (providerToken != null) {
-          Logger().i('Provider token found, fetching user data');
-          try {
-            // Use the signInWithProviderToken method to get user details
-            final success = await signInWithProviderToken(
-              provider: provider,
-              providerToken: providerToken,
-            );
-
-            if (success) {
-              _showSuccessAlert('Successfully signed in');
-              return true;
-            }
-          } catch (e) {
-            Logger().e('Error using provider token: $e');
-            // Continue with the flow even if this fails
-          }
-        }
-
-        // At this point, we have at least saved the access token and can consider the sign-in successful
-        // You might need to add additional calls to get user details if needed
-        _showSuccessAlert('Successfully signed in');
-        return true;
+        return await _handleImplicitFlow(uri, provider);
       }
     } catch (e) {
       Logger().e('Error completing OAuth flow: $e');
@@ -423,6 +341,208 @@ class AuthService {
       }
       _showErrorAlert('Authentication failed');
       return false;
+    }
+  }
+
+  // Handle authorization code flow
+  Future<bool> _handleAuthorizationCode(String code, String provider) async {
+    Logger().i('OAuth code received, exchanging for tokens');
+
+    try {
+      // Exchange code for tokens
+      final response = await _apiClient.post(
+        '/auth/oauth/callback',
+        data: {'code': code, 'storeId': AppConfig.storeId},
+      );
+
+      if (response.statusCode == 200) {
+        // Save tokens from response
+        await _saveTokensFromResponse(response.data['session']);
+        _showSuccessAlert('Successfully signed in');
+        return true;
+      } else {
+        Logger().e(
+          'Failed to exchange code for tokens: ${response.statusCode}',
+        );
+        _showErrorAlert('Authentication failed');
+        return false;
+      }
+    } catch (e) {
+      Logger().e('Error exchanging code for tokens: $e');
+      _showErrorAlert('Authentication failed');
+      return false;
+    }
+  }
+
+  // Extract user data from JWT token
+  Map<String, dynamic>? extractJwtData(String? jwtToken) {
+    if (jwtToken == null) return null;
+
+    try {
+      // Split the token into 3 parts
+      final parts = jwtToken.split('.');
+      if (parts.length != 3) return null;
+
+      // Get the payload (middle part)
+      final payload = parts[1];
+
+      // Add padding if needed
+      String normalized = payload;
+      while (normalized.length % 4 != 0) {
+        normalized += '=';
+      }
+
+      // Decode base64
+      final decodedPayload = utf8.decode(base64Url.decode(normalized));
+
+      // Parse JSON
+      return json.decode(decodedPayload) as Map<String, dynamic>;
+    } catch (e) {
+      Logger().e('Error decoding JWT token: $e');
+      return null;
+    }
+  }
+
+  // Improved handler for implicit flow
+  Future<bool> _handleImplicitFlow(Uri uri, String provider) async {
+    Logger().i('Handling implicit flow with tokens in fragment');
+
+    // Extract and parse the fragment
+    final fragment = uri.fragment;
+    if (fragment.isEmpty) {
+      Logger().e('No fragment found in callback URL');
+      _showErrorAlert('Authentication failed');
+      return false;
+    }
+
+    // Parse fragment parameters
+    final fragmentParams = Uri.splitQueryString(fragment);
+
+    // Extract all tokens
+    final accessToken = fragmentParams['access_token'];
+    final refreshToken = fragmentParams['refresh_token'];
+    final expiresIn = fragmentParams['expires_in'];
+    final expiresAt = fragmentParams['expires_at'];
+    final providerToken = fragmentParams['provider_token'];
+
+    Logger().i('Access token present: ${accessToken != null}');
+    Logger().i('Refresh token present: ${refreshToken != null}');
+    Logger().i('Provider token present: ${providerToken != null}');
+
+    if (accessToken == null) {
+      Logger().e('No access token found in callback URL fragment');
+      _showErrorAlert('Authentication failed');
+      return false;
+    }
+
+    // Decode the JWT to extract user information
+    final jwtData = extractJwtData(accessToken);
+    String? userId;
+    String? email;
+
+    if (jwtData != null) {
+      // Extract user ID from common JWT fields
+      userId = jwtData['sub'] ?? jwtData['user_id'];
+      email = jwtData['email'];
+
+      Logger().i('Extracted user ID: $userId');
+      Logger().i('Extracted email: $email');
+
+      // Log other useful information for debugging
+      if (jwtData.containsKey('user_metadata')) {
+        Logger().i('User metadata present in JWT');
+      }
+
+      if (jwtData.containsKey('app_metadata')) {
+        Logger().i('App metadata present in JWT');
+      }
+    } else {
+      Logger().w('Could not decode JWT data from access token');
+    }
+
+    // Save all the tokens
+    await _secureStorage.write(key: 'access_token', value: accessToken);
+    Logger().i('access_token saved');
+
+    if (refreshToken != null) {
+      await _secureStorage.write(key: 'refresh_token', value: refreshToken);
+      Logger().i('refresh_token saved');
+    }
+
+    // Handle expiration time
+    String finalExpiresAt;
+    if (expiresAt != null) {
+      finalExpiresAt = expiresAt;
+    } else if (expiresIn != null) {
+      finalExpiresAt = _calculateExpiresAt(expiresIn);
+    } else {
+      // Default to 1 hour if no expiration info is provided
+      finalExpiresAt =
+          DateTime.now().add(const Duration(hours: 1)).toIso8601String();
+    }
+
+    await _secureStorage.write(key: 'expires_at', value: finalExpiresAt);
+    Logger().i('expires_at saved: $finalExpiresAt');
+
+    // Save user ID if available
+    if (userId != null) {
+      await _secureStorage.write(key: 'user_id', value: userId);
+      Logger().i('user_id saved from JWT');
+    }
+
+    // Save email if needed for your application
+    if (email != null) {
+      await _secureStorage.write(key: 'user_email', value: email);
+      Logger().i('user_email saved from JWT');
+    }
+
+    // If we have a provider token, we might want to use it for additional user information
+    if (providerToken != null) {
+      Logger().i(
+        'Provider token found, fetching additional user data if needed',
+      );
+      try {
+        // Depending on your backend setup, you might need to validate or exchange this token
+        final success = await signInWithProviderToken(
+          provider: provider,
+          providerToken: providerToken,
+        );
+
+        if (success) {
+          Logger().i('Additional provider validation successful');
+        }
+      } catch (e) {
+        Logger().e('Error using provider token: $e');
+        // Continue with the flow even if this fails as we already have the main tokens
+      }
+    }
+
+    _showSuccessAlert('Successfully signed in');
+    return true;
+  }
+
+  // Extract user ID from JWT token
+  String? _extractUserId(Map<String, String> fragmentParams) {
+    try {
+      final accessToken = fragmentParams['access_token'];
+      if (accessToken == null) return null;
+
+      // JWT tokens consist of three parts separated by dots
+      final parts = accessToken.split('.');
+      if (parts.length != 3) return null;
+
+      // Decode the payload (middle part)
+      final payload = parts[1];
+      // Add padding if needed
+      final normalized = base64Url.normalize(payload);
+      final decodedPayload = utf8.decode(base64Url.decode(normalized));
+      final payloadJson = jsonDecode(decodedPayload) as Map<String, dynamic>;
+
+      // Extract user ID - could be 'sub', 'user_id', etc.
+      return payloadJson['sub'] ?? payloadJson['user_id'];
+    } catch (e) {
+      Logger().e('Error extracting user ID from token: $e');
+      return null;
     }
   }
 
@@ -554,7 +674,7 @@ class AuthService {
   }
 
   // Handle app resume - check if the token is still valid
- Future<void> handleAppResume() async {
+  Future<void> handleAppResume() async {
     try {
       // Check if user is authenticated first
       final userAuthenticated = await isAuthenticated();
@@ -577,6 +697,7 @@ class AuthService {
       Logger().e('Error in handleAppResume: $e');
     }
   }
+
   // Add this method to AuthService class
   Future<bool> _refreshToken() async {
     try {

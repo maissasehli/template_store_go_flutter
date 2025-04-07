@@ -111,7 +111,7 @@ List<GetPage<dynamic>>? routes = [
 
   // Products
   GetPage(
-    name: AppRoute.productDetail,
+    name: '/products/:id',
     page: () {
       final id = Get.parameters['id'] ?? '';
       return ProductDetailScreen(productId: id);

@@ -19,7 +19,8 @@ class Login extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final OAuthController oauthController = OAuthController();
+    final OAuthController oauthController = Get.put(OAuthController());
+
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
@@ -29,7 +30,6 @@ class Login extends GetView<LoginController> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-         
           body: SafeArea(
             child: SingleChildScrollView(
               child: Form(
@@ -94,45 +94,91 @@ class Login extends GetView<LoginController> {
                       ),
                       const SizedBox(height: 20),
                       // Google Sign-In Button with loading state
-                      const Text(
-                        'Continue With Google',
-                      ).secondaryIconTextButton(
-                        context,
-                        onPressed:
-                            () => {
-                              oauthController.signInWithProvider('google'),
-                            },
-                        icon: ThemeAwareSvg(
-                          onlyFill: false,
-                          assetPath: AssetConfig.googleIcon,
-                          colorName: AppColorName.primary,
+                      Obx(
+                        () => const Text(
+                          'Continue With Google',
+                        ).secondaryIconTextButton(
+                          context,
+                          onPressed:
+                              oauthController.isLoading.value
+                                  ? () {} // Empty function instead of null
+                                  : () => oauthController.signInWithProvider(
+                                    'google',
+                                  ),
+                          icon:
+                              oauthController.isLoading.value
+                                  ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                  : ThemeAwareSvg(
+                                    onlyFill: false,
+                                    assetPath: AssetConfig.googleIcon,
+                                    colorName: AppColorName.primary,
+                                  ),
+                          alignContentLeft: true,
+                          // Add an enabled parameter if your button extension supports it
+                          enabled: !oauthController.isLoading.value,
                         ),
-                        alignContentLeft: true,
                       ),
                       const SizedBox(height: 20),
                       // Apple Sign-In Button with loading state
-                      const Text('Continue With Apple').secondaryIconTextButton(
-                        context,
-                        onPressed: () {},
-                        icon: ThemeAwareSvg(
-                          assetPath: AssetConfig.appleIcon,
-                          colorName: AppColorName.primary,
+                      Obx(
+                        () => const Text(
+                          'Continue With Apple',
+                        ).secondaryIconTextButton(
+                          context,
+                          onPressed:() {},
+                          icon:
+                              oauthController.isLoading.value
+                                  ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                  : ThemeAwareSvg(
+                                    assetPath: AssetConfig.appleIcon,
+                                    colorName: AppColorName.primary,
+                                  ),
+                          alignContentLeft: true, enabled: false,
                         ),
-                        alignContentLeft: true,
                       ),
                       const SizedBox(height: 20),
                       // Facebook Sign-In Button with loading state
-                      const Text(
-                        'Continue With Facebook',
-                      ).secondaryIconTextButton(
-                        context,
-                        onPressed: () {},
-                        icon: ThemeAwareSvg(
-                          onlyFill: false,
-                          assetPath: AssetConfig.facebookIcon,
-                          colorName: AppColorName.primary,
+                      Obx(
+                        () => const Text(
+                          'Continue With Facebook',
+                        ).secondaryIconTextButton(
+                          context,
+                          onPressed:(){},
+                          icon:
+                              oauthController.isLoading.value
+                                  ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                  : ThemeAwareSvg(
+                                    onlyFill: false,
+                                    assetPath: AssetConfig.facebookIcon,
+                                    colorName: AppColorName.primary,
+                                  ),
+                          alignContentLeft: true,
+                          enabled: false,
                         ),
-                        alignContentLeft: true,
                       ),
                     ],
                   ),

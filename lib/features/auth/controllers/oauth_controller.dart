@@ -15,7 +15,7 @@ class OAuthController extends GetxController {
   Future<void> signInWithProvider(String provider) async {
     try {
       _logger.i('Starting OAuth sign-in with provider: $provider');
-      isLoading.value = true;
+      isLoading.value = true; // Set loading to true when starting
 
       // Complete the full OAuth flow with WebView
       final success = await _authService.completeOAuthFlow(
@@ -25,61 +25,16 @@ class OAuthController extends GetxController {
 
       if (success) {
         _logger.i('OAuth sign-in successful, navigating to home');
-        Get.offAllNamed(AppRoute.home);
+        Get.offAllNamed(
+          AppRoute.mainContainer,
+        ); // Using mainContainer as in login method
       } else {
         _logger.e('OAuth sign-in failed');
       }
     } catch (e) {
       _logger.e('Error during OAuth sign-in: $e');
     } finally {
-      isLoading.value = false;
-    }
-  }
-
-  // Sign in with a provider token (for native SDK integrations)
-  Future<void> signInWithProviderToken(String provider, String token) async {
-    try {
-      _logger.i('Starting OAuth token sign-in with provider: $provider');
-      isLoading.value = true;
-
-      final success = await _authService.signInWithProviderToken(
-        provider: provider,
-        providerToken: token,
-      );
-
-      if (success) {
-        _logger.i('OAuth token sign-in successful, navigating to home');
-        Get.offAllNamed(AppRoute.home);
-      } else {
-        _logger.e('OAuth token sign-in failed');
-      }
-    } catch (e) {
-      _logger.e('Error during OAuth token sign-in: $e');
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  // Link an existing account with an OAuth provider
-  Future<void> linkAccountWithProvider(String provider, String token) async {
-    try {
-      _logger.i('Linking account with provider: $provider');
-      isLoading.value = true;
-
-      final success = await _authService.linkOAuthProvider(
-        provider: provider,
-        providerToken: token,
-      );
-
-      if (success) {
-        _logger.i('Account linked successfully');
-      } else {
-        _logger.e('Account linking failed');
-      }
-    } catch (e) {
-      _logger.e('Error linking account: $e');
-    } finally {
-      isLoading.value = false;
+      isLoading.value = false; // Reset loading regardless of outcome
     }
   }
 }

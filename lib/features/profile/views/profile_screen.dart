@@ -4,11 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/services/user_api_service.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   const ProfilePage({super.key});
+  AuthService get authService => AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -345,7 +347,7 @@ class ProfilePage extends GetView<ProfileController> {
           ElevatedButton(
             onPressed: () {
               // Implement logout functionality
-              Get.offAllNamed('/login');
+              authService.signOut();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),

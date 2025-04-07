@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/features/home/models/product_model.dart';
+import 'package:store_go/features/product/models/product_modal.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
@@ -307,8 +307,8 @@ class ProductGrid extends StatelessWidget {
       final assetPath = imageUrl.replaceFirst('asset://', '');
       return ClipRRect(
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8), // Match overall radius
-          topRight: Radius.circular(8), // Match overall radius
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
         ),
         child: Image.asset(
           assetPath,
@@ -329,7 +329,50 @@ class ProductGrid extends StatelessWidget {
           },
         ),
       );
-    } else {
+    }
+    // Add handling for network/remote images
+    else if (imageUrl.startsWith('http://') ||
+        imageUrl.startsWith('https://')) {
+      return ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+        ),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Center(
+              child: CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            (loadingProgress.expectedTotalBytes ?? 1)
+                        : null,
+                color: AppColors.primary(context),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: AppColors.muted(context),
+              child: Center(
+                child: Icon(
+                  Icons.broken_image,
+                  size: 40,
+                  color: AppColors.mutedForeground(context),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+    // Fallback for other image formats or invalid URLs
+    else {
       return Container(
         color: AppColors.muted(context),
         child: Center(

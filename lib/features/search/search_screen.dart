@@ -430,7 +430,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             ),
                           ),
                           Text(
-                            ' (${product.reviewCount})',
+                            ' (${product.stockQuantity})',
                             style: TextStyle(
                               fontSize: 10,
                               color: Colors.grey.shade600,

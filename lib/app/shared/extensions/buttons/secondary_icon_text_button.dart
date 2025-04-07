@@ -10,7 +10,7 @@ extension StyledButton on Widget {
     bool isLoading = false,
     bool iconLeading = true,
     double spacing = 16.0,
-    bool alignContentLeft = false, // parameter for left alignment
+    bool alignContentLeft = false, required bool enabled, // parameter for left alignment
   }) {
     final colors = Theme.of(context).extension<AppColorExtension>();
     final buttonChild =

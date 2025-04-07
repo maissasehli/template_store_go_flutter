@@ -1,5 +1,6 @@
 class AppRoute {
   static const String settings = "/settings";
+  static const String products= "/products";
   static const String mainContainer = "/main";
   static const String language = "/language";
   static const String onBoarding = "/onboarding";

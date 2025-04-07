@@ -95,29 +95,36 @@ class CategoryFilter extends StatelessWidget {
     // Handle http:// or https:// URLs
     else if (iconPath.startsWith('http://') ||
         iconPath.startsWith('https://')) {
-      return Image.network(
-        iconPath,
-        width: 28,
-        height: 28,
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(
-            Icons.category,
-            color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-            size: 28,
-          );
-        },
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return CircularProgressIndicator(
-            value:
-                loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                    : null,
-            color: Theme.of(context).primaryColor,
-            strokeWidth: 2.0,
-          );
-        },
+      return Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: Image.network(
+            iconPath,
+            width: 28,
+            height: 28,
+            fit: BoxFit.cover,
+            
+            errorBuilder: (context, error, stackTrace) {
+              return Icon(
+                Icons.category,
+                color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
+                size: 28,
+              );
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return CircularProgressIndicator(
+                value:
+                    loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                color: Theme.of(context).primaryColor,
+                strokeWidth: 2.0,
+              );
+            },
+          ),
+        ),
       );
     }
     // For other formats, try asset

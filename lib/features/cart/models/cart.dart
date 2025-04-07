@@ -1,4 +1,4 @@
-import 'package:store_go/features/home/models/product_model.dart';
+import 'package:store_go/features/product/models/product_modal.dart';
 
 class CartItem {
   final String id;
