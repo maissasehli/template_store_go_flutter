@@ -5,6 +5,7 @@ import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/services/storage_service.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
+import 'package:store_go/features/auth/services/token_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,6 +16,7 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen> {
   final AuthService authService = Get.find<AuthService>();
+  final TokenManager tokenManager = Get.find<TokenManager>();
 
   @override
   void initState() {
@@ -34,7 +36,7 @@ class SplashScreenState extends State<SplashScreen> {
 
       if (isAuthenticated) {
         // If authenticated, check if token is valid
-        final hasValidToken = await authService.checkAndRefreshTokenIfNeeded();
+        final hasValidToken = await tokenManager.checkAndRefreshTokenIfNeeded();
         Logger().i("Checking if token is valid: $hasValidToken");
 
         if (hasValidToken) {

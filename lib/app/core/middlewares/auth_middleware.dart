@@ -3,9 +3,11 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
+import 'package:store_go/features/auth/services/token_manager.dart';
 
 class AuthMiddleware extends GetMiddleware {
   final AuthService _authService = Get.find<AuthService>();
+  final TokenManager _tokenManager = Get.find<TokenManager>();
 
   @override
   RouteSettings? redirect(String? route) {
@@ -22,7 +24,7 @@ class AuthMiddleware extends GetMiddleware {
       }
 
       final isAuthenticated = await _authService.isAuthenticated();
-      final hasValidToken = await _authService.checkAndRefreshTokenIfNeeded();
+      final hasValidToken = await _tokenManager.checkAndRefreshTokenIfNeeded();
 
       if (!isAuthenticated || !hasValidToken) {
         Logger().w('AuthMiddleware: Not authenticated, redirecting to login');

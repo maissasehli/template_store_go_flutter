@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
-import 'package:store_go/features/auth/services/auth_service.dart';
+import 'package:store_go/features/auth/services/oauth_service.dart';
 
 class OAuthController extends GetxController {
-  final AuthService _authService = AuthService();
+  final OAuthService _oauthService = OAuthService();
   final RxBool isLoading = false.obs;
   final Logger _logger = Logger();
 
@@ -18,7 +18,7 @@ class OAuthController extends GetxController {
       isLoading.value = true; 
 
       // Complete the full OAuth flow with WebView
-      final success = await _authService.completeOAuthFlow(
+      final success = await _oauthService.completeOAuthFlow(
         provider: provider,
         callbackUrlScheme: 'com.storego',
       );

@@ -14,9 +14,11 @@ class AuthBinding implements Bindings {
       () => ForgetPasswordController(),
       fenix: true,
     );
+
     Get.lazyPut<ResetPasswordController>(
       () => ResetPasswordController(),
       fenix: true,
     );
+   
   }
 }
