@@ -37,9 +37,6 @@ class _OnboardingState extends State<Onboarding> {
       imagePaths.add(page.rightImage);
     }
 
-    // Preload all images at once
-    await _preloaderManager.preloadScreenImages(context, imagePaths);
-
     // Also preload auth images to prepare for the next screens
     await _preloaderManager.preloadAuthImages(context);
 
