@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/features/home/models/size_variant_model.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class SizeSelector extends StatelessWidget {
-  final List<SizeVariantModel> sizes;
-  final String? selectedSizeId;
+  final String? selectedSize;
   final Function(String) onSizeSelected;
+  final List<String> availableSizes;
 
+  // ignore: use_super_parameters
   const SizeSelector({
     Key? key,
-    required this.sizes,
-    required this.selectedSizeId,
+    required this.selectedSize,
     required this.onSizeSelected,
+    this.availableSizes = const ['S', 'M', 'L', 'XL', 'XXL'],
   }) : super(key: key);
 
   @override
@@ -19,109 +19,55 @@ class SizeSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Size',
-              style: TextStyle(
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                // Show size guide dialog
-                showDialog(
-                  context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: Text('Size Guide'),
-                        content: Container(
-                          width: double.maxFinite,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Sizing information for this product.'),
-                              // Add size chart here
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text('Close'),
-                          ),
-                        ],
-                      ),
-                );
-              },
-              child: Text(
-                'Size Guide',
-                style: TextStyle(
-                  fontSize: UIConfig.fontSizeSmall,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children:
-                sizes.map((size) {
-                  final isSelected = size.id == selectedSizeId;
-                  final isAvailable = size.isAvailable;
-
-                  return GestureDetector(
-                    onTap: isAvailable ? () => onSizeSelected(size.id) : null,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      margin: const EdgeInsets.only(
-                        right: UIConfig.paddingSmall,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            isSelected
-                                ? Theme.of(context).primaryColor
-                                : isAvailable
-                                ? Colors.white
-                                : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(
-                          UIConfig.borderRadiusSmall,
-                        ),
-                        border: Border.all(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : isAvailable
-                                  ? Colors.grey.shade300
-                                  : Colors.grey.shade200,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        size.name,
-                        style: TextStyle(
-                          color:
-                              isSelected
-                                  ? Colors.white
-                                  : isAvailable
-                                  ? Colors.black
-                                  : Colors.grey,
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+        Text(
+          'Size',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
           ),
         ),
+        const SizedBox(height: 8),
+        Row(
+          children:
+              availableSizes
+                  .map((size) => _buildSizeOption(context, size))
+                  .toList(),
+        ),
       ],
+    );
+  }
+
+  Widget _buildSizeOption(BuildContext context, String size) {
+    return GestureDetector(
+      onTap: () => onSizeSelected(size),
+      child: Container(
+        width: 36,
+        height: 36,
+        margin: const EdgeInsets.only(right: 8),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color:
+              selectedSize == size
+                  ? AppColors.primary(context)
+                  : AppColors.card(context),
+          border: Border.all(color: AppColors.border(context)),
+        ),
+        child: Center(
+          child: Text(
+            size,
+            style: TextStyle(
+              color:
+                  selectedSize == size
+                      ? AppColors.primaryForeground(context)
+                      : AppColors.foreground(context),
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

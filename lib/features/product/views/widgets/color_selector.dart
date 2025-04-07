@@ -1,94 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/features/home/models/color_variant_model.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class ColorSelector extends StatelessWidget {
-  final List<ColorVariantModel> colors;
-  final String? selectedColorId;
+  final String? selectedColor;
   final Function(String) onColorSelected;
+  final Map<String, Color> colorOptions;
 
   const ColorSelector({
     Key? key,
-    required this.colors,
-    required this.selectedColorId,
+    required this.selectedColor,
     required this.onColorSelected,
+    this.colorOptions = const {
+      'White': Colors.white,
+      'Black': Colors.black,
+      'Green': Colors.green,
+      'Orange': Colors.orange,
+    },
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Color',
-          style: TextStyle(
-            fontSize: UIConfig.fontSizeMedium,
-            fontWeight: FontWeight.bold,
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: AppColors.card(context),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.border(context).withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 5,
           ),
-        ),
-        const SizedBox(height: 12),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children:
-                colors.map((color) {
-                  final isSelected = color.id == selectedColorId;
-
-                  return GestureDetector(
-                    onTap: () => onColorSelected(color.id),
-                    child: Container(
-                      margin: const EdgeInsets.only(
-                        right: UIConfig.paddingSmall,
-                      ),
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.transparent,
-                          width: 2,
-                        ),
-                      ),
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Color(int.parse('0xFF${color.hexCode}')),
-                          shape: BoxShape.circle,
-                        ),
-                        child:
-                            isSelected
-                                ? Icon(
-                                  Icons.check,
-                                  color:
-                                      _isDarkColor(color.hexCode)
-                                          ? Colors.white
-                                          : Colors.black,
-                                  size: 16,
-                                )
-                                : null,
-                      ),
-                    ),
-                  );
-                }).toList(),
-          ),
-        ),
-      ],
+        ],
+      ),
+      child: Column(
+        children:
+            colorOptions.entries.map((entry) {
+              return GestureDetector(
+                onTap: () => onColorSelected(entry.key),
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  margin: const EdgeInsets.only(bottom: 6),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: entry.value,
+                    border:
+                        entry.key == 'White'
+                            ? Border.all(color: AppColors.border(context))
+                            : null,
+                  ),
+                  child:
+                      selectedColor == entry.key && entry.key == 'White'
+                          ? Center(
+                            child: Icon(
+                              Icons.check,
+                              size: 16,
+                              color: AppColors.foreground(context),
+                            ),
+                          )
+                          : null,
+                ),
+              );
+            }).toList(),
+      ),
     );
-  }
-
-  bool _isDarkColor(String hexColor) {
-    // Convert hex to RGB and check if it's a dark color
-    final r = int.parse(hexColor.substring(0, 2), radix: 16);
-    final g = int.parse(hexColor.substring(2, 4), radix: 16);
-    final b = int.parse(hexColor.substring(4, 6), radix: 16);
-
-    // Calculate perceived brightness
-    // Formula: (R * 299 + G * 587 + B * 114) / 1000
-    final brightness = (r * 299 + g * 587 + b * 114) / 1000;
-
-    return brightness < 128; // If brightness < 128, it's a dark color
   }
 }
