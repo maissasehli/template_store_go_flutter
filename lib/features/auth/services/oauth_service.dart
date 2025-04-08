@@ -1,9 +1,12 @@
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+
 import 'package:logger/logger.dart';
 import 'package:store_go/features/auth/services/auth_api_client.dart';
 import 'package:store_go/features/auth/services/jwt_utils.dart';
 import 'package:store_go/features/auth/services/token_manager.dart';
 import 'package:store_go/features/auth/services/notification_service.dart';
+import 'dart:async';
+
+import 'package:store_go/features/auth/views/widgets/custom_webview.dart';
 
 /// Handles OAuth authentication flows
 class OAuthService {
@@ -15,16 +18,20 @@ class OAuthService {
 
   /// Initiates OAuth flow for the given provider
   /// Returns the URL to be opened in a WebView or browser
+  // In your OAuthService class, modify the initiateOAuth method:
   Future<String?> initiateOAuth({
     required String provider,
     required String redirectUrl,
+    required Map<String, dynamic> additionalParams
   }) async {
     try {
       _logger.i('Initiating OAuth flow for provider: $provider');
 
+      // For Google auth, add specific parameters to show account chooser
       final response = await _apiClient.initiateOAuth(
         provider: provider,
         redirectUrl: redirectUrl,
+        additionalParams: additionalParams,
       );
 
       if (response.statusCode == 200) {
@@ -43,7 +50,8 @@ class OAuthService {
     }
   }
 
-  /// Complete OAuth flow using WebView
+  /// Complete OAuth flow using WebView with improved redirect URL handling
+
   Future<bool> completeOAuthFlow({
     required String provider,
     String? callbackUrlScheme,
@@ -51,194 +59,190 @@ class OAuthService {
     try {
       _logger.i('Starting complete OAuth flow for provider: $provider');
 
-      // Define redirect URL with custom scheme for mobile app
-      final redirectUrl =
-          '${callbackUrlScheme ?? 'com.storego'}://oauth-callback';
+      // Define redirect URL that Supabase expects
+      const redirectUrl = 'http://localhost:3000';
 
-      // 1. Get authorization URL from backend
+      // 1. Get authorization URL from backend with improved params for Google
+      Map<String, dynamic> additionalParams = {};
+      if (provider.toLowerCase() == 'google') {
+        // These parameters help with account selection screen and security
+        additionalParams = {
+          'prompt': 'select_account', // Force account chooser
+          'access_type': 'offline', // Get refresh token
+          'include_granted_scopes': 'true',
+          'login_hint': '', // You can add a specific email here if you know it
+        };
+      }
+
+      // Get authorization URL
       final authUrl = await initiateOAuth(
         provider: provider,
         redirectUrl: redirectUrl,
+        additionalParams: additionalParams,
       );
 
       if (authUrl == null) {
         _logger.e('Failed to get OAuth authorization URL');
-        return false;
-      }
-
-      // 2. Open WebView for user authentication
-      _logger.i('Opening WebView for OAuth authentication');
-      final result = await FlutterWebAuth2.authenticate(
-        url: authUrl,
-        callbackUrlScheme: callbackUrlScheme ?? 'com.storego',
-      );
-
-      _logger.i('Got callback URL: $result');
-
-      // 3. Parse the resulting URL
-      final uri = Uri.parse(result);
-
-      // Check if we're dealing with an authorization code flow (code in query parameters)
-      final code = uri.queryParameters['code'];
-
-      if (code != null) {
-        // Handle authorization code flow
-        return await _handleAuthorizationCode(code, provider);
-      } else {
-        // Handle implicit flow (token in URL fragment)
-        return await _handleImplicitFlow(uri, provider);
-      }
-    } catch (e) {
-      _logger.e('Error completing OAuth flow: $e');
-      _notificationService.showError('Authentication failed');
-      return false;
-    }
-  }
-
-  // Handle authorization code flow
-  Future<bool> _handleAuthorizationCode(String code, String provider) async {
-    _logger.i('OAuth code received, exchanging for tokens');
-
-    try {
-      // Exchange code for tokens
-      final response = await _apiClient.exchangeAuthCode(code: code);
-
-      if (response.statusCode == 200) {
-        // Save tokens from response
-        await _tokenManager.saveSessionData(response.data['session']);
-        _notificationService.showSuccess('Successfully signed in');
-        return true;
-      } else {
-        _logger.e('Failed to exchange code for tokens: ${response.statusCode}');
         _notificationService.showError('Authentication failed');
         return false;
       }
-    } catch (e) {
-      _logger.e('Error exchanging code for tokens: $e');
+
+      // 2. Show custom WebView and wait for redirect
+      _logger.i('Opening WebView for OAuth authentication');
+      final resultUrl = await showAuthWebView(authUrl);
+
+      if (resultUrl == null) {
+        _logger.e('WebView closed without authentication result');
+        _notificationService.showError('Authentication canceled');
+        return false;
+      }
+
+      _logger.i('WebView closed with result URL captured');
+
+      // 3. Parse the resulting URL to extract tokens
+      return await _handleAuthResultUrl(resultUrl);
+    } catch (e, stackTrace) {
+      _logger.e('Error completing OAuth flow: $e');
+      _logger.e('Stack trace: $stackTrace');
       _notificationService.showError('Authentication failed');
       return false;
     }
   }
 
-  // Improved handler for implicit flow
-  Future<bool> _handleImplicitFlow(Uri uri, String provider) async {
-    _logger.i('Handling implicit flow with tokens in fragment');
+  // Improved method to extract tokens from the URL
+  Future<bool> _handleAuthResultUrl(String url) async {
+    _logger.i('Processing authentication result URL');
 
-    // Extract and parse the fragment
-    final fragment = uri.fragment;
-    if (fragment.isEmpty) {
-      _logger.e('No fragment found in callback URL');
-      _notificationService.showError('Authentication failed');
-      return false;
-    }
+    try {
+      // Extract fragment or query part from URL
+      Map<String, String> params = {};
 
-    // Parse fragment parameters
-    final fragmentParams = Uri.splitQueryString(fragment);
-
-    // Extract all tokens
-    final accessToken = fragmentParams['access_token'];
-    final refreshToken = fragmentParams['refresh_token'];
-    final expiresIn = fragmentParams['expires_in'];
-    final expiresAt = fragmentParams['expires_at'];
-    final providerToken = fragmentParams['provider_token'];
-
-    _logger.i('Access token present: ${accessToken != null}');
-    _logger.i('Refresh token present: ${refreshToken != null}');
-    _logger.i('Provider token present: ${providerToken != null}');
-
-    if (accessToken == null) {
-      _logger.e('No access token found in callback URL fragment');
-      _notificationService.showError('Authentication failed');
-      return false;
-    }
-
-    // Decode the JWT to extract user information
-    final jwtData = _jwtUtils.extractJwtData(accessToken);
-    String? userId;
-    String? email;
-
-    if (jwtData != null) {
-      // Extract user ID from common JWT fields
-      userId = jwtData['sub'] ?? jwtData['user_id'];
-      email = jwtData['email'];
-
-      _logger.i('Extracted user ID: $userId');
-      _logger.i('Extracted email: $email');
-
-      // Log other useful information for debugging
-      if (jwtData.containsKey('user_metadata')) {
-        _logger.i('User metadata present in JWT');
+      // Check for fragment part first (most common with OAuth implicit flow)
+      if (url.contains('#')) {
+        final fragmentPart = url.split('#')[1];
+        _logger.i('Found fragment in URL');
+        params = Uri.splitQueryString(fragmentPart);
       }
-
-      if (jwtData.containsKey('app_metadata')) {
-        _logger.i('App metadata present in JWT');
+      // Then check for query parameters
+      else if (url.contains('?')) {
+        final queryPart = url.split('?')[1];
+        params = Uri.splitQueryString(queryPart);
       }
-    } else {
-      _logger.w('Could not decode JWT data from access token');
-    }
-
-    // Save all the tokens
-    await _tokenManager.saveUserData('access_token', accessToken);
-
-    if (refreshToken != null) {
-      await _tokenManager.saveUserData('refresh_token', refreshToken);
-    }
-
-    // Handle expiration time
-    String finalExpiresAt;
-    if (expiresAt != null) {
-      finalExpiresAt = expiresAt;
-    } else if (expiresIn != null) {
-      finalExpiresAt = _calculateExpiresAt(expiresIn);
-    } else {
-      // Default to 1 hour if no expiration info is provided
-      finalExpiresAt =
-          DateTime.now().add(const Duration(hours: 1)).toIso8601String();
-    }
-
-    await _tokenManager.saveUserData('expires_at', finalExpiresAt);
-
-    // Save user ID if available
-    if (userId != null) {
-      await _tokenManager.saveUserData('user_id', userId);
-    }
-
-    // Save email if needed for your application
-    if (email != null) {
-      await _tokenManager.saveUserData('user_email', email);
-    }
-
-    // If we have a provider token, we might want to use it for additional user information
-    if (providerToken != null) {
-      _logger.i(
-        'Provider token found, fetching additional user data if needed',
-      );
-      try {
-        // Depending on your backend setup, you might need to validate or exchange this token
-        final success = await signInWithProviderToken(
-          provider: provider,
-          providerToken: providerToken,
-        );
-
-        if (success) {
-          _logger.i('Additional provider validation successful');
+      // If no obvious delimiter, try to extract based on localhost:3000
+      else if (url.contains('localhost:3000')) {
+        final parts = url.split('localhost:3000');
+        if (parts.length > 1 && parts[1].isNotEmpty) {
+          // Remove any leading / or # characters
+          String paramPart = parts[1].replaceFirst(RegExp(r'^[/#]+'), '');
+          params = Uri.splitQueryString(paramPart);
         }
-      } catch (e) {
-        _logger.e('Error using provider token: $e');
-        // Continue with the flow even if this fails as we already have the main tokens
       }
+
+      // Log found parameters (without exposing sensitive values)
+      _logger.i('Found parameters: ${params.keys.join(', ')}');
+
+      // Extract tokens
+      final accessToken = params['access_token'];
+      final refreshToken = params['refresh_token'];
+      final expiresIn = params['expires_in'];
+      final expiresAt = params['expires_at'];
+      final providerToken = params['provider_token'];
+      final tokenType = params['token_type'] ?? 'bearer';
+
+      if (accessToken == null) {
+        _logger.e('No access token found in URL');
+        _notificationService.showError('Authentication failed');
+        return false;
+      }
+
+      _logger.i('Successfully extracted access token');
+
+      // Save all tokens securely
+      await _tokenManager.saveUserData('access_token', accessToken);
+      await _tokenManager.saveUserData('token_type', tokenType);
+
+      if (refreshToken != null) {
+        await _tokenManager.saveUserData('refresh_token', refreshToken);
+      }
+      if (providerToken != null) {
+        await _tokenManager.saveUserData('provider_token', providerToken);
+      }
+
+      // Handle token expiration
+      if (expiresAt != null) {
+        await _tokenManager.saveUserData('expires_at', expiresAt);
+      } else if (expiresIn != null) {
+        final expirationTime =
+            DateTime.now()
+                .add(Duration(seconds: int.tryParse(expiresIn) ?? 3600))
+                .toIso8601String();
+        await _tokenManager.saveUserData('expires_at', expirationTime);
+      } else {
+        // Default expiration if none provided
+        final defaultExpiration =
+            DateTime.now().add(const Duration(hours: 1)).toIso8601String();
+        await _tokenManager.saveUserData('expires_at', defaultExpiration);
+      }
+
+      // Extract user data from JWT
+      final jwtData = _jwtUtils.extractJwtData(accessToken);
+      if (jwtData != null) {
+        _logger.i('Successfully decoded JWT data');
+
+        // Save user ID
+        if (jwtData['sub'] != null) {
+          await _tokenManager.saveUserData(
+            'user_id',
+            jwtData['sub'].toString(),
+          );
+        }
+
+        // Save email
+        if (jwtData['email'] != null) {
+          await _tokenManager.saveUserData(
+            'user_email',
+            jwtData['email'].toString(),
+          );
+        }
+
+        // Save additional user metadata if available
+        if (jwtData.containsKey('user_metadata')) {
+          try {
+            final metadata = jwtData['user_metadata'];
+            if (metadata is Map) {
+              // You might want to save specific fields from metadata
+              if (metadata.containsKey('full_name')) {
+                await _tokenManager.saveUserData(
+                  'user_name',
+                  metadata['full_name'].toString(),
+                );
+              }
+
+              if (metadata.containsKey('avatar_url')) {
+                await _tokenManager.saveUserData(
+                  'avatar_url',
+                  metadata['avatar_url'].toString(),
+                );
+              }
+            }
+          } catch (e) {
+            _logger.w('Error processing user metadata: $e');
+            // Non-critical, continue with login
+          }
+        }
+      }
+
+      _logger.i('OAuth authentication completed successfully');
+      _notificationService.showSuccess('Successfully signed in');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.e('Error processing authentication result: $e');
+      _logger.e('Stack trace: $stackTrace');
+      _notificationService.showError('Authentication failed');
+      return false;
     }
-
-    _notificationService.showSuccess('Successfully signed in');
-    return true;
   }
 
-  // Helper method to calculate expiration time
-  String _calculateExpiresAt(String? expiresInStr) {
-    final expiresIn = int.tryParse(expiresInStr ?? '3600') ?? 3600;
-    final expiresAt = DateTime.now().add(Duration(seconds: expiresIn));
-    return expiresAt.toIso8601String();
-  }
 
   /// Direct sign-in with OAuth provider token
   Future<bool> signInWithProviderToken({

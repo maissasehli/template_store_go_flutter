@@ -48,15 +48,20 @@ class AuthApiClient {
   Future<Response> initiateOAuth({
     required String provider,
     required String redirectUrl,
+    Map<String, dynamic>? additionalParams,
   }) async {
-    return await _apiClient.post(
-      '/auth/oauth/initiate',
-      data: {
-        'provider': provider,
-        'storeId': AppConfig.storeId,
-        'redirectUrl': redirectUrl,
-      },
-    );
+    Map<String, dynamic> data = {
+      'provider': provider,
+      'storeId': AppConfig.storeId,
+      'redirectUrl': redirectUrl,
+    };
+
+    // Add any additional parameters
+    if (additionalParams != null) {
+      data.addAll(additionalParams);
+    }
+
+    return await _apiClient.post('/auth/oauth/initiate', data: data);
   }
 
   // Exchange authorization code for tokens

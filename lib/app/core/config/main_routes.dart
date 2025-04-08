@@ -19,7 +19,7 @@ import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
 import 'package:store_go/features/product/product_binding.dart';
-import 'package:store_go/features/product/views/product_detail_screen.dart';
+import 'package:store_go/features/product/views/screens/product_detail_screen.dart';
 import 'package:store_go/features/profile/bindings/edit_profile_binding.dart';
 import 'package:store_go/features/profile/bindings/profile_binding.dart';
 import 'package:store_go/features/profile/views/add_adress.dart';

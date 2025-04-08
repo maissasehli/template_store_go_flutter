@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/universal_cached_image.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/services/user_api_service.dart';
@@ -119,8 +120,9 @@ class ProfilePage extends GetView<ProfileController> {
         Center(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(100),
-            child: Image.network(
-              user?.avatar?? "none", // You may want to add a user avatar field later
+            child: UniversalCachedImage(
+              imagePath: user?.avatar ?? "none",
+              source: ImageSource.network,
               width: 100.87,
               height: 100.87,
               fit: BoxFit.cover,

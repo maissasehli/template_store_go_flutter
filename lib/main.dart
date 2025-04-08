@@ -15,6 +15,7 @@ Future<void> main() async {
 
   // Initialize lifecycle observer
   Get.put(LifecycleObserver());
+  
 
   runApp(
     EasyLocalization(
