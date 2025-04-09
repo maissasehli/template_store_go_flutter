@@ -68,11 +68,12 @@ class _UniversalCachedImageState extends State<UniversalCachedImage> {
       if (mounted) setState(() => _isLoading = false);
     } catch (e) {
       debugPrint('Error loading image ${widget.imagePath}: $e');
-      if (mounted)
+      if (mounted) {
         setState(() {
           _isLoading = false;
           _hasError = true;
         });
+      }
     }
   }
 

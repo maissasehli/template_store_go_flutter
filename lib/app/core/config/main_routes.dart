@@ -33,7 +33,8 @@ import 'package:store_go/features/profile/views/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
 import 'package:store_go/features/setting/views/setting_screen.dart';
-import 'package:store_go/features/wishlist/wishlist_screen.dart';
+import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
+import 'package:store_go/features/wishlist/wishlist_binding.dart';
 
 List<GetPage<dynamic>>? routes = [
   GetPage(name: '/', page: () => const SplashScreen()),
@@ -122,7 +123,7 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.wishlist,
     page: () => WishlistPage(),
-    binding: HomeBinding(),
+    binding: WishlistBinding(),
   ),
   GetPage(
     name: AppRoute.cart,

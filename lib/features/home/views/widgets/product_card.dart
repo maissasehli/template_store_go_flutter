@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/product/models/product_modal.dart';
 import 'package:store_go/features/home/views/widgets/card_comps/favorite_button.dart';
 import 'package:store_go/features/home/views/widgets/card_comps/product_image.dart';
@@ -23,6 +25,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.find<HomeController>();
     return GestureDetector(
       onTap: () => onProductTap(product.id),
       child: Container(
@@ -47,10 +50,15 @@ class ProductCard extends StatelessWidget {
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: FavoriteButton(
-                      isFavorite: product.isFavorite,
-                      onTap: () => onFavoriteTap(product.id),
-                    ),
+                    child: Obx(() {
+                      final isFavorite = homeController.isProductInWishlist(
+                        product.id,
+                      );
+                      return FavoriteButton(
+                        isFavorite: isFavorite,
+                        onTap: () => homeController.toggleFavorite(product.id),
+                      );
+                    }),
                   ),
                 ],
               ),

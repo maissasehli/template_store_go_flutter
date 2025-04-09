@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/shared/widgets/bottom_nav_bar.dart';
 import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/features/home/views/home_screen.dart';
-import 'package:store_go/features/wishlist/wishlist_screen.dart';
+import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
 import 'package:store_go/features/cart/views/cart_screen.dart';
 import 'package:store_go/features/profile/views/profile_screen.dart';
 
