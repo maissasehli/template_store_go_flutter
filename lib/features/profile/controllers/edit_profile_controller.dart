@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/profile/services/user_api_service.dart';
-import 'package:store_go/features/profile/user_model.dart';
+import 'package:store_go/features/profile/models/user_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 

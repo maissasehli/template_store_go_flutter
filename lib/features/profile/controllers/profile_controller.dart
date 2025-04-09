@@ -1,10 +1,11 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:store_go/features/profile/services/user_api_service.dart';
-import 'package:store_go/features/profile/user_model.dart';
+import 'package:store_go/features/profile/repositories/profile_repository.dart';
+import 'package:store_go/features/profile/models/user_model.dart';
 
 class ProfileController extends GetxController {
-  final UserApiService _userApiService;
+  final ProfileRepository _repository;
   final logger = Logger();
 
   // Observable variables
@@ -14,7 +15,8 @@ class ProfileController extends GetxController {
   final RxString errorMessage = ''.obs;
 
   // Constructor with dependency injection
-  ProfileController(this._userApiService);
+  ProfileController({required ProfileRepository repository})
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -29,15 +31,9 @@ class ProfileController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
 
-      final response = await _userApiService.getCurrentUser();
-
-      if (response.statusCode == 200) {
-        final userData = response.data['data'];
-        user.value = UserModel.fromJson(userData);
-        logger.i('User data fetched successfully: ${user.value?.name}');
-      } else {
-        throw Exception('Failed to load user data');
-      }
+      final userData = await _repository.getCurrentUser();
+      user.value = userData;
+      logger.i('User data fetched successfully: ${user.value?.name}');
     } catch (e) {
       logger.e('Error fetching user: $e');
       hasError.value = true;
@@ -50,5 +46,43 @@ class ProfileController extends GetxController {
   // Refresh user data
   Future<void> refreshUserData() async {
     await fetchCurrentUser();
+  }
+
+  // Update profile
+  Future<void> updateProfile(Map<String, dynamic> userData) async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
+      final updatedUser = await _repository.updateProfile(userData);
+      user.value = updatedUser;
+      logger.i('Profile updated successfully');
+    } catch (e) {
+      logger.e('Error updating profile: $e');
+      hasError.value = true;
+      errorMessage.value = 'Failed to update profile. Please try again.';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Upload avatar
+  Future<void> uploadAvatar(File imageFile) async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
+      final updatedUser = await _repository.uploadAvatar(imageFile);
+      user.value = updatedUser;
+      logger.i('Avatar uploaded successfully');
+    } catch (e) {
+      logger.e('Error uploading avatar: $e');
+      hasError.value = true;
+      errorMessage.value = 'Failed to upload avatar. Please try again.';
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

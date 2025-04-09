@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/features/profile/views/orders_screen.dart';
+import 'package:store_go/features/order/orders_screen.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   const OrderDetailsPage({Key? key}) : super(key: key);
