@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
+import 'package:store_go/features/category/repositories/category_repository.dart';
 import 'package:store_go/features/category/services/category_api_service.dart';
 import 'package:store_go/features/category/services/category_service.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
@@ -24,7 +25,7 @@ class HomeBinding implements Bindings {
       () => CategoryService(Get.find<CategoryApiService>()),
     );
     Get.lazyPut<CategoryController>(
-      () => CategoryController(Get.find<CategoryService>()),
+      () => CategoryController(repository: Get.find<CategoryRepository>()),
     );
     Get.lazyPut<ProductService>(() => ProductService(), fenix: true);
     // Register controller
@@ -35,5 +36,10 @@ class HomeBinding implements Bindings {
     Get.lazyPut<WishlistRepository>(
       () => WishlistRepository(apiClient: apiClient),
     );
+
+    Get.lazyPut<CategoryRepository>(
+      () => CategoryRepository(apiClient: Get.find<ApiClient>()),
+    );
+    
   }
 }

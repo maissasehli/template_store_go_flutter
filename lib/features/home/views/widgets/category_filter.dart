@@ -1,5 +1,6 @@
+// ignore_for_file: deprecated_member_use
 import 'package:flutter/material.dart';
-import 'package:store_go/features/home/models/category_model.dart';
+import 'package:store_go/features/category/models/category.modal.dart';
 
 class CategoryFilter extends StatelessWidget {
   final List<Category> categories;
@@ -7,11 +8,11 @@ class CategoryFilter extends StatelessWidget {
   final Function(String) onCategorySelected;
 
   const CategoryFilter({
-    Key? key,
+    super.key,
     required this.categories,
     required this.selectedCategoryId,
     required this.onCategorySelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

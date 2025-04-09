@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart' as dio;
+import 'package:store_go/features/category/models/category.modal.dart';
 import 'package:store_go/features/category/services/category_api_service.dart';
-import 'package:store_go/features/home/models/category_model.dart';
 import 'package:logger/logger.dart';
 
 class CategoryService {

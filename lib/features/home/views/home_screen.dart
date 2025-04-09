@@ -1,5 +1,3 @@
-// lib/features/home/views/home_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';

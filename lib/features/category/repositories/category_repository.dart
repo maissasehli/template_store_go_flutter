@@ -1,59 +1,42 @@
-
+import 'package:store_go/app/core/services/api_client.dart';
+import 'package:logger/logger.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
-import 'package:store_go/features/category/services/category_service.dart';
 
 class CategoryRepository {
-  final CategoryService _categoryService;
+  final ApiClient _apiClient;
+  final Logger _logger = Logger();
 
-  // Optional: Add caching mechanism
-  List<Category>? _cachedCategories;
-  DateTime? _lastFetchTime;
+  CategoryRepository({required ApiClient apiClient}) : _apiClient = apiClient;
 
-  CategoryRepository(this._categoryService);
-
-  Future<List<Object>> getCategories({bool forceRefresh = false}) async {
-    // If we have cached data and it's not expired (and not forcing refresh)
-    if (_cachedCategories != null &&
-        _lastFetchTime != null &&
-        DateTime.now().difference(_lastFetchTime!).inMinutes < 30 &&
-        !forceRefresh) {
-      return _cachedCategories!;
-    }
-
-    // Otherwise fetch fresh data
+  Future<List<Category>> getCategories() async {
     try {
-      final categories = await _categoryService.getCategories();
+      final response = await _apiClient.get('/categories');
 
-      // Update cache
-      _cachedCategories = categories.cast<Category>();
-      _lastFetchTime = DateTime.now();
-
-      return categories;
+      if (response.statusCode == 200) {
+        final data = response.data['data'] as List;
+        return data.map((item) => Category.fromJson(item)).toList();
+      } else {
+        throw Exception('Failed to load categories');
+      }
     } catch (e) {
-      // Rethrow with more context if needed
-      rethrow;
+      _logger.e('Failed to load categories: $e');
+      throw Exception('Failed to load categories: $e');
     }
   }
 
-  Future<Object> getCategoryById(String id) async {
-    // Check if category exists in cache first
-    if (_cachedCategories != null) {
-      final cachedCategory = _cachedCategories!.firstWhere(
-        (category) => category.id == id,
-        orElse:
-            () =>
-                
-                // ignore: cast_from_null_always_fails
-                null
-                    as Category, // This will properly trigger the exception path
-      );
+  // Add additional methods as needed, for example:
+  Future<Category> getCategoryById(String id) async {
+    try {
+      final response = await _apiClient.get('/categories/$id');
 
-      if (cachedCategory != null) {
-        return cachedCategory;
+      if (response.statusCode == 200) {
+        return Category.fromJson(response.data['data']);
+      } else {
+        throw Exception('Failed to load category details');
       }
+    } catch (e) {
+      _logger.e('Failed to load category details: $e');
+      throw Exception('Failed to load category details: $e');
     }
-
-    // Fetch from service if not in cache
-    return _categoryService.getCategoryById(id);
   }
 }

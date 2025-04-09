@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/features/home/models/category_model.dart';
+import 'package:store_go/features/category/views/widgets/category_tile.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -48,9 +48,7 @@ class CategoryScreen extends StatelessWidget {
                     child: CustomSearchBar(
                       onSearch: (query) {
                         // Handle search functionality
-                        if (query.isNotEmpty) {
-                          // Navigate to search results or filter categories
-                        }
+                        controller.filterCategories(query);
                       },
                     ),
                   ),
@@ -92,13 +90,13 @@ class CategoryScreen extends StatelessWidget {
                     );
                   }
                   // Show error message if there's an error
-                  else if (controller.errorMessage.value != null) {
+                  else if (controller.hasError.value) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            controller.errorMessage.value!,
+                            controller.errorMessage.value,
                             style: TextStyle(
                               color: AppColors.destructive(context),
                             ),
@@ -120,7 +118,7 @@ class CategoryScreen extends StatelessWidget {
                     );
                   }
                   // Show empty state message if no categories found
-                  else if (controller.categories.isEmpty) {
+                  else if (controller.filteredCategories.isEmpty) {
                     return Center(
                       child: Text(
                         'No categories found',
@@ -133,13 +131,16 @@ class CategoryScreen extends StatelessWidget {
                   // Show the list of categories
                   return ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: controller.categories.length,
+                    itemCount: controller.filteredCategories.length,
                     itemBuilder: (context, index) {
-                      final category = controller.categories[index];
+                      final category = controller.filteredCategories[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: CategoryTile(
                           category: category,
+                          isSelected: controller.isCategorySelected(
+                            category.id,
+                          ),
                           onTap: () => controller.selectCategory(category.id),
                         ),
                       );
@@ -155,101 +156,3 @@ class CategoryScreen extends StatelessWidget {
   }
 }
 
-class CategoryTile extends StatelessWidget {
-  final Category category;
-  final VoidCallback onTap;
-
-  const CategoryTile({super.key, required this.category, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 64,
-      decoration: BoxDecoration(
-        color: AppColors.muted(context),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(8),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.card(context),
-                  ),
-                  child: _buildCategoryIcon(category, context),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  category.name,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    height: 1.0,
-                    letterSpacing: 0,
-                    color: AppColors.foreground(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryIcon(Category category, BuildContext context) {
-    // Check if the icon is a network URL
-    if (category.imageUrl != null && category.imageUrl!.startsWith('http')) {
-      return ClipOval(
-        child: Image.network(
-          category.imageUrl!,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback to default icon if image fails to load
-            return Icon(
-              Icons.category,
-              size: 24,
-              color: AppColors.mutedForeground(context),
-            );
-          },
-        ),
-      );
-    }
-    // Check if it's an asset path
-    else if (category.imageUrl != null) {
-      return ClipOval(
-        child: Image.asset(
-          category.imageUrl!,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback to default icon if asset fails to load
-            return Icon(
-              Icons.category,
-              size: 24,
-              color: AppColors.mutedForeground(context),
-            );
-          },
-        ),
-      );
-    }
-    // Use default icon if no icon is provided
-    else {
-      return Icon(
-        Icons.category,
-        size: 24,
-        color: AppColors.mutedForeground(context),
-      );
-    }
-  }
-}

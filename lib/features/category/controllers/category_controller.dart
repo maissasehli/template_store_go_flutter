@@ -1,21 +1,26 @@
 import 'package:get/get.dart';
-import 'package:store_go/features/category/services/category_service.dart';
-import 'package:store_go/features/home/models/category_model.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/category/repositories/category_repository.dart';
 
 class CategoryController extends GetxController {
-  final CategoryService _categoryService;
+  final CategoryRepository _repository;
   final Logger _logger = Logger();
 
-  // Observable variables
+  // Observable state
   final RxList<Category> categories = <Category>[].obs;
   final RxBool isLoading = false.obs;
-  final Rx<String?> errorMessage = Rx<String?>(null);
-  // Add the missing selectedCategoryId property
+  final RxBool hasError = false.obs;
+  final RxString errorMessage = ''.obs;
+
+  // For selected category tracking
   final RxString selectedCategoryId = ''.obs;
 
-  // Dependency injection through constructor
-  CategoryController(this._categoryService);
+  // For search functionality
+  final RxList<Category> filteredCategories = <Category>[].obs;
+
+  CategoryController({required CategoryRepository repository})
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -23,14 +28,15 @@ class CategoryController extends GetxController {
     fetchCategories();
   }
 
-  // Fetch all categories
   Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
-      errorMessage.value = null;
+      hasError.value = false;
+      errorMessage.value = '';
 
-      // Get categories from service
-      categories.value = await _categoryService.getCategories();
+      final items = await _repository.getCategories();
+      categories.value = items;
+      filteredCategories.value = items;
 
       // If categories were loaded and we don't have a selected category yet,
       // select the first one by default
@@ -41,6 +47,7 @@ class CategoryController extends GetxController {
       _logger.d("Categories fetched: ${categories.length}");
     } catch (e) {
       _logger.e("Error fetching categories: $e");
+      hasError.value = true;
       errorMessage.value = 'Failed to load categories. Please try again later.';
     } finally {
       isLoading.value = false;
@@ -54,5 +61,22 @@ class CategoryController extends GetxController {
     selectedCategoryId.value = id;
     // Navigate to products screen with category ID
     Get.toNamed('/products', arguments: {'categoryId': id});
+  }
+
+  void filterCategories(String searchText) {
+    if (searchText.isEmpty) {
+      filteredCategories.value = categories;
+    } else {
+      filteredCategories.value =
+          categories.where((category) {
+            return category.name.toLowerCase().contains(
+              searchText.toLowerCase(),
+            );
+          }).toList();
+    }
+  }
+
+  bool isCategorySelected(String categoryId) {
+    return selectedCategoryId.value == categoryId;
   }
 }

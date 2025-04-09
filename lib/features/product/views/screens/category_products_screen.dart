@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/features/category/models/category.modal.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
-import 'package:store_go/features/home/models/category_model.dart';
 import 'package:store_go/features/product/models/product_modal.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 

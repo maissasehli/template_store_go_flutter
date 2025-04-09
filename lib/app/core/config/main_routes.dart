@@ -94,7 +94,7 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.home,
     page: () => HomeScreen(),
-    binding: HomeBinding(),
+    bindings: [HomeBinding(), CategoryBinding()],
   ),
 
   // Categories
@@ -105,10 +105,8 @@ List<GetPage<dynamic>>? routes = [
   ),
   GetPage(
     name: AppRoute.categoryDetail,
-    page: () {
-      return CategoryScreen();
-    },
-    binding: HomeBinding(),
+    page: () => CategoryScreen(),
+    binding: CategoryBinding(),
   ),
 
   // Products
