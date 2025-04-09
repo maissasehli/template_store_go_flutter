@@ -7,6 +7,8 @@ import 'package:store_go/features/category/services/category_service.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/services/product_service.dart';
+import 'package:store_go/features/profile/controllers/profile_controller.dart';
+import 'package:store_go/features/profile/repositories/profile_repository.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/repositories/wishlist_repository.dart';
 
@@ -40,6 +42,11 @@ class HomeBinding implements Bindings {
     Get.lazyPut<CategoryRepository>(
       () => CategoryRepository(apiClient: Get.find<ApiClient>()),
     );
-    
+    Get.lazyPut<ProfileController>(
+      () => ProfileController(repository: Get.find<ProfileRepository>()),
+    );
+    Get.lazyPut<ProfileRepository>(
+      () => ProfileRepository(apiClient: Get.find<ApiClient>()),
+    );
   }
 }

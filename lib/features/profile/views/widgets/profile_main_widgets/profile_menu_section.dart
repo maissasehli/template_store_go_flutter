@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
-import 'package:store_go/features/profile/views/widgets/profile_menu_item.dart';
-import 'package:store_go/features/profile/views/widgets/logout_dialog.dart';
+import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_menu_item.dart';
+import 'package:store_go/features/profile/views/widgets/profile_main_widgets/logout_dialog.dart';
 
 class ProfileMenuSection extends StatelessWidget {
   final AuthService authService;

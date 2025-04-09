@@ -4,9 +4,9 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
-import 'package:store_go/features/profile/views/widgets/profile_header.dart';
-import 'package:store_go/features/profile/views/widgets/user_details_card.dart';
-import 'package:store_go/features/profile/views/widgets/profile_menu_section.dart';
+import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_header.dart';
+import 'package:store_go/features/profile/views/widgets/profile_main_widgets/user_details_card.dart';
+import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_menu_section.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   const ProfilePage({super.key});

@@ -24,15 +24,15 @@ import 'package:store_go/features/profile/bindings/edit_profile_binding.dart';
 import 'package:store_go/features/profile/bindings/profile_binding.dart';
 import 'package:store_go/features/address/add_adress.dart';
 import 'package:store_go/features/address/adress_screen.dart';
-import 'package:store_go/features/profile/views/edit_profile_screen.dart';
+import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart';
 import 'package:store_go/features/notifications/notification_screen.dart';
 import 'package:store_go/features/order/orders_detaill_screen.dart';
 import 'package:store_go/features/order/orders_screen.dart';
 import 'package:store_go/features/payment/payment_screen.dart';
-import 'package:store_go/features/profile/views/profile_screen.dart';
+import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
-import 'package:store_go/features/setting/views/setting_screen.dart';
+import 'package:store_go/features/settings/views/setting_screen.dart';
 import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
 import 'package:store_go/features/wishlist/wishlist_binding.dart';
 
