@@ -6,9 +6,12 @@ import 'package:store_go/features/cart/controllers/cart_controller.dart';
 
 /// Controller responsible for managing product details
 class ProductDetailController extends GetxController {
-  final ProductRepository _productRepository = Get.find<ProductRepository>();
+  final ProductRepository _repository;
   final ProductDetailState state = ProductDetailState();
   final Logger _logger = Logger();
+
+  ProductDetailController({required ProductRepository repository})
+    : _repository = repository;
 
   /// Fetches product details by ID
   Future<void> fetchProductDetails(String productId) async {
@@ -17,7 +20,7 @@ class ProductDetailController extends GetxController {
       state.clearError();
       state.clearProduct();
 
-      final product = await _productRepository.getProductById(
+      final product = await _repository.getProductById(
         productId,
         forceRefresh: true,
       );
@@ -104,7 +107,7 @@ class ProductDetailController extends GetxController {
 
     try {
       // Send update to API
-      final success = await _productRepository.updateFavoriteStatus(
+      final success = await _repository.updateFavoriteStatus(
         productId,
         !currentStatus,
       );

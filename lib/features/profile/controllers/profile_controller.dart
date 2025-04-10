@@ -43,10 +43,6 @@ class ProfileController extends GetxController {
     }
   }
 
-  // Refresh user data
-  Future<void> refreshUserData() async {
-    await fetchCurrentUser();
-  }
 
   // Update profile
   Future<void> updateProfile(Map<String, dynamic> userData) async {

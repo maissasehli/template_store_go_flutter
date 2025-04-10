@@ -6,10 +6,12 @@ import 'package:store_go/features/product/state/product_list_state.dart';
 
 /// Controller responsible for managing product listings
 class ProductListController extends GetxController {
-  final ProductRepository _productRepository = Get.find<ProductRepository>();
+  final ProductRepository _repository;
   final ProductListState state = ProductListState();
   final Logger _logger = Logger();
 
+  ProductListController({required ProductRepository repository})
+    : _repository = repository;
   @override
   void onInit() {
     super.onInit();
@@ -24,7 +26,7 @@ class ProductListController extends GetxController {
       state.setLoading(true);
       state.clearError();
 
-      final fetchedProducts = await _productRepository.getAllProducts(
+      final fetchedProducts = await _repository.getProducts(
         forceRefresh: true,
       );
       state.setProducts(fetchedProducts);
@@ -48,7 +50,7 @@ class ProductListController extends GetxController {
         return;
       }
 
-      final categoryProducts = await _productRepository.getProductsByCategory(
+      final categoryProducts = await _repository.getProductsByCategory(
         categoryId,
         forceRefresh: true,
       );
@@ -64,7 +66,7 @@ class ProductListController extends GetxController {
   /// Fetches featured products
   Future<void> fetchFeaturedProducts() async {
     try {
-      final featured = await _productRepository.getFeaturedProducts();
+      final featured = await _repository.getFeaturedProducts();
       state.setFeaturedProducts(featured);
     } catch (e) {
       _logger.e('Error fetching featured products: $e');
@@ -75,7 +77,7 @@ class ProductListController extends GetxController {
   /// Fetches new products
   Future<void> fetchNewProducts() async {
     try {
-      final newItems = await _productRepository.getNewProducts();
+      final newItems = await _repository.getNewProducts();
       state.setNewProducts(newItems);
     } catch (e) {
       _logger.e('Error fetching new products: $e');
@@ -92,7 +94,7 @@ class ProductListController extends GetxController {
 
     try {
       state.setLoading(true);
-      final results = await _productRepository.searchProducts(query);
+      final results = await _repository.searchProducts(query);
       state.setSearchResults(results);
     } catch (e) {
       _logger.e('Error searching products: $e');

@@ -9,7 +9,7 @@ class Product {
   final int stockQuantity;
   final double rating;
   final Map<String, dynamic> attributes;
-  final Map<String, List<String>> variants; // Add variants
+  final Map<String, List<String>> variants; 
   final String status;
   final bool isFavorite;
 

@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/product/models/product_modal.dart';
-import 'package:store_go/features/product/services/product_service.dart';
+import 'package:store_go/features/product/repositories/product_repository.dart';
 
 class ProductController extends GetxController {
-  final ProductService _productService = Get.find<ProductService>();
+  final ProductRepository _repository;
+  final Logger _logger = Logger();
 
   // Observable states for product listing
   final RxList<Product> products = <Product>[].obs;
@@ -14,6 +15,9 @@ class ProductController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
+
+  ProductController({required ProductRepository repository})
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -30,12 +34,12 @@ class ProductController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
 
-      final fetchedProducts = await _productService.getProducts();
+      final fetchedProducts = await _repository.getProducts();
       products.assignAll(fetchedProducts);
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      Logger().e('Error fetching products: $e');
+      _logger.e('Error fetching products: $e');
     } finally {
       isLoading.value = false;
     }
@@ -53,14 +57,14 @@ class ProductController extends GetxController {
         return;
       }
 
-      final categoryProducts = await _productService.getProductsByCategory(
+      final categoryProducts = await _repository.getProductsByCategory(
         categoryId,
       );
       products.assignAll(categoryProducts);
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      Logger().e('Error fetching products by category: $e');
+      _logger.e('Error fetching products by category: $e');
     } finally {
       isLoading.value = false;
     }
@@ -69,10 +73,10 @@ class ProductController extends GetxController {
   // Fetch featured products
   Future<void> fetchFeaturedProducts() async {
     try {
-      final featured = await _productService.getFeaturedProducts();
+      final featured = await _repository.getFeaturedProducts();
       featuredProducts.assignAll(featured);
     } catch (e) {
-      Logger().e('Error fetching featured products: $e');
+      _logger.e('Error fetching featured products: $e');
       // If featured fails, we can still show other sections
     }
   }
@@ -80,10 +84,10 @@ class ProductController extends GetxController {
   // Fetch new products
   Future<void> fetchNewProducts() async {
     try {
-      final newItems = await _productService.getNewProducts();
+      final newItems = await _repository.getNewProducts();
       newProducts.assignAll(newItems);
     } catch (e) {
-      Logger().e('Error fetching new products: $e');
+      _logger.e('Error fetching new products: $e');
       // If new products fail, we can still show other sections
     }
   }
@@ -97,10 +101,10 @@ class ProductController extends GetxController {
 
     try {
       isLoading.value = true;
-      final results = await _productService.searchProducts(query);
+      final results = await _repository.searchProducts(query);
       searchResults.assignAll(results);
     } catch (e) {
-      Logger().e('Error searching products: $e');
+      _logger.e('Error searching products: $e');
     } finally {
       isLoading.value = false;
     }
@@ -128,7 +132,7 @@ class ProductController extends GetxController {
 
     try {
       // Send update to API
-      final success = await _productService.updateFavoriteStatus(
+      final success = await _repository.updateFavoriteStatus(
         productId,
         newFavoriteStatus,
       );
@@ -140,7 +144,7 @@ class ProductController extends GetxController {
     } catch (e) {
       // If there was an error, revert the changes
       _revertFavoriteChange(productId, !newFavoriteStatus);
-      Logger().e('Error updating favorite status: $e');
+      _logger.e('Error updating favorite status: $e');
     }
   }
 
@@ -175,7 +179,7 @@ class ProductController extends GetxController {
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      Logger().e('Error clearing filters: $e');
+      _logger.e('Error clearing filters: $e');
     } finally {
       isLoading.value = false;
     }
@@ -246,7 +250,7 @@ class ProductController extends GetxController {
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
-      Logger().e('Error applying filters: $e');
+      _logger.e('Error applying filters: $e');
     } finally {
       isLoading.value = false;
     }

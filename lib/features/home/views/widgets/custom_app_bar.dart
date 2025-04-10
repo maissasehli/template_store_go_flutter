@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/shared/widgets/universal_cached_image.dart';
+import 'package:store_go/features/profile/controllers/profile_controller.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String)? onSearch;
-
-  const CustomAppBar({super.key, this.onSearch});
+  final ProfileController profileController;
+  const CustomAppBar({super.key, this.onSearch, required this.profileController});
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +26,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(18),
-              child: Image.asset(
-                'assets/images/profile_avatar.png',
-                fit: BoxFit.cover,
-              ),
+              child: Obx(
+                () => UniversalCachedImage(
+                  imagePath: profileController.user.value?.avatar ?? "",
+                  source: ImageSource.network,
+                ),
+              )
             ),
           ),
         ],

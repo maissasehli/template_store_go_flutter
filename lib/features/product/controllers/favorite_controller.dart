@@ -5,12 +5,14 @@ import 'package:store_go/features/product/repositories/product_repository.dart';
 
 /// Controller responsible for managing favorite products functionality
 class FavoriteController extends GetxController {
-  final ProductRepository _productRepository = Get.find<ProductRepository>();
+  final ProductRepository _repository;
   final Logger _logger = Logger();
 
   final RxList<Product> favoriteProducts = <Product>[].obs;
   final RxBool isLoading = false.obs;
 
+  FavoriteController({required ProductRepository repository})
+    : _repository = repository;
   @override
   void onInit() {
     super.onInit();
@@ -23,7 +25,7 @@ class FavoriteController extends GetxController {
       isLoading.value = true;
 
       // You may need to create a specific endpoint for this
-      final allProducts = await _productRepository.getAllProducts();
+      final allProducts = await _repository.getProducts();
       final favorites = allProducts.where((p) => p.isFavorite).toList();
 
       favoriteProducts.assignAll(favorites);
@@ -46,7 +48,7 @@ class FavoriteController extends GetxController {
       favoriteProducts.removeAt(index);
 
       try {
-        final success = await _productRepository.updateFavoriteStatus(
+        final success = await _repository.updateFavoriteStatus(
           productId,
           false,
         );
@@ -64,13 +66,13 @@ class FavoriteController extends GetxController {
     // If it's not in favorites, we need to add it
     else {
       try {
-        final product = await _productRepository.getProductById(productId);
+        final product = await _repository.getProductById(productId);
         final updatedProduct = product.copyWith(isFavorite: true);
 
         // Update UI optimistically
         favoriteProducts.add(updatedProduct);
 
-        final success = await _productRepository.updateFavoriteStatus(
+        final success = await _repository.updateFavoriteStatus(
           productId,
           true,
         );

@@ -63,7 +63,7 @@ class ProfilePage extends GetView<ProfileController> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: controller.refreshUserData,
+            onPressed: controller.fetchCurrentUser,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),
             ),
@@ -79,7 +79,7 @@ class ProfilePage extends GetView<ProfileController> {
 
   Widget _buildContent(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: controller.refreshUserData,
+      onRefresh: controller.fetchCurrentUser,
       color: AppColors.primary(context),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
