@@ -6,7 +6,7 @@ import 'package:store_go/app/core/config/assets_config.dart';
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
 
-  const BottomNavBar({Key? key, this.currentIndex = 0}) : super(key: key);
+  const BottomNavBar({super.key, this.currentIndex = 0});
 
   @override
   Widget build(BuildContext context) {

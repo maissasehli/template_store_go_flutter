@@ -1,66 +1,130 @@
-// For HomeController.dart
 import 'package:get/get.dart';
-import 'package:logger/logger.dart';
-import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/app/shared/controllers/navigation_controller.dart';
-import 'package:store_go/features/product/controllers/product_controller.dart';
-import 'package:store_go/features/home/models/category_model.dart';
-import 'package:store_go/features/category/services/category_api_service.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
+import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/features/category/models/categories_model.dart';
+import 'package:store_go/features/product/models/product_model.dart';
+import 'package:store_go/features/home/services/home_api_service.dart';
 
 class HomeController extends GetxController {
-  final CategoryController categoryController = Get.find<CategoryController>();
-  final ProductController productController = Get.find<ProductController>();
-  final NavigationController navigationController = Get.find<NavigationController>();
-  final CategoryApiService categoryApiService = Get.find<CategoryApiService>();
+  // Observable loading state
+  final isLoading = true.obs;
 
-  // Track which section's "See All" was clicked
-  final RxString currentSection = ''.obs;
+  // Observable list of products
+  final products = <ProductModels>[].obs;
+
+  // Observable list of categories
+  final categories = <CategoriesModels>[].obs;
+
+  // Observable for the currently selected category ID
+  final selectedCategoryId = ''.obs;
 
   @override
   void onInit() {
+    fetchInitialData();
     super.onInit();
-    // Initialize data when controller is created
-    productController.fetchProducts();
   }
 
-  // Navigate to product detail page
-  void navigateToProductDetail(String productId) {
-    Get.toNamed('/product/$productId', arguments: productId);
+  /// Fetches initial data including products and categories from the API
+  Future<void> fetchInitialData() async {
+    try {
+      isLoading(true);
+      final homeApiService = HomeApiService(ApiClient());
+      final response = await homeApiService.getHomeData();
+      final data = response.data;
+
+      // Load product list from 'items' in the response
+      if (data['items'] != null && data['items'] is List) {
+        products.assignAll(
+          (data['items'] as List)
+              .map((product) => ProductModels.fromJson(product))
+              .toList(),
+        );
+      } else {
+        products.clear();
+      }
+
+      // Load category list from 'categories' in the response
+      if (data['categories'] != null && data['categories'] is List) {
+        categories.assignAll(
+          (data['categories'] as List)
+              .map((category) => CategoriesModels.fromJson(category))
+              .toList(),
+        );
+      } else {
+        categories.clear();
+      }
+
+      // Set the first category as the selected one by default
+      if (categories.isNotEmpty) {
+        selectedCategoryId.value = categories.first.id ?? '';
+      }
+    } finally {
+      isLoading(false);
+    }
   }
 
-  // Navigate to category page for all products in a category
-  void navigateToCategoryScreen(String categoryId) {
-    final category = categoryController.categories.firstWhere(
-      (c) => c.id == categoryId,
-      orElse: () => Category(id: categoryId, name: 'Category'),
+  /// Navigates to the product screen with selected category and categories list as arguments
+  void gotoProducts(List<CategoriesModels> categories, CategoriesModels selectedCat) {
+    Get.toNamed(
+      AppRoute.productscreen,
+      arguments: {
+        "categories": categories,
+        "selected": selectedCat,
+      },
     );
-    Get.toNamed('/category/$categoryId', arguments: category);
   }
 
-  // Handle See All button click for Categories
-  void onCategoriesSeeAllTap() {
-    currentSection.value = 'categories';
-    Get.toNamed('/categories');
-    final categories = categoryApiService.getCategories();
-    Logger().i("Found categories : $categories");
+  /// Updates the currently selected category ID
+  void selectCategory(String categoryId) {
+    selectedCategoryId.value = categoryId;
   }
 
-  // Handle See All button click for Top Selling products
-  void onTopSellingSeeAllTap() {
-    currentSection.value = 'topSelling';
-    Get.toNamed('/products/featured', arguments: {'title': 'Top Selling'});
+  /// Searches for products based on a query (to be implemented)
+  void searchProducts(String query) {
+    // TODO: Implement product search logic
   }
 
-  // Handle See All button click for New In products
-  void onNewInSeeAllTap() {
-    currentSection.value = 'newIn';
-    Get.toNamed('/products/new', arguments: {'title': 'New In'});
+  /// Returns a list of top-selling products
+  /// Currently returns all products — can be updated for more advanced logic
+  List<ProductModels> getTopSellingProducts() {
+    final List<ProductModels> result = [];
+    final int count = products.length;
+
+    for (int i = 0; i < count; i++) {
+      result.add(products[i]);
+    }
+
+    return result;
   }
 
-  // Handle product tap from any section
-  void onProductTap(String productId) {
-    navigateToProductDetail(productId);
-  }
+  /// Toggles the favorite status of a product by its ID
+  void toggleFavorite(String productId) {
+    final index = products.indexWhere((product) => product.id == productId);
+    if (index != -1) {
+      final product = products[index];
+      final isFavorite = !(product.isFavorite ?? false);
 
-  // Handle category tap
+      // Update the product with new favorite status
+      products[index] = product.copyWith(isFavorite: isFavorite);
+
+      // Optional: send favorite status to backend
+      // saveFavoriteStatusToBackend(productId, isFavorite);
+    }
+  }
+void navigateToProductDetail(String productId) {
+  print("Attempting to navigate to product detail with ID: $productId");
+  try {
+    Get.toNamed(
+      AppRoute.productdetail,
+      arguments: {'productId': productId}
+    );
+  } catch (e) {
+    print("Navigation error: $e");
+    Get.snackbar(
+      'Error',
+      'Could not open product details',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+}
 }

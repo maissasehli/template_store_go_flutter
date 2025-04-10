@@ -1,175 +1,225 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/features/category/controllers/category_controller.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/app/core/theme/app_color_extension.dart';
-import 'package:store_go/features/home/views/widgets/category_filter.dart';
+import 'package:store_go/features/home/views/widgets/category_list_view.dart';
 import 'package:store_go/features/home/views/widgets/custom_app_bar.dart';
-import 'package:store_go/features/home/views/widgets/product_grid.dart';
+import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 
-// Example for HomeScreen
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
-  final CategoryController categoryController = Get.find<CategoryController>();
 
   HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorExtension>();
-
     return Scaffold(
-      backgroundColor: colors?.background ?? Colors.white,
-      appBar: CustomAppBar(
-        onSearch: (query) => controller.productController.searchProducts(query),
-      ),
-      body: _buildContent(context, colors),
+      backgroundColor: AppColors.background(context),
+      appBar: CustomAppBar(actions: []),
+      body: _buildContent(context),
     );
   }
 
-  Widget _buildContent(BuildContext context, AppColorExtension? colors) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: UIConfig.paddingMedium),
-          // Add CustomSearchBar right after the AppBar
-          CustomSearchBar(
-            onSearch:
-                (query) => controller.productController.searchProducts(query),
-          ),
+  Widget _buildContent(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: UIConfig.paddingMedium),
 
-          const SizedBox(height: UIConfig.paddingMedium),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConfig.paddingMedium,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Categories',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Gabarito',
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => controller.onCategoriesSeeAllTap(),
-                  child: const Text(
-                    'See All',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(
-            height: 100,
-            child: Obx(
-              () => CategoryFilter(
-                categories: controller.categoryController.categories,
-                selectedCategoryId:
-                    controller.categoryController.selectedCategoryId.value,
-                onCategorySelected:
-                    (categoryId) => controller.categoryController
-                        .selectCategory(categoryId),
+            // Search
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+              child: CustomSearchBar(
+                onSearch: (query) => controller.searchProducts(query),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConfig.paddingMedium,
-              vertical: UIConfig.paddingSmall,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Top Selling',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Gabarito',
+
+            const SizedBox(height: UIConfig.paddingMedium),
+
+            // Category Title with See All button
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingMedium,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Categories',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Gabarito',
+                      color: AppColors.foreground(context),
+                    ),
                   ),
+                  TextButton(
+                    onPressed: () {
+                      // Navigate to the CategoryScreen when See All is clicked
+                      Get.toNamed('/categories');
+                    },
+                    child: const Text('See All'),
+                  )
+                ],
+              ),
+            ),
+
+            // Category Filter
+            SizedBox(
+              height: 100,
+              child: Obx(
+                () => CategoryListView(
+                  categories: controller.categories,
+                  selectedCategoryId: controller.selectedCategoryId.value,
+                  onCategorySelected: (categoryId) {
+                    controller.selectCategory(categoryId);
+                  },
                 ),
-                TextButton(
-                  onPressed: () => controller.onTopSellingSeeAllTap(),
-                  child: const Text(
-                    'See All',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
+              ),
+            ),
+
+            const SizedBox(height: UIConfig.paddingMedium),
+
+            // Top Selling Section Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingMedium,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Top Selling',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Gabarito',
+                      color: AppColors.foreground(context),
+                    ),
                   ),
-                ),
-              ],
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed('/all-products', arguments: {'filter': 'top-selling'});
+                    },
+                    child: const Text('See All'),
+                  )
+                ],
+              ),
             ),
-          ),
 
-          Obx(() {
-            if (controller.productController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (controller.productController.products.isEmpty) {
-              return const SizedBox.shrink();
-            }
-
-            return ProductGrid(
-              products: controller.productController.products,
-              onProductTap: (productId) => controller.onProductTap(productId),
-              onFavoriteTap:
-                  (productId) =>
-                      controller.productController.toggleFavorite(productId),
-              isHorizontal: true,
-            );
-          }),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConfig.paddingMedium,
-              vertical: UIConfig.paddingSmall,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'New In',
-                  style: TextStyle(
-                    fontSize: UIConfig.fontSizeRegular,
-                    fontWeight: FontWeight.bold,
+            // Top Selling Products
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
                   ),
-                ),
-                TextButton(
-                  onPressed: () => controller.onNewInSeeAllTap(),
-                  child: const Text('See All'),
-                ),
-              ],
+                );
+              }
+
+              final topSellingProducts = controller.getTopSellingProducts();
+
+              if (topSellingProducts.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'No top selling products available.',
+                      style: TextStyle(color: AppColors.mutedForeground(context)),
+                    ),
+                  ),
+                );
+              }
+
+              return ProductCard(
+                products: topSellingProducts,
+                isHorizontal: true,
+                              onProductTap: (id) => controller.navigateToProductDetail(id),
+
+                onFavoriteTap: (String productId) {
+                  controller.toggleFavorite(productId);
+                },
+              );
+            }),
+
+            const SizedBox(height: UIConfig.paddingMedium),
+
+            // New Arrivals Section Header
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingMedium,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'New In',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Gabarito',
+                      color: AppColors.foreground(context),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Get.toNamed('/all-products', arguments: {'filter': 'new'});
+                    },
+                    child: const Text('See All'),
+                  )
+                ],
+              ),
             ),
-          ),
 
-          Obx(() {
-            if (controller.productController.isLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            }
+            // New Products
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
 
-            if (controller.productController.products.isEmpty) {
-              return const Center(child: Text('No products found.'));
-            }
+              final newProducts = controller.products
+                  .where((product) => product.isNew)
+                  .toList();
 
-            return ProductGrid(
-              products: controller.productController.products,
-              onProductTap: (productId) => controller.onProductTap(productId),
-              onFavoriteTap:
-                  (productId) =>
-                      controller.productController.toggleFavorite(productId),
-              isHorizontal: true,
-            );
-          }),
-        ],
+              if (newProducts.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'No new products available.',
+                      style: TextStyle(color: AppColors.mutedForeground(context)),
+                    ),
+                  ),
+                );
+              }
+
+              return ProductCard(
+                products: newProducts,
+                isHorizontal: true,
+                 onProductTap: (id) => controller.navigateToProductDetail(id),
+
+                onFavoriteTap: (String productId) {
+                  controller.toggleFavorite(productId);
+                },
+              );
+            }),
+
+            // Add padding at the bottom
+            const SizedBox(height: UIConfig.paddingLarge),
+          ],
+        ),
       ),
     );
   }

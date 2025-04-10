@@ -4,11 +4,15 @@ import 'package:store_go/app/shared/controllers/controller_form_field_state.dart
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/utils/valid_input.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
+import 'package:store_go/app/core/services/storage_service.dart'; // Add this import
 
 class LoginController extends GetxController {
   late ControllerFormFieldState emailFieldState;
   late ControllerFormFieldState passwordFieldState;
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
+  
+  // Fix this line to use StorageService
+  final StorageService myServices = Get.find<StorageService>();
 
   final AuthService _authService = AuthService();
   final RxBool isLoading = false.obs;
@@ -41,14 +45,22 @@ class LoginController extends GetxController {
     try {
       if (validateForm()) {
         isLoading.value = true;
-
-        final success = await _authService.signIn(
+        final response = await _authService.signIn(
           email: emailFieldState.controller.text.trim(),
           password: passwordFieldState.controller.text.trim(),
         );
 
-        if (success) {
+        print("==================== Controller $response");
+        
+        if (response) {
+          // Access SharedPreferences through StorageService
+          StorageService.prefs.setString("step", "1");
           Get.offAllNamed(AppRoute.mainContainer);
+        } else {
+          Get.defaultDialog(
+            title: "Warning",
+            middleText: "Email Or Password Not Correct",
+          );
         }
       }
     } finally {

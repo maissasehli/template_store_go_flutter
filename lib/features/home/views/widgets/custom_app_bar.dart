@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/shared/widgets/theme_toggle.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String)? onSearch;
 
-  const CustomAppBar({super.key, this.onSearch});
+  const CustomAppBar({super.key, this.onSearch, required List<ThemeToggle> actions});
 
   @override
   Widget build(BuildContext context) {

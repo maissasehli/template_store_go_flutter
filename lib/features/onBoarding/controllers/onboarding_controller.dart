@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/data/onboarding_static.dart';
+import 'package:store_go/app/core/services/storage_service.dart';
 
 class OnboardingController extends GetxController {
   late PageController pageController;
   var currentPage = 0.obs;
-
 
   final int pageCount = OnboardingStatic.pages.length;
 
@@ -24,21 +24,33 @@ class OnboardingController extends GetxController {
 
   bool get isLastPage => currentPage.value == pageCount - 1;
 
-  void nextPage() {
+  void next() {
     if (currentPage.value < pageCount - 1) {
-      Get.offAllNamed(AppRoute.login);
-      pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
+      currentPage.value++;
+      pageController.animateToPage(
+        currentPage.value, // Using .value to get the int from RxInt
+        duration: const Duration(milliseconds: 900),
         curve: Curves.easeInOut,
       );
+    } else {
+      // Onboarding completed
+      completeOnboarding();
     }
   }
 
-  void onPageChanged(int page) {
-    currentPage.value = page;
+  void onPageChanged(int index) {
+    currentPage.value = index;
+    update();
   }
 
-  void navigateToLogin() {
+  void completeOnboarding() async {
+    // Mark onboarding as completed using the StorageService
+    await StorageService.markOnboardingComplete();
     Get.offAllNamed(AppRoute.login);
+  }
+  
+  // Add this method for the skip button
+  void navigateToLogin() {
+    completeOnboarding();
   }
 }

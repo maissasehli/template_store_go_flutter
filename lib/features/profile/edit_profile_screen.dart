@@ -191,9 +191,7 @@ Widget _buildFormField({
             letterSpacing: 0.25,
             color: Color(0xFF757575),
           ),
-          // Utiliser floatingLabelBehavior pour garder le label en haut
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          // Ajuster le padding pour créer plus d'espace entre label et texte
           contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
         ),
         style: const TextStyle(

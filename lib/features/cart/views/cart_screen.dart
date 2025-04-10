@@ -2,78 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/features/cart/controllers/cart_controller.dart';
+import 'package:store_go/features/cart/models/cart.dart';
 
-class CartScreen extends StatefulWidget {
+class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
   @override
-  State<CartScreen> createState() => _CartScreenState();
-}
-
-class _CartScreenState extends State<CartScreen> {
-  final List<CartItem> cartItems = [
-    CartItem(
-      id: '1',
-      name: 'Roller Rabbit',
-      description: 'Vado Odelle Dress',
-      price: 198.00,
-      quantity: 1,
-      imageUrl: 'assets/products/tshirt_white.png',
-    ),
-    CartItem(
-      id: '2',
-      name: 'Axel Arigato',
-      description: 'Clean 90 Triple Sneakers',
-      price: 245.00,
-      quantity: 1,
-      imageUrl: 'assets/products/tshirt_white.png',
-    ),
-    CartItem(
-      id: '3',
-      name: 'Herschel Supply Co.',
-      description: 'Daypack Backpack',
-      price: 40.00,
-      quantity: 1,
-      imageUrl: 'assets/products/tshirt_white.png',
-    ),
-  ];
-
-  String couponCode = '';
-
-  double get subtotal {
-    return cartItems.fold(0, (sum, item) => sum + (item.price * item.quantity));
-  }
-
-  double get shippingCost => 8.00;
-  double get tax => 0.00;
-  double get total => subtotal + shippingCost + tax;
-
-  void updateQuantity(int index, int change) {
-    setState(() {
-      final newQuantity = cartItems[index].quantity + change;
-      if (newQuantity > 0) {
-        cartItems[index].quantity = newQuantity;
-      }
-    });
-  }
-
-  void removeItem(int index) {
-    setState(() {
-      cartItems.removeAt(index);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Use GetX to inject and initialize the controller
+final controller = Get.put(CartControllerImp());
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: cartItems.isEmpty ? _buildEmptyCart() : _buildCartWithItems(),
+        child: Obx(() => controller.cartItems.isEmpty 
+          ? _buildEmptyCart(controller) 
+          : _buildCartWithItems(controller)),
       ),
     );
   }
 
-  Widget _buildEmptyCart() {
+  Widget _buildEmptyCart(CartController controller) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -96,7 +46,7 @@ class _CartScreenState extends State<CartScreen> {
             ),
             child: Center(
               child: SvgPicture.asset(
-                AssetConfig.bagIcon,
+                AssetConfig.panierIcon,
                 width: 48,
                 height: 48,
                 colorFilter: const ColorFilter.mode(
@@ -122,10 +72,7 @@ class _CartScreenState extends State<CartScreen> {
 
           // Explore Categories button
           ElevatedButton(
-            onPressed: () {
-              // Navigate to categories screen
-              Get.toNamed('/categories');
-            },
+            onPressed: controller.navigateToCategories,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
@@ -145,7 +92,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildCartWithItems() {
+  Widget _buildCartWithItems(CartController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -157,7 +104,7 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               // Back button
               GestureDetector(
-                onTap: () => Get.back(),
+                onTap: controller.goBack,
                 child: Container(
                   width: 40,
                   height: 40,
@@ -191,20 +138,20 @@ class _CartScreenState extends State<CartScreen> {
 
           // Cart items list
           Expanded(
-            child: ListView.builder(
-              itemCount: cartItems.length,
+            child: Obx(() => ListView.builder(
+              itemCount: controller.cartItems.length,
               itemBuilder: (context, index) {
-                final item = cartItems[index];
-                return _buildCartItemCard(item, index);
+                final item = controller.cartItems[index];
+                return _buildCartItemCard(item, index, controller);
               },
-            ),
+            )),
           ),
 
           // Cart summary
-          _buildCartSummary(),
+          _buildCartSummary(controller),
 
           // Coupon code field
-          _buildCouponField(),
+          _buildCouponField(controller),
 
           // Checkout button
           Container(
@@ -212,10 +159,7 @@ class _CartScreenState extends State<CartScreen> {
             height: 55,
             margin: const EdgeInsets.only(bottom: 24, top: 16),
             child: ElevatedButton(
-              onPressed: () {
-                // Navigate to checkout
-                Get.toNamed('/checkout');
-              },
+              onPressed: controller.navigateToCheckout,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
@@ -239,35 +183,13 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  void onSwipeDelete(int index) {
-    // Show confirmation dialog
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Remove Item'),
-        content: const Text(
-          'Are you sure you want to remove this item from your cart?',
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              removeItem(index);
-            },
-            child: const Text('Remove'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCartItemCard(CartItem item, int index) {
+  Widget _buildCartItemCard(CartItem item, int index, CartController controller) {
     return Dismissible(
       key: Key(item.id),
       direction: DismissDirection.endToStart, // Only allow right to left swipe
       confirmDismiss: (direction) async {
         // Don't actually dismiss the item when swiped
-        onSwipeDelete(index);
+        controller.confirmItemRemoval(index);
         return false;
       },
       background: Container(
@@ -277,9 +199,7 @@ class _CartScreenState extends State<CartScreen> {
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
           color: Colors.black,
-          borderRadius: BorderRadius.circular(
-            13.76,
-          ), // Applique un radius similaire à la carte
+          borderRadius: BorderRadius.circular(13.76),
         ),
         child: Padding(
           padding: const EdgeInsets.only(right: 20.0),
@@ -291,7 +211,6 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
       ),
-
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         height: 105.87,
@@ -308,7 +227,6 @@ class _CartScreenState extends State<CartScreen> {
         ),
         child: Row(
           children: [
-            // Your existing cart item UI...
             // Product image
             ClipRRect(
               borderRadius: const BorderRadius.only(
@@ -361,8 +279,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
 
-            // Quantity controls and delete
-            // Replace the current quantity controls with this new design
+            // Quantity controls
             Container(
               width: 74.11,
               height: 31.76,
@@ -375,7 +292,7 @@ class _CartScreenState extends State<CartScreen> {
                 children: [
                   // Minus button
                   GestureDetector(
-                    onTap: () => updateQuantity(index, -1),
+                    onTap: () => controller.updateQuantity(index, -1),
                     child: const SizedBox(
                       width: 24,
                       height: 24,
@@ -404,7 +321,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                   // Plus button
                   GestureDetector(
-                    onTap: () => updateQuantity(index, 1),
+                    onTap: () => controller.updateQuantity(index, 1),
                     child: const SizedBox(
                       width: 24,
                       height: 24,
@@ -419,30 +336,24 @@ class _CartScreenState extends State<CartScreen> {
           ],
         ),
       ),
-      onDismissed: (_) {
-        // This won't be called due to confirmDismiss returning false
-      },
     );
   }
 
-  Widget _buildCartSummary() {
+  Widget _buildCartSummary(CartController controller) {
     return Container(
       margin: const EdgeInsets.only(top: 16),
-      child: Column(
+      child: Obx(() => Column(
         children: [
-          _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(0)}'),
-          _buildSummaryRow(
-            'Shipping Cost',
-            '\$${shippingCost.toStringAsFixed(2)}',
-          ),
-          _buildSummaryRow('Tax', '\$${tax.toStringAsFixed(2)}'),
+          _buildSummaryRow('Subtotal', '\$${controller.subtotal.toStringAsFixed(0)}'),
+          _buildSummaryRow('Shipping Cost', '\$${controller.shippingCost.toStringAsFixed(2)}'),
+          _buildSummaryRow('Tax', '\$${controller.tax.toStringAsFixed(2)}'),
           _buildSummaryRow(
             'Total',
-            '\$${total.toStringAsFixed(0)}',
+            '\$${controller.total.toStringAsFixed(0)}',
             isTotal: true,
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -474,7 +385,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildCouponField() {
+  Widget _buildCouponField(CartController controller) {
     return Container(
       height: 56,
       margin: const EdgeInsets.only(top: 16),
@@ -486,7 +397,7 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           const SizedBox(width: 16),
           SvgPicture.asset(
-            AssetConfig.discountshape, // Create this asset
+            AssetConfig.discountshape,
             width: 20,
             height: 20,
             colorFilter: ColorFilter.mode(Colors.green[400]!, BlendMode.srcIn),
@@ -494,11 +405,7 @@ class _CartScreenState extends State<CartScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  couponCode = value;
-                });
-              },
+              onChanged: controller.onCouponCodeChanged,
               decoration: const InputDecoration(
                 hintText: 'Enter Coupon Code',
                 border: InputBorder.none,
@@ -510,19 +417,22 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10), // Ajuste selon tes besoins
-              child: SvgPicture.asset(
-                AssetConfig.arrowright2,
-                width: 20,
-                height: 20,
+          GestureDetector(
+            onTap: controller.applyCoupon,
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: SvgPicture.asset(
+                  AssetConfig.arrowright2,
+                  width: 20,
+                  height: 20,
+                ),
               ),
             ),
           ),
@@ -531,23 +441,4 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
-}
-
-// Model class for cart items
-class CartItem {
-  final String id;
-  final String name;
-  final String description;
-  final double price;
-  int quantity;
-  final String imageUrl;
-
-  CartItem({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.quantity,
-    required this.imageUrl,
-  });
 }

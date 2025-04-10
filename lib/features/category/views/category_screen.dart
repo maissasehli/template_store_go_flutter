@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/features/home/models/category_model.dart';
+import 'package:store_go/features/category/models/categories_model.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -27,7 +27,7 @@ class CategoryScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Color(0xFFF4F4F4), 
+                      color: const Color(0xFFF4F4F4), 
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -40,14 +40,10 @@ class CategoryScreen extends StatelessWidget {
                   
                   // Search bar (expanded to fill remaining space)
                   Expanded(
-                    child:CustomSearchBar (
+                    child: CustomSearchBar(
                       onSearch: (query) {
-                        // Handle search functionality
-                        if (query.isNotEmpty) {
-                          // Navigate to search results or filter categories
-                          // For example:
-                          // Get.to(() => SearchResultsScreen(query: query));
-                        }
+                        // Trigger category search 
+                        controller.searchCategories(query);
                       },
                     ),
                   ),
@@ -95,7 +91,7 @@ class CategoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 8),
                         child: CategoryTile(
                           category: category,
-                          onTap: () => controller.selectCategory(category.id),
+                          onTap: () => controller.selectCategory(category.id!),
                         ),
                       );
                     },
@@ -110,9 +106,10 @@ class CategoryScreen extends StatelessWidget {
   }
 }
 
+// Updated CategoryTile class from CategoryScreen
 class CategoryTile extends StatelessWidget {
-  final Category category;
-  final VoidCallback onTap;
+  final CategoriesModels category;
+  final Function() onTap;
 
   const CategoryTile({
     super.key,
@@ -122,6 +119,8 @@ class CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final CategoryController categoryController = Get.find<CategoryController>();
+
     return Container(
       width: double.infinity,
       height: 64,
@@ -133,7 +132,20 @@ class CategoryTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
-          onTap: onTap,
+          onTap: () {
+            // Only proceed if category id is not null
+            if (category.id != null) {
+              // Update selected category
+              categoryController.selectCategory(category.id!);
+              
+              // Navigate to ProductScreen with selected category and categories list
+             categoryController.gotoProduct(
+  categories: categoryController.categories,
+  selectedCategoryId: category.id ?? '',
+);
+
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -145,18 +157,11 @@ class CategoryTile extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: Colors.white, 
                   ),
-                  child: category.icon != null
-                      ? ClipOval(
-                          child: Image.asset(
-                            category.icon!,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                      : const Icon(Icons.category, size: 24, color: Colors.grey),
+                  child: _buildCategoryIcon(),
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  category.name,
+                  category.name ?? '',
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 15,
@@ -173,5 +178,30 @@ class CategoryTile extends StatelessWidget {
       ),
     );
   }
-}
 
+  Widget _buildCategoryIcon() {
+    // If imageUrl is null or empty, show default icon
+    if (category.imageUrl == null || category.imageUrl!.isEmpty) {
+      return const Icon(Icons.category, size: 24, color: Colors.grey);
+    }
+
+    // Prepare the image path, removing 'assets/' prefix if needed
+    final String imagePath = category.imageUrl!.startsWith('assets/') 
+        ? category.imageUrl! 
+        : 'assets/${category.imageUrl!}';
+
+    return ClipOval(
+      child: Image.asset(
+        imagePath,
+        width: 40,
+        height: 40,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback to default icon if image fails to load
+          return const Icon(Icons.category, size: 24, color: Colors.grey);
+        },
+      ),
+    );
+  }
+
+}

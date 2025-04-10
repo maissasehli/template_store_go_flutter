@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 
 class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({Key? key}) : super(key: key);
+  const NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -13,6 +13,8 @@ class AssetConfig {
   static const String onBoardingHeaderMain = '$rootImages/fashion1.jpg';
   static const String onBoardingHeaderLeft = '$rootImages/fashion2.jpg';
   static const String onBoardingHeaderRight = '$rootImages/fashion.jpg';
+  static const String search = '$rootIcons/search.png';
+
 
   // Social Login Icons
   static const String appleIcon = '$rootSvg/apple.svg';

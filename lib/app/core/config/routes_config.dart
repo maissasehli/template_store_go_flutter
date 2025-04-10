@@ -43,11 +43,15 @@ class AppRoute {
     forgetPassword,
   ];
   static const String address = "/address";
-          static const String order_details = "/order-details";
+  static const String order_details = "/order-details";
 
-    static const String add_address = "/add-address";
-        static const String payments = "/payments";
-        static const String notifications = "/notifications";
+  static const String add_address = "/add-address";
+  static const String payments = "/payments";
+  static const String notifications = "/notifications";
+   static const String productscreen = "/productscreen";
+      static const String productdetail = "/productdetail";
+
+
 
 
 

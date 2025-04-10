@@ -247,7 +247,7 @@ class _OnboardingState extends State<Onboarding> {
                                 style: TextStyle(color: Colors.white60),
                               ),
                               TextButton(
-                                onPressed: controller.nextPage,
+                                onPressed: controller.navigateToLogin,
                                 child: const Text(
                                   'Sign in',
                                   style: TextStyle(

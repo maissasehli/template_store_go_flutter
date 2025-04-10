@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use GetX to rebuild when theme changes
     return GetBuilder<ThemeController>(
       builder: (themeController) {
         return GetMaterialApp(
@@ -37,10 +36,10 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'StoreGo',
           theme: themeController.theme,
-          darkTheme: themeController.theme, // Let controller determine theme
+          darkTheme: themeController.theme, 
           themeMode: themeController.themeMode,
           getPages: routes,
-        );
+                  );
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:store_go/app/core/middleware/auth_middleware.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
 import 'package:store_go/features/home/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
@@ -17,12 +18,14 @@ import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
 import 'package:store_go/features/product/views/product_detail_screen.dart';
+import 'package:store_go/features/product/views/products_screen.dart';
+//import 'package:store_go/features/product/views/product_detail_screen.dart';
 import 'package:store_go/features/profile/add_adress.dart';
 import 'package:store_go/features/profile/adress_screen.dart';
 import 'package:store_go/features/profile/edit_profile_screen.dart';
 import 'package:store_go/features/profile/notification_screen.dart';
-import 'package:store_go/features/profile/orders_detaill_screen.dart';
-import 'package:store_go/features/profile/orders_screen.dart';
+import 'package:store_go/features/orders/views/order_details/orders_detaill_screen.dart';
+import 'package:store_go/features/orders/views/orders_screen.dart';
 import 'package:store_go/features/profile/payment_screen.dart';
 import 'package:store_go/features/profile/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
@@ -30,30 +33,43 @@ import 'package:store_go/app/shared/screens/splash_screen.dart';
 import 'package:store_go/features/wishlist/wishlist_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
-  GetPage(name: '/', page: () => const SplashScreen()),
+
+  GetPage(name: '/', page: () => const SplashScreen(), middlewares: [AppMiddleware()]),
 
   GetPage(
     name: AppRoute.mainContainer,
     page: () => MainContainerScreen(),
     binding: HomeBinding(),
+    middlewares: [AppMiddleware()]
   ),
 
   GetPage(
     name: AppRoute.language,
     page: () => const LanguageScreen(),
     binding: LanguageBinding(),
+    middlewares: [AppMiddleware()]
+    
   ),
 
   // OnBoarding
-  GetPage(name: AppRoute.onBoarding, page: () => Onboarding()),
+  GetPage(
+    name: AppRoute.onBoarding, 
+    page: () => Onboarding(),
+    middlewares: [AppMiddleware()]),
   GetPage(
     name: AppRoute.profileSetup,
     page: () => const ProfileSetupScreen(),
     binding: AuthBinding(),
+    
   ),
 
   // Auth
-  GetPage(name: AppRoute.login, page: () => Login(), binding: AuthBinding()),
+  GetPage(
+    name: AppRoute.login,
+     page: () => Login(),
+   binding: AuthBinding(),
+   middlewares: [AppMiddleware()],
+),
   GetPage(
     name: AppRoute.signup,
     page: () => const Signup(),
@@ -80,6 +96,7 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoute.home,
     page: () => HomeScreen(),
     binding: HomeBinding(),
+
   ),
 
   // Categories
@@ -97,14 +114,7 @@ List<GetPage<dynamic>>? routes = [
   ),
 
   // Products
-  GetPage(
-    name: AppRoute.productDetail,
-    page: () {
-      final id = Get.parameters['id'] ?? '';
-      return ProductDetailScreen(productId: id);
-    },
-    binding: HomeBinding(),
-  ),
+ 
   GetPage(
     name: AppRoute.wishlist,
     page: () => WishlistPage(),
@@ -161,4 +171,14 @@ List<GetPage<dynamic>>? routes = [
     page: () => NotificationsPage(),
     binding: HomeBinding(),
   ),
+    GetPage(
+    name: AppRoute.productscreen,
+    page: () => ProductScreen(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+  name: AppRoute.productdetail,
+  page: () => ProductDetail(),
+  binding: HomeBinding(),
+),
 ];

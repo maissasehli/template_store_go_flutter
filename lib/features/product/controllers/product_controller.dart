@@ -1,222 +1,259 @@
 import 'package:get/get.dart';
-import 'package:store_go/features/home/models/color_variant_model.dart';
-import 'package:store_go/features/home/models/product_model.dart';
-import 'package:store_go/features/home/models/size_variant_model.dart';
-import 'package:store_go/features/product/services/product_service.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
+import 'package:store_go/features/category/models/categories_model.dart';
+import 'package:store_go/features/product/models/product_model.dart';
+import 'package:store_go/features/product/services/product_api_service.dart';
+import 'package:store_go/app/core/services/api_client.dart';
 
-class ProductController extends GetxController {
-  final ProductService _productService = ProductService();
-  
-  // Observable variables
-  final RxList<Product> products = <Product>[].obs;
-  final RxList<Product> featuredProducts = <Product>[].obs;
-  final RxList<Product> newProducts = <Product>[].obs;
-  final RxList<Product> favoriteProducts = <Product>[].obs;
-  final RxBool isLoading = false.obs;
-  final RxString searchQuery = ''.obs;
-  final RxString selectedCategory = ''.obs;
-  final RxInt quantity = 1.obs;
-  final RxList<ColorVariantModel> colorVariants = <ColorVariantModel>[].obs;
-  final RxList<SizeVariantModel> sizeVariants = <SizeVariantModel>[].obs;
-  
-  // Get product by ID or load a specific product
-  final Rx<Product?> selectedProduct = Rx<Product?>(null);
-  
+abstract class productController extends GetxController {
+  initialData();
+  filterByCategory(String categoryId);
+  resetFilter();
+  toggleFavorite(String productId);
+}
+
+class ProductControllerImp  extends productController {
+  final isLoading = true.obs;
+  final products = <ProductModels>[].obs;
+  final filteredProducts = <ProductModels>[].obs;
+  final categories = <CategoriesModels>[].obs;
+  final selectedCat = Rx<String?>(null);
+
+  final ProductApiService _productApiService = ProductApiService(ApiClient());
+  final searchQuery = ''.obs;
+
   @override
   void onInit() {
+    initialData();
     super.onInit();
-    fetchProducts();
-    fetchFeaturedProducts();
   }
-  
-  // Fetch all products
-  Future<void> fetchProducts() async {
-    isLoading(true);
+
+  @override
+  initialData() async {
     try {
-      final result = await _productService.getProducts();
-      products.value = result;
+      isLoading(true);
+
+      // Check if arguments are passed (e.g., from previous screen)
+      if (Get.arguments != null && Get.arguments is Map) {
+        final args = Get.arguments as Map;
+
+        // Load categories from arguments if available
+        if (args['categories'] != null && args['categories'] is List) {
+          final categoriesList = args['categories'] as List;
+          categories.assignAll(
+            categoriesList.map((cat) =>
+              cat is CategoriesModels ? cat : CategoriesModels.fromJson(cat)
+            ).toList()
+          );
+        } else {
+          // Fetch categories from the API if not found in arguments
+          await fetchCategories();
+        }
+
+        // Check for selected category and fetch related products
+        if (args['selected'] != null) {
+          selectedCat.value = args['selected'].toString();
+          await fetchProductsByCategory(selectedCat.value!);
+        } else {
+          await fetchAllProducts();
+        }
+      } else {
+        // No valid arguments, fetch everything from the API
+        await fetchCategories();
+        await fetchAllProducts();
+      }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load products: $e');
+      // If an error occurs, try to fetch everything from the API
+      await fetchCategories();
+      await fetchAllProducts();
     } finally {
       isLoading(false);
     }
   }
-  
-  // Fetch featured products
-  Future<void> fetchFeaturedProducts() async {
+
+  Future<void> fetchCategories() async {
     try {
-      final result = await _productService.getFeaturedProducts();
-      featuredProducts.value = result;
+      final response = await _productApiService.getCategories();
+      final data = response.data;
+
+      // Parse response depending on its structure
+      if (data is Map && data.containsKey('categories') && data['categories'] is List) {
+        categories.assignAll(
+          (data['categories'] as List)
+              .map((category) => CategoriesModels.fromJson(category))
+              .toList(),
+        );
+      } else if (data is List) {
+        categories.assignAll(
+          data.map((category) => CategoriesModels.fromJson(category)).toList(),
+        );
+      }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load featured products: $e');
+      // Handle errors if the categories API fails
     }
   }
-  
-  // Fetch products by category
+
+  Future<void> fetchAllProducts() async {
+    try {
+final response = await _productApiService.getAllProducts();
+      final data = response.data;
+
+      // Support multiple backend response structures
+      if (data is Map && data['items'] != null && data['items'] is List) {
+        products.assignAll(
+          (data['items'] as List)
+              .map((product) => ProductModels.fromJson(product))
+              .toList(),
+        );
+        filteredProducts.assignAll(products);
+      } else if (data is Map && data['data'] != null && data['data'] is List) {
+        products.assignAll(
+          (data['data'] as List)
+              .map((product) => ProductModels.fromJson(product))
+              .toList(),
+        );
+        filteredProducts.assignAll(products);
+      }
+    } catch (e) {
+      // Handle errors if the products API fails
+    }
+  }
+
   Future<void> fetchProductsByCategory(String categoryId) async {
-    isLoading(true);
-    selectedCategory.value = categoryId;
     try {
-      final result = await _productService.getProductsByCategory(categoryId);
-      products.value = result;
+      isLoading(true);
+      final response = await _productApiService.getProductsByCategory(categoryId);
+      final data = response.data;
+
+      filteredProducts.clear(); // Clear the existing filtered list
+
+      // Handle various response structures
+      if (data is Map) {
+        if (data['data'] != null && data['data'] is List) {
+          filteredProducts.assignAll(
+            (data['data'] as List)
+                .map((product) => ProductModels.fromJson(product))
+                .toList(),
+          );
+        } else if (data['items'] != null && data['items'] is List) {
+          filteredProducts.assignAll(
+            (data['items'] as List)
+                .map((product) => ProductModels.fromJson(product))
+                .toList(),
+          );
+        } else if (data['status'] == 'success' && data.containsKey('data') && data['data'] is List) {
+          filteredProducts.assignAll(
+            (data['data'] as List)
+                .map((product) => ProductModels.fromJson(product))
+                .toList(),
+          );
+        }
+      } else if (data is List) {
+        // In case the response is a direct list
+        filteredProducts.assignAll(
+          data.map((product) => ProductModels.fromJson(product)).toList()
+        );
+      }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load products for this category: $e');
+      // Handle errors if fetching by category fails
     } finally {
       isLoading(false);
     }
   }
-  
-  // Search products
-// Search products
-Future<void> searchProducts(String query) async {
-  searchQuery.value = query;
-  isLoading(true);
-  
-  try {
-    if (query.isEmpty) {
-      await fetchProducts();
+
+  @override
+  filterByCategory(String categoryId) {
+    selectedCat.value = categoryId;
+
+    if (categoryId.isEmpty) {
+      filteredProducts.assignAll(products);
+      return;
+    }
+
+    // Always fetch from API to ensure updated data
+    fetchProductsByCategory(categoryId);
+  }
+
+  @override
+  resetFilter() {
+    selectedCat.value = null;
+    filteredProducts.assignAll(products);
+  }
+
+  changeCat(dynamic val) {
+    // Convert selected category to string
+    if (val is String) {
+      selectedCat.value = val;
+    } else if (val != null) {
+      selectedCat.value = val.toString();
     } else {
-      // Call the API for search or filter locally
-      final allProducts = await _productService.getProducts();
-      products.value = allProducts.where((product) => 
-        product.name.toLowerCase().contains(query.toLowerCase()) ||
-        product.description.toLowerCase().contains(query.toLowerCase())
+      selectedCat.value = null;
+    }
+
+    // Refresh product list after changing category
+    if (selectedCat.value != null) {
+      filterByCategory(selectedCat.value!);
+    } else {
+      resetFilter();
+    }
+  }
+
+  @override
+  toggleFavorite(String productId) {
+    // Toggle favorite status in the full product list
+    final productIndex = products.indexWhere((product) => product.id == productId);
+    if (productIndex != -1) {
+      final product = products[productIndex];
+      final isFavorite = !(product.isFavorite ?? false);
+      products[productIndex] = product.copyWith(isFavorite: isFavorite);
+    }
+
+    // Toggle favorite status in the filtered product list
+    final filteredIndex = filteredProducts.indexWhere((product) => product.id == productId);
+    if (filteredIndex != -1) {
+      final product = filteredProducts[filteredIndex];
+      final isFavorite = !(product.isFavorite ?? false);
+      filteredProducts[filteredIndex] = product.copyWith(isFavorite: isFavorite);
+
+      // Notify backend about the change
+      _productApiService.toggleFavorite(productId, isFavorite);
+    }
+  }
+
+  void searchProducts(String query) {
+    searchQuery.value = query;
+
+    if (query.isEmpty) {
+      // Reset search to full or filtered products
+      if (selectedCat.value != null) {
+        filterByCategory(selectedCat.value!);
+      } else {
+        filteredProducts.assignAll(products);
+      }
+      return;
+    }
+
+    // Search based on product name and optional category filter
+    final queryLower = query.toLowerCase();
+    final List<ProductModels> searchResults;
+
+    if (selectedCat.value != null) {
+      searchResults = products.where((product) =>
+        product.categoryId == selectedCat.value &&
+        (product.name?.toLowerCase().contains(queryLower) ?? false)
+      ).toList();
+    } else {
+      searchResults = products.where((product) =>
+        product.name?.toLowerCase().contains(queryLower) ?? false
       ).toList();
     }
-  } catch (e) {
-    Get.snackbar('Error', 'Failed to search products: $e');
-  } finally {
-    isLoading(false);
+
+    filteredProducts.assignAll(searchResults);
   }
+  void navigateToProductDetail(String productId) {
+  Get.toNamed(
+    AppRoute.productdetail, 
+    arguments: {'productId': productId}
+  );
 }
-  
-  // Toggle favorite status
-  void toggleFavorite(String productId) {
-    final index = products.indexWhere((product) => product.id == productId);
-    if (index >= 0) {
-      final product = products[index];
-      final updatedProduct = product.copyWith(isFavorite: !product.isFavorite);
-      products[index] = updatedProduct;
-      
-      // Update selected product if it's the same
-      if (selectedProduct.value?.id == productId) {
-        selectedProduct.value = updatedProduct;
-      }
-      
-      // Update favorite products list
-      if (updatedProduct.isFavorite) {
-        favoriteProducts.add(updatedProduct);
-      } else {
-        favoriteProducts.removeWhere((p) => p.id == productId);
-      }
-      
-      // Update in backend
-      _productService.updateFavoriteStatus(productId, updatedProduct.isFavorite);
-    }
-  }
-  
-  // Fetch product details
-  Future<void> fetchProductDetails(String productId) async {
-    isLoading(true);
-    try {
-      final product = await _productService.getProductById(productId);
-      selectedProduct.value = product;
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to load product details: $e');
-    } finally {
-      isLoading(false);
-    }
-  }
-
-  // Filter products based on criteria
-  void filterProducts({
-    String? category,
-    double? minPrice,
-    double? maxPrice,
-    String? sortBy,
-    int? rating
-  }) {
-    isLoading(true);
-    
-    try {
-      // Start with all products
-      fetchProducts().then((_) {
-        List<Product> filteredProducts = List.from(products);
-        
-        // Filter by search query if exists
-        if (searchQuery.isNotEmpty) {
-          filteredProducts = filteredProducts.where((product) => 
-            product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-            product.description.toLowerCase().contains(searchQuery.toLowerCase())
-          ).toList();
-        }
-        
-        // Filter by category
-        if (category != null && category != 'All') {
-          filteredProducts = filteredProducts.where((product) => 
-            product.category.toLowerCase() == category.toLowerCase()
-          ).toList();
-        }
-        
-        // Filter by price range
-        if (minPrice != null && maxPrice != null) {
-          filteredProducts = filteredProducts.where((product) => 
-            product.price >= minPrice && product.price <= maxPrice
-          ).toList();
-        }
-        
-        // Filter by rating
-        if (rating != null && rating > 0) {
-          filteredProducts = filteredProducts.where((product) => 
-            product.rating >= rating
-          ).toList();
-        }
-        
-        // Sort products
-        if (sortBy != null) {
-          switch (sortBy) {
-            case 'New Today':
-              // Since we don't have createdAt field, we'll just sort by id for demo
-              filteredProducts.sort((a, b) => b.id.compareTo(a.id));
-              break;
-            case 'Top Sellers':
-              // Since we don't have salesCount field, we'll sort by rating for demo
-              filteredProducts.sort((a, b) => b.rating.compareTo(a.rating));
-              break;
-            case 'New collection':
-              // Since we don't have isNewCollection field, we'll filter those with higher ids
-              filteredProducts = filteredProducts.where((product) => 
-                int.tryParse(product.id) != null && int.parse(product.id) > 5
-              ).toList();
-              break;
-            default:
-              break;
-          }
-        }
-        
-        // Update products list
-        products.value = filteredProducts;
-        isLoading(false);
-      });
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to filter products: $e');
-      isLoading(false);
-    }
-  }
-
-  // Get products that match the current search and filter criteria
-  List<Product> getFilteredProducts() {
-    return products;
-  }
-
-  // Clear all filters
-  void clearFilters() {
-    if (searchQuery.isNotEmpty) {
-      // If there's a search query, just reapply the search
-      searchProducts(searchQuery.value);
-    } else {
-      // Otherwise, get all products
-      fetchProducts();
-    }
-  }
 }
