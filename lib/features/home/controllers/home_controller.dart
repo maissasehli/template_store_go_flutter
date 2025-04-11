@@ -64,13 +64,13 @@ class HomeController extends GetxController {
   }
 
   /// Navigates to the product screen with selected category and categories list as arguments
-  void gotoProducts(List<CategoriesModels> categories, CategoriesModels selectedCat) {
+  void gotoProducts(
+    List<CategoriesModels> categories,
+    CategoriesModels selectedCat,
+  ) {
     Get.toNamed(
       AppRoute.productscreen,
-      arguments: {
-        "categories": categories,
-        "selected": selectedCat,
-      },
+      arguments: {"categories": categories, "selected": selectedCat},
     );
   }
 
@@ -98,33 +98,9 @@ class HomeController extends GetxController {
   }
 
   /// Toggles the favorite status of a product by its ID
-  void toggleFavorite(String productId) {
-    final index = products.indexWhere((product) => product.id == productId);
-    if (index != -1) {
-      final product = products[index];
-      final isFavorite = !(product.isFavorite ?? false);
 
-      // Update the product with new favorite status
-      products[index] = product.copyWith(isFavorite: isFavorite);
 
-      // Optional: send favorite status to backend
-      // saveFavoriteStatusToBackend(productId, isFavorite);
-    }
+  void navigateToProductDetail(String productId) {
+    Get.toNamed(AppRoute.productdetail, arguments: {'productId': productId});
   }
-void navigateToProductDetail(String productId) {
-  print("Attempting to navigate to product detail with ID: $productId");
-  try {
-    Get.toNamed(
-      AppRoute.productdetail,
-      arguments: {'productId': productId}
-    );
-  } catch (e) {
-    print("Navigation error: $e");
-    Get.snackbar(
-      'Error',
-      'Could not open product details',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-}
 }

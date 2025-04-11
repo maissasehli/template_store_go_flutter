@@ -7,10 +7,13 @@ import 'package:store_go/features/home/views/widgets/category_list_view.dart';
 import 'package:store_go/features/home/views/widgets/custom_app_bar.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
+import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
+    final ProductController productController = Get.put(ProductControllerImp());  // Add this line
+
 
   HomeScreen({super.key});
 
@@ -141,11 +144,10 @@ class HomeScreen extends StatelessWidget {
               return ProductCard(
                 products: topSellingProducts,
                 isHorizontal: true,
-                              onProductTap: (id) => controller.navigateToProductDetail(id),
+               onProductTap: (id) => controller.navigateToProductDetail(id),
 
-                onFavoriteTap: (String productId) {
-                  controller.toggleFavorite(productId);
-                },
+                onFavoriteTap: (id) => productController.toggleFavorite(id),
+
               );
             }),
 
@@ -211,7 +213,7 @@ class HomeScreen extends StatelessWidget {
                  onProductTap: (id) => controller.navigateToProductDetail(id),
 
                 onFavoriteTap: (String productId) {
-                  controller.toggleFavorite(productId);
+                  productController.toggleFavorite(productId);
                 },
               );
             }),

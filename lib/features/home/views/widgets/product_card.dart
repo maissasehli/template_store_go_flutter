@@ -206,43 +206,38 @@ class ProductCard extends StatelessWidget {
       ],
     );
   }
+Widget _buildProductImage(ProductModels product) {
+  final List<String> images = product.imageUrls?.split(',') ?? [];
 
-  Widget _buildProductImage(ProductModels product) {
-    final List<String> images = product.imageUrls?.split(',') ?? [];
+  if (images.isEmpty) {
+    return Container(
+      color: Colors.grey[200],
+      child: const Center(
+        child: Icon(Icons.image, size: 40, color: Colors.grey),
+      ),
+    );
+  }
 
-    if (images.isEmpty) {
-      return Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.image, size: 40, color: Colors.grey),
-        ),
-      );
-    }
-
-    String imageUrl = images[0];
-    
-    if (imageUrl.isNotEmpty) {
-      return Image.asset(
+  String imageUrl = images[0];
+  
+  if (imageUrl.isNotEmpty) {
+    // Simplifie le tag Hero
+    return Hero(
+      tag: "product-${product.id}",  // Tag simplifié
+      child: Image.asset(
         imageUrl,
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: Colors.grey[200],
-            child: const Center(
-              child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
-            ),
-          );
-        },
-      );
-    } else {
-      return Container(
-        color: Colors.grey[200],
-        child: const Center(
-          child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
-        ),
-      );
-    }
+      ),
+    );
+  } else {
+    return Container(
+      color: Colors.grey[200],
+      child: const Center(
+        child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+      ),
+    );
   }
+}
 }

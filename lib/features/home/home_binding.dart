@@ -33,7 +33,10 @@ class HomeBinding implements Bindings {
     
     
     // Create WishlistController with WishlistApiService
-    Get.lazyPut(() => WishlistController(Get.find()), fenix: true);
+Get.lazyPut(() => WishlistController(
+  Get.find<WishlistApiService>(), 
+  Get.find<ProductApiService>()
+), fenix: true);    
         Get.lazyPut<ProductDetailControllerImp>(
       () => ProductDetailControllerImp(),
       fenix: true, // Permet au controller d'être réinitialisé à chaque appel

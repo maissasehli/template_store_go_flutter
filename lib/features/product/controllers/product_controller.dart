@@ -4,22 +4,27 @@ import 'package:store_go/features/category/models/categories_model.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/product/services/product_api_service.dart';
 import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/features/wishlist/services/wishlist_api_service.dart';
+import 'package:logger/logger.dart';
 
-abstract class productController extends GetxController {
+abstract class ProductController extends GetxController {
   initialData();
   filterByCategory(String categoryId);
   resetFilter();
   toggleFavorite(String productId);
 }
 
-class ProductControllerImp  extends productController {
+class ProductControllerImp extends ProductController {
   final isLoading = true.obs;
+  final isFavoriteLoading = false.obs; // New loading state for favorite actions
   final products = <ProductModels>[].obs;
   final filteredProducts = <ProductModels>[].obs;
   final categories = <CategoriesModels>[].obs;
   final selectedCat = Rx<String?>(null);
+  final Logger _logger = Logger();
 
   final ProductApiService _productApiService = ProductApiService(ApiClient());
+  final WishlistApiService _wishlistApiService = WishlistApiService(ApiClient());
   final searchQuery = ''.obs;
 
   @override
@@ -63,6 +68,7 @@ class ProductControllerImp  extends productController {
         await fetchAllProducts();
       }
     } catch (e) {
+      _logger.e('Error in initialData: $e');
       // If an error occurs, try to fetch everything from the API
       await fetchCategories();
       await fetchAllProducts();
@@ -89,13 +95,14 @@ class ProductControllerImp  extends productController {
         );
       }
     } catch (e) {
+      _logger.e('Error fetching categories: $e');
       // Handle errors if the categories API fails
     }
   }
 
   Future<void> fetchAllProducts() async {
     try {
-final response = await _productApiService.getAllProducts();
+      final response = await _productApiService.getAllProducts();
       final data = response.data;
 
       // Support multiple backend response structures
@@ -115,6 +122,7 @@ final response = await _productApiService.getAllProducts();
         filteredProducts.assignAll(products);
       }
     } catch (e) {
+      _logger.e('Error fetching all products: $e');
       // Handle errors if the products API fails
     }
   }
@@ -155,6 +163,7 @@ final response = await _productApiService.getAllProducts();
         );
       }
     } catch (e) {
+      _logger.e('Error fetching products by category: $e');
       // Handle errors if fetching by category fails
     } finally {
       isLoading(false);
@@ -199,24 +208,62 @@ final response = await _productApiService.getAllProducts();
   }
 
   @override
-  toggleFavorite(String productId) {
-    // Toggle favorite status in the full product list
+  Future<void> toggleFavorite(String productId) async {
+    try {
+      _logger.i('Toggle favorite called for product: $productId');
+      isFavoriteLoading(true);
+      
+      // First update UI optimistically
+      _updateLocalFavoriteStatus(productId);
+      
+      // Then update backend
+      final isFavorite = await _wishlistApiService.toggleFavorite(productId);
+      
+      // Update both lists with the confirmed status from the server
+      _updateProductFavoriteStatus(productId, isFavorite);
+      
+      _logger.i('Favorite status updated for $productId: $isFavorite');
+      
+    } catch (e) {
+      _logger.e('Error toggling favorite: $e');
+      // Revert the optimistic update if there was an error
+      _updateLocalFavoriteStatus(productId); // Toggle back
+    } finally {
+      isFavoriteLoading(false);
+    }
+  }
+  
+  // Helper method to update favorite status locally without API call
+  void _updateLocalFavoriteStatus(String productId) {
+    // Update in main products list
     final productIndex = products.indexWhere((product) => product.id == productId);
     if (productIndex != -1) {
       final product = products[productIndex];
-      final isFavorite = !(product.isFavorite ?? false);
-      products[productIndex] = product.copyWith(isFavorite: isFavorite);
+      final newStatus = !(product.isFavorite ?? false);
+      products[productIndex] = product.copyWith(isFavorite: newStatus);
     }
-
-    // Toggle favorite status in the filtered product list
+    
+    // Update in filtered products list
     final filteredIndex = filteredProducts.indexWhere((product) => product.id == productId);
     if (filteredIndex != -1) {
       final product = filteredProducts[filteredIndex];
-      final isFavorite = !(product.isFavorite ?? false);
-      filteredProducts[filteredIndex] = product.copyWith(isFavorite: isFavorite);
-
-      // Notify backend about the change
-      _productApiService.toggleFavorite(productId, isFavorite);
+      final newStatus = !(product.isFavorite ?? false);
+      filteredProducts[filteredIndex] = product.copyWith(isFavorite: newStatus);
+    }
+  }
+  
+  // Helper method to set a specific favorite status
+  void _updateProductFavoriteStatus(String productId, bool isFavorite) {
+    // Update in main products list
+    final productIndex = products.indexWhere((product) => product.id == productId);
+    if (productIndex != -1) {
+      products[productIndex] = products[productIndex].copyWith(isFavorite: isFavorite);
+    }
+    
+    // Update in filtered products list
+    final filteredIndex = filteredProducts.indexWhere((product) => product.id == productId);
+    if (filteredIndex != -1) {
+      filteredProducts[filteredIndex] = filteredProducts[filteredIndex].copyWith(isFavorite: isFavorite);
     }
   }
 
@@ -250,10 +297,11 @@ final response = await _productApiService.getAllProducts();
 
     filteredProducts.assignAll(searchResults);
   }
+  
   void navigateToProductDetail(String productId) {
-  Get.toNamed(
-    AppRoute.productdetail, 
-    arguments: {'productId': productId}
-  );
-}
+    Get.toNamed(
+      AppRoute.productdetail, 
+      arguments: {'productId': productId}
+    );
+  }
 }

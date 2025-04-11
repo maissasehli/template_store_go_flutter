@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 
 class WishlistPage extends StatelessWidget {
@@ -60,49 +61,67 @@ class WishlistPage extends StatelessWidget {
 
   Widget _buildWishlistItem(WishlistController controller, int index) {
     final item = controller.wishlistItems[index];
+    final product = controller.getProductDetails(item.id);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: Colors.grey.shade200, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product image placeholder
+          // Dynamic product image
           Container(
-            width: 70,
-            height: 70,
-            margin: const EdgeInsets.all(15),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-            child: Image.asset(
-              'assets/products/tshirt_white.png', 
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+            image: DecorationImage(
+              image: _getProductImage(product),
               fit: BoxFit.cover,
             ),
+            
+            ),
           ),
-
+          const SizedBox(width: 12),
+          
           // Product details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  item.name,
+                  product?.name ?? item.name,
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
-                  item.description,
+                  product?.description ?? item.description,
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 11,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                const SizedBox(height: 4),
                 Text(
-                  '\$${item.price.toStringAsFixed(2)}',
+                  '\$${product?.finalPrice.toStringAsFixed(2) ?? item.price.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
@@ -112,33 +131,48 @@ class WishlistPage extends StatelessWidget {
             ),
           ),
 
-          // Quantity and remove controls
+          // Close button and quantity selector
           Column(
             children: [
-              IconButton(
-                icon: const Icon(Icons.close, size: 16),
-                onPressed: () => controller.removeFromWishlist(item.id),
+              InkWell(
+                onTap: () => controller.removeFromWishlist(item.id),
+                child: const Icon(Icons.close, size: 18),
               ),
+              const SizedBox(height: 24),
+              
+              // Quantity selector
               Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove, size: 16),
-                      onPressed: () => controller.updateItemQuantity(
+                    InkWell(
+                      onTap: () => controller.updateItemQuantity(
                         item.id, 
                         item.quantity > 1 ? item.quantity - 1 : 1
                       ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(Icons.remove, size: 16),
+                      ),
                     ),
-                    Text(item.quantity.toString()),
-                    IconButton(
-                      icon: const Icon(Icons.add, size: 16),
-                      onPressed: () => controller.updateItemQuantity(
+                    const SizedBox(width: 4),
+                    Text(
+                      item.quantity.toString(),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(width: 4),
+                    InkWell(
+                      onTap: () => controller.updateItemQuantity(
                         item.id, 
                         item.quantity + 1
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Icon(Icons.add, size: 16),
                       ),
                     ),
                   ],
@@ -150,6 +184,21 @@ class WishlistPage extends StatelessWidget {
       ),
     );
   }
+// Helper method to determine the correct image to display
+ImageProvider _getProductImage(ProductModels? product) {
+  final imageUrl = product?.imageUrls;
+  
+  // Check if the image URL is a network URL or an asset path
+  if (imageUrl != null && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
+    // It's a network image
+    return NetworkImage(imageUrl);
+  } else {
+    // It's an asset image
+    // Remove any 'file:///' prefix if it exists
+    final assetPath = (imageUrl ?? '').replaceAll('file:///', '');
+    return AssetImage(assetPath);
+  }
+}
 
   Widget _buildEmptyWishlist() {
     return Center(
