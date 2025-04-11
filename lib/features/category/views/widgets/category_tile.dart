@@ -1,20 +1,12 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
 
 class CategoryTile extends StatelessWidget {
   final Category category;
-  final bool isSelected;
   final VoidCallback onTap;
 
-  const CategoryTile({
-    super.key,
-    required this.category,
-    required this.onTap,
-    this.isSelected = false,
-  });
+  const CategoryTile({super.key, required this.category, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +14,8 @@ class CategoryTile extends StatelessWidget {
       width: double.infinity,
       height: 64,
       decoration: BoxDecoration(
-        color:
-            isSelected
-                ? AppColors.foreground(context).withOpacity(0.08)
-                : AppColors.foreground(context).withOpacity(0.05),
+        color: AppColors.foreground(context).withOpacity(0.05),
         borderRadius: BorderRadius.circular(8),
-        border:
-            isSelected
-                ? Border.all(color: AppColors.primary(context), width: 1)
-                : null,
       ),
       child: Material(
         color: Colors.transparent,

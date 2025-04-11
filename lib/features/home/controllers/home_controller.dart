@@ -19,14 +19,6 @@ class HomeController extends GetxController {
     super.onInit();
     // Get the wishlist controller
     _wishlistController = Get.find<WishlistController>();
-    // Listen to category changes to update products
-    ever(categoryController.selectedCategoryId, (String? categoryId) {
-      if (categoryId != null && categoryId.isNotEmpty) {
-        productController.fetchProductsByCategory(categoryId);
-      } else {
-        productController.fetchAllProducts();
-      }
-    });
   }
 
   void onCategoriesSeeAllTap() {

@@ -70,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                       controller.categoryController.selectedCategoryId.value,
                   onCategorySelected:
                       (categoryId) => controller.categoryController
-                          .selectCategory(categoryId),
+                          .selectCategoryById(categoryId),
                 ),
               ),
             ),

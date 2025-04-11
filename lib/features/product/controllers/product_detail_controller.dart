@@ -11,7 +11,7 @@ class ProductDetailController extends GetxController {
   final Logger _logger = Logger();
 
   ProductDetailController({required ProductRepository repository})
-    : _repository = repository;
+      : _repository = repository;
 
   /// Fetches product details by ID
   Future<void> fetchProductDetails(String productId) async {

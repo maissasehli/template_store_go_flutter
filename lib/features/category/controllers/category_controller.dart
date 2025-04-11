@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
 import 'package:store_go/features/category/repositories/category_repository.dart';
 
@@ -12,9 +13,7 @@ class CategoryController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
-
-  // For selected category tracking
-  final RxString selectedCategoryId = ''.obs;
+  final RxString selectedCategoryId = ''.obs; // Add this line
 
   // For search functionality
   final RxList<Category> filteredCategories = <Category>[].obs;
@@ -26,9 +25,10 @@ class CategoryController extends GetxController {
   void onInit() {
     super.onInit();
     fetchCategories();
+    filteredCategories.assignAll(categories);
   }
 
-  Future<void> fetchCategories() async {
+    Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
       hasError.value = false;
@@ -53,30 +53,48 @@ class CategoryController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  // Select a category and navigate to its products
-  void selectCategory(String id) {
-    _logger.d("Category selected: $id");
-    // Update the selected category ID
-    selectedCategoryId.value = id;
-    // Navigate to products screen with category ID
-    Get.toNamed('/products', arguments: {'categoryId': id});
-  }
-
-  void filterCategories(String searchText) {
-    if (searchText.isEmpty) {
-      filteredCategories.value = categories;
-    } else {
-      filteredCategories.value =
-          categories.where((category) {
-            return category.name.toLowerCase().contains(
-              searchText.toLowerCase(),
-            );
-          }).toList();
+  void filterCategories(String query) {
+    if (query.isEmpty) {
+      // If query is empty, show all categories
+      filteredCategories.assignAll(categories);
+      return;
     }
+
+    // Filter categories by name containing the query (case insensitive)
+    final List<Category> results =
+        categories.where((category) {
+          return category.name.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+
+    // Update the filteredCategories list
+    filteredCategories.assignAll(results);
   }
 
-  bool isCategorySelected(String categoryId) {
-    return selectedCategoryId.value == categoryId;
+  // Select a category and navigate to the category products screen
+ void selectCategory(Category category) {
+    _logger.d("Category selected: ${category.id}");
+
+    // Set the selected category ID
+    selectedCategoryId.value = category.id;
+
+    // Navigate to the category products screen with the category as an argument
+    Get.toNamed(AppRoute.categoryDetail, arguments: category);
+  }
+
+
+  void selectCategoryById(String categoryId) {
+    // Find the category with the given ID
+    final Category? category = categories.firstWhereOrNull(
+      (c) => c.id == categoryId,
+    );
+
+    // Only proceed if we found a valid category
+    if (category != null) {
+      // Update the selected category ID
+      selectedCategoryId.value = categoryId;
+
+      // Call the existing selectCategory method with the Category object
+      selectCategory(category);
+    }
   }
 }

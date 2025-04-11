@@ -138,10 +138,7 @@ class CategoryScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 8),
                         child: CategoryTile(
                           category: category,
-                          isSelected: controller.isCategorySelected(
-                            category.id,
-                          ),
-                          onTap: () => controller.selectCategory(category.id),
+                          onTap: () => controller.selectCategory(category),
                         ),
                       );
                     },
@@ -155,4 +152,3 @@ class CategoryScreen extends StatelessWidget {
     );
   }
 }
-
