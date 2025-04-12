@@ -55,8 +55,6 @@ class CategoryListView extends GetView<CategoryController> {
                   // Make sure products are fetched for the new category
                   categoryProductController.fetchCategoryProducts(category.id);
 
-                  // Log when category is changed
-                  print("Changed to category: ${category.name} (${category.id})");
                 },
               );
             });

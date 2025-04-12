@@ -1,3 +1,4 @@
+
 class CartItem {
   final String id;
   final String productId;
@@ -17,7 +18,6 @@ class CartItem {
     required this.image,
   });
 
-  // Create a copy of this cart item with some properties changed
   CartItem copyWith({
     String? id,
     String? productId,
@@ -57,10 +57,15 @@ class CartItem {
       id: json['id'] ?? '',
       productId: json['productId'] ?? '',
       name: json['name'] ?? '',
-      price: json['price'] ?? 0.0,
+      price: (json['price'] ?? 0.0).toDouble(),
       quantity: json['quantity'] ?? 0,
       variants: Map<String, String>.from(json['variants'] ?? {}),
       image: json['image'] ?? '',
     );
+  }
+
+  @override
+  String toString() {
+    return 'CartItem{id: $id, productId: $productId, name: $name, price: $price, quantity: $quantity}';
   }
 }

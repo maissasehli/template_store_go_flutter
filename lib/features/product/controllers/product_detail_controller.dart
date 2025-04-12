@@ -132,7 +132,7 @@ class ProductDetailController extends GetxController {
     if (state.product.value == null) return;
 
     try {
-      final productId = state.product.value!.id;
+      final product = state.product.value!;
       final quantity = state.quantity.value;
 
       Map<String, String> variants = {};
@@ -149,7 +149,7 @@ class ProductDetailController extends GetxController {
       // Get cart controller and add item
       final cartController = Get.find<CartController>();
       await cartController.addToCart(
-        productId: productId,
+        product: product, // Pass the entire product object
         quantity: quantity,
         variants: variants,
       );

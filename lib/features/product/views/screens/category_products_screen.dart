@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
@@ -14,9 +13,8 @@ import 'package:store_go/features/search/no_search_result.dart';
 class CategoryProductsScreen extends StatefulWidget {
   final Category category;
 
-  CategoryProductsScreen({Key? key})
-    : category = Get.arguments as Category,
-      super(key: key);
+  CategoryProductsScreen({super.key})
+    : category = Get.arguments as Category;
 
   @override
   State<CategoryProductsScreen> createState() => _CategoryProductsScreenState();

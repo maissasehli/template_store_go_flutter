@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/features/cart/controllers/cart_controller.dart';
+import 'package:store_go/features/cart/reposetory/cart_repository.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/repositories/category_repository.dart';
 import 'package:store_go/features/category/services/category_api_service.dart';
@@ -59,5 +61,9 @@ class HomeBinding implements Bindings {
     ), 
     fenix: true, // This will recreate the controller if it was deleted
   );
+      Get.put(CartRepository(apiClient: Get.find<ApiClient>()), permanent: true);
+
+      Get.put(CartController(repository: Get.find<CartRepository>()), permanent: true);
+
   }
 }

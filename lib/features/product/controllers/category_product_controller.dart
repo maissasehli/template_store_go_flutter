@@ -97,7 +97,7 @@ class CategoryProductController extends GetxController {
       // Then filter by search query (case insensitive)
       final filteredProducts = allCategoryProducts.where((product) {
         return product.name.toLowerCase().contains(query.toLowerCase()) ||
-               (product.description?.toLowerCase() ?? '').contains(query.toLowerCase());
+               (product.description.toLowerCase()).contains(query.toLowerCase());
       }).toList();
       
       _logger.d("Found ${filteredProducts.length} products matching '$query' in category ${currentCategory.value?.id}");

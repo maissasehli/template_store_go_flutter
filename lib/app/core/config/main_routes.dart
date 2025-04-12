@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:store_go/app/core/middlewares/auth_middleware.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
+import 'package:store_go/features/cart/binding/cart_binding.dart';
 import 'package:store_go/features/category/category_binding.dart';
 import 'package:store_go/features/home/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
@@ -18,6 +19,7 @@ import 'package:store_go/features/language/language_binding.dart';
 import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
+import 'package:store_go/features/order/order_beinding/order_binding.dart';
 import 'package:store_go/features/product/product_binding.dart';
 import 'package:store_go/features/product/views/screens/category_products_screen.dart';
 import 'package:store_go/features/product/views/screens/product_detail_screen.dart';
@@ -27,8 +29,8 @@ import 'package:store_go/features/address/add_adress.dart';
 import 'package:store_go/features/address/adress_screen.dart';
 import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart';
 import 'package:store_go/features/notifications/notification_screen.dart';
-import 'package:store_go/features/order/orders_detaill_screen.dart';
-import 'package:store_go/features/order/orders_screen.dart';
+import 'package:store_go/features/order/view/widget/orders_detaill_screen.dart';
+import 'package:store_go/features/order/view/orders_screen.dart';
 import 'package:store_go/features/payment/payment_screen.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
@@ -161,11 +163,11 @@ List<GetPage<dynamic>>? routes = [
     page: () => AddCardPage(),
     binding: HomeBinding(),
   ),
-  GetPage(name: AppRoute.orders, page: () => OrdersPage()),
+  GetPage(name: AppRoute.orders, page: () => OrdersPage(),binding: OrderBinding(),),
   GetPage(
     name: AppRoute.order_details,
     page: () => OrderDetailsPage(),
-    binding: HomeBinding(),
+    binding: OrderBinding(),
   ),
   GetPage(
     name: AppRoute.notifications,
