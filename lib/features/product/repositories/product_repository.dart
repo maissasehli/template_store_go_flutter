@@ -73,44 +73,48 @@ class ProductRepository {
     return _productCache[productId]!;
   }
 
-  // Get products by category with caching
-  Future<List<Product>> getProductsByCategory(
-    String categoryId, {
-    bool forceRefresh = false,
-  }) async {
-    if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
-      try {
-        final response = await _apiClient.get(
-          _productsEndpoint,
-          queryParameters: {'categoryId': categoryId},
-        );
+Future<List<Product>> getProductsByCategory(
+  String categoryId, {
+  bool forceRefresh = false,
+}) async {
+  if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
+    try {
+      final response = await _apiClient.get(
+        _productsEndpoint,
+        queryParameters: {'categoryId': categoryId},
+      );
 
-        if (response.statusCode == 200) {
-          List<dynamic> productsJson = response.data['data'] ?? [];
-          final products =
-              productsJson.map((json) => Product.fromJson(json)).toList();
+      if (response.statusCode == 200) {
+        List<dynamic> productsJson = response.data['data'] ?? [];
+        final products =
+            productsJson.map((json) => Product.fromJson(json)).toList();
 
-          _categoryProductsCache[categoryId] = products;
+        // Important: Store these products specific to this category
+        _categoryProductsCache[categoryId] = products;
+        
+        // Log the number of products
+        print("Fetched ${products.length} products for category $categoryId");
 
-          // Update cache entries for individual products
-          for (var product in products) {
-            _productCache[product.id] = product;
-          }
-
-          return products;
-        } else {
-          throw Exception(
-            'Failed to load category products: ${response.statusMessage}',
-          );
+        // Also update individual product cache
+        for (var product in products) {
+          _productCache[product.id] = product;
         }
-      } catch (e) {
-        throw Exception('Error fetching category products: $e');
-      }
-    }
 
-    return List.from(_categoryProductsCache[categoryId] ?? []);
+        return products;
+      } else {
+        throw Exception(
+          'Failed to load category products: ${response.statusMessage}',
+        );
+      }
+    } catch (e) {
+      print('Error fetching category products: $e');
+      throw Exception('Error fetching category products: $e');
+    }
   }
 
+  // Return cached products for this category
+  return List.from(_categoryProductsCache[categoryId] ?? []);
+}
   // Get featured products
   Future<List<Product>> getFeaturedProducts() async {
     try {
@@ -223,6 +227,7 @@ class ProductRepository {
       }
     }
   }
+  
 
   // Clear all caches
   void clearCache() {

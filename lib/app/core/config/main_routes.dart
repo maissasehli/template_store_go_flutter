@@ -104,11 +104,7 @@ List<GetPage<dynamic>>? routes = [
     page: () => CategoryScreen(),
     binding: CategoryBinding(),
   ),
-  GetPage(
-    name: AppRoute.categoryDetail,
-    page: () => const CategoryProductsScreen(),
-    binding: ProductBinding(),
-  ),
+ 
 
   // Products
   GetPage(
@@ -176,4 +172,11 @@ List<GetPage<dynamic>>? routes = [
     page: () => NotificationsPage(),
     binding: HomeBinding(),
   ),
+   GetPage(
+    name: AppRoute.categoryDetail,
+    page: () => CategoryProductsScreen(),
+    transition: Transition.cupertino,
+    binding: HomeBinding(),
+  ),
+
 ];

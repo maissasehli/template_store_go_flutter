@@ -5,6 +5,7 @@ import 'package:store_go/features/category/repositories/category_repository.dart
 import 'package:store_go/features/category/services/category_api_service.dart';
 import 'package:store_go/features/category/services/category_service.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
+import 'package:store_go/features/product/controllers/category_product_controller.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
@@ -48,5 +49,15 @@ class HomeBinding implements Bindings {
     Get.lazyPut<ProfileRepository>(
       () => ProfileRepository(apiClient: Get.find<ApiClient>()),
     );
+     Get.put<ProductRepository>(
+      ProductRepository(apiClient: Get.find<ApiClient>()),
+      permanent: true,
+    );
+     Get.lazyPut<CategoryProductController>(
+    () => CategoryProductController(
+      repository: Get.find<ProductRepository>(),
+    ), 
+    fenix: true, // This will recreate the controller if it was deleted
+  );
   }
 }
