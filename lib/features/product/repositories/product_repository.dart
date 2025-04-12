@@ -74,48 +74,54 @@ class ProductRepository {
   }
 
 Future<List<Product>> getProductsByCategory(
-  String categoryId, {
-  bool forceRefresh = false,
-}) async {
-  if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
-    try {
-      final response = await _apiClient.get(
-        _productsEndpoint,
-        queryParameters: {'categoryId': categoryId},
-      );
-
-      if (response.statusCode == 200) {
-        List<dynamic> productsJson = response.data['data'] ?? [];
-        final products =
-            productsJson.map((json) => Product.fromJson(json)).toList();
-
-        // Important: Store these products specific to this category
-        _categoryProductsCache[categoryId] = products;
-        
-        // Log the number of products
-        print("Fetched ${products.length} products for category $categoryId");
-
-        // Also update individual product cache
-        for (var product in products) {
-          _productCache[product.id] = product;
-        }
-
-        return products;
-      } else {
-        throw Exception(
-          'Failed to load category products: ${response.statusMessage}',
-        );
-      }
-    } catch (e) {
-      print('Error fetching category products: $e');
-      throw Exception('Error fetching category products: $e');
+    String categoryId, {
+    bool forceRefresh = false,
+  }) async {
+    // Always clear the cached category products when forced to refresh
+    if (forceRefresh && _categoryProductsCache.containsKey(categoryId)) {
+      _categoryProductsCache.remove(categoryId);
     }
-  }
+    
+    if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
+      try {
+        // Ensure we're passing the categoryId to the API using the correct format
+        final response = await _apiClient.get(
+          '$_productsEndpoint/category/$categoryId',
+          // If your API uses query parameters instead of path params, use this:
+          // queryParameters: {'categoryId': categoryId},
+        );
 
-  // Return cached products for this category
-  return List.from(_categoryProductsCache[categoryId] ?? []);
-}
-  // Get featured products
+        if (response.statusCode == 200) {
+          List<dynamic> productsJson = response.data['data'] ?? [];
+          final products =
+              productsJson.map((json) => Product.fromJson(json)).toList();
+
+          // Important: Store these products specific to this category
+          _categoryProductsCache[categoryId] = products;
+          
+          // Log the number of products
+          print("Fetched ${products.length} products for category $categoryId");
+
+          // Also update individual product cache
+          for (var product in products) {
+            _productCache[product.id] = product;
+          }
+
+          return products;
+        } else {
+          throw Exception(
+            'Failed to load category products: ${response.statusMessage}',
+          );
+        }
+      } catch (e) {
+        print('Error fetching category products: $e');
+        throw Exception('Error fetching category products: $e');
+      }
+    }
+
+    // Return cached products for this category
+    return List.from(_categoryProductsCache[categoryId] ?? []);
+  }
   Future<List<Product>> getFeaturedProducts() async {
     try {
       final response = await _apiClient.get(

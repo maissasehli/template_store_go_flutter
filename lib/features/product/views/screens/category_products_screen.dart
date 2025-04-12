@@ -7,6 +7,7 @@ import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/product/controllers/category_product_controller.dart';
+import 'package:store_go/features/product/views/widgets/category_product/category_list_view.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 
@@ -38,8 +39,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
       // Create and register the controller if not already registered
       categoryProductController = Get.put(
         CategoryProductController(
-          repository:
-              Get.find(), // Should automatically find your ProductRepository
+          repository: Get.find(), // Should automatically find your ProductRepository
         ),
       );
     }
@@ -100,17 +100,16 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                   // Expanded custom search bar
                   Expanded(
                     child: CustomSearchBar(
-                      onSearch:
-                          (query) => categoryProductController
-                              .searchCategoryProducts(query),
+                      onSearch: (query) => 
+                          categoryProductController.searchCategoryProducts(query),
                     ),
                   ),
                 ],
               ),
             ),
 
-            // Category filter horizontal list
-            _buildCategoryPills(),
+            // Category filter horizontal list using the extracted widget
+            CategoryListView(categoryProductController: categoryProductController),
 
             // Results count text
             Padding(
@@ -167,25 +166,20 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                   child: GridView.builder(
                     padding: const EdgeInsets.only(bottom: 16),
                     physics: const BouncingScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.7,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                    itemCount:
-                        categoryProductController.categoryProducts.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.7,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: categoryProductController.categoryProducts.length,
                     itemBuilder: (context, index) {
-                      final product =
-                          categoryProductController.categoryProducts[index];
+                      final product = categoryProductController.categoryProducts[index];
 
                       return ProductCard(
                         product: product,
                         onProductTap: (id) => homeController.onProductTap(id),
-                        onFavoriteTap:
-                            (id) =>
-                                categoryProductController.toggleFavorite(id),
+                        onFavoriteTap: (id) => categoryProductController.toggleFavorite(id),
                       );
                     },
                   ),
@@ -195,75 +189,6 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  // In your _buildCategoryPills() method inside CategoryProductsScreen
-  Widget _buildCategoryPills() {
-    return Container(
-      height: 36,
-      margin: const EdgeInsets.only(top: 8),
-      child: Obx(() {
-        if (categoryController.isLoading.value) {
-          return const Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
-        }
-
-        if (categoryController.categories.isEmpty) {
-          categoryController.fetchCategories();
-
-          return const Center(child: Text('No categories available'));
-        }
-
-        // Display categories as pills
-        return ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: categoryController.categories.length,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemBuilder: (context, index) {
-            final category = categoryController.categories[index];
-            final isSelected =
-                category.id == categoryController.selectedCategoryId.value;
-
-            return GestureDetector(
-              onTap: () {
-                // Set the selected category ID
-                categoryController.selectedCategoryId.value = category.id;
-
-                // Update the current category in our controller and fetch its products
-                categoryProductController.setCategory(category);
-
-                // Log when category is changed
-                print("Changed to category: ${category.name} (${category.id})");
-              },
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? Colors.black : const Color(0xFFF4F4F4),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Text(
-                  category.name,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      }),
     );
   }
 }

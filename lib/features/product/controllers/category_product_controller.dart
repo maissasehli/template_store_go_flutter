@@ -25,10 +25,16 @@ class CategoryProductController extends GetxController {
       : _repository = repository;
 
   void setCategory(Category category) {
+    // Clear previous products when changing categories
+    categoryProducts.clear();
+    
+    // Set the new category
     currentCategory.value = category;
+    
     // Clear any active search when changing categories
     searchQuery.value = '';
     isSearchActive.value = false;
+    
     // Then fetch products for this category
     fetchCategoryProducts(category.id);
   }
@@ -39,12 +45,13 @@ class CategoryProductController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
       
+      // Fetch products for this specific category
       final products = await _repository.getProductsByCategory(categoryId);
       
       // Log the number of products received
       _logger.d("Fetched ${products.length} products for category $categoryId");
       
-      // Update the products list
+      // Update the products list with only the products for this category
       categoryProducts.assignAll(products);
       
     } catch (e) {
@@ -76,9 +83,6 @@ class CategoryProductController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
       isSearchActive.value = true;
-      
-      // For API-based search that supports category filtering:
-      // final searchResults = await _repository.searchProductsInCategory(currentCategory.value!.id, query);
       
       // For client-side filtering if your API doesn't support it:
       // First get all products for this category if we don't have them
