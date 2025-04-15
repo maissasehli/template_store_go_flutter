@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/features/product/views/widgets/favorite_button.dart';
 import 'package:store_go/features/product/views/widgets/product_image_gallery.dart';
 import 'package:store_go/features/product/views/widgets/top_navigation_bar.dart';
 import 'package:store_go/features/product/views/widgets/size_selector.dart';
@@ -10,7 +11,6 @@ import 'package:store_go/features/product/views/widgets/quantity_selector.dart';
 import 'package:store_go/features/product/views/widgets/product_info.dart';
 import 'package:store_go/features/product/views/widgets/add_to_cart_button.dart';
 import 'package:store_go/features/product/views/widgets/product_description.dart';
-import 'package:store_go/features/product/views/widgets/favorite_button.dart';
 import 'package:store_go/features/product/views/widgets/image_page_indicator.dart';
 import 'package:store_go/features/product/views/widgets/draggable_info_sheet.dart';
 
@@ -57,53 +57,42 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
               // Main product image area
               ProductImageGallery(product: product),
 
-              // Top navigation and controls
+              // Top navigation bar
               SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Top navigation bar
-                    TopNavigationBar(
-                      onBackPressed: () => Navigator.pop(context),
-                      onCartPressed: () {
-                        // Navigate to cart
+                child: TopNavigationBar(
+                  onBackPressed: () => Navigator.pop(context),
+                  onCartPressed: () {
+                    // Navigate to cart
+                  },
+                ),
+              ),
+
+              // Favorite button - deliberately placed AFTER the gallery in the stack
+              // for proper z-ordering and with a SafeArea to avoid status bar
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+      padding: const EdgeInsets.only(right: 16.0, bottom: 380.0), // Reduced bottom padding
+                    child: FavoriteButton(
+                      isFavorite: product.isFavorite,
+                      onToggleFavorite: () {
+                        detailController.toggleFavorite();
                       },
                     ),
+                  ),
+                ),
+              ),
 
-                    // Spacer to push content to bottom
-                    const Spacer(),
-
-                    // Favorite button positioned at bottom left of image
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
-                      child: FavoriteButton(
-                        isFavorite: product.isFavorite,
-                        onToggleFavorite: () {
-                          // Use the controller's method directly
-                          detailController.toggleFavorite();
-                        },
-                      ),
-                    ),
-
-                    // Image page indicators at bottom center
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Obx(
-                          () => ImagePageIndicator(
-                            currentIndex:
-                                detailController.state.currentImageIndex.value,
-                            totalImages:
-                                product.images.isNotEmpty
-                                    ? product.images.length
-                                    : 3,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+              // Image page indicators at bottom center
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 70.0),
+                  child: ImagePageIndicator(
+                    currentIndex: detailController.state.currentImageIndex.value,
+                    totalImages: product.images.isNotEmpty ? product.images.length : 3,
+                  ),
                 ),
               ),
 
@@ -210,6 +199,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                   ],
                 ),
               ),
+
+              // Debug button - just to confirm that buttons can appear
+              // REMOVE THIS AFTER TESTING
+             
             ],
           );
         }

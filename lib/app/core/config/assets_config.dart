@@ -26,7 +26,6 @@ class AssetConfig {
   static const String bagIcon = '$rootSvg/bag2.svg';
   static const String emailSentIcon = '$rootSvg/email_sent.svg';
 
-  static const String loveIcon = '$rootSvg/love.svg';
   static const String searchIcon = '$rootSvg/searchnormal1.svg';
   static const String discountshape = '$rootSvg/discountshape.svg';
   static const String delete = '$rootSvg/delete.svg';

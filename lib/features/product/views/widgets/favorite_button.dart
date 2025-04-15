@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class FavoriteButton extends StatelessWidget {
@@ -14,23 +16,23 @@ class FavoriteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 40,
-      height: 40,
+      width: 35,
+      height: 35,
       decoration: BoxDecoration(
-        color: AppColors.card(context),
+        color: Colors.white, // Using white as seen in the image
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.border(context), width: 1),
       ),
       child: InkWell(
         onTap: onToggleFavorite,
+        borderRadius: BorderRadius.circular(15.6), // Half of width/height for circle
         child: Center(
-          child: Icon(
-            isFavorite ? Icons.favorite : Icons.favorite_border,
-            size: 20,
-            color:
-                isFavorite
-                    ? AppColors.destructive(context)
-                    : AppColors.foreground(context),
+          child: SvgPicture.asset(
+            AssetConfig.heartIcon, // Make sure this constant is defined in your AssetConfig
+            width: 18,
+            height: 17,
+            color: isFavorite 
+                ? AppColors.destructive(context) 
+                : const Color(0xFF130F26),
           ),
         ),
       ),
