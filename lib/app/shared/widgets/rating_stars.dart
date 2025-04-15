@@ -8,13 +8,13 @@ class RatingStars extends StatelessWidget {
   final bool showReviewCount;
 
   const RatingStars({
-    Key? key,
+    super.key,
     required this.rating,
     this.reviewCount = 0,
     this.size = 16,
     this.color,
     this.showReviewCount = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

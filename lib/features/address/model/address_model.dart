@@ -21,7 +21,7 @@ class Address {
     String? zipCode,
   }) {
     return Address(
-      id: this.id,
+      id: id,
       street: street ?? this.street,
       city: city ?? this.city,
       state: state ?? this.state,

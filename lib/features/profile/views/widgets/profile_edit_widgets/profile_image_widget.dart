@@ -23,7 +23,7 @@ class ProfileImageWidget extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(77),
               border: Border.all(
-                color: Colors.purple.withAlpha(77), // Remplacé withOpacity par withAlpha
+                color: Colors.black.withAlpha(77), 
                 width: 2,
               ),
             ),
@@ -51,7 +51,7 @@ class ProfileImageWidget extends StatelessWidget {
                           },
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              color: Colors.grey.withAlpha(51), // Remplacé withOpacity par withAlpha
+                              color: Colors.grey.withAlpha(51), 
                               child: const Center(
                                 child: Icon(
                                   Icons.person_outline,
@@ -63,7 +63,7 @@ class ProfileImageWidget extends StatelessWidget {
                           },
                         )
                       : Container(
-                          color: Colors.grey.withAlpha(51), // Remplacé withOpacity par withAlpha
+                          color: Colors.grey.withAlpha(51), 
                           child: const Center(
                             child: Icon(
                               Icons.person_outline,

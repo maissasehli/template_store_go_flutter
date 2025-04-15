@@ -76,7 +76,7 @@ class CartScreen extends StatelessWidget {
             ),
             child: Center(
               child: SvgPicture.asset(
-                AssetConfig.bagIcon,
+                AssetConfig.panierIcon,
                 width: 48,
                 height: 48,
                 colorFilter: const ColorFilter.mode(

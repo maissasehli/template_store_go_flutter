@@ -9,9 +9,9 @@ class OrderItem extends StatelessWidget {
   final OrderModel order;
 
   const OrderItem({
-    Key? key,
+    super.key,
     required this.order,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -12,16 +12,34 @@ class EmptyNotificationState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Use a try-catch block to handle potential asset loading errors
-          _buildAssetImage(),
+          // Bell icon with circular background and shadow
+          Container(
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF686868).withOpacity(0.2),
+                  spreadRadius: 0,
+                  blurRadius: 26.1,
+                  offset: const Offset(0, 0),
+                ),
+              ],
+            ),
+            child: Center(
+              child: _buildBellIcon(),
+            ),
+          ),
           const SizedBox(height: 16),
           const Text(
             'No Notification yet',
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
               fontFamily: 'Poppins',
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 24),
@@ -29,16 +47,16 @@ class EmptyNotificationState extends StatelessWidget {
             onPressed: () => Get.toNamed('/categories'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(100),
               ),
             ),
             child: const Text(
               'Explore Categories',
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
                 color: Colors.white,
                 fontFamily: 'Poppins',
               ),
@@ -48,28 +66,29 @@ class EmptyNotificationState extends StatelessWidget {
       ),
     );
   }
-  
-  Widget _buildAssetImage() {
+
+  Widget _buildBellIcon() {
     try {
+      // Use Image.asset for PNG files
       return Image.asset(
         AssetConfig.bell,
-        width: 80,
-        height: 80,
+        width: 70,
+        height: 70,
         errorBuilder: (context, error, stackTrace) {
-          // Fallback to an icon if the asset fails to load
-          return Icon(
-            Icons.notifications_outlined,
-            size: 80,
-          );
+          return _buildFallbackIcon();
         },
       );
     } catch (e) {
       // Fallback in case of any other error
-      return Icon(
-        Icons.notifications_outlined,
-        size: 80,
-        color: Colors.grey[300],
-      );
+      return _buildFallbackIcon();
     }
+  }
+
+  Widget _buildFallbackIcon() {
+    return const Icon(
+      Icons.notifications_outlined,
+      size: 47,
+      color: Colors.grey,
+    );
   }
 }

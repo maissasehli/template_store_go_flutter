@@ -14,7 +14,6 @@ class OrderRepository {
 
       // Check for 500 error
       if (response.statusCode == 500) {
-        print('Server returned 500 error for orders');
         return []; // Return empty list instead of throwing
       }
 
@@ -22,11 +21,9 @@ class OrderRepository {
         final data = response.data['data'] as List;
         return data.map((item) => OrderModel.fromJson(item)).toList();
       } else {
-        print('Unexpected status code: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print('Error in getOrders: $e');
       return []; // Return empty list on error
     }
   }
@@ -37,18 +34,15 @@ class OrderRepository {
 
       // Check for 500 error
       if (response.statusCode == 500) {
-        print('Server returned 500 error for order details');
         return null;
       }
 
       if (response.statusCode == 200) {
         return OrderModel.fromJson(response.data['data']);
       } else {
-        print('Unexpected status code: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      print('Error in getOrderDetails: $e');
       return null;
     }
   }
@@ -59,13 +53,11 @@ class OrderRepository {
       
       // Check for 500 error
       if (response.statusCode == 500) {
-        print('Server returned 500 error when cancelling order');
         return false;
       }
       
       return response.statusCode == 200;
     } catch (e) {
-      print('Error in cancelOrder: $e');
       return false;
     }
   }

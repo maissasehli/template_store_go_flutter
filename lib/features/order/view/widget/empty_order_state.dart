@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 
 class EmptyOrderState extends StatelessWidget {
-  const EmptyOrderState({Key? key}) : super(key: key);
+  const EmptyOrderState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class EmptyOrderState extends StatelessWidget {
           const Text(
             'No Orders yet',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 22,
               fontWeight: FontWeight.w500,
               fontFamily: 'Poppins',
               color: Colors.grey,

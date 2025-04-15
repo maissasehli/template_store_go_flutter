@@ -9,6 +9,7 @@ class OrderDetailsPage extends StatefulWidget {
   @override
   State<OrderDetailsPage> createState() => _OrderDetailsPageState();
 }
+
 class _OrderDetailsPageState extends State<OrderDetailsPage> {
   String orderId = '';
   late OrderController controller;
@@ -24,7 +25,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       isInitialized = true;
     } catch (e) {
       // If controller not found, we'll handle this in the post-frame callback
-      print('Controller not found initially: $e');
     }
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -38,7 +38,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     
     // Check if arguments are null
     if (args == null) {
-      _showError('ID de commande non fourni');
+      _showError('Order ID not provided');
       return;
     }
     
@@ -48,7 +48,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       
       // Check if ID is empty
       if (orderId.isEmpty) {
-        _showError('ID de commande invalide');
+        _showError('Invalid order ID');
         return;
       }
       
@@ -58,7 +58,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           controller = Get.find<OrderController>();
           isInitialized = true;
         } catch (e) {
-          _showError('Erreur système: contrôleur non disponible');
+          _showError('System error: controller not available');
           return;
         }
       }
@@ -66,13 +66,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       // Fetch order details
       controller.fetchOrderDetails(orderId);
     } catch (e) {
-      _showError('Format d\'ID de commande invalide');
+      _showError('Invalid order ID format');
     }
   }
 
   void _showError(String message) {
     Get.snackbar(
-      'Erreur',
+      'Error',
       message,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.red.withOpacity(0.7),
@@ -527,7 +527,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
-mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,

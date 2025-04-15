@@ -100,7 +100,6 @@ Future<List<Product>> getProductsByCategory(
           _categoryProductsCache[categoryId] = products;
           
           // Log the number of products
-          print("Fetched ${products.length} products for category $categoryId");
 
           // Also update individual product cache
           for (var product in products) {
@@ -114,7 +113,6 @@ Future<List<Product>> getProductsByCategory(
           );
         }
       } catch (e) {
-        print('Error fetching category products: $e');
         throw Exception('Error fetching category products: $e');
       }
     }
@@ -207,7 +205,6 @@ Future<List<Product>> getProductsByCategory(
       return success;
     } catch (e) {
       // If API doesn't support it yet, return true to allow local state change
-      print('Favorite toggle API not implemented: $e');
       return true;
     }
   }

@@ -95,7 +95,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                             currentIndex:
                                 detailController.state.currentImageIndex.value,
                             totalImages:
-                                product.images.length > 0
+                                product.images.isNotEmpty
                                     ? product.images.length
                                     : 3,
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/address/model/address_model.dart';
+// ignore: depend_on_referenced_packages
 import 'package:uuid/uuid.dart';
 
 class AddressController extends GetxController {

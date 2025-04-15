@@ -7,7 +7,7 @@ class ColorSelector extends StatelessWidget {
   final Map<String, Color> colorOptions;
 
   const ColorSelector({
-    Key? key,
+    super.key,
     required this.selectedColor,
     required this.onColorSelected,
     this.colorOptions = const {
@@ -16,7 +16,7 @@ class ColorSelector extends StatelessWidget {
       'Green': Colors.green,
       'Orange': Colors.orange,
     },
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

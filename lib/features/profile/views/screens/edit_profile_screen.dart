@@ -7,7 +7,7 @@ import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/pro
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/save_button.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({Key? key}) : super(key: key);
+  const EditProfilePage({super.key});
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({super.key});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -292,7 +292,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const Spacer(flex: 2),
 
                   // Checkmark icon in a circle
-                  Container(child: SvgPicture.asset(AssetConfig.Success)),
+                  SvgPicture.asset(AssetConfig.Success),
 
                   // Success message
                   const Text(
@@ -311,7 +311,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                   // Email confirmation text
                   const Text(
-                    'You will recieve an email\nconfirmation',
+                    'You will receive an email\nconfirmation',
                     style: TextStyle(
                       color: Color(0xFF9E9E9E),
                       fontSize: 15,
@@ -346,7 +346,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         size: 20,
                       ),
                       label: Text(
-                        'Laissez un commentaire',
+                        'Leave a comment',
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 16,

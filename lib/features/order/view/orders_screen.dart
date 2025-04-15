@@ -10,7 +10,7 @@ import 'package:store_go/features/order/view/widget/order_status_tabs.dart';
 
 
 class OrdersPage extends StatelessWidget {
-  const OrdersPage({Key? key}) : super(key: key);
+  const OrdersPage({super.key});
 
   @override
   Widget build(BuildContext context) {

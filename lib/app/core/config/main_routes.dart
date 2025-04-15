@@ -30,7 +30,7 @@ import 'package:store_go/features/address/view/add_address.dart';
 import 'package:store_go/features/address/view/address_screen.dart';
 import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart';
 import 'package:store_go/features/notifications/views/notification_screen.dart';
-import 'package:store_go/features/order/view/widget/orders_detaill_screen.dart';
+import 'package:store_go/features/order/view/widget/orders_details_screen.dart';
 import 'package:store_go/features/order/view/orders_screen.dart';
 import 'package:store_go/features/payment/payment_screen.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';

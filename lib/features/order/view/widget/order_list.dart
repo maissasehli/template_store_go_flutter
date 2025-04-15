@@ -8,9 +8,9 @@ class OrderList extends StatelessWidget {
   final OrderController controller;
 
   const OrderList({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

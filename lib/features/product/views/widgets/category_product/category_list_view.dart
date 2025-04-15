@@ -10,14 +10,12 @@ import 'package:store_go/features/product/views/screens/filter/filter_screen.dar
 class CategoryListView extends GetView<CategoryController> {
   final CategoryProductController categoryProductController;
 
-  const CategoryListView({Key? key, required this.categoryProductController})
-    : super(key: key);
+  const CategoryListView({super.key, required this.categoryProductController});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Bouton de filtre (at the beginning)
         GestureDetector(
           onTap: () {
             // Show the filter bottom sheet
@@ -66,7 +64,6 @@ class CategoryListView extends GetView<CategoryController> {
           ),
         ),
         
-        // Liste principale des catégories
         Expanded(
           child: Container(
             height: 36,

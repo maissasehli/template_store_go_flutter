@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
 
 class AddAddressPage extends StatelessWidget {
-  const AddAddressPage({Key? key}) : super(key: key);
+  const AddAddressPage({super.key});
 
   @override
 Widget build(BuildContext context) {

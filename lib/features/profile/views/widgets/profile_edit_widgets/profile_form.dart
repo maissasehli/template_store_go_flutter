@@ -12,13 +12,13 @@ class ProfileForm extends StatelessWidget {
   final Function(String?) onGenderChanged;
 
   const ProfileForm({
-    Key? key,
+    super.key,
     required this.controller,
     required this.selectedCountry,
     required this.selectedGender,
     required this.onCountryChanged,
     required this.onGenderChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

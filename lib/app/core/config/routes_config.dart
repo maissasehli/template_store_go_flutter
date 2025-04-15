@@ -26,7 +26,7 @@ class AppRoute {
   
   // Cart and checkout
   static const String cart = "/cart";
-    static const String add_cart = "/add-cart";
+  static const String add_cart = "/add-cart";
 
   static const String checkout = "/checkout";
   

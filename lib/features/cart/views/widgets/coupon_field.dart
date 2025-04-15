@@ -8,11 +8,11 @@ class CouponField extends StatefulWidget {
   final bool isLoading;
 
   const CouponField({
-    Key? key,
+    super.key,
     required this.onApplyCoupon,
     this.initialValue,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   State<CouponField> createState() => _CouponFieldState();

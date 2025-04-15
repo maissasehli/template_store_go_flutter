@@ -9,14 +9,14 @@ class CartSummary extends StatelessWidget {
   final String? couponCode;
 
   const CartSummary({
-    Key? key,
+    super.key,
     required this.subtotal,
     required this.shippingCost,
     required this.tax,
     this.discount = 0.0,
     required this.total,
     this.couponCode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

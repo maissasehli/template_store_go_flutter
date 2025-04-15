@@ -155,7 +155,6 @@ class EditProfileController extends GetxController {
       await uploadAvatar();
     }
 
-    // TODO: Implement the rest of profile update logic here
     // For now, we'll just show a success message
     Get.snackbar(
       'Success',

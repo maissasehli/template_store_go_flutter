@@ -8,10 +8,10 @@ class ProductInfo extends StatelessWidget {
   final String subtitle;
 
   const ProductInfo({
-    Key? key,
+    super.key,
     required this.product,
-    this.subtitle = 'Vado Odelle Dress',
-  }) : super(key: key);
+    this.subtitle = 'Vado Odell Dress',
+  });
 
   @override
   Widget build(BuildContext context) {
