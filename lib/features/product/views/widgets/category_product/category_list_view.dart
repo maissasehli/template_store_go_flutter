@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
 import 'package:store_go/features/product/controllers/category_product_controller.dart';
+import 'package:store_go/features/product/views/screens/filter/filter_screen.dart';
 
 class CategoryListView extends GetView<CategoryController> {
   final CategoryProductController categoryProductController;
@@ -12,55 +15,110 @@ class CategoryListView extends GetView<CategoryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 36,
-      margin: const EdgeInsets.only(top: 8),
-      child: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(
-            child: SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+    return Row(
+      children: [
+        // Bouton de filtre (at the beginning)
+        GestureDetector(
+          onTap: () {
+            // Show the filter bottom sheet
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => DraggableScrollableSheet(
+                initialChildSize: 0.9,
+                minChildSize: 0.5,
+                maxChildSize: 0.95,
+                builder: (_, scrollController) {
+                  return FilterPage();
+                },
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(left: 16, top: 8),
+            height: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(18),
             ),
-          );
-        }
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(
+                  AssetConfig.filter,
+                  width: 20,
+                  height: 20,
+                  color: Colors.white,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  '2',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        // Liste principale des catégories
+        Expanded(
+          child: Container(
+            height: 36,
+            margin: const EdgeInsets.only(top: 8),
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                );
+              }
 
-        if (controller.categories.isEmpty) {
-          controller.fetchCategories();
-          return const Center(child: Text('No categories available'));
-        }
+              if (controller.categories.isEmpty) {
+                controller.fetchCategories();
+                return const Center(child: Text('No categories available'));
+              }
 
-        // Display categories as pills
-        return ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: controller.categories.length,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemBuilder: (context, index) {
-            final category = controller.categories[index];
-            
-            // We need to use Obx in the widget tree, not as a variable
-            return Obx(() {
-              final isSelected = category.id == controller.selectedCategoryId.value;
-              
-              return CategoryPill(
-                category: category,
-                isSelected: isSelected,
-                onTap: () {
-                  // Set the selected category ID
-                  controller.selectedCategoryId.value = category.id;
+              // Display categories as pills
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: controller.categories.length,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemBuilder: (context, index) {
+                  final category = controller.categories[index];
+                  
+                  // We need to use Obx in the widget tree, not as a variable
+                  return Obx(() {
+                    final isSelected = category.id == controller.selectedCategoryId.value;
+                    
+                    return CategoryPill(
+                      category: category,
+                      isSelected: isSelected,
+                      onTap: () {
+                        // Set the selected category ID
+                        controller.selectedCategoryId.value = category.id;
 
-                  // Update the current category in our controller and fetch its products
-                  categoryProductController.setCategory(category);
-                  // Make sure products are fetched for the new category
-                  categoryProductController.fetchCategoryProducts(category.id);
-
+                        // Update the current category in our controller and fetch its products
+                        categoryProductController.setCategory(category);
+                        // Make sure products are fetched for the new category
+                        categoryProductController.fetchCategoryProducts(category.id);
+                      },
+                    );
+                  });
                 },
               );
-            });
-          },
-        );
-      }),
+            }),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -7,28 +7,28 @@ import 'package:store_go/features/category/repositories/category_repository.dart
 class CategoryController extends GetxController {
   final CategoryRepository _repository;
   final Logger _logger = Logger();
+  final RxBool isSearchActive = false.obs;
+
 
   // Observable state
   final RxList<Category> categories = <Category>[].obs;
+  final RxList<Category> filteredCategories = <Category>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
-  final RxString selectedCategoryId = ''.obs; // Add this line
-
-  // For search functionality
-  final RxList<Category> filteredCategories = <Category>[].obs;
+  final RxString selectedCategoryId = ''.obs;
+  final RxString searchQuery = ''.obs; // Track current search query
 
   CategoryController({required CategoryRepository repository})
-    : _repository = repository;
+      : _repository = repository;
 
   @override
   void onInit() {
     super.onInit();
     fetchCategories();
-    filteredCategories.assignAll(categories);
   }
 
-    Future<void> fetchCategories() async {
+  Future<void> fetchCategories() async {
     try {
       isLoading.value = true;
       hasError.value = false;
@@ -53,25 +53,49 @@ class CategoryController extends GetxController {
       isLoading.value = false;
     }
   }
-  void filterCategories(String query) {
+
+Future<void> filterCategories(String query) async {
+  try {
+    searchQuery.value = query;
+    isSearchActive.value = query.isNotEmpty;
+    
+    // Si la requête est vide, réinitialiser à toutes les catégories
     if (query.isEmpty) {
-      // If query is empty, show all categories
       filteredCategories.assignAll(categories);
       return;
     }
-
-    // Filter categories by name containing the query (case insensitive)
-    final List<Category> results =
-        categories.where((category) {
-          return category.name.toLowerCase().contains(query.toLowerCase());
-        }).toList();
-
-    // Update the filteredCategories list
+    
+    
+    final List<Category> results = categories
+        .where((category) => 
+             category.name.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    
     filteredCategories.assignAll(results);
+    
+    _logger.d("Filtered categories: ${results.length} results for query '$query'");
+    
+  } catch (e) {
+    _logger.e("Error filtering categories: $e");
   }
+}
 
-  // Select a category and navigate to the category products screen
- void selectCategory(Category category) {
+void clearSearch() {
+  _logger.d("Clearing search - categories count: ${categories.length}");
+  searchQuery.value = '';
+  isSearchActive.value = false;
+  
+  if (categories.isNotEmpty) {
+    filteredCategories.assignAll(categories);
+    _logger.d("Search cleared - filtered categories reset to: ${filteredCategories.length}");
+  } else {
+    _logger.w("Search cleared but categories list is empty!");
+    fetchCategories();
+  }
+}
+
+
+  void selectCategory(Category category) {
     _logger.d("Category selected: ${category.id}");
 
     // Set the selected category ID
@@ -80,7 +104,6 @@ class CategoryController extends GetxController {
     // Navigate to the category products screen with the category as an argument
     Get.toNamed(AppRoute.categoryDetail, arguments: category);
   }
-
 
   void selectCategoryById(String categoryId) {
     // Find the category with the given ID

@@ -4,6 +4,7 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/views/widgets/category_tile.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
+import 'package:store_go/features/search/no_search_result.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({super.key});
@@ -28,7 +29,7 @@ class CategoryScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.muted(context),
+                      color: Color(0xFFF4F4F4),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -46,12 +47,14 @@ class CategoryScreen extends StatelessWidget {
                   // Search bar (expanded to fill remaining space)
                   Expanded(
                     child: CustomSearchBar(
-                      onSearch: (query) {
-                        // Handle search functionality
-                        controller.filterCategories(query);
-                      },
-                    ),
-                  ),
+  onSearch: (query) {
+    if (query.isEmpty) {
+      controller.clearSearch();
+    } else {
+      controller.filterCategories(query);
+    }
+  },
+),),
                 ],
               ),
             ),
@@ -76,76 +79,74 @@ class CategoryScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Categories list
+            // Categories list or NoSearchResult
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Obx(() {
-                  // Show loading indicator while fetching data
-                  if (controller.isLoading.value) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary(context),
-                      ),
-                    );
-                  }
-                  // Show error message if there's an error
-                  else if (controller.hasError.value) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            controller.errorMessage.value,
-                            style: TextStyle(
-                              color: AppColors.destructive(context),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 16),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary(context),
-                              foregroundColor: AppColors.primaryForeground(
-                                context,
-                              ),
-                            ),
-                            onPressed: controller.fetchCategories,
-                            child: Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  // Show empty state message if no categories found
-                  else if (controller.filteredCategories.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No categories found',
-                        style: TextStyle(
-                          color: AppColors.mutedForeground(context),
-                        ),
-                      ),
-                    );
-                  }
-                  // Show the list of categories
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: controller.filteredCategories.length,
-                    itemBuilder: (context, index) {
-                      final category = controller.filteredCategories[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: CategoryTile(
-                          category: category,
-                          onTap: () => controller.selectCategory(category),
-                        ),
-                      );
-                    },
-                  );
-                }),
+  child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24),
+    child: Obx(() {
+      if (controller.isLoading.value) {
+        return Center(
+          child: CircularProgressIndicator(
+            color: AppColors.primary(context),
+          ),
+        );
+      }
+      
+      else if (controller.hasError.value) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                controller.errorMessage.value,
+                style: TextStyle(
+                  color: AppColors.destructive(context),
+                ),
+                textAlign: TextAlign.center,
               ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary(context),
+                  foregroundColor: AppColors.primaryForeground(context),
+                ),
+                onPressed: controller.fetchCategories,
+                child: Text('Retry'),
+              ),
+            ],
+          ),
+        );
+      }
+      
+     else if (controller.filteredCategories.isEmpty) {
+  return NoSearchResult(
+    onExploreCategories: () {
+      if (controller.isSearchActive.value) {
+        controller.clearSearch();
+      } else {
+        controller.fetchCategories();
+      }
+    },
+  );
+}
+      
+      return ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: controller.filteredCategories.length,
+        itemBuilder: (context, index) {
+          final category = controller.filteredCategories[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: CategoryTile(
+              category: category,
+              onTap: () => controller.selectCategory(category),
             ),
+          );
+        },
+      );
+    }),
+  ),
+)
           ],
         ),
       ),

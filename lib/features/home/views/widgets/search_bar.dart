@@ -6,7 +6,7 @@ import 'package:store_go/app/core/theme/ui_config.dart';
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
 
-  const CustomSearchBar({Key? key, required this.onSearch}) : super(key: key);
+  const CustomSearchBar({super.key, required this.onSearch});
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();

@@ -74,7 +74,6 @@ class HomeController extends GetxController {
     } catch (e) {
       // If there's an error, refresh the wishlist to sync with server
       await _wishlistController.fetchWishlistItems();
-      print('Error toggling favorite status: $e');
     }
   }
 

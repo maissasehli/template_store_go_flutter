@@ -23,17 +23,17 @@ class OrderModel {
     required this.totalAmount,
   });
 
-  factory OrderModel.fromJson(Map<String, dynamic> json) {
-    List<OrderItemModel> orderItems = [];
-    if (json['items'] != null) {
-      orderItems = (json['items'] as List)
-          .map((item) => OrderItemModel.fromJson(item))
-          .toList();
-    }
+factory OrderModel.fromJson(Map<String, dynamic> json) {
+  List<OrderItemModel> orderItems = [];
+  if (json['items'] != null) {
+    orderItems = (json['items'] as List)
+        .map((item) => OrderItemModel.fromJson(item))
+        .toList();
+  }
 
-    return OrderModel(
-      id: json['id'] ?? '',
-      orderNumber: json['order_number'] ?? '',
+return OrderModel(
+    id: json['id'] ?? '',              
+    orderNumber: json['order_number'] ?? '',
       itemCount: json['item_count'] ?? orderItems.length,
       status: json['status'] ?? 'Processing',
       date: json['created_at'] != null

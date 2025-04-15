@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:store_go/app/core/middlewares/auth_middleware.dart';
+import 'package:store_go/features/address/view/edit_address_page.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
-import 'package:store_go/features/cart/binding/cart_binding.dart';
 import 'package:store_go/features/category/category_binding.dart';
 import 'package:store_go/features/home/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
@@ -12,23 +12,24 @@ import 'package:store_go/features/auth/views/reset_password_screen.dart';
 import 'package:store_go/features/auth/views/signup_screen.dart';
 import 'package:store_go/features/cart/views/add_card_screen.dart';
 import 'package:store_go/features/cart/views/cart_screen.dart';
-import 'package:store_go/features/cart/views/chekout_screen.dart';
+import 'package:store_go/features/cart/views/checkout_screen.dart';
 import 'package:store_go/features/category/views/category_screen.dart';
 import 'package:store_go/features/home/views/home_screen.dart';
 import 'package:store_go/features/language/language_binding.dart';
 import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
-import 'package:store_go/features/order/order_beinding/order_binding.dart';
+import 'package:store_go/features/order/order_binding/order_binding.dart';
 import 'package:store_go/features/product/product_binding.dart';
 import 'package:store_go/features/product/views/screens/category_products_screen.dart';
+import 'package:store_go/features/product/views/screens/filter/filter_screen.dart';
 import 'package:store_go/features/product/views/screens/product_detail_screen.dart';
 import 'package:store_go/features/profile/bindings/edit_profile_binding.dart';
 import 'package:store_go/features/profile/bindings/profile_binding.dart';
-import 'package:store_go/features/address/add_adress.dart';
-import 'package:store_go/features/address/adress_screen.dart';
+import 'package:store_go/features/address/view/add_address.dart';
+import 'package:store_go/features/address/view/address_screen.dart';
 import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart';
-import 'package:store_go/features/notifications/notification_screen.dart';
+import 'package:store_go/features/notifications/views/notification_screen.dart';
 import 'package:store_go/features/order/view/widget/orders_detaill_screen.dart';
 import 'package:store_go/features/order/view/orders_screen.dart';
 import 'package:store_go/features/payment/payment_screen.dart';
@@ -154,6 +155,11 @@ List<GetPage<dynamic>>? routes = [
     binding: HomeBinding(),
   ),
   GetPage(
+    name: AppRoute.edit_address,
+    page: () => EditAddressPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
     name: AppRoute.payments,
     page: () => PaymentPage(),
     binding: HomeBinding(),
@@ -178,6 +184,11 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoute.categoryDetail,
     page: () => CategoryProductsScreen(),
     transition: Transition.cupertino,
+    binding: HomeBinding(),
+  ),
+   GetPage(
+    name: AppRoute.filter,
+    page: () => FilterPage(),
     binding: HomeBinding(),
   ),
 

@@ -1,10 +1,10 @@
-// File: lib/features/order/views/widgets/empty_order_state.dart
+// File: lib/app/features/notification/views/widgets/empty_notification_state.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 
-class EmptyOrderState extends StatelessWidget {
-  const EmptyOrderState({Key? key}) : super(key: key);
+class EmptyNotificationState extends StatelessWidget {
+  const EmptyNotificationState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,14 +12,11 @@ class EmptyOrderState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            AssetConfig.checkout,
-            width: 80,
-            height: 80,
-          ),
+          // Use a try-catch block to handle potential asset loading errors
+          _buildAssetImage(),
           const SizedBox(height: 16),
           const Text(
-            'No Orders yet',
+            'No Notification yet',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -50,5 +47,29 @@ class EmptyOrderState extends StatelessWidget {
         ],
       ),
     );
+  }
+  
+  Widget _buildAssetImage() {
+    try {
+      return Image.asset(
+        AssetConfig.bell,
+        width: 80,
+        height: 80,
+        errorBuilder: (context, error, stackTrace) {
+          // Fallback to an icon if the asset fails to load
+          return Icon(
+            Icons.notifications_outlined,
+            size: 80,
+          );
+        },
+      );
+    } catch (e) {
+      // Fallback in case of any other error
+      return Icon(
+        Icons.notifications_outlined,
+        size: 80,
+        color: Colors.grey[300],
+      );
+    }
   }
 }

@@ -9,21 +9,95 @@ class OrderDetailsPage extends StatefulWidget {
   @override
   State<OrderDetailsPage> createState() => _OrderDetailsPageState();
 }
-
 class _OrderDetailsPageState extends State<OrderDetailsPage> {
-  late String orderId;
+  String orderId = '';
   late OrderController controller;
+  bool isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    orderId = Get.arguments as String;
-    controller = Get.find<OrderController>();
-    controller.fetchOrderDetails(orderId);
+    
+    try {
+      // Try to find the controller first
+      controller = Get.find<OrderController>();
+      isInitialized = true;
+    } catch (e) {
+      // If controller not found, we'll handle this in the post-frame callback
+      print('Controller not found initially: $e');
+    }
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeOrderDetails();
+    });
+  }
+
+  void _initializeOrderDetails() {
+    // Get arguments safely
+    final args = Get.arguments;
+    
+    // Check if arguments are null
+    if (args == null) {
+      _showError('ID de commande non fourni');
+      return;
+    }
+    
+    // Try to convert arguments to String
+    try {
+      orderId = args as String;
+      
+      // Check if ID is empty
+      if (orderId.isEmpty) {
+        _showError('ID de commande invalide');
+        return;
+      }
+      
+      // Try to find or initialize the controller if not done already
+      if (!isInitialized) {
+        try {
+          controller = Get.find<OrderController>();
+          isInitialized = true;
+        } catch (e) {
+          _showError('Erreur système: contrôleur non disponible');
+          return;
+        }
+      }
+      
+      // Fetch order details
+      controller.fetchOrderDetails(orderId);
+    } catch (e) {
+      _showError('Format d\'ID de commande invalide');
+    }
+  }
+
+  void _showError(String message) {
+    Get.snackbar(
+      'Erreur',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red.withOpacity(0.7),
+      colorText: Colors.white,
+    );
+    Get.back();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Check if controller is initialized first
+    if (!isInitialized) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Order Details'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () => Get.back(),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+    
+    // Normal UI with initialized controller
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -48,6 +122,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         }),
       ),
       body: Obx(() {
+        if (!isInitialized) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
         if (controller.isLoadingDetails.value) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -61,6 +139,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return const Center(child: Text('Order not found'));
         }
 
+        // Your existing order details UI code
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),

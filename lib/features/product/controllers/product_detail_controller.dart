@@ -39,27 +39,40 @@ class ProductDetailController extends GetxController {
   }
 
   /// Initializes product options once product is loaded
-  void _initializeProductOptions() {
-    final product = state.product.value;
-    if (product == null) return;
+ /// Initializes product options once product is loaded
+void _initializeProductOptions() {
+  final product = state.product.value;
+  if (product == null) return;
 
-    // Set default color if available in variants
-    if (product.variants.containsKey('color') &&
-        product.variants['color']!.isNotEmpty) {
-      state.setSelectedColor(product.variants['color']![0]);
-    }
-
-    // Set default size if available in variants
-    if (product.variants.containsKey('size') &&
-        product.variants['size']!.isNotEmpty) {
-      state.setSelectedSize(product.variants['size']![0]);
-    }
-
-    // Reset quantity and image index
-    state.setQuantity(1);
-    state.setCurrentImageIndex(0);
+  // Log detailed information about the product and its variants
+  _logger.i('Product: ${product.name}, Variants: ${product.variants}');
+  
+  // Handle colors
+  if (product.variants.containsKey('color') && 
+      product.variants['color']!.isNotEmpty) {
+    final defaultColor = product.variants['color']![0];
+    _logger.i('Setting default color: $defaultColor');
+    state.setSelectedColor(defaultColor);
+  } else {
+    _logger.w('No colors available for this product');
+    state.setSelectedColor('');
   }
 
+  // Handle sizes
+  if (product.variants.containsKey('size') && 
+      product.variants['size']!.isNotEmpty) {
+    final defaultSize = product.variants['size']![0];
+    _logger.i('Setting default size: $defaultSize');
+    state.setSelectedSize(defaultSize);
+  } else {
+    _logger.w('No sizes available for this product');
+    state.setSelectedSize('');
+  }
+
+  // Reset quantity and image index
+  state.setQuantity(1);
+  state.setCurrentImageIndex(0);
+}
   /// Updates selected size
   void updateSize(String size) {
     state.setSelectedSize(size);

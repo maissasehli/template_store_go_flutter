@@ -64,7 +64,6 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +165,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                     physics: const BouncingScrollPhysics(),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.7,
+                      childAspectRatio: 159/280, // Ratio exact pour avoir width: 159, height: 280
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
                     ),
@@ -178,6 +177,8 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                         product: product,
                         onProductTap: (id) => homeController.onProductTap(id),
                         onFavoriteTap: (id) => categoryProductController.toggleFavorite(id),
+                        width: 159, 
+                        height: 280, 
                       );
                     },
                   ),

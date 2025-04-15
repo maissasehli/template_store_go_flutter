@@ -45,11 +45,17 @@ class AppRoute {
     forgetPassword,
   ];
   static const String address = "/address";
-          static const String order_details = "/order-details";
+  static const String add_address = "/add-address";
+  static const String edit_address = "/edit-address";
 
-    static const String add_address = "/add-address";
-        static const String payments = "/payments";
-        static const String notifications = "/notifications";
+
+  static const String order_details = "/order-details";
+
+  static const String payments = "/payments";
+  static const String notifications = "/notifications";
+
+    static const String filter = "/filter";
+
 
 
 

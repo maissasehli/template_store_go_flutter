@@ -16,26 +16,10 @@ class SizeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Size',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-            color: AppColors.foreground(context),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children:
-              availableSizes
-                  .map((size) => _buildSizeOption(context, size))
-                  .toList(),
-        ),
-      ],
+    return Row(
+      children: availableSizes
+          .map((size) => _buildSizeOption(context, size))
+          .toList(),
     );
   }
 
@@ -48,20 +32,18 @@ class SizeSelector extends StatelessWidget {
         margin: const EdgeInsets.only(right: 8),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color:
-              selectedSize == size
-                  ? AppColors.primary(context)
-                  : AppColors.card(context),
+          color: selectedSize == size
+              ? AppColors.primary(context)
+              : AppColors.card(context),
           border: Border.all(color: AppColors.border(context)),
         ),
         child: Center(
           child: Text(
             size,
             style: TextStyle(
-              color:
-                  selectedSize == size
-                      ? AppColors.primaryForeground(context)
-                      : AppColors.foreground(context),
+              color: selectedSize == size
+                  ? AppColors.primaryForeground(context)
+                  : AppColors.foreground(context),
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),

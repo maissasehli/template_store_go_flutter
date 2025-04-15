@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/features/address/controller/address_controller.dart';
 
 class AddressPage extends StatelessWidget {
-  const AddressPage({Key? key}) : super(key: key);
+  const AddressPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Initialize controller if it doesn't exist yet
+    final AddressController controller = Get.put(AddressController());
+    
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Get.back(),
-        ),
+ leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+        onPressed: () => Get.back(),
+      ),
         centerTitle: true,
         title: const Text(
           'Address',
@@ -37,17 +41,12 @@ class AddressPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Address',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Gabarito',
-                    color: Colors.black,
-                  ),
-                ),
+                
                 GestureDetector(
-                  onTap: () => Get.toNamed('/add-address'),
+                  onTap: () {
+                    controller.clearFields();
+                    Get.toNamed('/add-address');
+                  },
                   child: const Text(
                     'Add Address',
                     style: TextStyle(
@@ -62,21 +61,37 @@ class AddressPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             
-            // Address Card 1
-            _buildAddressCard(
-              '2716 Ash Dr, San Jose, South Dakota 83475',
-              onEdit: () => Get.toNamed('/edit-address'),
-            ),
-            const SizedBox(height: 12),
-            
-            // Address Card 2
-            _buildAddressCard(
-              '2716 Ash Dr, San Jose, South Dakota 83475',
-              onEdit: () => Get.toNamed('/edit-address'),
+            // Address List
+            Expanded(
+              child: Obx(() => controller.addresses.isEmpty 
+                ? const Center(
+                    child: Text(
+                      'No addresses added yet',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    itemCount: controller.addresses.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final address = controller.addresses[index];
+                      return _buildAddressCard(
+                        address.formattedAddress,
+                        onEdit: () {
+                          controller.setAddressForEditing(address);
+                          Get.toNamed('/edit-address');
+                        },
+                      );
+                    },
+                  ),
+              ),
             ),
             
             // Bottom navigation indicator
-            const Spacer(),
             Center(
               child: Container(
                 width: 134,

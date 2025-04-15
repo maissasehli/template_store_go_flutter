@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/order/model/order_model.dart';
-import 'package:store_go/features/order/repository/order_repository.dart';
+import 'package:store_go/features/order/repositories/order_repository.dart';
 
 class OrderController extends GetxController {
   final OrderRepository _repository;
@@ -26,35 +27,23 @@ class OrderController extends GetxController {
     fetchOrders();
   }
 
-Future<void> fetchOrders() async {
-  try {
-    isLoading.value = true;
-    hasError.value = false;
-    errorMessage.value = '';
-
+  Future<void> fetchOrders() async {
     try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
       final items = await _repository.getOrders(status: selectedStatus.value);
       orders.value = items;
       hasOrders.value = items.isNotEmpty;
     } catch (e) {
-      // Set empty orders but still mark as loaded (instead of error state)
+      // Handle error state
       orders.value = [];
       hasOrders.value = false;
-      
-      // Optional: you can still set error message for logging
-      print('Server error when loading orders: $e');
-    }
-  } catch (e) {
-    hasError.value = true;
-    errorMessage.value = 'Failed to load orders. Please try again later.';
-  } finally {
-    isLoading.value = false;
-  }
-}
-  void changeOrderStatus(String status) {
-    if (selectedStatus.value != status) {
-      selectedStatus.value = status;
-      fetchOrders();
+      hasError.value = true;
+      errorMessage.value = 'Failed to load orders. Please try again later.';
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -65,10 +54,15 @@ Future<void> fetchOrders() async {
       errorMessage.value = '';
 
       final orderDetails = await _repository.getOrderDetails(orderId);
-      selectedOrder.value = orderDetails;
+      if (orderDetails != null) {
+        selectedOrder.value = orderDetails;
+      } else {
+        hasError.value = true;
+        errorMessage.value = 'Order details not available';
+      }
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Failed to load order details. Please try again.';
     } finally {
       isLoadingDetails.value = false;
     }
@@ -76,16 +70,47 @@ Future<void> fetchOrders() async {
 
   Future<void> cancelOrder(String orderId) async {
     try {
-      await _repository.cancelOrder(orderId);
-      // Refresh the orders list after cancellation
-      await fetchOrders();
-      // If currently viewing order details, refresh them too
-      if (selectedOrder.value != null && selectedOrder.value!.id == orderId) {
-        await fetchOrderDetails(orderId);
+      final success = await _repository.cancelOrder(orderId);
+      if (success) {
+        // Refresh the orders list after cancellation
+        await fetchOrders();
+        // If currently viewing order details, refresh them too
+        if (selectedOrder.value != null && selectedOrder.value!.id == orderId) {
+          await fetchOrderDetails(orderId);
+        }
+        Get.snackbar(
+          'Success',
+          'Order cancelled successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green.withOpacity(0.7),
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to cancel order',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.withOpacity(0.7),
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Failed to cancel order';
+      Get.snackbar(
+        'Error',
+        'Failed to cancel order: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.7),
+        colorText: Colors.white,
+      );
     }
   }
+  // Add this method to your OrderController class
+void changeOrderStatus(String status) {
+  if (selectedStatus.value != status) {
+    selectedStatus.value = status;
+    fetchOrders();
+  }
+}
 }

@@ -1,14 +1,13 @@
-import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
 import 'package:logger/logger.dart';
-import 'package:store_go/features/cart/reposetory/cart_repository.dart';
+import 'package:store_go/features/cart/reposetories/cart_repository.dart';
 import 'package:store_go/features/product/models/product_modal.dart';
 
 class CartController extends GetxController {
   final CartRepository _repository;
   final Logger _logger = Logger();
-  
 
   // Observable state
   final RxList<CartItem> cartItems = <CartItem>[].obs;
@@ -16,7 +15,7 @@ class CartController extends GetxController {
   final RxBool isError = false.obs;
   final RxString errorMessage = ''.obs;
   final RxString couponCode = ''.obs;
-  
+
   // Cart totals
   final RxDouble subtotal = 0.0.obs;
   final RxDouble shipping = 0.0.obs;
@@ -25,7 +24,7 @@ class CartController extends GetxController {
   final RxDouble total = 0.0.obs;
 
   CartController({required CartRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -47,7 +46,7 @@ class CartController extends GetxController {
         _logger.w('Failed to load cart from server, using local cart: $e');
         // Don't set error state here - we'll just use the local cart
       }
-      
+
       // Calculate cart totals
       _calculateCartTotals();
     } catch (e) {
@@ -59,23 +58,21 @@ class CartController extends GetxController {
     }
   }
 
-Future<void> addToCart({
-  required Product product,
-  required int quantity,
-  required Map<String, String> variants,
-}) async {
-  // Implementation
-
+  Future<void> addToCart({
+    required Product product,
+    required int quantity,
+    required Map<String, String> variants,
+  }) async {
     try {
       isLoading.value = true;
       isError.value = false;
-      
+
       // In a real app, you'd look up product information here
       // For now, using placeholders
-    final name = product.name;
-final price = product.price;
-final image = product.images.isNotEmpty ? product.images.first : '';
-      
+      final name = product.name;
+      final price = product.price;
+      final image = product.images.isNotEmpty ? product.images.first : '';
+
       // Create a new cart item
       final item = CartItem(
         id: DateTime.now().toString(), // Temporary ID
@@ -86,15 +83,15 @@ final image = product.images.isNotEmpty ? product.images.first : '';
         variants: variants,
         image: image,
       );
-      
+
       // Optimistic update
       cartItems.add(item);
       _calculateCartTotals();
-      
+
       // Try to send to server, but don't fail if server is unavailable
       try {
         await _repository.addToCart(item);
-        
+
         // In a real app with a working API, you'd refresh the cart here
         // await loadCart();
       } catch (e) {
@@ -114,12 +111,12 @@ final image = product.images.isNotEmpty ? product.images.first : '';
     try {
       final index = cartItems.indexWhere((item) => item.id == itemId);
       if (index == -1) return;
-      
+
       // Update locally first (optimistic update)
       final updatedItem = cartItems[index].copyWith(quantity: quantity);
       cartItems[index] = updatedItem;
       _calculateCartTotals();
-      
+
       // Try to update on server, but don't fail if server is unavailable
       try {
         await _repository.updateCartItem(updatedItem);
@@ -134,58 +131,62 @@ final image = product.images.isNotEmpty ? product.images.first : '';
     }
   }
 
-    Future<void> removeFromCart(String itemId) async {
-  try {
-    final removedItem = cartItems.firstWhere((item) => item.id == itemId);
-    final removedIndex = cartItems.indexOf(removedItem);
-
-    // Optimistic update
-    cartItems.removeAt(removedIndex);
-    _calculateCartTotals();
-
+  Future<void> removeFromCart(String itemId) async {
     try {
-      await _repository.removeFromCart(itemId);
-    } catch (e) {
-      if (e is DioException) {
-        if (e.response?.statusCode == 405) {
-          _logger.w('Remove operation not supported by server');
-          Get.snackbar(
-            'Offline Mode', 
-            'Changes will sync when online',
-            duration: 2.seconds,
-          );
-        } else {
-          // Revert for other errors
-          cartItems.insert(removedIndex, removedItem);
-          _calculateCartTotals();
-          throw Exception('Failed to remove item: ${e.message}');
-        }
-      } else {
-        // Revert for non-Dio errors
-        cartItems.insert(removedIndex, removedItem);
-        _calculateCartTotals();
-        rethrow;
+      // Find the item to remove
+      final index = cartItems.indexWhere((item) => item.id == itemId);
+      if (index == -1) {
+        _logger.w('Item not found in cart: $itemId');
+        return;
       }
+
+      // Store the item in case we need to restore it
+      final CartItem removedItem = cartItems[index];
+
+      // Optimistic update - remove from UI immediately
+      cartItems.removeAt(index);
+      _calculateCartTotals();
+
+      try {
+        // Try to sync with server, but don't fail if server is unavailable
+        await _repository.removeFromCart(removedItem.productId);
+        _logger.i('Item successfully removed from cart on server');
+      } catch (e) {
+        // This catch block should never be reached with our improved repository
+        // but keeping it as a failsafe
+        _logger.e('Failed to sync cart item removal with server: $e');
+
+        // Show a subtle message that we're in offline mode
+        Get.snackbar(
+          'Offline Mode',
+          'Changes will sync when online',
+          duration: 2.seconds,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.black54,
+          colorText: Colors.white,
+        );
+
+        // No need to revert local changes - we're keeping the item removed locally
+      }
+    } catch (e) {
+      // This catch block handles any unexpected errors in the method itself
+      _logger.e('Error in removeFromCart: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to remove item',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
-  } catch (e) {
-    _logger.e('Error in removeFromCart: $e');
-    Get.snackbar(
-      'Error', 
-      'Failed to remove item',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-    rethrow;
   }
-}
 
   Future<void> clearCart() async {
     try {
       isLoading.value = true;
-      
+
       // Clear local state
       cartItems.clear();
       _calculateCartTotals();
-      
+
       // Try to clear on server, but don't fail if server is unavailable
       try {
         await _repository.clearCart();
@@ -209,24 +210,26 @@ final image = product.images.isNotEmpty ? product.images.first : '';
       _calculateCartTotals();
       return;
     }
-    
+
     try {
       isLoading.value = true;
       isError.value = false;
-      
+
       // Store the coupon code
       couponCode.value = code;
-      
+
       // Try to apply coupon on server, but don't fail if server is unavailable
       double discountAmount = 0.0;
       try {
         discountAmount = await _repository.applyCoupon(code);
       } catch (e) {
-        _logger.w('Failed to apply coupon on server, using default discount: $e');
+        _logger.w(
+          'Failed to apply coupon on server, using default discount: $e',
+        );
         // Use a default discount for demonstration
         discountAmount = subtotal.value * 0.1; // 10% discount
       }
-      
+
       // Update discount and recalculate
       discount.value = discountAmount;
       _calculateCartTotals();
@@ -234,7 +237,7 @@ final image = product.images.isNotEmpty ? product.images.first : '';
       couponCode.value = '';
       discount.value = 0.0;
       _calculateCartTotals();
-      
+
       isError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error in applyCoupon(): $e');
@@ -242,8 +245,12 @@ final image = product.images.isNotEmpty ? product.images.first : '';
       isLoading.value = false;
     }
   }
+
   void _calculateCartTotals() {
-    subtotal.value = cartItems.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
+    subtotal.value = cartItems.fold(
+      0.0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
     shipping.value = 10.0; // Static for now
     tax.value = subtotal.value * 0.1; // 10% tax
     total.value = subtotal.value + shipping.value + tax.value - discount.value;
@@ -252,7 +259,7 @@ final image = product.images.isNotEmpty ? product.images.first : '';
   bool isCartEmpty() {
     return cartItems.isEmpty;
   }
-  
+
   bool isProductInCart(String productId) {
     return cartItems.any((item) => item.productId == productId);
   }
