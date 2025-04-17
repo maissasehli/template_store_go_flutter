@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/middlewares/auth_middleware.dart';
 import 'package:store_go/features/address/view/edit_address_page.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
+import 'package:store_go/features/cart/binding/cart_binding.dart';
 import 'package:store_go/features/category/category_binding.dart';
 import 'package:store_go/features/home/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
@@ -20,6 +21,7 @@ import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
 import 'package:store_go/features/order/order_binding/order_binding.dart';
+import 'package:store_go/features/payment/view/edit_payment.dart';
 import 'package:store_go/features/product/product_binding.dart';
 import 'package:store_go/features/product/views/screens/category_products_screen.dart';
 import 'package:store_go/features/product/views/screens/filter/filter_screen.dart';
@@ -32,7 +34,7 @@ import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart
 import 'package:store_go/features/notifications/views/notification_screen.dart';
 import 'package:store_go/features/order/view/widget/orders_details_screen.dart';
 import 'package:store_go/features/order/view/orders_screen.dart';
-import 'package:store_go/features/payment/payment_screen.dart';
+import 'package:store_go/features/payment/view/payment_screen.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
@@ -126,7 +128,7 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.cart,
     page: () => CartScreen(),
-    binding: HomeBinding(),
+    binding: CartBinding(),
   ),
   GetPage(
     name: AppRoute.profile,
@@ -164,11 +166,9 @@ List<GetPage<dynamic>>? routes = [
     page: () => PaymentPage(),
     binding: HomeBinding(),
   ),
-  GetPage(
-    name: AppRoute.add_cart,
-    page: () => AddCardPage(),
-    binding: HomeBinding(),
-  ),
+        GetPage(name: '/add-payment', page: () => const AddCardPage()),
+        GetPage(name: '/edit-payment', page: () => const EditPaymentPage()),
+
   GetPage(name: AppRoute.orders, page: () => OrdersPage(),binding: OrderBinding(),),
   GetPage(
     name: AppRoute.order_details,

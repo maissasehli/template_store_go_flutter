@@ -1,4 +1,3 @@
-
 class CartItem {
   final String id;
   final String productId;
@@ -38,7 +37,6 @@ class CartItem {
     );
   }
 
-  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -51,16 +49,18 @@ class CartItem {
     };
   }
 
-  // Create from JSON
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    final product = json['product'] ?? {};
     return CartItem(
       id: json['id'] ?? '',
-      productId: json['productId'] ?? '',
-      name: json['name'] ?? '',
-      price: (json['price'] ?? 0.0).toDouble(),
+      productId: json['product_id'] ?? json['productId'] ?? '',
+      name: product['name'] ?? json['name'] ?? '',
+      price: double.tryParse(product['price']?.toString() ?? '0.0') ?? 0.0,
       quantity: json['quantity'] ?? 0,
       variants: Map<String, String>.from(json['variants'] ?? {}),
-      image: json['image'] ?? '',
+      image: (product['image_urls'] as List<dynamic>?)?.isNotEmpty == true
+          ? product['image_urls'][0] ?? ''
+          : json['image'] ?? '',
     );
   }
 

@@ -52,6 +52,9 @@ class AppRoute {
   static const String order_details = "/order-details";
 
   static const String payments = "/payments";
+    static const String add_payment = "/add-payment";
+        static const String edit_payment = "/edit-payment";
+
   static const String notifications = "/notifications";
 
     static const String filter = "/filter";

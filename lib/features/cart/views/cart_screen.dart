@@ -13,7 +13,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartController = Get.find<CartController>();
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -21,7 +21,7 @@ class CartScreen extends StatelessWidget {
           if (cartController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
-          
+
           if (cartController.isError.value) {
             return Center(
               child: Column(
@@ -36,7 +36,7 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => cartController.loadCart(),
+                    onPressed: () => cartController.fetchCartItems(), // Fixed: Changed loadCart to fetchCartItems
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                     child: const Text('Try Again'),
                   ),
@@ -44,9 +44,9 @@ class CartScreen extends StatelessWidget {
               ),
             );
           }
-          
-          return cartController.cartItems.isEmpty 
-              ? _buildEmptyCart() 
+
+          return cartController.cartItems.isEmpty
+              ? _buildEmptyCart()
               : _buildCartWithItems(cartController);
         }),
       ),
@@ -58,7 +58,6 @@ class CartScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Bag icon in a circle with enhanced shadow
           Container(
             width: 98,
             height: 98,
@@ -87,8 +86,6 @@ class CartScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Empty cart text
           const Text(
             'Your Panier is Empty',
             style: TextStyle(
@@ -99,11 +96,8 @@ class CartScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-
-          // Explore Categories button
           ElevatedButton(
             onPressed: () {
-              // Navigate to categories screen
               Get.toNamed('/categories');
             },
             style: ElevatedButton.styleFrom(
@@ -132,10 +126,8 @@ class CartScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          // Back button and title
           Row(
             children: [
-              // Back button
               GestureDetector(
                 onTap: () => Get.back(),
                 child: Container(
@@ -164,12 +156,10 @@ class CartScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 40), // Balance the layout
+              const SizedBox(width: 40),
             ],
           ),
           const SizedBox(height: 20),
-
-          // Cart items list
           Expanded(
             child: Obx(() {
               return ListView.builder(
@@ -178,42 +168,35 @@ class CartScreen extends StatelessWidget {
                   final item = controller.cartItems[index];
                   return CartItemCard(
                     item: item,
-                    onQuantityChanged: (quantity) => 
-                        controller.updateQuantity(item.id, quantity),
-                    onRemove: () => controller.removeFromCart(item.id),
+                    onQuantityChanged: (quantity) =>
+                        controller.updateQuantity(item.productId, quantity), // Fixed: Use productId
+                    onRemove: () => controller.removeFromCart(item.productId), // Fixed: Use productId
                   );
                 },
               );
             }),
           ),
-
-          // Cart summary
           Obx(() => CartSummary(
-            subtotal: controller.subtotal.value,
-            shippingCost: controller.shipping.value,
-            tax: controller.tax.value,
-            discount: controller.discount.value,
-            total: controller.total.value,
-            couponCode: controller.couponCode.value.isNotEmpty 
-                ? controller.couponCode.value 
-                : null,
-          )),
-
-          // Coupon code field
+                subtotal: controller.subtotal.value,
+                shippingCost: controller.shipping.value,
+                tax: controller.tax.value,
+                discount: controller.discount.value,
+                total: controller.total.value,
+                couponCode: controller.couponCode.value.isNotEmpty
+                    ? controller.couponCode.value
+                    : null,
+              )),
           Obx(() => CouponField(
-            onApplyCoupon: controller.applyCoupon,
-            initialValue: controller.couponCode.value,
-            isLoading: controller.isLoading.value,
-          )),
-
-          // Checkout button
+                onApplyCoupon: controller.applyCoupon,
+                initialValue: controller.couponCode.value,
+                isLoading: controller.isLoading.value,
+              )),
           Container(
             width: double.infinity,
             height: 55,
             margin: const EdgeInsets.only(bottom: 24, top: 16),
             child: ElevatedButton(
               onPressed: () {
-                // Navigate to checkout
                 Get.toNamed('/checkout');
               },
               style: ElevatedButton.styleFrom(
@@ -224,14 +207,14 @@ class CartScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Obx(() => Text(
-                'Checkout (\$${controller.total.value.toStringAsFixed(2)})',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                ),
-              )),
+                    'Checkout (\$${controller.total.value.toStringAsFixed(2)})',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Poppins',
+                    ),
+                  )),
             ),
           ),
         ],

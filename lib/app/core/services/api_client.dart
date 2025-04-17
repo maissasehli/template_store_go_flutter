@@ -12,6 +12,7 @@ class ApiClient {
 
   ApiClient() {
     _dio = dio.Dio(
+      
       dio.BaseOptions(
         baseUrl: AppConfig.baseUrl,
         connectTimeout: const Duration(seconds: 15),
