@@ -13,6 +13,7 @@ import 'package:store_go/features/product/views/widgets/add_to_cart_button.dart'
 import 'package:store_go/features/product/views/widgets/product_description.dart';
 import 'package:store_go/features/product/views/widgets/image_page_indicator.dart';
 import 'package:store_go/features/product/views/widgets/draggable_info_sheet.dart';
+import 'package:store_go/features/product/views/widgets/review_section.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -23,15 +24,22 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class ProductDetailScreenState extends State<ProductDetailScreen> {
-  // Use the new dedicated controller
   final ProductDetailController detailController =
       Get.find<ProductDetailController>();
+  String? selectedColor; // State variable for selected color
 
   @override
   void initState() {
     super.initState();
-    // Fetch product details using the dedicated controller
     detailController.fetchProductDetails(widget.productId);
+    // Initialize selectedColor after fetching product details
+    detailController.state.product.listen((product) {
+      if (product != null && product.variants['color'] != null && product.variants['color']!.isNotEmpty) {
+        setState(() {
+          selectedColor = product.variants['color']![0]; // Default to the first color
+        });
+      }
+    });
   }
 
   @override
@@ -39,7 +47,6 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
     return Scaffold(
       backgroundColor: AppColors.background(context),
       body: Obx(() {
-        // Access state properties through the controller's state object
         if (detailController.state.isLoading.value) {
           return Center(
             child: CircularProgressIndicator(color: AppColors.primary(context)),
@@ -49,42 +56,29 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
             child: Text('Error: ${detailController.state.errorMessage.value}'),
           );
         } else if (detailController.state.product.value == null) {
-          return Center(child: Text('Product not found'));
+          return const Center(child: Text('Product not found'));
         } else {
           final product = detailController.state.product.value!;
           return Stack(
             children: [
-              // Main product image area
               ProductImageGallery(product: product),
-
-              // Top navigation bar
               SafeArea(
                 child: TopNavigationBar(
                   onBackPressed: () => Navigator.pop(context),
                   onCartPressed: () {
-                    // Navigate to cart
+                    Get.toNamed('/cart');
                   },
                 ),
               ),
-
-              // Favorite button - deliberately placed AFTER the gallery in the stack
-              // for proper z-ordering and with a SafeArea to avoid status bar
               SafeArea(
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-      padding: const EdgeInsets.only(right: 16.0, bottom: 380.0), // Reduced bottom padding
-                    child: FavoriteButton(
-                      isFavorite: product.isFavorite,
-                      onToggleFavorite: () {
-                        detailController.toggleFavorite();
-                      },
-                    ),
+                    padding: const EdgeInsets.only(right: 16.0, bottom: 380.0),
+                    child: FavoriteButton(productId: product.id),
                   ),
                 ),
               ),
-
-              // Image page indicators at bottom center
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -95,100 +89,70 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ),
               ),
-
-              // Draggable info sheet
               DraggableInfoSheet(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Product title row with quantity selector
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Title - will be replaced with actual product name
                         Expanded(
                           child: Text(
                             product.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Poppins',
-                              color: AppColors.foreground(context),
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                        // Quantity selector
-                        Obx(
-                          () => QuantitySelector(
-                            quantity: detailController.state.quantity.value,
-                            onQuantityChanged: (value) {
-                              detailController.updateQuantity(value);
-                            },
-                          ),
+                        QuantitySelector(
+                          quantity: detailController.state.quantity.value,
+                          onQuantityChanged: (value) {
+                            detailController.updateQuantity(value);
+                          },
                         ),
                       ],
                     ),
-
-                    // Product info
-                    ProductInfo(product: product),
+                    const SizedBox(height: 8),
+                    ProductInfo(
+                      product: product,
+                      subtitle: 'Relaxed Cargo Joggers', // Updated subtitle
+                    ),
                     const SizedBox(height: 16),
-
-                    SizedBox(
-                      height: 70,
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          // Size selector
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Text(
-                              'Size',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins',
-                                color: AppColors.foreground(context),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 40,
-                            left: 0,
-                            child: Obx(
-                              () => SizeSelector(
-                                selectedSize:
-                                    detailController.state.selectedSize.value,
-                                onSizeSelected: (size) {
-                                  detailController.updateSize(size);
-                                },
-                              ),
-                            ),
-                          ),
-
-                          // Color selector
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Obx(
-                              () => ColorSelector(
-                                selectedColor:
-                                    detailController.state.selectedColor.value,
-                                onColorSelected: (color) {
-                                  detailController.updateColor(color);
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
+                    const Text(
+                      'Size',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: Colors.black,
                       ),
                     ),
-
-                    // Product description
-                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizeSelector(
+                          selectedSize: detailController.state.selectedSize.value,
+                          sizes: product.variants['size'] ?? [],
+                          onSizeSelected: (size) {
+                            detailController.updateSize(size);
+                          },
+                        ),
+                        ColorSelector(
+                          selectedColor: selectedColor ?? (product.variants['color']?.isNotEmpty ?? false ? product.variants['color']![0] : ''),
+                          colors: product.colors, // Now this works with the updated Product class
+                          onColorSelected: (color) {
+                            setState(() {
+                              selectedColor = color;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                     ProductDescription(description: product.description),
-
-                    // Price and add to cart button
                     const SizedBox(height: 24),
                     AddToCartButton(
                       price: product.price,
@@ -199,10 +163,6 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                   ],
                 ),
               ),
-
-              // Debug button - just to confirm that buttons can appear
-              // REMOVE THIS AFTER TESTING
-             
             ],
           );
         }

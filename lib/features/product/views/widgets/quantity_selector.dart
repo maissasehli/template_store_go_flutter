@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class QuantitySelector extends StatelessWidget {
   final int quantity;
-  final Function(int) onQuantityChanged;
+  final ValueChanged<int> onQuantityChanged;
 
   const QuantitySelector({
     super.key,
@@ -14,59 +13,29 @@ class QuantitySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.muted(context),
-        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.withOpacity(0.5)),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Minus button
-          InkWell(
+          GestureDetector(
             onTap: () {
-              if (quantity > 1) {
-                onQuantityChanged(quantity - 1);
-              }
+              if (quantity > 1) onQuantityChanged(quantity - 1);
             },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                '-',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.foreground(context),
-                ),
-              ),
-            ),
+            child: const Icon(Icons.remove, size: 20, color: Colors.black),
           ),
-          // Quantity display
+          const SizedBox(width: 8),
           Text(
             '$quantity',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppColors.foreground(context),
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          // Plus button
-          InkWell(
-            onTap: () {
-              onQuantityChanged(quantity + 1);
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                '+',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.foreground(context),
-                ),
-              ),
-            ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => onQuantityChanged(quantity + 1),
+            child: const Icon(Icons.add, size: 20, color: Colors.black),
           ),
         ],
       ),

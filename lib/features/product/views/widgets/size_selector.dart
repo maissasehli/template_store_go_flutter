@@ -2,54 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class SizeSelector extends StatelessWidget {
-  final String? selectedSize;
-  final Function(String) onSizeSelected;
-  final List<String> availableSizes;
+  final String selectedSize;
+  final List<String> sizes;
+  final ValueChanged<String> onSizeSelected;
 
-  // ignore: use_super_parameters
   const SizeSelector({
-    Key? key,
+    super.key,
     required this.selectedSize,
+    required this.sizes,
     required this.onSizeSelected,
-    this.availableSizes = const ['S', 'M', 'L', 'XL', 'XXL'],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: availableSizes
-          .map((size) => _buildSizeOption(context, size))
-          .toList(),
-    );
-  }
+    if (sizes.isEmpty) {
+      return const Text(
+        'No sizes available',
+        style: TextStyle(fontSize: 14, color: Colors.grey),
+      );
+    }
 
-  Widget _buildSizeOption(BuildContext context, String size) {
-    return GestureDetector(
-      onTap: () => onSizeSelected(size),
-      child: Container(
-        width: 36,
-        height: 36,
-        margin: const EdgeInsets.only(right: 8),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: selectedSize == size
-              ? AppColors.primary(context)
-              : AppColors.card(context),
-          border: Border.all(color: AppColors.border(context)),
-        ),
-        child: Center(
-          child: Text(
-            size,
-            style: TextStyle(
-              color: selectedSize == size
-                  ? AppColors.primaryForeground(context)
-                  : AppColors.foreground(context),
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
+    return Row(
+      children: sizes.map((size) {
+        final isSelected = selectedSize == size;
+        return Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child: GestureDetector(
+            onTap: () => onSizeSelected(size),
+            child: Container(
+              width: 35,
+              height: 35,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? Colors.black : Colors.transparent,
+                border: Border.all(
+                  color: isSelected ? Colors.black : Colors.grey.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  size,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.white : Colors.black,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }).toList(),
     );
   }
 }

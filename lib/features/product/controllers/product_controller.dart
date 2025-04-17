@@ -2,12 +2,12 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/product/models/product_modal.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
+import 'dart:developer' as developer;
 
 class ProductController extends GetxController {
   final ProductRepository _repository;
   final Logger _logger = Logger();
 
-  // Observable states for product listing
   final RxList<Product> products = <Product>[].obs;
   final RxList<Product> featuredProducts = <Product>[].obs;
   final RxList<Product> newProducts = <Product>[].obs;
@@ -16,8 +16,7 @@ class ProductController extends GetxController {
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
 
-  ProductController({required ProductRepository repository})
-    : _repository = repository;
+  ProductController({required ProductRepository repository}) : _repository = repository;
 
   @override
   void onInit() {
@@ -27,7 +26,6 @@ class ProductController extends GetxController {
     fetchNewProducts();
   }
 
-  // Fetch all products
   Future<void> fetchAllProducts() async {
     try {
       isLoading.value = true;
@@ -36,63 +34,81 @@ class ProductController extends GetxController {
 
       final fetchedProducts = await _repository.getProducts();
       products.assignAll(fetchedProducts);
+      developer.log('Fetched ${fetchedProducts.length} products', name: 'ProductController.fetchAllProducts');
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Failed to load products. Please try again.';
       _logger.e('Error fetching products: $e');
+      developer.log('Error fetching products: $e', name: 'ProductController.fetchAllProducts', error: e);
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Fetch products by category
   Future<void> fetchProductsByCategory(String categoryId) async {
     try {
       isLoading.value = true;
       hasError.value = false;
 
       if (categoryId.isEmpty) {
-        // If no category selected, show all products
         await fetchAllProducts();
         return;
       }
 
-      final categoryProducts = await _repository.getProductsByCategory(
-        categoryId,
-      );
+      final categoryProducts = await _repository.getProductsByCategory(categoryId);
       products.assignAll(categoryProducts);
+      developer.log('Fetched ${categoryProducts.length} products for category $categoryId',
+          name: 'ProductController.fetchProductsByCategory');
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Failed to load category products. Please try again.';
       _logger.e('Error fetching products by category: $e');
+      developer.log('Error fetching products by category: $e',
+          name: 'ProductController.fetchProductsByCategory', error: e);
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Fetch featured products
   Future<void> fetchFeaturedProducts() async {
     try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
       final featured = await _repository.getFeaturedProducts();
       featuredProducts.assignAll(featured);
+      developer.log('Fetched ${featured.length} featured products', name: 'ProductController.fetchFeaturedProducts');
     } catch (e) {
+      hasError.value = true;
+      errorMessage.value = 'Failed to load featured products. Please try again.';
       _logger.e('Error fetching featured products: $e');
-      // If featured fails, we can still show other sections
+      developer.log('Error fetching featured products: $e',
+          name: 'ProductController.fetchFeaturedProducts', error: e);
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // Fetch new products
   Future<void> fetchNewProducts() async {
     try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
       final newItems = await _repository.getNewProducts();
       newProducts.assignAll(newItems);
+      developer.log('Fetched ${newItems.length} new products', name: 'ProductController.fetchNewProducts');
     } catch (e) {
+      hasError.value = true;
+      errorMessage.value = 'Failed to load new products. Please try again.';
       _logger.e('Error fetching new products: $e');
-      // If new products fail, we can still show other sections
+      developer.log('Error fetching new products: $e', name: 'ProductController.fetchNewProducts', error: e);
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  // Search products
   Future<void> searchProducts(String query) async {
     if (query.isEmpty) {
       searchResults.clear();
@@ -101,23 +117,28 @@ class ProductController extends GetxController {
 
     try {
       isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
       final results = await _repository.searchProducts(query);
       searchResults.assignAll(results);
+      developer.log('Found ${results.length} products for query: $query', name: 'ProductController.searchProducts');
     } catch (e) {
+      hasError.value = true;
+      errorMessage.value = 'Failed to search products. Please try again.';
       _logger.e('Error searching products: $e');
+      developer.log('Error searching products: $e', name: 'ProductController.searchProducts', error: e);
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Toggle favorite status across all product lists
   Future<void> toggleFavorite(String productId) async {
     _toggleFavoriteInList(products, productId);
     _toggleFavoriteInList(featuredProducts, productId);
     _toggleFavoriteInList(newProducts, productId);
     _toggleFavoriteInList(searchResults, productId);
 
-    // Get the new favorite status from any of the updated products
     bool? newFavoriteStatus;
     for (var list in [products, featuredProducts, newProducts, searchResults]) {
       final index = list.indexWhere((p) => p.id == productId);
@@ -127,28 +148,23 @@ class ProductController extends GetxController {
       }
     }
 
-    // If we couldn't find the product in any list, we can't proceed
     if (newFavoriteStatus == null) return;
 
     try {
-      // Send update to API
-      final success = await _repository.updateFavoriteStatus(
-        productId,
-        newFavoriteStatus,
-      );
-
-      // If API call failed, revert the changes
+      final success = await _repository.updateFavoriteStatus(productId, newFavoriteStatus);
       if (!success) {
         _revertFavoriteChange(productId, !newFavoriteStatus);
       }
+      developer.log('Updated favorite status for product $productId to $newFavoriteStatus',
+          name: 'ProductController.toggleFavorite');
     } catch (e) {
-      // If there was an error, revert the changes
       _revertFavoriteChange(productId, !newFavoriteStatus);
       _logger.e('Error updating favorite status: $e');
+      developer.log('Error updating favorite status: $e',
+          name: 'ProductController.toggleFavorite', error: e);
     }
   }
 
-  // Helper method to toggle favorite status in a specific list
   void _toggleFavoriteInList(RxList<Product> productList, String productId) {
     final index = productList.indexWhere((p) => p.id == productId);
     if (index != -1) {
@@ -157,7 +173,6 @@ class ProductController extends GetxController {
     }
   }
 
-  // Helper method to revert favorite state if API call fails
   void _revertFavoriteChange(String productId, bool originalState) {
     for (var list in [products, featuredProducts, newProducts, searchResults]) {
       final index = list.indexWhere((p) => p.id == productId);
@@ -168,24 +183,24 @@ class ProductController extends GetxController {
     }
   }
 
-  // Clear all filters and reset to original products state
   Future<void> clearFilters() async {
     try {
-      // Reset all filter-related state
       isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
 
-      // Fetch all products without filters
       await fetchAllProducts();
+      developer.log('Cleared filters and fetched all products', name: 'ProductController.clearFilters');
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Failed to clear filters. Please try again.';
       _logger.e('Error clearing filters: $e');
+      developer.log('Error clearing filters: $e', name: 'ProductController.clearFilters', error: e);
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Filter products based on provided criteria
   Future<void> filterProducts({
     String? category,
     double? minPrice,
@@ -198,59 +213,47 @@ class ProductController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
 
-      // Start with all products (or you could optimize by fetching filtered results from API)
-      // First get all products if we don't have them yet
       if (products.isEmpty) {
         await fetchAllProducts();
       }
 
-      // Create a copy to filter
       List<Product> filteredProducts = List.from(products);
 
-      // Apply category filter if provided
       if (category != null && category != 'All') {
-        filteredProducts =
-            filteredProducts.where((p) => p.category == category).toList();
+        filteredProducts = filteredProducts.where((p) => p.category == category).toList();
       }
 
-      // Apply price range filter
       if (minPrice != null && maxPrice != null) {
         filteredProducts =
-            filteredProducts
-                .where((p) => p.price >= minPrice && p.price <= maxPrice)
-                .toList();
+            filteredProducts.where((p) => p.price >= minPrice && p.price <= maxPrice).toList();
       }
 
-      // Apply rating filter
       if (rating != null && rating > 0) {
-        filteredProducts =
-            filteredProducts.where((p) => p.rating >= rating).toList();
+        filteredProducts = filteredProducts.where((p) => p.rating >= rating).toList();
       }
 
-      // Apply sorting
       if (sortBy != null) {
         switch (sortBy) {
           case 'New Today':
-            // Assuming newer products have higher IDs or another property
             filteredProducts.sort((a, b) => b.id.compareTo(a.id));
             break;
           case 'Top Sellers':
-            // Assuming you track sales or popularity - here using rating as a proxy
             filteredProducts.sort((a, b) => b.rating.compareTo(a.rating));
             break;
           case 'New collection':
-            // This might be based on a specific category or tag
             filteredProducts.sort((a, b) => b.id.compareTo(a.id));
             break;
         }
       }
 
-      // Update the products list with filtered results
       products.assignAll(filteredProducts);
+      developer.log('Filtered ${filteredProducts.length} products with criteria: category=$category, minPrice=$minPrice, maxPrice=$maxPrice, sortBy=$sortBy, rating=$rating',
+          name: 'ProductController.filterProducts');
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = e.toString();
+      errorMessage.value = 'Failed to apply filters. Please try again.';
       _logger.e('Error applying filters: $e');
+      developer.log('Error applying filters: $e', name: 'ProductController.filterProducts', error: e);
     } finally {
       isLoading.value = false;
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/widgets/rating_stars.dart';
 import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/review/model/review_model.dart';
 
 class ProductInfo extends StatelessWidget {
   final Product product;
@@ -13,8 +14,16 @@ class ProductInfo extends StatelessWidget {
     this.subtitle = 'Vado Odell Dress',
   });
 
+  double _calculateAverageRating(List<Review> reviews) {
+    if (reviews.isEmpty) return 0.0;
+    return reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isInStock = product.stockQuantity > 0;
+    final double averageRating = _calculateAverageRating(product.reviews);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -48,10 +57,10 @@ class ProductInfo extends StatelessWidget {
             // Rating stars and reviews
             Row(
               children: [
-                RatingStars(rating: product.rating),
+                RatingStars(rating: averageRating), // Use the calculated average rating
                 const SizedBox(width: 8),
                 Text(
-                  '(${product.stockQuantity} Reviews)',
+                  '(${product.reviews.length} Reviews)',
                   style: TextStyle(
                     color: AppColors.mutedForeground(context),
                     fontSize: 11,
@@ -63,12 +72,12 @@ class ProductInfo extends StatelessWidget {
 
             // Available in stock text
             Text(
-              'Available in stock',
+              isInStock ? 'Available in stock' : 'Out of stock',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
+                color: isInStock ? Colors.green : Colors.red,
               ),
             ),
           ],

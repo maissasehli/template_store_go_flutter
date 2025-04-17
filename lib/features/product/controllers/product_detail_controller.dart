@@ -3,8 +3,8 @@ import 'package:logger/logger.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/product/state/product_detail_state.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
+import 'package:store_go/features/product/models/product_modal.dart';
 
-/// Controller responsible for managing product details
 class ProductDetailController extends GetxController {
   final ProductRepository _repository;
   final ProductDetailState state = ProductDetailState();
@@ -13,7 +13,6 @@ class ProductDetailController extends GetxController {
   ProductDetailController({required ProductRepository repository})
       : _repository = repository;
 
-  /// Fetches product details by ID
   Future<void> fetchProductDetails(String productId) async {
     try {
       state.setLoading(true);
@@ -26,9 +25,9 @@ class ProductDetailController extends GetxController {
       );
 
       _logger.i('Fetched product: ${product.toJson()}');
+      _logger.i('Product reviews: ${product.reviews.map((r) => r.toJson()).toList()}');
       state.setProduct(product);
 
-      // Initialize product options once product is loaded
       _initializeProductOptions();
     } catch (e) {
       state.setError('Error fetching product details: $e');
@@ -38,101 +37,81 @@ class ProductDetailController extends GetxController {
     }
   }
 
-  /// Initializes product options once product is loaded
- /// Initializes product options once product is loaded
-void _initializeProductOptions() {
-  final product = state.product.value;
-  if (product == null) return;
+  void _initializeProductOptions() {
+    final product = state.product.value;
+    if (product == null) return;
 
-  // Log detailed information about the product and its variants
-  _logger.i('Product: ${product.name}, Variants: ${product.variants}');
-  
-  // Handle colors
-  if (product.variants.containsKey('color') && 
-      product.variants['color']!.isNotEmpty) {
-    final defaultColor = product.variants['color']![0];
-    _logger.i('Setting default color: $defaultColor');
-    state.setSelectedColor(defaultColor);
-  } else {
-    _logger.w('No colors available for this product');
-    state.setSelectedColor('');
+    _logger.i('Product: ${product.name}, Variants: ${product.variants}');
+    
+    if (product.variants.containsKey('color') && 
+        product.variants['color']!.isNotEmpty) {
+      final defaultColor = product.variants['color']![0]; // Now correctly "black"
+      _logger.i('Setting default color: $defaultColor');
+      state.setSelectedColor(defaultColor);
+    } else {
+      _logger.w('No colors available for this product');
+      state.setSelectedColor('');
+    }
+
+    if (product.variants.containsKey('size') && 
+        product.variants['size']!.isNotEmpty) {
+      final defaultSize = product.variants['size']![0];
+      _logger.i('Setting default size: $defaultSize');
+      state.setSelectedSize(defaultSize);
+    } else {
+      _logger.w('No sizes available for this product');
+      state.setSelectedSize('');
+    }
+
+    state.setQuantity(1);
+    state.setCurrentImageIndex(0);
   }
 
-  // Handle sizes
-  if (product.variants.containsKey('size') && 
-      product.variants['size']!.isNotEmpty) {
-    final defaultSize = product.variants['size']![0];
-    _logger.i('Setting default size: $defaultSize');
-    state.setSelectedSize(defaultSize);
-  } else {
-    _logger.w('No sizes available for this product');
-    state.setSelectedSize('');
-  }
-
-  // Reset quantity and image index
-  state.setQuantity(1);
-  state.setCurrentImageIndex(0);
-}
-  /// Updates selected size
   void updateSize(String size) {
     state.setSelectedSize(size);
   }
 
-  /// Updates selected color
   void updateColor(String color) {
     state.setSelectedColor(color);
   }
 
-  /// Updates quantity
   void updateQuantity(int value) {
-    // Ensure quantity is at least 1
     if (value < 1) value = 1;
-
-    // Optionally limit by available stock
     final product = state.product.value;
     if (product != null && value > product.stockQuantity) {
       value = product.stockQuantity;
     }
-
     state.setQuantity(value);
   }
 
-  /// Updates current image index
   void updateImageIndex(int index) {
     if (state.product.value == null) return;
-
-    // Ensure index is within bounds
     final imageCount = state.product.value!.images.length;
     if (index >= 0 && index < imageCount) {
       state.setCurrentImageIndex(index);
     }
   }
 
-  /// Toggles favorite status for the current product
   Future<void> toggleFavorite() async {
     if (state.product.value == null) return;
 
     final productId = state.product.value!.id;
     final currentStatus = state.product.value!.isFavorite;
 
-    // Update UI optimistically
     state.setProduct(state.product.value!.copyWith(isFavorite: !currentStatus));
 
     try {
-      // Send update to API
       final success = await _repository.updateFavoriteStatus(
         productId,
         !currentStatus,
       );
 
-      // If API call failed, revert the changes
       if (!success) {
         state.setProduct(
           state.product.value!.copyWith(isFavorite: currentStatus),
         );
       }
     } catch (e) {
-      // If there was an error, revert the changes
       state.setProduct(
         state.product.value!.copyWith(isFavorite: currentStatus),
       );
@@ -140,7 +119,6 @@ void _initializeProductOptions() {
     }
   }
 
-  /// Adds current product to cart with selected options
   Future<void> addToCart() async {
     if (state.product.value == null) return;
 
@@ -149,20 +127,16 @@ void _initializeProductOptions() {
       final quantity = state.quantity.value;
 
       Map<String, String> variants = {};
-
-      // Add selected variants to options
       if (state.selectedSize.value.isNotEmpty) {
         variants['size'] = state.selectedSize.value;
       }
-
       if (state.selectedColor.value.isNotEmpty) {
         variants['color'] = state.selectedColor.value;
       }
 
-      // Get cart controller and add item
       final cartController = Get.find<CartController>();
       await cartController.addToCart(
-        product: product, // Pass the entire product object
+        product: product,
         quantity: quantity,
         variants: variants,
       );

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class AddToCartButton extends StatelessWidget {
@@ -19,22 +17,20 @@ class AddToCartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Price
         Text(
           '\$${price.toStringAsFixed(2)}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.foreground(context),
+            color: Colors.black,
           ),
         ),
         const SizedBox(width: 16),
-        // Add to cart button
         Expanded(
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary(context),
+              backgroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
@@ -43,19 +39,18 @@ class AddToCartButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  AssetConfig.bagIcon,
-                  color: AppColors.primaryForeground(context),
-                  width: 16,
-                  height: 16,
+                const Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 16,
+                  color: Colors.white,
                 ),
                 const SizedBox(width: 8),
                 Text(
                   buttonText,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.primaryForeground(context),
+                    color: Colors.white,
                     fontFamily: 'Poppins',
                   ),
                 ),
