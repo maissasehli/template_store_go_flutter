@@ -1,6 +1,6 @@
 class AppRoute {
   static const String settings = "/settings";
-  static const String products= "/products";
+  static const String products = "/products";
   static const String mainContainer = "/main";
   static const String language = "/language";
   static const String onBoarding = "/onboarding";
@@ -26,17 +26,19 @@ class AppRoute {
   
   // Cart and checkout
   static const String cart = "/cart";
-  static const String add_cart = "/add-cart";
-
+  static const String addCart = "/add-cart"; // Changed from add_cart
   static const String checkout = "/checkout";
   
   // User profile
-  static const String edit_profile = "/edit-profile";
+  static const String editProfile = "/edit-profile"; // Changed from edit_profile
   static const String profile = "/profile";
   static const String orders = "/orders";
   static const String wishlist = "/wishlist";
 
-  // public routes
+  // Review routes
+  static const String reviews = "/reviews/:productId"; // New route for reviews
+
+  // Public routes
   static const List<String> publicRoutes = [
     language,
     onBoarding,
@@ -45,24 +47,13 @@ class AppRoute {
     forgetPassword,
   ];
   static const String address = "/address";
-  static const String add_address = "/add-address";
-  static const String edit_address = "/edit-address";
-
-
-  static const String order_details = "/order-details";
-
+  static const String addAddress = "/add-address"; // Changed from add_address
+  static const String editAddress = "/edit-address"; // Changed from edit_address
+  static const String orderDetails = "/order-details"; // Changed from order_details
   static const String payments = "/payments";
-    static const String add_payment = "/add-payment";
-        static const String edit_payment = "/edit-payment";
-
+  static const String addPayment = "/add-payment"; // Changed from add_payment
+  static const String editPayment = "/edit-payment"; // Changed from edit_payment
   static const String notifications = "/notifications";
-
-    static const String filter = "/filter";
-
-
-
-
-
-
-
+  static const String filter = "/filter";
+  static const String subcategoryProducts = '/subcategory-products';
 }

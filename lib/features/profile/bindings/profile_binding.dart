@@ -10,6 +10,12 @@ class ProfileBinding implements Bindings {
     if (!Get.isRegistered<ApiClient>()) {
       Get.put(ApiClient());
     }
+
+    // Register ProfileRepository if not already registered
+    if (!Get.isRegistered<ProfileRepository>()) {
+      Get.put(ProfileRepository(apiClient: Get.find<ApiClient>()));
+    }
+
     // Register ProfileController
     Get.lazyPut<ProfileController>(
       () => ProfileController(repository: Get.find<ProfileRepository>()),

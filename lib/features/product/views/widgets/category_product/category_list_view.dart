@@ -1,16 +1,15 @@
+// lib/features/product/views/widgets/category_product/category_list_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/filter/screen/view/filter_screen.dart';
 import 'package:store_go/features/product/controllers/category_product_controller.dart';
-import 'package:store_go/features/product/views/screens/filter/filter_screen.dart';
 
 class CategoryListView extends GetView<CategoryController> {
-  final CategoryProductController categoryProductController;
-
-  const CategoryListView({super.key, required this.categoryProductController});
+  const CategoryListView({super.key, required CategoryProductController categoryProductController});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,6 @@ class CategoryListView extends GetView<CategoryController> {
       children: [
         GestureDetector(
           onTap: () {
-            // Show the filter bottom sheet
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
@@ -63,7 +61,6 @@ class CategoryListView extends GetView<CategoryController> {
             ),
           ),
         ),
-        
         Expanded(
           child: Container(
             height: 36,
@@ -78,36 +75,22 @@ class CategoryListView extends GetView<CategoryController> {
                   ),
                 );
               }
-
               if (controller.categories.isEmpty) {
                 controller.fetchCategories();
                 return const Center(child: Text('No categories available'));
               }
-
-              // Display categories as pills
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.categories.length,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemBuilder: (context, index) {
                   final category = controller.categories[index];
-                  
-                  // We need to use Obx in the widget tree, not as a variable
                   return Obx(() {
                     final isSelected = category.id == controller.selectedCategoryId.value;
-                    
                     return CategoryPill(
                       category: category,
                       isSelected: isSelected,
-                      onTap: () {
-                        // Set the selected category ID
-                        controller.selectedCategoryId.value = category.id;
-
-                        // Update the current category in our controller and fetch its products
-                        categoryProductController.setCategory(category);
-                        // Make sure products are fetched for the new category
-                        categoryProductController.fetchCategoryProducts(category.id);
-                      },
+                      onTap: () => controller.selectCategory(category),
                     );
                   });
                 },

@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/product/state/product_detail_state.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/review/model/review_model.dart';
 
 class ProductDetailController extends GetxController {
   final ProductRepository _repository;
@@ -45,7 +45,7 @@ class ProductDetailController extends GetxController {
     
     if (product.variants.containsKey('color') && 
         product.variants['color']!.isNotEmpty) {
-      final defaultColor = product.variants['color']![0]; // Now correctly "black"
+      final defaultColor = product.variants['color']![0];
       _logger.i('Setting default color: $defaultColor');
       state.setSelectedColor(defaultColor);
     } else {
@@ -116,6 +116,25 @@ class ProductDetailController extends GetxController {
         state.product.value!.copyWith(isFavorite: currentStatus),
       );
       _logger.e('Error updating favorite status: $e');
+    }
+  }
+
+  Future<void> addReview(Review review) async {
+    if (state.product.value == null) return;
+
+    try {
+      final productId = state.product.value!.id;
+      final updatedReviews = [...state.product.value!.reviews, review];
+      final updatedProduct = state.product.value!.copyWith(reviews: updatedReviews);
+
+      await _repository.updateProductReviews(productId, updatedReviews);
+
+      state.setProduct(updatedProduct);
+      _logger.i('Review added: ${review.toJson()}');
+      Get.snackbar('Success', 'Review submitted successfully');
+    } catch (e) {
+      _logger.e('Error adding review: $e');
+      Get.snackbar('Error', 'Failed to submit review');
     }
   }
 

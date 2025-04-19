@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:store_go/features/profile/services/user_api_service.dart';
 import 'package:store_go/features/profile/models/user_model.dart';
+import 'package:store_go/features/profile/repositories/profile_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class EditProfileController extends GetxController {
-  final UserApiService _userApiService;
+  final ProfileRepository _repository;
   final logger = Logger();
 
   // Observable variables
@@ -25,7 +25,7 @@ class EditProfileController extends GetxController {
   late TextEditingController phoneController;
 
   // Constructor with dependency injection
-  EditProfileController(this._userApiService);
+  EditProfileController(this._repository);
 
   @override
   void onInit() {
@@ -55,23 +55,17 @@ class EditProfileController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
 
-      final response = await _userApiService.getCurrentUser();
+      final userData = await _repository.getCurrentUser();
+      user.value = userData;
 
-      if (response.statusCode == 200) {
-        final userData = response.data['data'];
-        user.value = UserModel.fromJson(userData);
+      // Populate form controllers
+      fullNameController.text = user.value?.name ?? '';
+      userNameController.text =
+          user.value?.name.split(' ').first.toLowerCase() ?? '';
+      emailController.text = user.value?.email ?? '';
+      phoneController.text = ''; // Phone not in the model, add if needed
 
-        // Populate form controllers
-        fullNameController.text = user.value?.name ?? '';
-        userNameController.text =
-            user.value?.name.split(' ').first.toLowerCase() ?? '';
-        emailController.text = user.value?.email ?? '';
-        phoneController.text = ''; // Phone not in the model, add if needed
-
-        logger.i('User data fetched successfully: ${user.value?.name}');
-      } else {
-        throw Exception('Failed to load user data');
-      }
+      logger.i('User data fetched successfully: ${user.value?.name}');
     } catch (e) {
       logger.e('Error fetching user data: $e');
       hasError.value = true;
@@ -112,28 +106,16 @@ class EditProfileController extends GetxController {
 
     try {
       isUploading.value = true;
-      final userId = await _userApiService.getCurrentUserId();
+      final updatedUser = await _repository.uploadAvatar(selectedImage.value!);
+      user.value = updatedUser;
 
-      final response = await _userApiService.uploadAvatar(
-        userId,
-        selectedImage.value!,
+      Get.snackbar(
+        'Success',
+        'Avatar uploaded successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
       );
-
-      if (response.statusCode == 200) {
-        // Update user model with new avatar URL
-        final updatedUserData = response.data['data']['user'];
-        user.value = UserModel.fromJson(updatedUserData);
-
-        Get.snackbar(
-          'Success',
-          'Avatar uploaded successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-      } else {
-        throw Exception('Failed to upload avatar');
-      }
     } catch (e) {
       logger.e('Error uploading avatar: $e');
       Get.snackbar(
@@ -150,19 +132,48 @@ class EditProfileController extends GetxController {
 
   // Save profile updates
   Future<void> saveProfile() async {
-    // First upload avatar if selected
-    if (selectedImage.value != null) {
-      await uploadAvatar();
-    }
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
 
-    // For now, we'll just show a success message
-    Get.snackbar(
-      'Success',
-      'Profile updated successfully',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-    Get.back();
+      // First upload avatar if selected
+      if (selectedImage.value != null) {
+        await uploadAvatar();
+      }
+
+      // Prepare user data for update
+      final userData = {
+        'name': fullNameController.text.trim(),
+        'email': emailController.text.trim(),
+        // Add phone if needed: 'phone': phoneController.text.trim(),
+      };
+
+      // Update profile
+      final updatedUser = await _repository.updateProfile(userData);
+      user.value = updatedUser;
+
+      Get.snackbar(
+        'Success',
+        'Profile updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      Get.back();
+    } catch (e) {
+      logger.e('Error saving profile: $e');
+      hasError.value = true;
+      errorMessage.value = 'Failed to save profile. Please try again.';
+      Get.snackbar(
+        'Error',
+        'Failed to save profile. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

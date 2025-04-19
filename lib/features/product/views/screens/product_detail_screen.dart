@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/features/product/views/widgets/favorite_button.dart';
-import 'package:store_go/features/product/views/widgets/product_image_gallery.dart';
-import 'package:store_go/features/product/views/widgets/top_navigation_bar.dart';
-import 'package:store_go/features/product/views/widgets/size_selector.dart';
-import 'package:store_go/features/product/views/widgets/color_selector.dart';
-import 'package:store_go/features/product/views/widgets/quantity_selector.dart';
-import 'package:store_go/features/product/views/widgets/product_info.dart';
-import 'package:store_go/features/product/views/widgets/add_to_cart_button.dart';
-import 'package:store_go/features/product/views/widgets/product_description.dart';
-import 'package:store_go/features/product/views/widgets/image_page_indicator.dart';
-import 'package:store_go/features/product/views/widgets/draggable_info_sheet.dart';
-import 'package:store_go/features/product/views/widgets/review_section.dart';
+import 'package:store_go/features/product/controllers/product_detail_controller.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/favorite_button.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/product_image_gallery.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/product_info.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/top_navigation_bar.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/size_selector.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/color_selector.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/quantity_selector.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/add_to_cart_button.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/product_description.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/image_page_indicator.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/draggable_info_sheet.dart';
+import 'package:store_go/features/review/view/screen/review_section.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -26,17 +26,16 @@ class ProductDetailScreen extends StatefulWidget {
 class ProductDetailScreenState extends State<ProductDetailScreen> {
   final ProductDetailController detailController =
       Get.find<ProductDetailController>();
-  String? selectedColor; // State variable for selected color
+  String? selectedColor;
 
   @override
   void initState() {
     super.initState();
     detailController.fetchProductDetails(widget.productId);
-    // Initialize selectedColor after fetching product details
     detailController.state.product.listen((product) {
       if (product != null && product.variants['color'] != null && product.variants['color']!.isNotEmpty) {
         setState(() {
-          selectedColor = product.variants['color']![0]; // Default to the first color
+          selectedColor = product.variants['color']![0];
         });
       }
     });
@@ -118,9 +117,15 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                     const SizedBox(height: 8),
                     ProductInfo(
                       product: product,
-                      subtitle: 'Relaxed Cargo Joggers', // Updated subtitle
+                      reviews: product.reviews, // Pass the reviews list
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
+                    ReviewSection(
+                      initialReviews: product.reviews,
+                      product: product,
+                    ),
+                const SizedBox(height: 8),
+
                     const Text(
                       'Size',
                       style: TextStyle(
@@ -142,7 +147,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         ColorSelector(
                           selectedColor: selectedColor ?? (product.variants['color']?.isNotEmpty ?? false ? product.variants['color']![0] : ''),
-                          colors: product.colors, // Now this works with the updated Product class
+                          colors: product.colors,
                           onColorSelected: (color) {
                             setState(() {
                               selectedColor = color;
@@ -151,9 +156,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 8),
                     ProductDescription(description: product.description),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                     AddToCartButton(
                       price: product.price,
                       onPressed: () {

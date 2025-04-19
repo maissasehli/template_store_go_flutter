@@ -1,45 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/shared/widgets/rating_stars.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/review/model/review_model.dart';
 
 class ProductInfo extends StatelessWidget {
   final Product product;
   final String subtitle;
+  final List<Review> reviews; // Add reviews to calculate average rating
 
   const ProductInfo({
     super.key,
     required this.product,
-    this.subtitle = 'Vado Odell Dress',
+    this.subtitle = '',
+    required this.reviews, // Add reviews as a required parameter
   });
 
-  double _calculateAverageRating(List<Review> reviews) {
-    if (reviews.isEmpty) return 0.0;
+  // Calculate the average rating based on reviews
+  double get averageRating {
+    if (reviews.isEmpty) return 0;
     return reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isInStock = product.stockQuantity > 0;
-    final double averageRating = _calculateAverageRating(product.reviews);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Product title
-        Text(
-          'Roller Rabbit',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-            color: AppColors.foreground(context),
-          ),
-        ),
-
-        // Product subtitle
-        const SizedBox(height: 4),
         Text(
           subtitle,
           style: TextStyle(
@@ -48,33 +36,43 @@ class ProductInfo extends StatelessWidget {
             fontFamily: 'Poppins',
           ),
         ),
-
-        // Rating and available stock
         const SizedBox(height: 8),
+        // Display rating and stock status on the same line
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Rating stars and reviews
+            // Rating (stars and review count)
             Row(
               children: [
-                RatingStars(rating: averageRating), // Use the calculated average rating
-                const SizedBox(width: 8),
+                Row(
+                  children: List.generate(5, (index) {
+                    return Icon(
+                      index < averageRating.round()
+                          ? Icons.star
+                          : Icons.star_border,
+                      size: 16,
+                      color: index < averageRating.round()
+                          ? const Color(0xFFFFCC00) // Gold color for stars
+                          : Colors.grey[300],
+                    );
+                  }),
+                ),
+                const SizedBox(width: 4),
                 Text(
-                  '(${product.reviews.length} Reviews)',
+                  '(${reviews.length} Review${reviews.length == 1 ? '' : 's'})',
                   style: TextStyle(
-                    color: AppColors.mutedForeground(context),
                     fontSize: 11,
                     fontFamily: 'Poppins',
+                    color: AppColors.mutedForeground(context),
                   ),
                 ),
               ],
             ),
-
-            // Available in stock text
+            // Stock status
             Text(
               isInStock ? 'Available in stock' : 'Out of stock',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
                 color: isInStock ? Colors.green : Colors.red,

@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';

@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
 import 'package:store_go/features/cart/reposetories/cart_repository.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 
 class CartController extends GetxController {
   final CartRepository _repository;

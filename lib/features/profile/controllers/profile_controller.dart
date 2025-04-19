@@ -16,7 +16,7 @@ class ProfileController extends GetxController {
 
   // Constructor with dependency injection
   ProfileController({required ProfileRepository repository})
-    : _repository = repository;
+      : _repository = repository;
 
   @override
   void onInit() {
@@ -42,7 +42,6 @@ class ProfileController extends GetxController {
       isLoading.value = false;
     }
   }
-
 
   // Update profile
   Future<void> updateProfile(Map<String, dynamic> userData) async {

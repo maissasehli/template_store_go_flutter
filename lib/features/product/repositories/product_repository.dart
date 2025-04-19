@@ -1,5 +1,6 @@
 import 'package:store_go/app/core/services/api_client.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
+import 'package:store_go/features/review/model/review_model.dart';
 import 'dart:developer' as developer;
 
 class ProductRepository {
@@ -110,7 +111,7 @@ class ProductRepository {
       }
     } catch (e) {
       developer.log('Error fetching featured products: $e', name: 'ProductRepository.getFeaturedProducts', error: e);
-      return getProducts(); // Fallback to all products
+      return getProducts();
     }
   }
 
@@ -130,7 +131,7 @@ class ProductRepository {
       }
     } catch (e) {
       developer.log('Error fetching new products: $e', name: 'ProductRepository.getNewProducts', error: e);
-      return getProducts(); // Fallback to all products
+      return getProducts();
     }
   }
 
@@ -172,7 +173,31 @@ class ProductRepository {
       return success;
     } catch (e) {
       developer.log('Error updating favorite status: $e', name: 'ProductRepository.updateFavoriteStatus', error: e);
-      return true; // Allow local state change if API fails
+      return true;
+    }
+  }
+
+  Future<void> updateProductReviews(String productId, List<Review> reviews) async {
+    try {
+      final response = await _apiClient.put(
+        '$_productsEndpoint/$productId',
+        data: {
+          'reviews': reviews.map((r) => r.toJson()).toList(),
+        },
+      );
+      developer.log('Update product reviews response: ${response.data}', name: 'ProductRepository.updateProductReviews');
+
+      if (response.statusCode == 200) {
+        if (_productCache.containsKey(productId)) {
+          _productCache[productId] = _productCache[productId]!.copyWith(reviews: reviews);
+          _updateProductReviewsInCollections(productId, reviews);
+        }
+      } else {
+        throw Exception('Failed to update product reviews: ${response.statusMessage}');
+      }
+    } catch (e) {
+      developer.log('Error updating product reviews: $e', name: 'ProductRepository.updateProductReviews', error: e);
+      throw Exception('Error updating product reviews: $e');
     }
   }
 
@@ -187,6 +212,21 @@ class ProductRepository {
       final index = entry.value.indexWhere((p) => p.id == productId);
       if (index != -1) {
         entry.value[index] = entry.value[index].copyWith(isFavorite: isFavorite);
+      }
+    }
+  }
+
+  void _updateProductReviewsInCollections(String productId, List<Review> reviews) {
+    final allProductIndex = _allProductsCache.indexWhere((p) => p.id == productId);
+    if (allProductIndex != -1) {
+      _allProductsCache[allProductIndex] =
+          _allProductsCache[allProductIndex].copyWith(reviews: reviews);
+    }
+
+    for (var entry in _categoryProductsCache.entries) {
+      final index = entry.value.indexWhere((p) => p.id == productId);
+      if (index != -1) {
+        entry.value[index] = entry.value[index].copyWith(reviews: reviews);
       }
     }
   }

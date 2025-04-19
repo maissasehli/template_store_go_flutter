@@ -8,22 +8,32 @@ class EditAddressPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AddressController controller = Get.find<AddressController>();
-    
+    final isLoading = false.obs;
+
     if (controller.selectedAddress.value == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.back();
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Get.back(),
+        leading: Container(
+          margin: const EdgeInsets.only(left: 16),
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.grey[200], // Grey circle background
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+            onPressed: () => Get.back(),
+          ),
         ),
         centerTitle: true,
         title: const Text(
@@ -50,8 +60,10 @@ class EditAddressPage extends StatelessWidget {
                         child: const Text('Cancel'),
                       ),
                       TextButton(
-                        onPressed: () {
-                          controller.deleteAddress(controller.selectedAddress.value!.id);
+                        onPressed: () async {
+                          isLoading.value = true;
+                          await controller.deleteAddress(controller.selectedAddress.value!.id);
+                          isLoading.value = false;
                           Get.back();
                           Get.back();
                         },
@@ -71,16 +83,10 @@ class EditAddressPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            
-            // Street Address
             _buildTextField(controller.streetController, 'Street Address'),
             const SizedBox(height: 12),
-            
-            // City
             _buildTextField(controller.cityController, 'City'),
             const SizedBox(height: 12),
-            
-            // State and Zip Code in a row
             Row(
               children: [
                 Expanded(
@@ -92,50 +98,42 @@ class EditAddressPage extends StatelessWidget {
                 ),
               ],
             ),
-            
-            // Spacer to push button to bottom
             const Spacer(),
-            
-            // Save Button
             Container(
               width: double.infinity,
               height: 56,
               margin: const EdgeInsets.only(bottom: 24),
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.updateAddress();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: isLoading.value
+                      ? null
+                      : () async {
+                          isLoading.value = true;
+                          if (controller.validateInputs()) {
+                            await controller.updateAddress();
+                          }
+                          isLoading.value = false;
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                  ),
+                  child: isLoading.value
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Save Changes',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                 ),
               ),
             ),
-            
-            // Bottom navigation indicator
-            Center(
-              child: Container(
-                width: 134,
-                height: 5,
-                margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(2.5),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -146,9 +144,10 @@ class EditAddressPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 56,
-      margin: const EdgeInsets.only(bottom: 0),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F4F4),
+        color: Colors.white,
+        border: Border.all(color: Colors.grey[300]!, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: TextField(
@@ -160,7 +159,7 @@ class EditAddressPage extends StatelessWidget {
           color: Colors.black,
         ),
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
@@ -171,8 +170,6 @@ class EditAddressPage extends StatelessWidget {
             fontSize: 15,
             color: Colors.grey[400],
           ),
-          filled: true,
-          fillColor: const Color(0xFFF4F4F4),
         ),
       ),
     );

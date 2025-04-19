@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'dart:developer' as developer;
 

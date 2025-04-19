@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class AddToCartButton extends StatelessWidget {
   final VoidCallback onPressed;

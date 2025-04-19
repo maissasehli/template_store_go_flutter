@@ -33,11 +33,8 @@ class Review {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'appUser': {'name': userName},
       'rating': rating,
-      'content': content,
-      'created_at': createdAt.toIso8601String(),
+      'content': content ?? '',
     };
   }
 }
