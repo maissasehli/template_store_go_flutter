@@ -76,12 +76,15 @@ class AuthService {
   // Sign out method
   Future<void> signOut() async {
     try {
-      await _apiClient.signOut();
-      // Clear local storage
-      await _tokenManager.clearAllTokens();
-      // Disconnect Pusher
       final pusherService = Get.find<PusherService>();
-      pusherService.disconnect();
+      // Update status to offline first
+      await pusherService.updateUserOnlineStatus(false);
+
+      // Proceed with sign-out
+      await _apiClient.signOut();
+      await _tokenManager.clearAllTokens();
+      // Disconnect Pusher without updating status again
+      pusherService.disconnect(skipStatusUpdate: true);
       _logger.i('Log out successful');
       Get.offAllNamed(AppRoute.login);
     } catch (e) {

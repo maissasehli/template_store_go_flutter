@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/services/activity_detector.dart';
 import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:store_go/app/di/initializer.dart';
 import 'package:get/get.dart';
@@ -40,17 +41,19 @@ class MyApp extends StatelessWidget {
     // Use GetX to rebuild when theme changes
     return GetBuilder<ThemeController>(
       builder: (themeController) {
-        return GetMaterialApp(
-          navigatorKey: pusherService.navigatorKey, 
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          debugShowCheckedModeBanner: false,
-          title: 'StoreGo',
-          theme: themeController.theme,
-          darkTheme: themeController.theme,
-          themeMode: themeController.themeMode,
-          getPages: routes,
+        return ActivityDetector(
+          child: GetMaterialApp(
+            navigatorKey: pusherService.navigatorKey, 
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            debugShowCheckedModeBanner: false,
+            title: 'StoreGo',
+            theme: themeController.theme,
+            darkTheme: themeController.theme,
+            themeMode: themeController.themeMode,
+            getPages: routes,
+          ),
         );
       },
     );

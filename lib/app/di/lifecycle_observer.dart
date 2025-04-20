@@ -39,20 +39,24 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      // Handle token refresh and other resumption logic
-      _authService.handleAppResume();
+    final isLoggedIn = await _authService.isAuthenticated();
 
-      // Re-initialize Pusher connection if needed
-      final isLoggedIn = await _authService.isAuthenticated();
-    if (isLoggedIn) {
-      _initializePusherIfNeeded();
-    }
-    } else if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
-      // Optionally disconnect Pusher to save resources when app is in background
-      // Uncomment if you want to disconnect when app goes to background
-      // _pusherService.disconnect();
+    if (!isLoggedIn) return;
+
+    if (state == AppLifecycleState.resumed) {
+      // App is in foreground - user is "online"
+      await _initializePusherIfNeeded();
+
+      // Update online status directly
+      final pusherService = Get.find<PusherService>();
+      await pusherService.updateUserOnlineStatus(true);
+    } else if (state == AppLifecycleState.paused) {
+      // App is in background - user is "away" or "offline"
+      final pusherService = Get.find<PusherService>();
+      await pusherService.updateUserOnlineStatus(false);
+
+      // Optionally disconnect Pusher when app goes to background
+      pusherService.disconnect();
     }
   }
 
@@ -68,4 +72,6 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
       Logger().e("Failed to initialize Pusher: $e");
     }
   }
+
+
 }
