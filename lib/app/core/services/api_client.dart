@@ -4,6 +4,7 @@ import 'package:store_go/app/core/config/app_config.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:synchronized/synchronized.dart';
 
 class ApiClient {
@@ -215,13 +216,16 @@ class ApiClient {
           final accessToken = response.data['session']['accessToken'];
           final newRefreshToken = response.data['session']['refreshToken'];
           final expiresAt = response.data['session']['expiresAt'];
-
+          final userId = response.data['session']['userId'];
           // Store all tokens atomically
           await Future.wait([
             _secureStorage.write(key: 'access_token', value: accessToken),
             _secureStorage.write(key: 'refresh_token', value: newRefreshToken),
             _secureStorage.write(key: 'expires_at', value: expiresAt),
           ]);
+          // Initialize pusher
+          final pusherService = Get.find<PusherService>();
+          pusherService.initializePusher(AppConfig.storeId,userId);
 
           Logger().i('Token refreshed successfully');
           return true;
@@ -229,7 +233,9 @@ class ApiClient {
         return false;
       } catch (e) {
         Logger().e('Error refreshing token: $e');
-
+        // Disconnect Pusher
+        final pusherService = Get.find<PusherService>();
+        pusherService.disconnect();
         // If error is 'refresh_token_already_used', it means another refresh happened
         // In this case, just check if we have valid tokens
         if (e.toString().contains('refresh_token_already_used')) {

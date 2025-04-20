@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:store_go/features/auth/services/token_manager.dart';
 import 'package:store_go/features/auth/services/oauth_service.dart';
 import 'package:store_go/features/auth/services/auth_error_handler.dart';
@@ -54,6 +56,14 @@ class AuthService {
       if (response.statusCode == 200) {
         await _tokenManager.saveSessionData(response.data['session']);
         _notificationService.showSuccess('Successfully logged in');
+        // Initialize Pusher
+        final pusherService = Get.find<PusherService>();
+        final userId = response.data['session']['userId'];
+        if (userId == null || userId.toString().isEmpty) {
+          Logger().e('No userId provided to initialize Pusher Services');
+        } else {
+          pusherService.initializePusher(AppConfig.storeId, userId);
+        }
         return true;
       }
       return false;
@@ -69,6 +79,9 @@ class AuthService {
       await _apiClient.signOut();
       // Clear local storage
       await _tokenManager.clearAllTokens();
+      // Disconnect Pusher
+      final pusherService = Get.find<PusherService>();
+      pusherService.disconnect();
       _logger.i('Log out successful');
       Get.offAllNamed(AppRoute.login);
     } catch (e) {
