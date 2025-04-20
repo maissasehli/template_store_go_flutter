@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/shared/widgets/universal_cached_image.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class ProductImage extends StatelessWidget {

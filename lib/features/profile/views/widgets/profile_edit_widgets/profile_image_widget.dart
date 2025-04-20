@@ -23,63 +23,72 @@ class ProfileImageWidget extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(77),
               border: Border.all(
-                color: Colors.purple.withOpacity(0.3),
+                color: Colors.black.withAlpha(77), 
                 width: 2,
               ),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(77),
-              child:
-                  hasSelectedImage
-                      ? Image.file(
-                        controller.selectedImage.value!,
-                        fit: BoxFit.cover,
-                      )
-                      : avatarUrl != null && avatarUrl.isNotEmpty
+              child: hasSelectedImage
+                  ? Image.file(
+                      controller.selectedImage.value!,
+                      fit: BoxFit.cover,
+                    )
+                  : avatarUrl != null && avatarUrl.isNotEmpty
                       ? Image.network(
-                        avatarUrl,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value:
-                                  loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
+                          avatarUrl,
+                          fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey.withAlpha(51), 
+                              child: const Center(
+                                child: Icon(
+                                  Icons.person_outline,
+                                  color: Colors.grey,
+                                  size: 40,
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
+                          color: Colors.grey.withAlpha(51), 
+                          child: const Center(
+                            child: Icon(
+                              Icons.person_outline,
+                              color: Colors.grey,
+                              size: 40,
                             ),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/profile_avatar.png',
-                            fit: BoxFit.cover,
-                          );
-                        },
-                      )
-                      : Image.asset(
-                        'assets/images/profile_avatar.png',
-                        fit: BoxFit.cover,
-                      ),
+                          ),
+                        ),
             ),
           ),
           GestureDetector(
             onTap: () => _showImageSourceActionSheet(context),
             child: CircleAvatar(
               radius: 16,
-              backgroundColor: Colors.purple,
-              child:
-                  controller.isUploading.value
-                      ? SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                      : Icon(Icons.camera_alt, size: 16, color: Colors.white),
+              backgroundColor: Colors.black,
+              child: controller.isUploading.value
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Icon(Icons.camera_alt, size: 16, color: Colors.white),
             ),
           ),
         ],

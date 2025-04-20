@@ -33,9 +33,9 @@ class HomeController extends GetxController {
     Get.toNamed(AppRoute.products, arguments: {'title': 'New In'});
   }
 
-  void onProductTap(String productId) {
-    Get.toNamed('/products/$productId');
-  }
+void onProductTap(String productId) {
+  Get.toNamed(AppRoute.productDetail.replaceAll(':id', productId));
+}
 
   // method to handle favorite toggling
   Future<void> toggleFavorite(String productId) async {
@@ -74,7 +74,6 @@ class HomeController extends GetxController {
     } catch (e) {
       // If there's an error, refresh the wishlist to sync with server
       await _wishlistController.fetchWishlistItems();
-      print('Error toggling favorite status: $e');
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/profile/controllers/edit_profile_controller.dart';
-import 'package:store_go/features/profile/services/user_api_service.dart';
+import 'package:store_go/features/profile/repositories/profile_repository.dart';
 
 class EditProfileBinding implements Bindings {
   @override
@@ -11,12 +11,12 @@ class EditProfileBinding implements Bindings {
       Get.put(ApiClient());
     }
 
-    // Register UserApiService if not already registered
-    if (!Get.isRegistered<UserApiService>()) {
-      Get.put(UserApiService(Get.find<ApiClient>()));
+    // Register ProfileRepository if not already registered
+    if (!Get.isRegistered<ProfileRepository>()) {
+      Get.put(ProfileRepository(apiClient: Get.find<ApiClient>()));
     }
 
     // Register EditProfileController
-    Get.put(EditProfileController(Get.find<UserApiService>()));
+    Get.put(EditProfileController(Get.find<ProfileRepository>()));
   }
 }

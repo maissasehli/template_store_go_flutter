@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AddCardPage extends StatelessWidget {
-  const AddCardPage({Key? key}) : super(key: key);
+  const AddCardPage({super.key});
 
   @override
   Widget build(BuildContext context) {

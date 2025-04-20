@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 
 class ProductGrid extends StatelessWidget {

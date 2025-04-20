@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:store_go/features/product/models/product_modal.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 
 /// State management class for product details
 class ProductDetailState {

@@ -17,7 +17,6 @@ class CartItem {
     required this.image,
   });
 
-  // Create a copy of this cart item with some properties changed
   CartItem copyWith({
     String? id,
     String? productId,
@@ -38,7 +37,6 @@ class CartItem {
     );
   }
 
-  // Convert to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -51,16 +49,23 @@ class CartItem {
     };
   }
 
-  // Create from JSON
   factory CartItem.fromJson(Map<String, dynamic> json) {
+    final product = json['product'] ?? {};
     return CartItem(
       id: json['id'] ?? '',
-      productId: json['productId'] ?? '',
-      name: json['name'] ?? '',
-      price: json['price'] ?? 0.0,
+      productId: json['product_id'] ?? json['productId'] ?? '',
+      name: product['name'] ?? json['name'] ?? '',
+      price: double.tryParse(product['price']?.toString() ?? '0.0') ?? 0.0,
       quantity: json['quantity'] ?? 0,
       variants: Map<String, String>.from(json['variants'] ?? {}),
-      image: json['image'] ?? '',
+      image: (product['image_urls'] as List<dynamic>?)?.isNotEmpty == true
+          ? product['image_urls'][0] ?? ''
+          : json['image'] ?? '',
     );
+  }
+
+  @override
+  String toString() {
+    return 'CartItem{id: $id, productId: $productId, name: $name, price: $price, quantity: $quantity}';
   }
 }

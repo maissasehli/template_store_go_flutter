@@ -68,7 +68,6 @@ class Signup extends GetView<SignupController> {
                             // Forgot Password Link
                             GestureDetector(
                               onTap: () {
-                                // TODO: Implement password reset logic
                               },
                               child: Text('Forgot Password? Reset').body(context),
                             ),

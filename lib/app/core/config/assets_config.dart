@@ -21,11 +21,11 @@ class AssetConfig {
 
   // Email related
   static const String sendMail = '$rootIcons/email_sent.png';
+  static const String checkout = '$rootIcons/check-out.png';
 
   static const String bagIcon = '$rootSvg/bag2.svg';
   static const String emailSentIcon = '$rootSvg/email_sent.svg';
 
-  static const String loveIcon = '$rootSvg/love.svg';
   static const String searchIcon = '$rootSvg/searchnormal1.svg';
   static const String discountshape = '$rootSvg/discountshape.svg';
   static const String delete = '$rootSvg/delete.svg';
@@ -33,12 +33,17 @@ class AssetConfig {
 
   static const String setting = '$rootSvg/setting-2.svg';
   static const String receipt = '$rootSvg/receipt1.svg';
+    static const String filter = '$rootSvg/filter.svg';
+
   static const String notification = '$rootSvg/notificationbing.svg';
-  static const String bell = '$rootSvg/bell 1.png';
+  static const String bell = '$rootIcons/bell 1.png';
 
   static const String Logout = '$rootSvg/Logout.svg';
   static const String location = '$rootSvg/location.svg';
   static const String Success = '$rootSvg/Success Icon.svg';
+
+    static const String search = '$rootIcons/search.png';
+
 
   // Get all onboarding images as a list
   static List<String> get allOnboardingImages => [

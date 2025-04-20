@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
 import 'package:store_go/features/wishlist/views/widget/empty_wishlist_view.dart';
@@ -10,10 +11,10 @@ class WishlistPage extends StatefulWidget {
   const WishlistPage({super.key});
 
   @override
-  State<WishlistPage> createState() => _WishlistPageState();
+  State<WishlistPage> createState() => _WishlistScreenState();
 }
 
-class _WishlistPageState extends State<WishlistPage> {
+class _WishlistScreenState extends State<WishlistPage> {
   late WishlistController _wishlistController;
 
   @override
@@ -54,7 +55,7 @@ class _WishlistPageState extends State<WishlistPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         title: const Text(
-          'Wishlist',
+          'My Wishlist',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
@@ -71,7 +72,7 @@ class _WishlistPageState extends State<WishlistPage> {
         }
 
         // Show empty state when wishlist is empty
-        if (_wishlistController.filteredWishlistItems.isEmpty) {
+        if (_wishlistController.wishlistItems.isEmpty) {
           return const EmptyWishlistView();
         }
 
@@ -108,8 +109,15 @@ class _WishlistPageState extends State<WishlistPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Obx(() {
-              if (_wishlistController.filteredWishlistItems.isEmpty) {
-                return const Center(child: Text('No matching items found'));
+              // No items after filtering (search with no results)
+              if (_wishlistController.filteredWishlistItems.isEmpty && 
+                  _wishlistController.wishlistItems.isNotEmpty) {
+                return NoSearchResult(
+                  onExploreCategories: () {
+                    // Clear search and return to all items
+                    _wishlistController.filterWishlistItems('');
+                  },
+                );
               }
 
               return ListView.builder(

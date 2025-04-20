@@ -1,7 +1,10 @@
 import 'package:get/get.dart';
 import 'package:store_go/app/core/middlewares/auth_middleware.dart';
+import 'package:store_go/features/address/view/edit_address_page.dart';
 import 'package:store_go/features/auth/auth_binding.dart';
+import 'package:store_go/features/cart/binding/cart_binding.dart';
 import 'package:store_go/features/category/category_binding.dart';
+import 'package:store_go/features/filter/screen/view/filter_screen.dart';
 import 'package:store_go/features/home/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/auth/views/email_confirmation_screen.dart';
@@ -11,31 +14,36 @@ import 'package:store_go/features/auth/views/reset_password_screen.dart';
 import 'package:store_go/features/auth/views/signup_screen.dart';
 import 'package:store_go/features/cart/views/add_card_screen.dart';
 import 'package:store_go/features/cart/views/cart_screen.dart';
-import 'package:store_go/features/cart/views/chekout_screen.dart';
+import 'package:store_go/features/cart/views/checkout_screen.dart';
 import 'package:store_go/features/category/views/category_screen.dart';
 import 'package:store_go/features/home/views/home_screen.dart';
 import 'package:store_go/features/language/language_binding.dart';
 import 'package:store_go/features/language/views/language_screen.dart';
 import 'package:store_go/features/onBoarding/views/onboarding_screen.dart';
 import 'package:store_go/features/onBoarding/views/profile_setup_screen.dart';
-import 'package:store_go/features/product/product_binding.dart';
+import 'package:store_go/features/order/order_binding/order_binding.dart';
+import 'package:store_go/features/payment/view/edit_payment.dart';
+import 'package:store_go/features/product/binding/product_binding.dart';
 import 'package:store_go/features/product/views/screens/category_products_screen.dart';
 import 'package:store_go/features/product/views/screens/product_detail_screen.dart';
 import 'package:store_go/features/profile/bindings/edit_profile_binding.dart';
 import 'package:store_go/features/profile/bindings/profile_binding.dart';
-import 'package:store_go/features/address/add_adress.dart';
-import 'package:store_go/features/address/adress_screen.dart';
+import 'package:store_go/features/address/view/add_address.dart';
+import 'package:store_go/features/address/view/address_screen.dart';
 import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart';
-import 'package:store_go/features/notifications/notification_screen.dart';
-import 'package:store_go/features/order/orders_detaill_screen.dart';
-import 'package:store_go/features/order/orders_screen.dart';
-import 'package:store_go/features/payment/payment_screen.dart';
+import 'package:store_go/features/notifications/views/notification_screen.dart';
+import 'package:store_go/features/order/view/widget/orders_details_screen.dart';
+import 'package:store_go/features/order/view/orders_screen.dart';
+import 'package:store_go/features/payment/view/payment_screen.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
+import 'package:store_go/features/review/binding/review_binding.dart';
 import 'package:store_go/features/settings/views/setting_screen.dart';
+import 'package:store_go/features/subcategory/views/screens/subcategory_list_screen.dart';
+import 'package:store_go/features/subcategory/views/screens/subcategory_products_screen.dart';
 import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
-import 'package:store_go/features/wishlist/wishlist_binding.dart';
+import 'package:store_go/features/wishlist/binding/wishlist_binding.dart';
 
 List<GetPage<dynamic>>? routes = [
   GetPage(name: '/', page: () => const SplashScreen()),
@@ -104,21 +112,27 @@ List<GetPage<dynamic>>? routes = [
     page: () => CategoryScreen(),
     binding: CategoryBinding(),
   ),
-  GetPage(
-    name: AppRoute.categoryDetail,
-    page: () => const CategoryProductsScreen(),
-    binding: ProductBinding(),
-  ),
 
   // Products
   GetPage(
-    name: '/products/:id',
+    name: AppRoute.productDetail,
     page: () {
       final id = Get.parameters['id'] ?? '';
       return ProductDetailScreen(productId: id);
     },
     binding: ProductBinding(),
   ),
+
+  // Reviews
+GetPage(
+  name: AppRoute.productDetail,
+  page: () {
+    final id = Get.parameters['id'] ?? '';
+    return ProductDetailScreen(productId: id);
+  },
+  bindings: [ProductBinding(), ReviewBinding()], // Add ReviewBinding here
+),
+
   GetPage(
     name: AppRoute.wishlist,
     page: () => WishlistPage(),
@@ -127,7 +141,7 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.cart,
     page: () => CartScreen(),
-    binding: HomeBinding(),
+    binding: CartBinding(),
   ),
   GetPage(
     name: AppRoute.profile,
@@ -136,7 +150,7 @@ List<GetPage<dynamic>>? routes = [
     middlewares: [AuthMiddleware()],
   ),
   GetPage(
-    name: AppRoute.edit_profile,
+    name: AppRoute.editProfile,
     page: () => EditProfilePage(),
     binding: EditProfileBinding(),
   ),
@@ -151,8 +165,13 @@ List<GetPage<dynamic>>? routes = [
     binding: HomeBinding(),
   ),
   GetPage(
-    name: AppRoute.add_address,
+    name: AppRoute.addAddress,
     page: () => AddAddressPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.editAddress,
+    page: () => EditAddressPage(),
     binding: HomeBinding(),
   ),
   GetPage(
@@ -161,19 +180,49 @@ List<GetPage<dynamic>>? routes = [
     binding: HomeBinding(),
   ),
   GetPage(
-    name: AppRoute.add_cart,
-    page: () => AddCardPage(),
-    binding: HomeBinding(),
+    name: AppRoute.addPayment,
+    page: () => const AddCardPage(),
+    binding: HomeBinding(), // Add binding if needed
   ),
-  GetPage(name: AppRoute.orders, page: () => OrdersPage()),
   GetPage(
-    name: AppRoute.order_details,
+    name: AppRoute.editPayment,
+    page: () => const EditPaymentPage(),
+    binding: HomeBinding(), // Add binding if needed
+  ),
+  GetPage(
+    name: AppRoute.orders,
+    page: () => OrdersPage(),
+    binding: OrderBinding(),
+  ),
+  GetPage(
+    name: AppRoute.orderDetails,
     page: () => OrderDetailsPage(),
-    binding: HomeBinding(),
+    binding: OrderBinding(),
   ),
   GetPage(
     name: AppRoute.notifications,
     page: () => NotificationsPage(),
     binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.categoryDetail,
+    page: () => CategoryProductsScreen(),
+    transition: Transition.cupertino,
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.filter,
+    page: () => FilterPage(),
+    binding: HomeBinding(),
+  ),
+  GetPage(
+    name: AppRoute.subcategoryProducts,
+    page: () => SubcategoryProductsScreen(),
+    binding: HomeBinding(), // Add binding if needed
+  ),
+  GetPage(
+    name: AppRoute.categoryDetail,
+    page: () => SubcategoryListScreen(),
+    binding: HomeBinding(), // Add binding if needed
   ),
 ];

@@ -76,7 +76,7 @@ class BottomNavBar extends StatelessWidget {
             text: 'Cart',
             textColor: Theme.of(context).colorScheme.onPrimary,
             leading: ThemeAwareSvg(
-              assetPath: AssetConfig.panierIcon,
+              assetPath: AssetConfig.bagIcon,
               width: 24,
               height: 24,
               colorName:

@@ -20,18 +20,20 @@ class Category {
   });
 
   // Factory constructor to create a Category from JSON
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['id'].toString(),
-      name: json['name'],
-      imageUrl: json['imageUrl'],
-      description: json['description'],
-      userId: json['userId']?.toString(),
-      storeId: json['storeId']?.toString(),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-    );
-  }
+factory Category.fromJson(Map<String, dynamic> json) {
+  return Category(
+    id: json['id'].toString(),
+    name: json['name'] ?? 'Unknown',
+    imageUrl: (json['imageUrl'] == null || json['imageUrl'] == '' || json['imageUrl'] == 'none') 
+        ? null 
+        : json['imageUrl'],
+    description: json['description'],
+    userId: json['userId']?.toString(),
+    storeId: json['storeId']?.toString(),
+    createdAt: json['created_at'],
+    updatedAt: json['updated_at'],
+  );
+}
 
   // Convert Category to JSON
   Map<String, dynamic> toJson() {
