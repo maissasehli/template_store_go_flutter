@@ -20,6 +20,9 @@ class Login extends GetView<LoginController> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final OAuthController oauthController = Get.put(OAuthController());
+    // Make sure controller is properly initialized
+
+    controller.reinitializeIfNeeded();
 
     // ignore: deprecated_member_use
     return WillPopScope(
@@ -133,7 +136,7 @@ class Login extends GetView<LoginController> {
                           'Continue With Apple',
                         ).secondaryIconTextButton(
                           context,
-                          onPressed:() {},
+                          onPressed: () {},
                           icon:
                               oauthController.isLoading.value
                                   ? SizedBox(
@@ -149,7 +152,8 @@ class Login extends GetView<LoginController> {
                                     assetPath: AssetConfig.appleIcon,
                                     colorName: AppColorName.primary,
                                   ),
-                          alignContentLeft: true, enabled: false,
+                          alignContentLeft: true,
+                          enabled: false,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -159,7 +163,7 @@ class Login extends GetView<LoginController> {
                           'Continue With Facebook',
                         ).secondaryIconTextButton(
                           context,
-                          onPressed:(){},
+                          onPressed: () {},
                           icon:
                               oauthController.isLoading.value
                                   ? SizedBox(

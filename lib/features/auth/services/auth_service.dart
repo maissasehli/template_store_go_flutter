@@ -52,7 +52,9 @@ class AuthService {
         email: email,
         password: password,
       );
-
+      if (response.statusCode != 200){
+        Logger().e("Error during sign in: ${response.data['error']}");
+      }
       if (response.statusCode == 200) {
         await _tokenManager.saveSessionData(response.data['session']);
         _notificationService.showSuccess('Successfully logged in');

@@ -50,7 +50,7 @@ class AuthErrorHandler {
       if (error.response?.statusCode == 401) {
         _notificationService.showError('Invalid email or password');
       } else {
-        _notificationService.showError('Authentication failed');
+        _notificationService.showError('Authentication failed ');
       }
     } else {
       _notificationService.showError('An unexpected error occurred');

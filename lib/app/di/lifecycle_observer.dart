@@ -79,6 +79,4 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
       Logger().e("Failed to initialize Pusher: $e");
     }
   }
-
-
 }
