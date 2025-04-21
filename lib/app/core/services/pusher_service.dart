@@ -170,7 +170,28 @@ class PusherService {
     }
   }
 
-  // Method to update user online status
+  // method for immediate status updates
+  Future<void> updateUserOnlineStatusImmediate(bool isOnline) async {
+    // Cancel any pending timer
+    _statusUpdateTimer?.cancel();
+
+    await _statusLock.synchronized(() async {
+      try {
+        final payload = {
+          'isOnline': isOnline,
+          'lastSeen': DateTime.now().toIso8601String(),
+        };
+        final apiClient = Get.find<ApiClient>();
+        await apiClient.post('/users/status', data: payload);
+        _lastReportedStatus = isOnline; // Track what we last sent
+        Logger().i("User online status updated immediately: $isOnline");
+      } catch (e) {
+        Logger().e("Failed to update online status immediately: $e");
+      }
+    });
+  }
+
+  // the original debounced method
   Future<void> updateUserOnlineStatus(bool isOnline) async {
     // Cancel any pending timer
     _statusUpdateTimer?.cancel();
