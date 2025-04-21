@@ -33,7 +33,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
     super.initState();
     detailController.fetchProductDetails(widget.productId);
     detailController.state.product.listen((product) {
-      if (product != null && product.variants['color'] != null && product.variants['color']!.isNotEmpty) {
+      if (product != null &&
+          product.variants['color'] != null &&
+          product.variants['color']!.isNotEmpty) {
         setState(() {
           selectedColor = product.variants['color']![0];
         });
@@ -60,7 +62,32 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
           final product = detailController.state.product.value!;
           return Stack(
             children: [
-              ProductImageGallery(product: product),
+              ProductImageGallery(
+                product: product,
+                onPageChanged: (index) {
+                  detailController.updateImageIndex(index);
+                },
+              ),
+              if (product.images.length >
+                  1) // Only show dots if there are multiple images
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 16.0, bottom: 420.0),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 16.0,
+                      ),
+                     
+                      child: ImagePageIndicator(
+                        currentIndex:
+                            detailController.state.currentImageIndex.value,
+                        totalImages: product.images.length,
+                      ),
+                    ),
+                  ),
+                ),
               SafeArea(
                 child: TopNavigationBar(
                   onBackPressed: () => Navigator.pop(context),
@@ -73,99 +100,86 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, bottom: 380.0),
+                    padding: const EdgeInsets.only(right: 16.0, bottom: 420.0),
                     child: FavoriteButton(productId: product.id),
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 70.0),
-                  child: ImagePageIndicator(
-                    currentIndex: detailController.state.currentImageIndex.value,
-                    totalImages: product.images.isNotEmpty ? product.images.length : 3,
-                  ),
-                ),
-              ),
               DraggableInfoSheet(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            product.name,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Poppins',
-                              color: Colors.black,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              product.name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        ),
-                        QuantitySelector(
-                          quantity: detailController.state.quantity.value,
-                          onQuantityChanged: (value) {
-                            detailController.updateQuantity(value);
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ProductInfo(
-                      product: product,
-                      reviews: product.reviews, // Pass the reviews list
-                    ),
-                    const SizedBox(height: 8),
-                    ReviewSection(
-                      initialReviews: product.reviews,
-                      product: product,
-                    ),
-                const SizedBox(height: 8),
-
-                    const Text(
-                      'Size',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                        color: Colors.black,
+                          QuantitySelector(
+                            quantity: detailController.state.quantity.value,
+                            onQuantityChanged: (value) {
+                              detailController.updateQuantity(value);
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizeSelector(
-                          selectedSize: detailController.state.selectedSize.value,
-                          sizes: product.variants['size'] ?? [],
-                          onSizeSelected: (size) {
-                            detailController.updateSize(size);
-                          },
-                        ),
-                        ColorSelector(
-                          selectedColor: selectedColor ?? (product.variants['color']?.isNotEmpty ?? false ? product.variants['color']![0] : ''),
-                          colors: product.colors,
-                          onColorSelected: (color) {
-                            setState(() {
-                              selectedColor = color;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ProductDescription(description: product.description),
-                    const SizedBox(height: 16),
-                    AddToCartButton(
-                      price: product.price,
-                      onPressed: () {
-                        detailController.addToCart();
-                      },
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      ProductInfo(product: product, reviews: product.reviews),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: SizeSelector(
+                              selectedSize:
+                                  detailController.state.selectedSize.value,
+                              sizes: product.variants['size'] ?? [],
+                              onSizeSelected: (size) {
+                                detailController.updateSize(size);
+                              },
+                            ),
+                          ),
+                          ColorSelector(
+                            selectedColor:
+                                selectedColor ??
+                                (product.variants['color']?.isNotEmpty ?? false
+                                    ? product.variants['color']![0]
+                                    : ''),
+                            colors: product.colors,
+                            onColorSelected: (color) {
+                              setState(() {
+                                selectedColor = color;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ProductDescription(description: product.description),
+                      const SizedBox(height: 8),
+                      ReviewSection(
+                        initialReviews: product.reviews,
+                        product: product,
+                      ),
+                      const SizedBox(height: 16),
+                      AddToCartButton(
+                        price: product.price,
+                        onPressed: () {
+                          detailController.addToCart();
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ],

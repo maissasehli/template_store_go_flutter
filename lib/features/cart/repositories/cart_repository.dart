@@ -35,10 +35,13 @@ class CartRepository {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart/${item.productId}';
       _logger.i('Adding to cart at: $fullUrl');
-      await _apiClient.post('/products/cart/${item.productId}', data: {
+      final data = {
         'quantity': item.quantity,
-        'variants': item.variants,
-      });
+      };
+      if (item.variantId.isNotEmpty) {
+        data['variantId'] = item.variantId as int;
+      }
+      await _apiClient.post('/products/cart/${item.productId}', data: data);
     } catch (e) {
       _logger.e('Failed to add item to cart: $e');
       throw Exception('Failed to add item to cart: $e');
@@ -63,8 +66,8 @@ class CartRepository {
       final data = {
         'quantity': item.quantity,
       };
-      if (item.variants.isNotEmpty) {
-        data['variants'] = item.variants as int;
+      if (item.variantId.isNotEmpty) {
+        data['variantId'] = item.variantId as int; // Send as String (or int.parse(item.variantId) if int is required)
       }
       await _apiClient.put('/products/cart/${item.productId}', data: data);
     } catch (e) {

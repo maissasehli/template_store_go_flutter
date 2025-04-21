@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/shared/widgets/universal_cached_image.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 
 class ProductImageGallery extends StatefulWidget {
@@ -33,14 +31,14 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height * widget.height,
-      color: AppColors.muted(context),
+      color: Colors.grey[300],
       child: _buildProductImageGallery(context),
     );
   }
 
   Widget _buildProductImageGallery(BuildContext context) {
     if (widget.product.images.isEmpty) {
-      return _buildEmptyGallery(context);
+      return const Center(child: Icon(Icons.image_not_supported, size: 50));
     }
 
     return PageView.builder(
@@ -48,48 +46,14 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
       itemCount: widget.product.images.length,
       onPageChanged: widget.onPageChanged,
       itemBuilder: (context, index) {
-        final String imagePath = widget.product.images[index];
-
-        // Determine if it's an asset or network image
-        final bool isAsset = imagePath.startsWith('asset://');
-        final ImageSource source =
-            isAsset ? ImageSource.asset : ImageSource.network;
-        final String path =
-            isAsset ? imagePath.replaceFirst('asset://', '') : imagePath;
-
-        return UniversalCachedImage(
-          imagePath: path,
-          source: source,
+        return Image.network(
+          widget.product.images[index],
           fit: BoxFit.cover,
-          errorWidget: _buildErrorWidget(context),
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(child: Icon(Icons.broken_image, size: 40));
+          },
         );
       },
-    );
-  }
-
-  Widget _buildEmptyGallery(BuildContext context) {
-    return Container(
-      color: AppColors.muted(context),
-      child: Center(
-        child: Icon(
-          Icons.image_not_supported,
-          size: 50,
-          color: AppColors.mutedForeground(context),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorWidget(BuildContext context) {
-    return Container(
-      color: AppColors.muted(context),
-      child: Center(
-        child: Icon(
-          Icons.broken_image,
-          size: 40,
-          color: AppColors.mutedForeground(context),
-        ),
-      ),
     );
   }
 }

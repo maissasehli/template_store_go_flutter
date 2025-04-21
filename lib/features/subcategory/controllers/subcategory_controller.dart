@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/subcategory/models/subcategory_model.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
@@ -9,18 +8,15 @@ class SubcategoryController extends GetxController {
   final SubcategoryRepository _repository;
   final Logger _logger = Logger();
 
-  // Observable states
   final RxList<Subcategory> subcategories = <Subcategory>[].obs;
   final RxList<Product> subcategoryProducts = <Product>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
 
-  // Store current category and subcategory
   final RxString currentCategoryId = ''.obs;
   final RxString currentSubcategoryId = ''.obs;
 
-  // Search functionality
   final RxString searchQuery = ''.obs;
   final RxBool isSearchActive = false.obs;
 
@@ -28,11 +24,27 @@ class SubcategoryController extends GetxController {
 
   void setCategory(String categoryId) {
     currentCategoryId.value = categoryId;
+    currentSubcategoryId.value = '';
     subcategories.clear();
     subcategoryProducts.clear();
     searchQuery.value = '';
     isSearchActive.value = false;
+    hasError.value = false;
+    errorMessage.value = '';
+
     fetchSubcategories(categoryId);
+  }
+
+  // New method to reset state when refreshing or clearing filters
+  void resetState() {
+    currentCategoryId.value = '';
+    currentSubcategoryId.value = '';
+    subcategories.clear();
+    subcategoryProducts.clear();
+    searchQuery.value = '';
+    isSearchActive.value = false;
+    hasError.value = false;
+    errorMessage.value = '';
   }
 
   Future<void> fetchSubcategories(String categoryId) async {
@@ -49,6 +61,7 @@ class SubcategoryController extends GetxController {
       _logger.e("Error fetching subcategories for category $categoryId: $e");
       hasError.value = true;
       errorMessage.value = 'Failed to load subcategories: $e';
+      subcategories.clear();
     } finally {
       isLoading.value = false;
     }
@@ -57,8 +70,6 @@ class SubcategoryController extends GetxController {
   void selectSubcategory(Subcategory subcategory) {
     currentSubcategoryId.value = subcategory.id;
     fetchSubcategoryProducts(subcategory.id);
-    // Navigate to a new screen to show products (we'll create this later)
-    Get.toNamed(AppRoute.subcategoryProducts, arguments: subcategory);
   }
 
   Future<void> fetchSubcategoryProducts(String subcategoryId) async {
@@ -81,7 +92,6 @@ class SubcategoryController extends GetxController {
     }
   }
 
-  // Search within subcategories
   Future<void> searchSubcategoryProducts(String query) async {
     searchQuery.value = query;
 

@@ -1,5 +1,5 @@
-// widgets/price_range_section.dart
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'custom_thumb_shape.dart';
 
 class PriceRangeSection extends StatelessWidget {
@@ -14,6 +14,20 @@ class PriceRangeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logger = Logger();
+    
+    // Clamp priceRange to ensure values are within [0, 500]
+    final clampedPriceRange = RangeValues(
+      priceRange.start.clamp(0.0, 500.0),
+      priceRange.end.clamp(0.0, 500.0),
+    );
+
+    // Log if clamping was necessary
+    if (priceRange != clampedPriceRange) {
+      logger.w('Clamped invalid priceRange: start=${priceRange.start}, end=${priceRange.end} '
+          'to start=${clampedPriceRange.start}, end=${clampedPriceRange.end}');
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,20 +41,20 @@ class PriceRangeSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-       
-        // Price slider
+        
+        // Price slider labels
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${priceRange.start.toInt()}',
+              '${clampedPriceRange.start.toInt()}',
               style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,
               ),
             ),
             Text(
-              '${priceRange.end.toInt()}',
+              '${clampedPriceRange.end.toInt()}',
               style: const TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 16,
@@ -66,10 +80,17 @@ class PriceRangeSection extends StatelessWidget {
             overlayColor: Colors.transparent,
           ),
           child: RangeSlider(
-            values: priceRange,
+            values: clampedPriceRange,
             min: 0,
             max: 500,
-            onChanged: onRangeChanged,
+            onChanged: (RangeValues newValues) {
+              // Ensure new values are within bounds
+              final clampedValues = RangeValues(
+                newValues.start.clamp(0.0, 500.0),
+                newValues.end.clamp(0.0, 500.0),
+              );
+              onRangeChanged(clampedValues);
+            },
           ),
         ),
       ],

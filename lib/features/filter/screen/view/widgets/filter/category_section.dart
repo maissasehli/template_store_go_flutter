@@ -1,15 +1,22 @@
-// widgets/category_section.dart
 import 'package:flutter/material.dart';
+import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/subcategory/models/subcategory_model.dart';
 import 'category_button.dart';
 
 class CategorySection extends StatelessWidget {
-  final String selectedCategory;
+  final String selectedCategoryId;
+  final List<Category> categories;
+  final List<Subcategory> subcategories;
   final Function(String) onCategorySelected;
+  final Function(String) onSubcategorySelected;
 
   const CategorySection({
     super.key,
-    required this.selectedCategory,
+    required this.selectedCategoryId,
+    required this.categories,
+    required this.subcategories,
     required this.onCategorySelected,
+    required this.onSubcategorySelected,
   });
 
   @override
@@ -28,53 +35,47 @@ class CategorySection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         
-        // Categories first row
-        Row(
+        // Categories row
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
             CategoryButton(
               label: 'All',
-              isSelected: selectedCategory == 'All',
+              isSelected: selectedCategoryId == 'All',
               onTap: () => onCategorySelected('All'),
             ),
-            const SizedBox(width: 8),
-            CategoryButton(
-              label: 'Vêtements',
-              isSelected: selectedCategory == 'Vêtements',
-              onTap: () => onCategorySelected('Vêtements'),
-            ),
-            const SizedBox(width: 8),
-            CategoryButton(
-              label: 'Soins',
-              isSelected: selectedCategory == 'Soins',
-              onTap: () => onCategorySelected('Soins'),
-            ),
+            ...categories.map((category) => CategoryButton(
+                  label: category.name,
+                  isSelected: selectedCategoryId == category.id,
+                  onTap: () => onCategorySelected(category.id),
+                )),
           ],
         ),
         
-        const SizedBox(height: 8),
-        
-        // Categories second row
-        Row(
-          children: [
-            CategoryButton(
-              label: 'Tops',
-              isSelected: selectedCategory == 'Tops',
-              onTap: () => onCategorySelected('Tops'),
+        // Subcategories row (shown only if a category is selected and subcategories exist)
+        if (selectedCategoryId != 'All' && subcategories.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          const Text(
+            'Sous-catégories',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF121826),
             ),
-            const SizedBox(width: 8),
-            CategoryButton(
-              label: 'Shorts',
-              isSelected: selectedCategory == 'Shorts',
-              onTap: () => onCategorySelected('Shorts'),
-            ),
-            const SizedBox(width: 8),
-            CategoryButton(
-              label: 'Cats',
-              isSelected: selectedCategory == 'Cats',
-              onTap: () => onCategorySelected('Cats'),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: subcategories.map((subcategory) => CategoryButton(
+                  label: subcategory.name,
+                  isSelected: selectedCategoryId == subcategory.id,
+                  onTap: () => onSubcategorySelected(subcategory.id),
+                )).toList(),
+          ),
+        ],
       ],
     );
   }

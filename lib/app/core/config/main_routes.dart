@@ -12,7 +12,7 @@ import 'package:store_go/features/auth/views/forget_password_screen.dart';
 import 'package:store_go/features/auth/views/login_screen.dart';
 import 'package:store_go/features/auth/views/reset_password_screen.dart';
 import 'package:store_go/features/auth/views/signup_screen.dart';
-import 'package:store_go/features/cart/views/add_card_screen.dart';
+import 'package:store_go/features/payment/view/widget/add_card_screen.dart';
 import 'package:store_go/features/cart/views/cart_screen.dart';
 import 'package:store_go/features/cart/views/checkout_screen.dart';
 import 'package:store_go/features/category/views/category_screen.dart';

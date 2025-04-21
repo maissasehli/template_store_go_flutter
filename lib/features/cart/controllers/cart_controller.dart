@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
-import 'package:store_go/features/cart/reposetories/cart_repository.dart';
+import 'package:store_go/features/cart/repositories/cart_repository.dart'; 
 import 'package:store_go/features/product/models/product_model.dart';
 
 class CartController extends GetxController {
@@ -50,7 +50,7 @@ class CartController extends GetxController {
   Future<void> addToCart({
     required Product product,
     required int quantity,
-    required Map<String, String> variants,
+    required String variantId,
   }) async {
     try {
       isLoading.value = true;
@@ -63,7 +63,7 @@ class CartController extends GetxController {
         name: product.name,
         price: product.price,
         quantity: quantity,
-        variants: variants,
+        variantId: variantId,
         image: product.images.isNotEmpty ? product.images.first : '',
       );
 
@@ -86,29 +86,35 @@ class CartController extends GetxController {
   }
 
   Future<void> updateQuantity(String productId, int quantity) async {
+    // Declare item and index outside the try block so they are accessible in the catch block
+    CartItem? item;
+    int? index;
+
     try {
-      isLoading.value = true;
-      isError.value = false;
-      errorMessage.value = '';
+      // Prevent negative or zero quantities
+      if (quantity <= 0) {
+        await removeFromCart(productId);
+        return;
+      }
 
-      final item = cartItems.firstWhere((item) => item.productId == productId);
+      // Update locally first (this updates the UI immediately)
+      item = cartItems.firstWhere((item) => item.productId == productId);
       final updatedItem = item.copyWith(quantity: quantity);
-
-      final index = cartItems.indexWhere((item) => item.productId == productId);
+      index = cartItems.indexWhere((item) => item.productId == productId);
       cartItems[index] = updatedItem;
       _calculateCartTotals();
 
+      // Sync with backend without refreshing the entire cart
       await _repository.updateCartItem(updatedItem);
-      await fetchCartItems();
     } catch (e) {
-      await fetchCartItems();
+      // Revert the local change if the backend update fails
+      if (item != null && index != null) {
+        cartItems[index] = item; // Revert to the original item
+        _calculateCartTotals();
+      }
 
-      isError.value = true;
-      errorMessage.value = e.toString();
       _logger.e('Error updating cart item: $e');
-      Get.snackbar('Error', 'Failed to update cart item', snackPosition: SnackPosition.BOTTOM);
-    } finally {
-      isLoading.value = false;
+      Get.snackbar('Error', 'Failed to update quantity', snackPosition: SnackPosition.BOTTOM);
     }
   }
 

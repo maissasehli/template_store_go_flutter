@@ -14,10 +14,12 @@ class Product {
   final double rating;
   final Map<String, dynamic> attributes;
   final Map<String, List<String>> variants;
-  final List<Map<String, String>> colors; // Stores value, customColor, and colorClass
+  final List<Map<String, String>> colors;
   final String status;
   final bool isFavorite;
   final List<Review> reviews;
+  final DateTime createdAt; // New: For "New Today" sorting
+  final int? salesCount; // New: For "Top Sellers" sorting
 
   Product({
     required this.id,
@@ -35,6 +37,8 @@ class Product {
     required this.status,
     this.isFavorite = false,
     this.reviews = const [],
+    required this.createdAt,
+    this.salesCount,
   });
 
   Product copyWith({
@@ -53,6 +57,8 @@ class Product {
     String? status,
     bool? isFavorite,
     List<Review>? reviews,
+    DateTime? createdAt,
+    int? salesCount,
   }) {
     return Product(
       id: id ?? this.id,
@@ -70,6 +76,8 @@ class Product {
       status: status ?? this.status,
       isFavorite: isFavorite ?? this.isFavorite,
       reviews: reviews ?? this.reviews,
+      createdAt: createdAt ?? this.createdAt,
+      salesCount: salesCount ?? this.salesCount,
     );
   }
 
@@ -118,8 +126,8 @@ class Product {
           if (color is Map<String, dynamic>) {
             return {
               'value': color['value']?.toString() ?? '',
-              'customColor': color['customColor']?.toString() ?? '', // May be empty
-              'colorClass': color['colorClass']?.toString() ?? '', // New field
+              'customColor': color['customColor']?.toString() ?? '',
+              'colorClass': color['colorClass']?.toString() ?? '',
             };
           }
           return {'value': color.toString(), 'customColor': '', 'colorClass': ''};
@@ -170,6 +178,8 @@ class Product {
         status: json['status']?.toString() ?? 'draft',
         isFavorite: json['isFavorite'] as bool? ?? false,
         reviews: reviewsList,
+        createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ?? DateTime.now(),
+        salesCount: int.tryParse(json['sales_count']?.toString() ?? ''),
       );
     } catch (e) {
       developer.log('Error constructing Product: $e', name: 'Product.fromJson', error: e);
@@ -194,6 +204,8 @@ class Product {
       'status': status,
       'isFavorite': isFavorite,
       'reviews': reviews.map((review) => review.toJson()).toList(),
+      'created_at': createdAt.toIso8601String(),
+      'sales_count': salesCount,
     };
   }
 }

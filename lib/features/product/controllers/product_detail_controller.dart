@@ -36,6 +36,7 @@ class ProductDetailController extends GetxController {
       state.setLoading(false);
     }
   }
+  
 
   void _initializeProductOptions() {
     final product = state.product.value;
@@ -84,13 +85,13 @@ class ProductDetailController extends GetxController {
     state.setQuantity(value);
   }
 
-  void updateImageIndex(int index) {
-    if (state.product.value == null) return;
-    final imageCount = state.product.value!.images.length;
-    if (index >= 0 && index < imageCount) {
-      state.setCurrentImageIndex(index);
-    }
+ void updateImageIndex(int index) {
+  if (state.product.value == null) return;
+  final imageCount = state.product.value!.images.length;
+  if (index >= 0 && index < imageCount) {
+    state.setCurrentImageIndex(index);
   }
+}
 
   Future<void> toggleFavorite() async {
     if (state.product.value == null) return;
@@ -157,7 +158,7 @@ class ProductDetailController extends GetxController {
       await cartController.addToCart(
         product: product,
         quantity: quantity,
-        variants: variants,
+       variantId: '',
       );
 
       Get.snackbar(

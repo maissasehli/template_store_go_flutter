@@ -129,7 +129,7 @@ class _SubcategoryListScreenState extends State<SubcategoryListScreen> {
                     );
                   } else if (subcategoryController.subcategories.isEmpty) {
                     return const NoSearchResult(
-                      onExploreCategories: null, // No action needed here
+                      onExploreCategories: null,
                     );
                   }
                   return ListView.builder(

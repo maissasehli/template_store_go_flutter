@@ -4,7 +4,7 @@ class CartItem {
   final String name;
   final double price;
   final int quantity;
-  final Map<String, String> variants;
+  final String variantId; // Changed from Map<String, String> to String
   final String image;
 
   CartItem({
@@ -13,7 +13,7 @@ class CartItem {
     required this.name,
     required this.price,
     required this.quantity,
-    required this.variants,
+    required this.variantId,
     required this.image,
   });
 
@@ -23,7 +23,7 @@ class CartItem {
     String? name,
     double? price,
     int? quantity,
-    Map<String, String>? variants,
+    String? variantId,
     String? image,
   }) {
     return CartItem(
@@ -32,7 +32,7 @@ class CartItem {
       name: name ?? this.name,
       price: price ?? this.price,
       quantity: quantity ?? this.quantity,
-      variants: variants ?? this.variants,
+      variantId: variantId ?? this.variantId,
       image: image ?? this.image,
     );
   }
@@ -44,7 +44,7 @@ class CartItem {
       'name': name,
       'price': price,
       'quantity': quantity,
-      'variants': variants,
+      'variantId': variantId,
       'image': image,
     };
   }
@@ -52,20 +52,20 @@ class CartItem {
   factory CartItem.fromJson(Map<String, dynamic> json) {
     final product = json['product'] ?? {};
     return CartItem(
-      id: json['id'] ?? '',
-      productId: json['product_id'] ?? json['productId'] ?? '',
-      name: product['name'] ?? json['name'] ?? '',
+      id: json['id']?.toString() ?? '',
+      productId: json['product_id']?.toString() ?? json['productId']?.toString() ?? '',
+      name: product['name']?.toString() ?? json['name']?.toString() ?? '',
       price: double.tryParse(product['price']?.toString() ?? '0.0') ?? 0.0,
-      quantity: json['quantity'] ?? 0,
-      variants: Map<String, String>.from(json['variants'] ?? {}),
+      quantity: int.tryParse(json['quantity']?.toString() ?? '0') ?? 0,
+      variantId: json['variantId']?.toString() ?? '',
       image: (product['image_urls'] as List<dynamic>?)?.isNotEmpty == true
-          ? product['image_urls'][0] ?? ''
-          : json['image'] ?? '',
+          ? product['image_urls'][0]?.toString() ?? ''
+          : json['image']?.toString() ?? '',
     );
   }
 
   @override
   String toString() {
-    return 'CartItem{id: $id, productId: $productId, name: $name, price: $price, quantity: $quantity}';
+    return 'CartItem{id: $id, productId: $productId, name: $name, price: $price, quantity: $quantity, variantId: $variantId}';
   }
 }

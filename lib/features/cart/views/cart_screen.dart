@@ -30,13 +30,15 @@ class CartScreen extends StatelessWidget {
                   const Icon(Icons.error_outline, size: 48, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
-                    cartController.errorMessage.value,
+                    cartController.errorMessage.value.isNotEmpty
+                        ? cartController.errorMessage.value
+                        : 'An error occurred',
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.red),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => cartController.fetchCartItems(), // Fixed: Changed loadCart to fetchCartItems
+                    onPressed: () => cartController.fetchCartItems(),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
                     child: const Text('Try Again'),
                   ),
@@ -169,8 +171,8 @@ class CartScreen extends StatelessWidget {
                   return CartItemCard(
                     item: item,
                     onQuantityChanged: (quantity) =>
-                        controller.updateQuantity(item.productId, quantity), // Fixed: Use productId
-                    onRemove: () => controller.removeFromCart(item.productId), // Fixed: Use productId
+                        controller.updateQuantity(item.productId, quantity),
+                    onRemove: () => controller.removeFromCart(item.productId),
                   );
                 },
               );
@@ -196,11 +198,14 @@ class CartScreen extends StatelessWidget {
             height: 55,
             margin: const EdgeInsets.only(bottom: 24, top: 16),
             child: ElevatedButton(
-              onPressed: () {
-                Get.toNamed('/checkout');
-              },
+              onPressed: controller.cartItems.isEmpty
+                  ? null
+                  : () {
+                      Get.toNamed('/checkout');
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
+                disabledBackgroundColor: Colors.grey[400],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(100),
                 ),

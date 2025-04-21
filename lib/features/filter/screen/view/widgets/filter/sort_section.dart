@@ -1,4 +1,3 @@
-// widgets/sort_section.dart
 import 'package:flutter/material.dart';
 import 'sort_tab.dart';
 
@@ -27,20 +26,29 @@ class SortSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        
-        // Sort tabs
-        Row(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
             SortTab(
               label: 'New Today',
               isSelected: selectedTab == 'New Today',
               onTap: () => onTabSelected('New Today'),
             ),
-            const SizedBox(width: 8),
             SortTab(
               label: 'Top Sellers',
               isSelected: selectedTab == 'Top Sellers',
               onTap: () => onTabSelected('Top Sellers'),
+            ),
+            SortTab(
+              label: 'Price: Low to High',
+              isSelected: selectedTab == 'Price: Low to High',
+              onTap: () => onTabSelected('Price: Low to High'),
+            ),
+            SortTab(
+              label: 'Price: High to Low',
+              isSelected: selectedTab == 'Price: High to Low',
+              onTap: () => onTabSelected('Price: High to Low'),
             ),
           ],
         ),

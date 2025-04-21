@@ -32,7 +32,7 @@ class ProductInfo extends StatelessWidget {
           subtitle,
           style: TextStyle(
             color: AppColors.mutedForeground(context),
-            fontSize: 11,
+            fontSize: 12,
             fontFamily: 'Poppins',
           ),
         ),
@@ -50,7 +50,7 @@ class ProductInfo extends StatelessWidget {
                       index < averageRating.round()
                           ? Icons.star
                           : Icons.star_border,
-                      size: 16,
+                      size: 18,
                       color: index < averageRating.round()
                           ? const Color(0xFFFFCC00) // Gold color for stars
                           : Colors.grey[300],
@@ -61,7 +61,7 @@ class ProductInfo extends StatelessWidget {
                 Text(
                   '(${reviews.length} Review${reviews.length == 1 ? '' : 's'})',
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 14,
                     fontFamily: 'Poppins',
                     color: AppColors.mutedForeground(context),
                   ),
@@ -72,7 +72,7 @@ class ProductInfo extends StatelessWidget {
             Text(
               isInStock ? 'Available in stock' : 'Out of stock',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
                 color: isInStock ? Colors.green : Colors.red,

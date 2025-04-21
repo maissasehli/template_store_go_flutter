@@ -14,6 +14,25 @@ class SizeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Size',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        _buildSizeOptions(),
+      ],
+    );
+  }
+
+  Widget _buildSizeOptions() {
     if (sizes.isEmpty) {
       return const Text(
         'No sizes available',

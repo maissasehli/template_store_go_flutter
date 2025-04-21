@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class DraggableInfoSheet extends StatelessWidget {
   final Widget child;
@@ -23,9 +22,9 @@ class DraggableInfoSheet extends StatelessWidget {
       maxChildSize: maxChildSize,
       builder: (context, scrollController) {
         return Container(
-          decoration: BoxDecoration(
-            color: AppColors.card(context),
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
@@ -36,14 +35,13 @@ class DraggableInfoSheet extends StatelessWidget {
             child: Column(
               children: [
                 child,
-                // Bottom indicator
                 const SizedBox(height: 16),
                 Center(
                   child: Container(
                     width: 50,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: AppColors.border(context),
+                      color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),

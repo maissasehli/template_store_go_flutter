@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/review/model/review_model.dart';
@@ -5,6 +6,7 @@ import 'dart:developer' as developer;
 
 class ProductRepository {
   final ApiClient _apiClient;
+  final Logger _logger = Logger();
 
   ProductRepository({required ApiClient apiClient}) : _apiClient = apiClient;
 
@@ -40,7 +42,6 @@ class ProductRepository {
         throw Exception('Error fetching products: $e');
       }
     }
-
     return List.from(_allProductsCache);
   }
 
@@ -55,21 +56,20 @@ class ProductRepository {
           _productCache[productId] = product;
           return product;
         } else {
-          throw Exception('Failed to load product details: ${response.statusMessage}');
+          throw Exception('Failed to load product: ${response.statusMessage}');
         }
       } catch (e) {
-        developer.log('Error fetching product details: $e', name: 'ProductRepository.getProductById', error: e);
-        throw Exception('Error fetching product details: $e');
+        developer.log('Error fetching product: $e', name: 'ProductRepository.getProductById', error: e);
+        throw Exception('Error fetching product: $e');
       }
     }
-
     return _productCache[productId]!;
   }
 
   Future<List<Product>> getProductsByCategory(String categoryId, {bool forceRefresh = false}) async {
-    if (forceRefresh || !_categoryProductsCache.containsKey(categoryId)) {
+    if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
       try {
-        final response = await _apiClient.get('$_productsEndpoint/category/$categoryId');
+        final response = await _apiClient.get('$_productsEndpoint?category_id=$categoryId');
         developer.log('Get products by category response: ${response.data}', name: 'ProductRepository.getProductsByCategory');
 
         if (response.statusCode == 200) {
@@ -91,16 +91,100 @@ class ProductRepository {
         throw Exception('Error fetching category products: $e');
       }
     }
-
     return List.from(_categoryProductsCache[categoryId] ?? []);
+  }
+
+  Future<List<Product>> getProductsBySubcategory(String subcategoryId, {bool forceRefresh = false}) async {
+    if (!_categoryProductsCache.containsKey(subcategoryId) || forceRefresh) {
+      try {
+        final response = await _apiClient.get('$_productsEndpoint?subcategory_id=$subcategoryId');
+        developer.log('Get products by subcategory response: ${response.data}', name: 'ProductRepository.getProductsBySubcategory');
+
+        if (response.statusCode == 200) {
+          List<dynamic> productsJson = response.data['data'] ?? [];
+          final products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+          _categoryProductsCache[subcategoryId] = products;
+
+          for (var product in products) {
+            _productCache[product.id] = product;
+          }
+
+          return products;
+        } else {
+          throw Exception('Failed to load subcategory products: ${response.statusMessage}');
+        }
+      } catch (e) {
+        developer.log('Error fetching subcategory products: $e', name: 'ProductRepository.getProductsBySubcategory', error: e);
+        throw Exception('Error fetching subcategory products: $e');
+      }
+    }
+    return List.from(_categoryProductsCache[subcategoryId] ?? []);
+  }
+
+  Future<List<Product>> getFilteredProducts({
+    String? categoryId,
+    String? subcategoryId,
+    double? minPrice,
+    double? maxPrice,
+    double? minRating,
+    String? sortOption,
+    bool forceRefresh = false,
+  }) async {
+    try {
+      final queryParameters = <String, String>{};
+      if (categoryId != null) queryParameters['category_id'] = categoryId;
+      if (subcategoryId != null) queryParameters['subcategory_id'] = subcategoryId;
+      if (minPrice != null) queryParameters['min_price'] = minPrice.toString();
+      if (maxPrice != null) queryParameters['max_price'] = maxPrice.toString();
+      if (minRating != null) queryParameters['min_rating'] = minRating.toString();
+      if (sortOption != null) {
+        switch (sortOption) {
+          case 'New Today':
+            queryParameters['sort'] = 'created_at_desc';
+            break;
+          case 'Top Sellers':
+            queryParameters['sort'] = 'sales_count_desc';
+            break;
+          case 'Price: Low to High':
+            queryParameters['sort'] = 'price_asc';
+            break;
+          case 'Price: High to Low':
+            queryParameters['sort'] = 'price_desc';
+            break;
+        }
+      }
+
+      final cacheKey = queryParameters.toString();
+      if (!_categoryProductsCache.containsKey(cacheKey) || forceRefresh) {
+        final response = await _apiClient.get(_productsEndpoint, queryParameters: queryParameters);
+        developer.log('Get filtered products response: ${response.data}', name: 'ProductRepository.getFilteredProducts');
+
+        if (response.statusCode == 200) {
+          List<dynamic> productsJson = response.data['data'] ?? [];
+          final products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+          _categoryProductsCache[cacheKey] = products;
+
+          for (var product in products) {
+            _productCache[product.id] = product;
+          }
+
+          return products;
+        } else {
+          throw Exception('Failed to load filtered products: ${response.statusMessage}');
+        }
+      }
+      return List.from(_categoryProductsCache[cacheKey] ?? []);
+    } catch (e) {
+      developer.log('Error fetching filtered products: $e', name: 'ProductRepository.getFilteredProducts', error: e);
+      throw Exception('Error fetching filtered products: $e');
+    }
   }
 
   Future<List<Product>> getFeaturedProducts() async {
     try {
-      final response = await _apiClient.get(
-        _productsEndpoint,
-        queryParameters: {'featured': 'true'},
-      );
+      final response = await _apiClient.get(_productsEndpoint, queryParameters: {'featured': 'true'});
       developer.log('Get featured products response: ${response.data}', name: 'ProductRepository.getFeaturedProducts');
 
       if (response.statusCode == 200) {
@@ -117,10 +201,7 @@ class ProductRepository {
 
   Future<List<Product>> getNewProducts() async {
     try {
-      final response = await _apiClient.get(
-        _productsEndpoint,
-        queryParameters: {'sort': 'newest'},
-      );
+      final response = await _apiClient.get(_productsEndpoint, queryParameters: {'sort': 'created_at_desc'});
       developer.log('Get new products response: ${response.data}', name: 'ProductRepository.getNewProducts');
 
       if (response.statusCode == 200) {
@@ -137,10 +218,7 @@ class ProductRepository {
 
   Future<List<Product>> searchProducts(String query) async {
     try {
-      final response = await _apiClient.get(
-        _productsEndpoint,
-        queryParameters: {'search': query},
-      );
+      final response = await _apiClient.get(_productsEndpoint, queryParameters: {'search': query});
       developer.log('Search products response: ${response.data}', name: 'ProductRepository.searchProducts');
 
       if (response.statusCode == 200) {
@@ -167,13 +245,13 @@ class ProductRepository {
 
       if (success && _productCache.containsKey(productId)) {
         _productCache[productId] = _productCache[productId]!.copyWith(isFavorite: isFavorite);
-        _updateProductInCollections(productId, isFavorite);
+        _updateProductInCollections(productId, isFavorite: isFavorite);
       }
 
       return success;
     } catch (e) {
       developer.log('Error updating favorite status: $e', name: 'ProductRepository.updateFavoriteStatus', error: e);
-      return true;
+      return false; // Changed to false to indicate failure
     }
   }
 
@@ -201,34 +279,28 @@ class ProductRepository {
     }
   }
 
-  void _updateProductInCollections(String productId, bool isFavorite) {
+  void _updateProductInCollections(String productId, {bool? isFavorite, List<Review>? reviews}) {
     final allProductIndex = _allProductsCache.indexWhere((p) => p.id == productId);
     if (allProductIndex != -1) {
-      _allProductsCache[allProductIndex] =
-          _allProductsCache[allProductIndex].copyWith(isFavorite: isFavorite);
+      _allProductsCache[allProductIndex] = _allProductsCache[allProductIndex].copyWith(
+        isFavorite: isFavorite ?? _allProductsCache[allProductIndex].isFavorite,
+        reviews: reviews ?? _allProductsCache[allProductIndex].reviews,
+      );
     }
 
     for (var entry in _categoryProductsCache.entries) {
       final index = entry.value.indexWhere((p) => p.id == productId);
       if (index != -1) {
-        entry.value[index] = entry.value[index].copyWith(isFavorite: isFavorite);
+        entry.value[index] = entry.value[index].copyWith(
+          isFavorite: isFavorite ?? entry.value[index].isFavorite,
+          reviews: reviews ?? entry.value[index].reviews,
+        );
       }
     }
   }
 
   void _updateProductReviewsInCollections(String productId, List<Review> reviews) {
-    final allProductIndex = _allProductsCache.indexWhere((p) => p.id == productId);
-    if (allProductIndex != -1) {
-      _allProductsCache[allProductIndex] =
-          _allProductsCache[allProductIndex].copyWith(reviews: reviews);
-    }
-
-    for (var entry in _categoryProductsCache.entries) {
-      final index = entry.value.indexWhere((p) => p.id == productId);
-      if (index != -1) {
-        entry.value[index] = entry.value[index].copyWith(reviews: reviews);
-      }
-    }
+    _updateProductInCollections(productId, reviews: reviews);
   }
 
   void clearCache() {

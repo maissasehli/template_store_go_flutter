@@ -2,27 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/features/category/models/category.modal.dart';
-import 'package:store_go/features/product/controllers/category_product_controller.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
+import 'package:store_go/features/subcategory/models/subcategory_model.dart';
 
-class CategoryListView extends GetView<CategoryController> {
-  final CategoryProductController categoryProductController;
+class SubcategoryListView extends GetView<SubcategoryController> {
   final VoidCallback applyFilters;
 
-  const CategoryListView({
-    super.key,
-    required this.categoryProductController,
-    required this.applyFilters,
-  });
+  const SubcategoryListView({super.key, required this.applyFilters});
 
   @override
   Widget build(BuildContext context) {
-    final SubcategoryController subcategoryController = Get.find<SubcategoryController>();
-
     return Row(
       children: [
+        // Filter Button
         GestureDetector(
           onTap: applyFilters,
           child: Container(
@@ -43,18 +35,21 @@ class CategoryListView extends GetView<CategoryController> {
                   color: Colors.white,
                 ),
                 const SizedBox(width: 8),
-                Obx(() => Text(
-                      '${categoryProductController.categoryProducts.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
+                Obx(() {
+                  return Text(
+                    '${controller.subcategoryProducts.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }),
               ],
             ),
           ),
         ),
+        // Subcategory List
         Expanded(
           child: Container(
             height: 36,
@@ -69,26 +64,22 @@ class CategoryListView extends GetView<CategoryController> {
                   ),
                 );
               }
-              if (controller.categories.isEmpty) {
-                controller.fetchCategories();
-                return const Center(child: Text('No categories available'));
+              if (controller.subcategories.isEmpty) {
+                controller.fetchSubcategories(controller.currentCategoryId.value);
+                return const Center(child: Text('No subcategories available'));
               }
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: controller.categories.length,
+                itemCount: controller.subcategories.length,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemBuilder: (context, index) {
-                  final category = controller.categories[index];
+                  final subcategory = controller.subcategories[index];
                   return Obx(() {
-                    final isSelected = category.id == controller.selectedCategoryId.value;
-                    return CategoryPill(
-                      category: category,
+                    final isSelected = subcategory.id == controller.currentSubcategoryId.value;
+                    return SubcategoryPill(
+                      subcategory: subcategory,
                       isSelected: isSelected,
-                      onTap: () {
-                        controller.selectCategory(category);
-                        categoryProductController.setCategory(category);
-                        subcategoryController.setCategory(category.id);
-                      },
+                      onTap: () => controller.selectSubcategory(subcategory),
                     );
                   });
                 },
@@ -101,14 +92,14 @@ class CategoryListView extends GetView<CategoryController> {
   }
 }
 
-class CategoryPill extends StatelessWidget {
-  final Category category;
+class SubcategoryPill extends StatelessWidget {
+  final Subcategory subcategory;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const CategoryPill({
+  const SubcategoryPill({
     Key? key,
-    required this.category,
+    required this.subcategory,
     required this.isSelected,
     required this.onTap,
   }) : super(key: key);
@@ -125,7 +116,7 @@ class CategoryPill extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
-          category.name,
+          subcategory.name,
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black,
             fontWeight: FontWeight.w500,

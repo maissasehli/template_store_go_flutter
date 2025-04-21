@@ -43,6 +43,8 @@ class AssetConfig {
   static const String Success = '$rootSvg/Success Icon.svg';
 
     static const String search = '$rootIcons/search.png';
+        static const String reviews = '$rootIcons/review.png';
+
 
 
   // Get all onboarding images as a list

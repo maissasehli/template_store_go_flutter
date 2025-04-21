@@ -147,5 +147,7 @@ class ReviewRepository {
       developer.log('Error deleting review: $e', name: 'ReviewRepository.deleteReview', error: e);
       throw Exception('Error deleting review: $e');
     }
+    
   }
+  
 }

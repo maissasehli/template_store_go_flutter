@@ -3,6 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
+import 'package:store_go/features/review/controllers/review_controller.dart';
 
 class CategoryProductController extends GetxController {
   final ProductRepository _repository;
@@ -10,14 +11,11 @@ class CategoryProductController extends GetxController {
 
   // Observable states
   final RxList<Product> categoryProducts = <Product>[].obs;
+  final RxList<Product> filteredProducts = <Product>[].obs; // New: For filtered/sorted products
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
-  
-  // Store current category
   final Rx<Category?> currentCategory = Rx<Category?>(null);
-  
-  // Search functionality
   final RxString searchQuery = ''.obs;
   final RxBool isSearchActive = false.obs;
 
@@ -25,17 +23,11 @@ class CategoryProductController extends GetxController {
       : _repository = repository;
 
   void setCategory(Category category) {
-    // Clear previous products when changing categories
     categoryProducts.clear();
-    
-    // Set the new category
+    filteredProducts.clear();
     currentCategory.value = category;
-    
-    // Clear any active search when changing categories
     searchQuery.value = '';
     isSearchActive.value = false;
-    
-    // Then fetch products for this category
     fetchCategoryProducts(category.id);
   }
 
@@ -44,36 +36,30 @@ class CategoryProductController extends GetxController {
       isLoading.value = true;
       hasError.value = false;
       errorMessage.value = '';
-      
-      // Fetch products for this specific category
+
       final products = await _repository.getProductsByCategory(categoryId);
-      
-      // Log the number of products received
       _logger.d("Fetched ${products.length} products for category $categoryId");
-      
-      // Update the products list with only the products for this category
+
       categoryProducts.assignAll(products);
-      
+      filteredProducts.assignAll(products); // Initialize filtered list
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error fetching products for category $categoryId: $e');
-      // Empty the products list on error
       categoryProducts.clear();
+      filteredProducts.clear();
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Search within current category
   Future<void> searchCategoryProducts(String query) async {
     searchQuery.value = query;
-    
+
     if (query.isEmpty) {
       isSearchActive.value = false;
-      // If search is cleared, restore original category products
       if (currentCategory.value != null) {
-        fetchCategoryProducts(currentCategory.value!.id);
+        filteredProducts.assignAll(categoryProducts);
       }
       return;
     }
@@ -83,28 +69,21 @@ class CategoryProductController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
       isSearchActive.value = true;
-      
-      // For client-side filtering if your API doesn't support it:
-      // First get all products for this category if we don't have them
+
       List<Product> allCategoryProducts;
       if (categoryProducts.isEmpty && currentCategory.value != null) {
         allCategoryProducts = await _repository.getProductsByCategory(currentCategory.value!.id);
       } else {
-        // Use existing products if we already have them
         allCategoryProducts = List.from(categoryProducts);
       }
-      
-      // Then filter by search query (case insensitive)
-      final filteredProducts = allCategoryProducts.where((product) {
+
+      final filteredProductsList = allCategoryProducts.where((product) {
         return product.name.toLowerCase().contains(query.toLowerCase()) ||
-               (product.description.toLowerCase()).contains(query.toLowerCase());
+               product.description.toLowerCase().contains(query.toLowerCase());
       }).toList();
-      
-      _logger.d("Found ${filteredProducts.length} products matching '$query' in category ${currentCategory.value?.id}");
-      
-      // Update the products list with search results
-      categoryProducts.assignAll(filteredProducts);
-      
+
+      _logger.d("Found ${filteredProductsList.length} products matching '$query' in category ${currentCategory.value?.id}");
+      filteredProducts.assignAll(filteredProductsList);
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
@@ -114,42 +93,121 @@ class CategoryProductController extends GetxController {
     }
   }
 
-  // Toggle favorite status
-  Future<void> toggleFavorite(String productId) async {
-    final productIndex = categoryProducts.indexWhere((p) => p.id == productId);
-    if (productIndex == -1) return; // Product not found
-    
-    final product = categoryProducts[productIndex];
-    final newFavoriteStatus = !product.isFavorite;
-    
-    // Update locally first for immediate UI feedback
-    categoryProducts[productIndex] = product.copyWith(isFavorite: newFavoriteStatus);
-    
+ Future<void> applyFilters({
+  required String categoryId,
+  required String subcategoryId,
+  required double minPrice,
+  required double maxPrice,
+  required String sortOption,
+  required double minRating,
+}) async {
+  try {
+    isLoading.value = true;
+    hasError.value = false;
+    errorMessage.value = '';
+
+    List<Product> products;
     try {
-      // Then update on the server
+      products = await _repository.getFilteredProducts(
+        categoryId: categoryId.isNotEmpty ? categoryId : null,
+        subcategoryId: subcategoryId.isNotEmpty ? subcategoryId : null,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        minRating: minRating > 0 ? minRating : null,
+        sortOption: sortOption,
+      );
+    } catch (e) {
+      _logger.w('Server-side filtering failed, falling back to client-side: $e');
+      products = subcategoryId.isNotEmpty
+          ? await _repository.getProductsBySubcategory(subcategoryId)
+          : await _repository.getProductsByCategory(categoryId.isNotEmpty ? categoryId : currentCategory.value!.id);
+
+      products = products.where((product) {
+        return product.price >= minPrice && product.price <= maxPrice;
+      }).toList();
+
+      if (minRating > 0) {
+        final reviewController = Get.find<ReviewController>();
+        products = await Future.wait(products.map((product) async {
+          if (product.rating >= minRating) {
+            return product;
+          }
+          // Use public method instead of accessing _repository
+          final reviews = await reviewController.getReviewsByProductId(product.id);
+          final avgRating = reviews.isNotEmpty
+              ? reviews.fold<double>(0, (sum, r) => sum + r.rating) / reviews.length
+              : 0.0;
+          return avgRating >= minRating ? product : null;
+        })).then((results) => results.whereType<Product>().toList());
+      }
+
+      switch (sortOption) {
+        case 'New Today':
+          products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          break;
+        case 'Top Sellers':
+          products.sort((a, b) => (b.salesCount ?? 0).compareTo(a.salesCount ?? 0));
+          break;
+        case 'Price: Low to High':
+          products.sort((a, b) => a.price.compareTo(b.price));
+          break;
+        case 'Price: High to Low':
+          products.sort((a, b) => b.price.compareTo(a.price));
+          break;
+      }
+    }
+
+    categoryProducts.assignAll(products);
+    filteredProducts.assignAll(products);
+    _logger.i('Applied filters: ${products.length} products found');
+  } catch (e) {
+    hasError.value = true;
+    errorMessage.value = 'Failed to apply filters: $e';
+    _logger.e('Error applying filters: $e');
+    filteredProducts.clear();
+  } finally {
+    isLoading.value = false;
+  }
+}
+  Future<void> toggleFavorite(String productId) async {
+    final productIndex = filteredProducts.indexWhere((p) => p.id == productId);
+    if (productIndex == -1) return;
+
+    final product = filteredProducts[productIndex];
+    final newFavoriteStatus = !product.isFavorite;
+
+    filteredProducts[productIndex] = product.copyWith(isFavorite: newFavoriteStatus);
+    final categoryIndex = categoryProducts.indexWhere((p) => p.id == productId);
+    if (categoryIndex != -1) {
+      categoryProducts[categoryIndex] = product.copyWith(isFavorite: newFavoriteStatus);
+    }
+
+    try {
       final success = await _repository.updateFavoriteStatus(productId, newFavoriteStatus);
-      
       if (!success) {
-        // Revert if server update failed
-        categoryProducts[productIndex] = product;
+        filteredProducts[productIndex] = product;
+        if (categoryIndex != -1) {
+          categoryProducts[categoryIndex] = product;
+        }
         _logger.e('Server rejected favorite status update');
       }
     } catch (e) {
-      // Revert on error
-      categoryProducts[productIndex] = product;
+      filteredProducts[productIndex] = product;
+      if (categoryIndex != -1) {
+        categoryProducts[categoryIndex] = product;
+      }
       _logger.e('Error updating favorite status: $e');
     }
   }
 
-  // Clear search and reset to showing all products for current category
   void clearSearch() {
     if (isSearchActive.value && currentCategory.value != null) {
       searchQuery.value = '';
       isSearchActive.value = false;
-      fetchCategoryProducts(currentCategory.value!.id);
+      filteredProducts.assignAll(categoryProducts);
     }
   }
-  
+
   @override
   void onClose() {
     _logger.d("CategoryProductController closed");

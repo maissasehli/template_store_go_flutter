@@ -22,7 +22,6 @@ class CartItemCard extends StatelessWidget {
       key: Key(item.id),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
-        // Show confirmation dialog
         final result = await Get.dialog<bool>(
           AlertDialog(
             title: const Text('Remove Item'),
@@ -41,11 +40,11 @@ class CartItemCard extends StatelessWidget {
             ],
           ),
         );
-        
+
         if (result == true) {
           onRemove();
         }
-        return false; // Don't actually dismiss, we'll handle it manually
+        return false;
       },
       background: Container(
         color: Colors.transparent,
@@ -82,7 +81,6 @@ class CartItemCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Product image
             ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(13.76),
@@ -110,8 +108,6 @@ class CartItemCard extends StatelessWidget {
                       child: const Icon(Icons.image),
                     ),
             ),
-
-            // Product details
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12),
@@ -129,9 +125,9 @@ class CartItemCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (item.variants.isNotEmpty)
+                    if (item.variantId.isNotEmpty)
                       Text(
-                        item.variants.entries.map((e) => '${e.key}: ${e.value}').join(', '),
+                        item.variantId, // Display variantId directly
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.grey[600],
@@ -153,8 +149,6 @@ class CartItemCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Quantity controls
             Container(
               width: 74.11,
               height: 31.76,
@@ -165,9 +159,14 @@ class CartItemCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Minus button
                   GestureDetector(
-                    onTap: () => onQuantityChanged(item.quantity - 1),
+                    onTap: () {
+                      if (item.quantity > 1) {
+                        onQuantityChanged(item.quantity - 1); // Only decrease if quantity > 1
+                      } else {
+                        onRemove(); // Remove item if quantity would be 0
+                      }
+                    },
                     child: const SizedBox(
                       width: 24,
                       height: 24,
@@ -180,7 +179,6 @@ class CartItemCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Quantity
                   SizedBox(
                     width: 24,
                     child: Center(
@@ -194,7 +192,6 @@ class CartItemCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Plus button
                   GestureDetector(
                     onTap: () => onQuantityChanged(item.quantity + 1),
                     child: const SizedBox(

@@ -6,6 +6,8 @@ import 'package:store_go/features/review/repositories/review_repository.dart';
 class ReviewController extends GetxController {
   final ReviewRepository _repository;
   final Logger _logger = Logger();
+    final RxBool hasError = false.obs;
+
 
   // State
   final RxList<Review> reviews = <Review>[].obs;
@@ -116,4 +118,26 @@ class ReviewController extends GetxController {
       setLoading(false);
     }
   }
+  Future<List<Review>> getReviewsByProductId(String productId) async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
+      final fetchedReviews = await _repository.getReviewsByProductId(productId);
+      _logger.d('Fetched ${fetchedReviews.length} reviews for product $productId');
+
+      reviews.assignAll(fetchedReviews);
+      return fetchedReviews;
+    } catch (e) {
+      _logger.e('Error fetching reviews for product $productId: $e');
+      hasError.value = true;
+      errorMessage.value = e.toString();
+      reviews.clear();
+      return [];
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 }
