@@ -5,14 +5,12 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pusher_client_fixed/pusher_client_fixed.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
-import 'package:store_go/features/auth/services/token_manager.dart';
+import 'package:synchronized/synchronized.dart';
 
 class PusherService {
   // Singleton pattern
   static final PusherService _instance = PusherService._internal();
-  final TokenManager _tokenManager = Get.find<TokenManager>();
   factory PusherService() => _instance;
   PusherService._internal();
 
@@ -21,8 +19,9 @@ class PusherService {
   String? _currentStoreId;
   String? _currentUserId;
 
-  // Debounce timer for status updates
   Timer? _statusUpdateTimer;
+  bool _lastReportedStatus = false;
+  final _statusLock = Lock(); 
   bool _isAppActive = true;
 
   // Flutter notification service
@@ -49,15 +48,6 @@ class PusherService {
         '9cc5c988880ae2d93c71',
         PusherOptions(
           cluster: 'eu',
-          encrypted: true,
-          auth: PusherAuth(
-            '${AppConfig.baseUrl}/auth/pusher', // Use full path: /api/mobile-app/auth/pusher
-            headers: {
-              'Authorization': 'Bearer ${await _tokenManager.getAccessToken()}',
-              'Content-Type': 'application/json',
-              'X-Store-ID': AppConfig.storeId,
-            },
-          ),
         ),
         autoConnect: false,
         enableLogging: true,
@@ -83,8 +73,8 @@ class PusherService {
         debugPrint("Pusher connection error: ${error!.message}");
       });
 
-      // Subscribe to the presence channel
-      _storeChannel = _pusherClient!.subscribe('presence-store-$storeId');
+      // Subscribe to a standard channel instead of presence channel
+      _storeChannel = _pusherClient!.subscribe('store-$storeId');
 
       // Add any other event listeners needed
       _storeChannel!.bind('new-product', (event) {
@@ -166,7 +156,8 @@ class PusherService {
 
     if (_pusherClient != null) {
       if (_storeChannel != null && _currentStoreId != null) {
-        _pusherClient!.unsubscribe('presence-store-$_currentStoreId');
+        // Use the regular channel name instead of presence channel
+        _pusherClient!.unsubscribe('store-$_currentStoreId');
         _storeChannel = null;
       }
 
@@ -181,16 +172,31 @@ class PusherService {
 
   // Method to update user online status
   Future<void> updateUserOnlineStatus(bool isOnline) async {
-    try {
-      final payload = {
-        'isOnline': isOnline,
-        'lastSeen': DateTime.now().toIso8601String(),
-      };
-      final apiClient = Get.find<ApiClient>();
-      await apiClient.post('/users/status', data: payload);
-      Logger().i("User online status updated: $isOnline");
-    } catch (e) {
-      Logger().e("Failed to update online status: $e");
-    }
+    // Cancel any pending timer
+    _statusUpdateTimer?.cancel();
+
+    // Set a new timer (500ms debounce)
+    _statusUpdateTimer = Timer(const Duration(milliseconds: 500), () async {
+      await _statusLock.synchronized(() async {
+        // Only update if the status has actually changed
+        if (_lastReportedStatus != isOnline) {
+          try {
+            final payload = {
+              'isOnline': isOnline,
+              'lastSeen': DateTime.now().toIso8601String(),
+            };
+            final apiClient = Get.find<ApiClient>();
+            await apiClient.post('/users/status', data: payload);
+            _lastReportedStatus = isOnline; // Track what we last sent
+            Logger().i("User online status updated: $isOnline");
+          } catch (e) {
+            Logger().e("Failed to update online status: $e");
+          }
+        } else {
+          Logger().d("Skipping duplicate online status update: $isOnline");
+        }
+      });
+    });
   }
+
 }

@@ -8,7 +8,8 @@
         android:label="store_go"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:enableOnBackInvokedCallback="true">
+        android:enableOnBackInvokedCallback="true"
+        android:usesCleartextTraffic="true">
         
         <!-- Facebook SDK metadata -->
         <meta-data android:name="com.facebook.sdk.ApplicationId"

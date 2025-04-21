@@ -37,7 +37,7 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  @override
+@override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     final isLoggedIn = await _authService.isAuthenticated();
 
@@ -54,12 +54,19 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
       // App is in background - user is "away" or "offline"
       final pusherService = Get.find<PusherService>();
       await pusherService.updateUserOnlineStatus(false);
+    } else if (state == AppLifecycleState.detached) {
+      // App is being destroyed/terminated
+      final pusherService = Get.find<PusherService>();
 
-      // Optionally disconnect Pusher when app goes to background
-      pusherService.disconnect();
+      // Update status to offline before disconnecting
+      await pusherService.updateUserOnlineStatus(false);
+
+      // Disconnect Pusher with skipStatusUpdate=true since we already updated status
+      await pusherService.disconnect(skipStatusUpdate: true);
+
+      Logger().i("App is being destroyed, user status updated to offline");
     }
   }
-
   // Helper method to initialize Pusher if user is logged in
   Future<void> _initializePusherIfNeeded() async{
     try {
