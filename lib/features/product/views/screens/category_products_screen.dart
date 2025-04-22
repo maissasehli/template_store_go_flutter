@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.modal.dart';
-import 'package:store_go/features/filter/screen/view/filter_screen.dart';
+import 'package:store_go/features/filter/view/screen/filter_screen.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
@@ -12,12 +12,10 @@ import 'package:store_go/features/product/views/widgets/category_product/subcate
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
-import 'package:store_go/features/subcategory/models/subcategory_model.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
 
 class CategoryProductsScreen extends StatefulWidget {
-  Category category;
-
+final Category category;
   CategoryProductsScreen({super.key})
       : category = Get.arguments as Category;
 
@@ -72,62 +70,60 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   }
 
   void applyFilters() async {
-    final result = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.9,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (_, scrollController) {
-          return FilterPage();
-        },
-      ),
-    );
+  final result = await showModalBottomSheet<Map<String, dynamic>>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) => DraggableScrollableSheet(
+      initialChildSize: 0.9,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, scrollController) {
+        return FilterPage();
+      },
+    ),
+  );
 
-    if (result != null) {
-      final String categoryId = result['categoryId'];
-      final String subcategoryId = result['subcategoryId'];
-      final double minPrice = result['minPrice'];
-      final double maxPrice = result['maxPrice'];
+  if (result != null) {
+    final String categoryId = result['categoryId'];
+    final String subcategoryId = result['subcategoryId'];
+    final double minPrice = result['minPrice'];
+    final double maxPrice = result['maxPrice'];
 
-      if (categoryId != widget.category.id) {
-        final newCategory = categoryController.categories.firstWhereOrNull((cat) => cat.id == categoryId);
-        if (newCategory != null) {
-          widget.category = newCategory;
-          categoryProductController.setCategory(newCategory);
-          subcategoryController.setCategory(newCategory.id);
-          categoryController.selectedCategoryId.value = newCategory.id;
-        }
-      }
-
-      if (subcategoryId.isNotEmpty) {
-        final newSubcategory = subcategoryController.subcategories.firstWhereOrNull((sub) => sub.id == subcategoryId);
-        if (newSubcategory != null) {
-          subcategoryController.selectSubcategory(newSubcategory);
-        }
-      } else {
-        subcategoryController.currentSubcategoryId.value = '';
-        await categoryProductController.fetchCategoryProducts(widget.category.id);
-      }
-
-      if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
-        subcategoryController.subcategoryProducts.assignAll(
-          subcategoryController.subcategoryProducts.where((product) {
-            return product.price >= minPrice && product.price <= maxPrice;
-          }).toList(),
-        );
-      } else {
-        categoryProductController.categoryProducts.assignAll(
-          categoryProductController.categoryProducts.where((product) {
-            return product.price >= minPrice && product.price <= maxPrice;
-          }).toList(),
-        );
+    if (categoryId != widget.category.id) {
+      final newCategory = categoryController.categories.firstWhereOrNull((cat) => cat.id == categoryId);
+      if (newCategory != null) {
+        // Instead of reassigning widget.category, navigate to a new screen or update controllers
+        Get.off(() => CategoryProductsScreen(), arguments: newCategory);
+        return; // Exit early after navigation
       }
     }
-  }
 
+    if (subcategoryId.isNotEmpty) {
+      final newSubcategory = subcategoryController.subcategories.firstWhereOrNull((sub) => sub.id == subcategoryId);
+      if (newSubcategory != null) {
+        subcategoryController.selectSubcategory(newSubcategory);
+      }
+    } else {
+      subcategoryController.currentSubcategoryId.value = '';
+      await categoryProductController.fetchCategoryProducts(widget.category.id);
+    }
+
+    if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+      subcategoryController.subcategoryProducts.assignAll(
+        subcategoryController.subcategoryProducts.where((product) {
+          return product.price >= minPrice && product.price <= maxPrice;
+        }).toList(),
+      );
+    } else {
+      categoryProductController.categoryProducts.assignAll(
+        categoryProductController.categoryProducts.where((product) {
+          return product.price >= minPrice && product.price <= maxPrice;
+        }).toList(),
+      );
+    }
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/review/model/review_model.dart';
@@ -6,7 +5,6 @@ import 'dart:developer' as developer;
 
 class ProductRepository {
   final ApiClient _apiClient;
-  final Logger _logger = Logger();
 
   ProductRepository({required ApiClient apiClient}) : _apiClient = apiClient;
 

@@ -41,7 +41,7 @@ class ProfileMenuSection extends StatelessWidget {
           onTap: () => Get.toNamed('/settings'),
         ),
         ProfileMenuItem(
-          icon: AssetConfig.Logout,
+          icon: AssetConfig.logout,
           title: 'Logout',
           onTap: () => showLogoutDialog(context, authService),
         ),

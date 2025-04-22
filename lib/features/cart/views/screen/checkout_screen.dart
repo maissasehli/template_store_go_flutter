@@ -292,7 +292,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   const Spacer(flex: 2),
 
                   // Checkmark icon in a circle
-                  SvgPicture.asset(AssetConfig.Success),
+                  SvgPicture.asset(AssetConfig.success),
 
                   // Success message
                   const Text(

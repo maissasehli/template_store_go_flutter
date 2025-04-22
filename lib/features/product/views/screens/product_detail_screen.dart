@@ -13,7 +13,7 @@ import 'package:store_go/features/product/views/widgets/product_detail/add_to_ca
 import 'package:store_go/features/product/views/widgets/product_detail/product_description.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/image_page_indicator.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/draggable_info_sheet.dart';
-import 'package:store_go/features/review/view/screen/review_section.dart';
+import 'package:store_go/features/review/view/widgets/review_section/review_section.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -79,7 +79,6 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         vertical: 8.0,
                         horizontal: 16.0,
                       ),
-                     
                       child: ImagePageIndicator(
                         currentIndex:
                             detailController.state.currentImageIndex.value,
@@ -133,7 +132,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      ProductInfo(product: product, reviews: product.reviews),
+                      ProductInfo(product: product), // Removed the reviews parameter
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

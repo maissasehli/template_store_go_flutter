@@ -1,17 +1,16 @@
-// filter_chips_row.dart
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
-class FilterChipsRow extends StatelessWidget {
-  final List<String> filterOptions;
+class ReviewFilter extends StatelessWidget {
   final String activeFilter;
-  final Function(String) onFilterApplied;
+  final List<String> filterOptions;
+  final Function(String) onFilterSelected;
 
-  const FilterChipsRow({
+  const ReviewFilter({
     super.key,
-    required this.filterOptions,
     required this.activeFilter,
-    required this.onFilterApplied,
+    required this.filterOptions,
+    required this.onFilterSelected,
   });
 
   @override
@@ -22,11 +21,7 @@ class FilterChipsRow extends StatelessWidget {
         children: [
           const Text(
             'Filter:',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
-            ),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -55,14 +50,12 @@ class FilterChipsRow extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                         side: BorderSide(
-                          color: isActive 
-                              ? AppColors.primary(context) 
-                              : Colors.grey[300]!,
+                          color: isActive ? AppColors.primary(context) : Colors.grey[300]!,
                         ),
                       ),
                       onSelected: (selected) {
                         if (selected) {
-                          onFilterApplied(filter);
+                          onFilterSelected(filter);
                         }
                       },
                     ),

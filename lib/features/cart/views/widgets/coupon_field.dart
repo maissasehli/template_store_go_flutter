@@ -46,7 +46,7 @@ class _CouponFieldState extends State<CouponField> {
         children: [
           const SizedBox(width: 16),
           SvgPicture.asset(
-            AssetConfig.discountshape,
+            AssetConfig.discountShape,
             width: 20,
             height: 20,
             colorFilter: ColorFilter.mode(Colors.green[400]!, BlendMode.srcIn),
@@ -89,7 +89,7 @@ class _CouponFieldState extends State<CouponField> {
                   : Padding(
                       padding: const EdgeInsets.all(10),
                       child: SvgPicture.asset(
-                        AssetConfig.arrowright2,
+                        AssetConfig.arrowRight2,
                         width: 20,
                         height: 20,
                       ),

@@ -1,14 +1,8 @@
-// no_filter_results.dart
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
-class NoFilterResults extends StatelessWidget {
-  final VoidCallback onReset;
-
-  const NoFilterResults({
-    super.key,
-    required this.onReset,
-  });
+class NoFilterResultsState extends StatelessWidget {
+  const NoFilterResultsState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +24,10 @@ class NoFilterResults extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           TextButton(
-            onPressed: onReset,
+            onPressed: () => Navigator.pop(context),
             child: Text(
               'Show all reviews',
-              style: TextStyle(
-                color: AppColors.primary(context),
-                fontWeight: FontWeight.w500,
-              ),
+              style: TextStyle(color: AppColors.primary(context), fontWeight: FontWeight.w500),
             ),
           ),
         ],

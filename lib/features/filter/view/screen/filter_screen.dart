@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/filter/controllers/filter_controller.dart';
-import 'package:store_go/features/filter/screen/view/widgets/filter/apply_button.dart';
-import 'package:store_go/features/filter/screen/view/widgets/filter/category_section.dart';
-import 'package:store_go/features/filter/screen/view/widgets/filter/filter_header.dart';
-import 'package:store_go/features/filter/screen/view/widgets/filter/price_range_section.dart';
-import 'package:store_go/features/filter/screen/view/widgets/filter/rating_section.dart';
-import 'package:store_go/features/filter/screen/view/widgets/filter/sort_section.dart';
+import 'package:store_go/features/filter/view/widgets/apply_button.dart';
+import 'package:store_go/features/filter/view/widgets/category_section.dart';
+import 'package:store_go/features/filter/view/widgets/filter_header.dart';
+import 'package:store_go/features/filter/view/widgets/price_range_section.dart';
+import 'package:store_go/features/filter/view/widgets/rating_section.dart';
+import 'package:store_go/features/filter/view/widgets/sort_section.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
 
 class FilterPage extends StatefulWidget {

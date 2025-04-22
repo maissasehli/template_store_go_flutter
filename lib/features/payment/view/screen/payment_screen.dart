@@ -7,7 +7,7 @@ import 'package:store_go/features/payment/view/widget/payment_item.dart';
 class PaymentPage extends StatelessWidget {
   final PaymentController controller = Get.put(PaymentController());
 
-  PaymentPage({Key? key}) : super(key: key);
+  PaymentPage({super.key});
 
   @override
   Widget build(BuildContext context) {

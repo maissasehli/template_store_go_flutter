@@ -6,14 +6,9 @@ import 'package:store_go/features/review/repositories/review_repository.dart';
 class ReviewBinding extends Bindings {
   @override
   void dependencies() {
-    final apiClient = Get.find<ApiClient>();
-
-    Get.lazyPut<ReviewRepository>(
-      () => ReviewRepository(apiClient: apiClient),
-    );
-
-    Get.lazyPut<ReviewController>(
-      () => ReviewController(repository: Get.find<ReviewRepository>()),
-    );
+    // Register dependencies required by ReviewController
+    Get.lazyPut(() => ApiClient());
+    Get.lazyPut(() => ReviewRepository(apiClient: Get.find<ApiClient>()));
+    Get.lazyPut(() => ReviewController(repository: Get.find<ReviewRepository>()));
   }
 }

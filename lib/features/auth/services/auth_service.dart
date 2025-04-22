@@ -6,6 +6,7 @@ import 'package:store_go/features/auth/services/oauth_service.dart';
 import 'package:store_go/features/auth/services/auth_error_handler.dart';
 import 'package:store_go/features/auth/services/notification_service.dart';
 import 'package:store_go/features/auth/services/auth_api_client.dart';
+import 'package:jwt_decoder/jwt_decoder.dart'; // Add this dependency for JWT decoding
 
 /// Main authentication service that coordinates all auth functionality
 class AuthService {
@@ -79,6 +80,31 @@ class AuthService {
   // Check if user is authenticated
   Future<bool> isAuthenticated() async {
     return await _tokenManager.hasValidAccessToken();
+  }
+
+  // Get current user's ID from JWT access token
+  Future<String?> getCurrentUserId() async {
+    try {
+      final accessToken = await _tokenManager.getAccessToken();
+      if (accessToken == null) {
+        _logger.w('No access token found');
+        return null;
+      }
+
+      // Decode the JWT to extract user ID
+      final decodedToken = JwtDecoder.decode(accessToken);
+      final userId = decodedToken['sub']?.toString() ?? decodedToken['id']?.toString();
+      if (userId == null) {
+        _logger.w('User ID not found in JWT payload');
+        return null;
+      }
+
+      _logger.i('Retrieved user ID: $userId');
+      return userId;
+    } catch (e) {
+      _logger.e('Error decoding JWT for user ID: $e');
+      return null;
+    }
   }
 
   // Handle OAuth authentication

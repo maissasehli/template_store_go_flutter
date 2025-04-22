@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/review/model/review_model.dart';
@@ -6,16 +7,20 @@ import 'package:store_go/features/review/repositories/review_repository.dart';
 class ReviewController extends GetxController {
   final ReviewRepository _repository;
   final Logger _logger = Logger();
-    final RxBool hasError = false.obs;
+  final RxBool hasError = false.obs;
 
-
-  // State
   final RxList<Review> reviews = <Review>[].obs;
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  ReviewController({required ReviewRepository repository})
-      : _repository = repository;
+  ReviewController({required ReviewRepository repository}) : _repository = repository;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Sync offline reviews, updates, and deletes on initialization
+    _syncOfflineData();
+  }
 
   void setLoading(bool value) {
     isLoading.value = value;
@@ -29,6 +34,23 @@ class ReviewController extends GetxController {
     errorMessage.value = '';
   }
 
+  Future<void> _syncOfflineData() async {
+    try {
+      await _repository.syncOfflineReviews();
+      await _repository.syncOfflineUpdatesAndDeletes();
+      _logger.i('Offline data synced successfully');
+    } catch (e) {
+      _logger.e('Error syncing offline data: $e');
+      setError('Error syncing offline data: $e');
+      Get.snackbar(
+        'Warning',
+        'Failed to sync offline data. Some changes may not be reflected.',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   Future<void> fetchReviews(String productId) async {
     try {
       setLoading(true);
@@ -40,6 +62,12 @@ class ReviewController extends GetxController {
     } catch (e) {
       setError('Error fetching reviews: $e');
       _logger.e('Error fetching reviews: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to load reviews',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       setLoading(false);
     }
@@ -52,10 +80,8 @@ class ReviewController extends GetxController {
 
       final success = await _repository.createReview(productId, review);
       if (success) {
-        // Fetch the latest reviews to get the server-generated ID
-        await fetchReviews(productId);
         _logger.i('Review added successfully for product $productId');
-        Get.snackbar('Success', 'Review submitted successfully');
+        Get.snackbar('Success', 'Review submitted successfully', backgroundColor: Colors.green);
       } else {
         throw Exception('Failed to create review: Saved offline');
       }
@@ -67,11 +93,13 @@ class ReviewController extends GetxController {
         errorMsg = 'Please log in to submit a review';
       } else if (e.toString().contains('Product not found')) {
         errorMsg = 'Product not found';
+      } else if (e.toString().contains('Saved offline')) {
+        errorMsg = 'Review saved offline, will sync when online';
       }
 
       setError('Error adding review: $e');
       _logger.e('Error adding review: $e');
-      Get.snackbar('Error', errorMsg);
+      Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
     } finally {
       setLoading(false);
     }
@@ -85,17 +113,28 @@ class ReviewController extends GetxController {
       await _repository.updateReview(reviewId, updates);
       final index = reviews.indexWhere((r) => r.id == reviewId);
       if (index != -1) {
-        final updatedReview = reviews[index].toJson();
-        updatedReview.addAll(updates);
-        reviews[index] = Review.fromJson(updatedReview);
+        final currentReview = reviews[index];
+        reviews[index] = Review(
+          id: currentReview.id,
+          userName: currentReview.userName,
+          appUserId: currentReview.appUserId,
+          rating: updates['rating'] ?? currentReview.rating,
+          content: updates['content'] ?? currentReview.content,
+          createdAt: currentReview.createdAt,
+        );
         reviews.refresh();
       }
       _logger.i('Review updated: $reviewId');
-      Get.snackbar('Success', 'Review updated successfully');
+      Get.snackbar('Success', 'Review updated successfully', backgroundColor: Colors.green);
     } catch (e) {
+      String errorMsg = 'Failed to update review';
+      if (e.toString().contains('Saved offline')) {
+        errorMsg = 'Review update saved offline, will sync when online';
+      }
+
       setError('Error updating review: $e');
       _logger.e('Error updating review: $e');
-      Get.snackbar('Error', 'Failed to update review');
+      Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
     } finally {
       setLoading(false);
     }
@@ -106,18 +145,32 @@ class ReviewController extends GetxController {
       setLoading(true);
       clearError();
 
+      _logger.i('Attempting to delete review with ID: $reviewId');
       await _repository.deleteReview(reviewId);
       reviews.removeWhere((r) => r.id == reviewId);
       _logger.i('Review deleted: $reviewId');
-      Get.snackbar('Success', 'Review deleted successfully');
+      Get.snackbar('Success', 'Review deleted successfully', backgroundColor: Colors.green);
     } catch (e) {
+      String errorMsg = 'Failed to delete review';
+      if (e.toString().contains('Saved offline')) {
+        errorMsg = 'Review deletion saved offline, will sync when online';
+        // Remove locally even if saved offline
+        reviews.removeWhere((r) => r.id == reviewId);
+      } else if (e.toString().contains('404')) {
+        errorMsg = 'Review not found on server, removed locally';
+        reviews.removeWhere((r) => r.id == reviewId);
+        Get.snackbar('Info', errorMsg, backgroundColor: Colors.orange);
+        return;
+      }
+
       setError('Error deleting review: $e');
       _logger.e('Error deleting review: $e');
-      Get.snackbar('Error', 'Failed to delete review');
+      Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
     } finally {
       setLoading(false);
     }
   }
+
   Future<List<Review>> getReviewsByProductId(String productId) async {
     try {
       isLoading.value = true;
@@ -139,5 +192,4 @@ class ReviewController extends GetxController {
       isLoading.value = false;
     }
   }
-
 }

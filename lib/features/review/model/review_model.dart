@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 class Review {
   final String id;
   final String userName;
+  final String appUserId;
   final int rating;
   final String? content;
   final DateTime createdAt;
@@ -10,6 +11,7 @@ class Review {
   Review({
     required this.id,
     required this.userName,
+    required this.appUserId,
     required this.rating,
     this.content,
     required this.createdAt,
@@ -23,6 +25,7 @@ class Review {
       userName: json['appUser'] != null
           ? json['appUser']['name']?.toString() ?? 'Anonymous'
           : 'Anonymous',
+      appUserId: json['appUserId']?.toString() ?? '',
       rating: int.tryParse(json['rating']?.toString() ?? '0') ?? 0,
       content: json['content']?.toString(),
       createdAt: json['created_at'] != null
@@ -32,9 +35,12 @@ class Review {
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final json = {
       'rating': rating,
       'content': content ?? '',
+      'appUserId': appUserId,
     };
+    developer.log('Converting Review to JSON: $json', name: 'Review.toJson');
+    return json;
   }
 }
