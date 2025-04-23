@@ -13,10 +13,17 @@ class LoginController extends GetxController {
   final AuthService _authService = AuthService();
   final RxBool isLoading = false.obs;
 
+  // Keep track of whether controllers have been disposed
+  bool isDisposed = false;
+
   @override
   void onInit() {
     super.onInit();
+    _initializeControllers();
+  }
 
+  void _initializeControllers() {
+    // Only initialize if they haven't been disposed or aren't initialized yet
     emailFieldState = ControllerFormFieldState(
       controller: TextEditingController(),
       validator: (val) => validInput(val!, 5, 100, "email"),
@@ -26,9 +33,14 @@ class LoginController extends GetxController {
       controller: TextEditingController(),
       validator: (val) => validInput(val!, 8, 30, "password"),
     );
+
+    isDisposed = false;
   }
 
   bool validateForm() {
+    // Prevent validation if controllers are disposed
+    if (isDisposed) return false;
+
     // Touch all fields to trigger validation
     emailFieldState.touch();
     passwordFieldState.touch();
@@ -38,6 +50,9 @@ class LoginController extends GetxController {
   }
 
   void login() async {
+    // Don't proceed if controllers are disposed
+    if (isDisposed) return;
+
     try {
       if (validateForm()) {
         isLoading.value = true;
@@ -62,8 +77,22 @@ class LoginController extends GetxController {
 
   @override
   void onClose() {
-    emailFieldState.dispose();
-    passwordFieldState.dispose();
+    _disposeControllers();
     super.onClose();
+  }
+
+  void _disposeControllers() {
+    if (!isDisposed) {
+      emailFieldState.dispose();
+      passwordFieldState.dispose();
+      isDisposed = true;
+    }
+  }
+
+  // Add this method to handle re-initialization if needed
+  void reinitializeIfNeeded() {
+    if (isDisposed) {
+      _initializeControllers();
+    }
   }
 }

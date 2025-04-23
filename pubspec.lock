@@ -941,6 +941,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  pusher_client_fixed:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "9d5a7f58a77baa3e547c756ad540b140905ae442"
+      url: "https://github.com/AbdoPrDZ/pusher_client_fixed.git"
+    source: git
+    version: "0.0.4+2"
   rxdart:
     dependency: transitive
     description:

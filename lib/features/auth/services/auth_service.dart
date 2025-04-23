@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:store_go/features/auth/services/token_manager.dart';
-import 'package:store_go/features/auth/services/oauth_service.dart';
 import 'package:store_go/features/auth/services/auth_error_handler.dart';
 import 'package:store_go/features/auth/services/notification_service.dart';
 import 'package:store_go/features/auth/services/auth_api_client.dart';
@@ -12,9 +13,8 @@ import 'package:jwt_decoder/jwt_decoder.dart'; // Add this dependency for JWT de
 class AuthService {
   final AuthApiClient _apiClient = AuthApiClient();
   final TokenManager _tokenManager = TokenManager();
-  final OAuthService _oauthService = OAuthService();
-  final NotificationService _notificationService = NotificationService();
   final AuthErrorHandler _errorHandler = AuthErrorHandler();
+  final NotificationService _notificationService = NotificationService();
   final Logger _logger = Logger();
 
   // Sign up method using secure backend proxy
@@ -51,10 +51,20 @@ class AuthService {
         email: email,
         password: password,
       );
-
+      if (response.statusCode != 200) {
+        Logger().e("Error during sign in: ${response.data['error']}");
+      }
       if (response.statusCode == 200) {
         await _tokenManager.saveSessionData(response.data['session']);
         _notificationService.showSuccess('Successfully logged in');
+        // Initialize Pusher
+        final pusherService = Get.find<PusherService>();
+        final userId = response.data['session']['userId'];
+        if (userId == null || userId.toString().isEmpty) {
+          Logger().e('No userId provided to initialize Pusher Services');
+        } else {
+          pusherService.initializePusher(AppConfig.storeId, userId);
+        }
         return true;
       }
       return false;
@@ -67,8 +77,16 @@ class AuthService {
   // Sign out method
   Future<void> signOut() async {
     try {
+      final pusherService = Get.find<PusherService>();
+
+      // Use the immediate version instead of the debounced one
+      await pusherService.updateUserOnlineStatusImmediate(false);
+
+      // Now proceed with disconnection and signout
+      await pusherService.disconnect(skipStatusUpdate: true);
       await _apiClient.signOut();
-      // Clear local storage
+
+      // Proceed with sign-out
       await _tokenManager.clearAllTokens();
       _logger.i('Log out successful');
       Get.offAllNamed(AppRoute.login);
@@ -105,55 +123,6 @@ class AuthService {
       _logger.e('Error decoding JWT for user ID: $e');
       return null;
     }
-  }
-
-  // Handle OAuth authentication
-  Future<bool> authenticateWithOAuth({
-    required String provider,
-    String? callbackUrlScheme,
-  }) async {
-    try {
-      return await _oauthService.completeOAuthFlow(
-        provider: provider,
-        callbackUrlScheme: callbackUrlScheme,
-      );
-    } catch (e) {
-      _logger.e('OAuth authentication error: $e');
-      _notificationService.showError('Authentication failed');
-      return false;
-    }
-  }
-
-  // Direct sign-in with OAuth provider token
-  Future<bool> signInWithProviderToken({
-    required String provider,
-    required String providerToken,
-  }) async {
-    try {
-      final success = await _oauthService.signInWithProviderToken(
-        provider: provider,
-        providerToken: providerToken,
-      );
-
-      if (success) {
-        _notificationService.showSuccess('Successfully signed in');
-      }
-      return success;
-    } catch (e) {
-      _errorHandler.handleOAuthError(e);
-      return false;
-    }
-  }
-
-  // Link an existing account with an OAuth provider
-  Future<bool> linkOAuthProvider({
-    required String provider,
-    required String providerToken,
-  }) async {
-    return await _oauthService.linkOAuthProvider(
-      provider: provider,
-      providerToken: providerToken,
-    );
   }
 
   // Handle app resume - check if the token is still valid
