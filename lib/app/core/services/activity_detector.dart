@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/pusher_service.dart';
 
 class ActivityDetector extends StatefulWidget {
@@ -61,24 +62,35 @@ class _ActivityDetectorState extends State<ActivityDetector>
     _inactivityTimer = Timer(widget.inactivityTimeout, _handleInactivity);
   }
 
-  void _handleInactivity() {
+ Future<void> _handleInactivity() async {
     if (_isActive) {
+      Logger().i(
+        "INACTIVITY DETECTED: User has been inactive for ${widget.inactivityTimeout.inMinutes} minutes",
+      );
       setState(() {
         _isActive = false;
       });
-      // Update status to "away" but not fully offline
-      _pusherService.updateUserOnlineStatus(false);
+      _pusherService.traceActivityState();
+      await _pusherService.updateUserOnlineStatusImmediate(false);
+      Logger().i("Status update request sent (inactive)");
     }
   }
 
-  void _handleUserActivity() {
+  Future<void> _handleUserActivity() async {
     _startInactivityTimer();
     if (!_isActive) {
+      Logger().i("ACTIVITY DETECTED: User activity after inactivity period");
       setState(() {
         _isActive = true;
       });
-      // User is active again
-      _pusherService.updateUserOnlineStatus(true);
+
+      // Make sure we wait for any pending updates to complete
+      _pusherService.traceActivityState();
+
+      // Wait for the immediate update to complete before continuing
+      await _pusherService.updateUserOnlineStatusImmediate(true);
+
+      Logger().i("Status update request sent (active)");
     }
   }
 
@@ -91,4 +103,5 @@ class _ActivityDetectorState extends State<ActivityDetector>
       child: widget.child,
     );
   }
+
 }

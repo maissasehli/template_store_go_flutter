@@ -236,19 +236,28 @@ class PusherService {
 
   // method for immediate status updates
   Future<void> updateUserOnlineStatusImmediate(bool isOnline) async {
-    // Cancel any pending timer
+    // Cancel any pending timer to avoid race conditions
     _statusUpdateTimer?.cancel();
 
     await _statusLock.synchronized(() async {
       try {
+        Logger().i(
+          "Attempting to update online status immediately to: $isOnline",
+        );
+
+        // Even if the last reported status is the same, force an update
         final payload = {
           'isOnline': isOnline,
           'lastSeen': DateTime.now().toIso8601String(),
         };
+
         final apiClient = Get.find<ApiClient>();
         await apiClient.post('/users/status', data: payload);
-        _lastReportedStatus = isOnline; // Track what we last sent
-        Logger().i("User online status updated immediately: $isOnline");
+
+        // Update the last reported status AFTER successful API call
+        _lastReportedStatus = isOnline;
+
+        Logger().i("User online status updated successfully to: $isOnline");
       } catch (e) {
         Logger().e("Failed to update online status immediately: $e");
       }
@@ -256,15 +265,18 @@ class PusherService {
   }
 
   // the original debounced method
-  Future<void> updateUserOnlineStatus(bool isOnline) async {
+  Future<void> updateUserOnlineStatus(
+    bool isOnline, {
+    bool force = false,
+  }) async {
     // Cancel any pending timer
     _statusUpdateTimer?.cancel();
 
     // Set a new timer (500ms debounce)
     _statusUpdateTimer = Timer(const Duration(milliseconds: 500), () async {
       await _statusLock.synchronized(() async {
-        // Only update if the status has actually changed
-        if (_lastReportedStatus != isOnline) {
+        // Always update if force is true
+        if (force || _lastReportedStatus != isOnline) {
           try {
             final payload = {
               'isOnline': isOnline,
@@ -284,4 +296,13 @@ class PusherService {
     });
   }
 
+  resetActivityState() {
+    _lastReportedStatus = false; // Reset to ensure next update will work
+    Logger().i("PusherService activity state reset");
+  }
+  void traceActivityState() {
+    Logger().i(
+      "ACTIVITY STATE TRACE: _lastReportedStatus=$_lastReportedStatus, _isAppActive=$_isAppActive",
+    );
+  }
 }
