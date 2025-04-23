@@ -99,7 +99,7 @@ class ProductRepository {
         developer.log('Get products by subcategory response: ${response.data}', name: 'ProductRepository.getProductsBySubcategory');
 
         if (response.statusCode == 200) {
-          List<dynamic> productsJson = response.data['data'] ?? [];
+          List<dynamic> productsJson = response.data['parentCategoryId'] ?? [];
           final products = productsJson.map((json) => Product.fromJson(json)).toList();
 
           _categoryProductsCache[subcategoryId] = products;
@@ -249,7 +249,7 @@ class ProductRepository {
       return success;
     } catch (e) {
       developer.log('Error updating favorite status: $e', name: 'ProductRepository.updateFavoriteStatus', error: e);
-      return false; // Changed to false to indicate failure
+      return false;
     }
   }
 

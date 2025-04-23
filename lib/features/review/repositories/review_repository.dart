@@ -217,7 +217,7 @@ Future<void> syncOfflineUpdatesAndDeletes() async {
   }
 
   final List<String> offlineDeleteData = offlineDeleteDataRaw
-      .where((item) => item is String)
+      .whereType<String>()
       .cast<String>()
       .toList();
 

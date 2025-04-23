@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/features/address/controller/address_controller.dart';
+import 'package:store_go/features/cart/controllers/cart_controller.dart';
+import 'package:store_go/features/order/controller/order_controller.dart';
+import 'package:store_go/features/payment/controller/payment_controller.dart';
+import 'package:store_go/features/payment/view/screen/payment_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -11,22 +17,53 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  // State variables
+final CartController cartController = Get.find<CartController>();
+  final AddressController addressController = Get.find<AddressController>();
+  final PaymentController paymentController = Get.find<PaymentController>(); // Use registered instance
+  final OrderController orderController = Get.find<OrderController>();
+
   bool isOrderPlaced = false;
-  String? shippingAddress;
-  String? paymentMethod;
 
-  // These values would normally come from your cart
-  final double subtotal = 200.0;
-  final double shippingCost = 8.0;
-  final double tax = 0.0;
-  double get total => subtotal + shippingCost + tax;
+  @override
+  void initState() {
+    super.initState();
+    addressController.fetchAddresses();
+    paymentController.fetchPaymentMethods();
+  }
 
-  void placeOrder() {
-    setState(() {
-      isOrderPlaced = true;
-    });
-    // In a real app, you would send the order to your backend here
+  Future<void> placeOrder() async {
+    if (addressController.selectedAddress.value == null || paymentController.selectedPaymentMethod.value == null) {
+      Get.snackbar('Error', 'Please select an address and payment method', snackPosition: SnackPosition.BOTTOM);
+      return;
+    }
+
+    try {
+      // Prepare order data
+      final orderData = {
+        'cartItems': cartController.cartItems.map((item) => item.toJson()).toList(),
+        'shippingAddressId': addressController.selectedAddress.value!.id,
+        'paymentMethodId': paymentController.selectedPaymentMethod.value!.id,
+        'subtotal': cartController.subtotal.value,
+        'shippingCost': cartController.shipping.value,
+        'tax': cartController.tax.value,
+        'discount': cartController.discount.value,
+        'total': cartController.total.value,
+      };
+
+      // Send order to backend
+      final response = await Get.find<ApiClient>().post('/orders', data: orderData);
+      if (response.statusCode == 201) {
+        setState(() {
+          isOrderPlaced = true;
+        });
+        await cartController.clearCart();
+        orderController.fetchOrders(); // Refresh orders
+      } else {
+        Get.snackbar('Error', 'Failed to place order', snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to place order: $e', snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   @override
@@ -49,7 +86,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           // Back button and title
           Row(
             children: [
-              // Back button
               GestureDetector(
                 onTap: () => Get.back(),
                 child: Container(
@@ -78,153 +114,150 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 40), // Balance the layout
+              const SizedBox(width: 40),
             ],
           ),
 
           const SizedBox(height: 30),
 
           // Shipping Address
-          Container(
-            width: 342,
-            height: 72,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFF4F4F4)),
-            ),
-            child: ListTile(
-              title: const Text(
-                'Shipping Address',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+          Obx(() => Container(
+                width: 342,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFF4F4F4)),
                 ),
-              ),
-              subtitle: Text(
-                shippingAddress ?? 'Add Shipping Address',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                // In a real app, you would show an address form
-                setState(() {
-                  shippingAddress = '2715 Ash Dr, San Jose, South Dakota';
-                });
-              },
-            ),
-          ),
+                child: ListTile(
+                  title: const Text(
+                    'Shipping Address',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                  subtitle: Text(
+                    addressController.selectedAddress.value?.formattedAddress ?? 'Select Shipping Address',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => Get.toNamed('/address'),
+                ),
+              )),
 
           const SizedBox(height: 16),
 
           // Payment Method
-          Container(
-            width: 342,
-            height: 72,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFF4F4F4)),
-            ),
-            child: ListTile(
-              title: const Text(
-                'Payment Method',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
+          Obx(() => Container(
+                width: 342,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFF4F4F4)),
                 ),
-              ),
-              subtitle: Text(
-                paymentMethod ?? 'Add Payment Method',
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () {
-                // In a real app, you would show a payment form
-                setState(() {
-                  paymentMethod = '**** 4187';
-                });
-              },
-            ),
-          ),
+                child: ListTile(
+                  title: const Text(
+                    'Payment Method',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                  subtitle: Text(
+                    paymentController.selectedPaymentMethod.value?.displayName ?? 'Select Payment Method',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => Get.to(() => PaymentMethodPage()),
+                ),
+              )),
 
           const Spacer(),
 
           // Order Summary
-          Container(
-            width: 342,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
-              ),
-            ),
-            child: Column(
-              children: [
-                _buildSummaryRow(
-                  'Subtotal',
-                  '\$${subtotal.toStringAsFixed(0)}',
+          Obx(() => Container(
+                width: 342,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    top: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
+                  ),
                 ),
-                _buildSummaryRow(
-                  'Shipping Cost',
-                  '\$${shippingCost.toStringAsFixed(2)}',
-                ),
-                _buildSummaryRow('Tax', '\$${tax.toStringAsFixed(2)}'),
-                _buildSummaryRow(
-                  'Total',
-                  '\$${total.toStringAsFixed(0)}',
-                  isTotal: true,
-                ),
-              ],
-            ),
-          ),
-
-          // Place Order Button
-          Container(
-            width: double.infinity,
-            height: 55,
-            margin: const EdgeInsets.only(top: 24, bottom: 24),
-            child: ElevatedButton(
-              onPressed:
-                  shippingAddress != null && paymentMethod != null
-                      ? placeOrder
-                      : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                disabledBackgroundColor: Colors.grey,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    Text(
-                      '\$${total.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    _buildSummaryRow(
+                      'Subtotal',
+                      '\$${cartController.subtotal.value.toStringAsFixed(2)}',
                     ),
-                    const Text(
-                      'Place Order',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    _buildSummaryRow(
+                      'Shipping Cost',
+                      '\$${cartController.shipping.value.toStringAsFixed(2)}',
+                    ),
+                    _buildSummaryRow(
+                      'Tax',
+                      '\$${cartController.tax.value.toStringAsFixed(2)}',
+                    ),
+                    _buildSummaryRow(
+                      'Discount',
+                      '-\$${cartController.discount.value.toStringAsFixed(2)}',
+                    ),
+                    _buildSummaryRow(
+                      'Total',
+                      '\$${cartController.total.value.toStringAsFixed(2)}',
+                      isTotal: true,
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
+              )),
+
+          // Place Order Button
+          Obx(() => Container(
+                width: double.infinity,
+                height: 55,
+                margin: const EdgeInsets.only(top: 24, bottom: 24),
+                child: ElevatedButton(
+                  onPressed: addressController.selectedAddress.value != null &&
+                          paymentController.selectedPaymentMethod.value != null
+                      ? placeOrder
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    disabledBackgroundColor: Colors.grey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '\$${cartController.total.value.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Text(
+                          'Place Order',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )),
         ],
       ),
     );
@@ -371,8 +404,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       height: 55,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Navigate to order details
-                          Get.toNamed('/order-details');
+                          Get.toNamed('/orders');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
@@ -384,7 +416,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           elevation: 0,
                         ),
                         child: const Text(
-                          'See Order details',
+                          'See Orders',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15,

@@ -7,8 +7,6 @@ class ProductGrid extends StatelessWidget {
   final List<Product> products;
   final Function(String) onProductTap;
   final Function(String) onFavoriteTap;
-  final String title;
-  final VoidCallback? onSeeAllTap;
   final bool isHorizontal;
 
   const ProductGrid({
@@ -16,44 +14,34 @@ class ProductGrid extends StatelessWidget {
     required this.products,
     required this.onProductTap,
     required this.onFavoriteTap,
-    this.title = 'Top Selling',
-    this.onSeeAllTap,
     this.isHorizontal = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Title is handled in the parent HomeScreen
-
-        // Products display - either horizontal list or grid
-        if (isHorizontal)
-          _buildHorizontalList(context)
-        else
-          _buildGrid(context),
-      ],
-    );
+    if (isHorizontal) {
+      return _buildHorizontalList(context);
+    } else {
+      return _buildGrid(context);
+    }
   }
 
   Widget _buildHorizontalList(BuildContext context) {
     return SizedBox(
-      height: 281, // Exact height from image 2 (Hug 281px)
+      height: 281,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
         itemCount: products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-
           return Padding(
-            padding: const EdgeInsets.only(right: 8), // Gap 8px
+            padding: const EdgeInsets.only(right: 8),
             child: ProductCard(
               product: product,
               onProductTap: onProductTap,
               onFavoriteTap: onFavoriteTap,
-              width: 159, // Exact width from image 2 (Fixed 159px)
+              width: 159,
               height: 280,
             ),
           );
@@ -73,15 +61,13 @@ class ProductGrid extends StatelessWidget {
         shrinkWrap: true,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.7, // Adjusted to match the height/width ratio
-          crossAxisSpacing: 8, // Gap 8px
-          mainAxisSpacing: 8, // Gap 8px
+          childAspectRatio: 0.7,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
         ),
-        itemCount:
-            products.length > 4 ? 4 : products.length, // Limit to 4 items
+        itemCount: products.length > 4 ? 4 : products.length,
         itemBuilder: (context, index) {
           final product = products[index];
-
           return ProductCard(
             product: product,
             onProductTap: onProductTap,

@@ -1,4 +1,3 @@
-// lib/features/category/views/screens/category_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';

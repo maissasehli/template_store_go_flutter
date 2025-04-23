@@ -17,40 +17,39 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Get the wishlist controller
     _wishlistController = Get.find<WishlistController>();
   }
 
   void onCategoriesSeeAllTap() {
     Get.toNamed(AppRoute.categories);
   }
-
-  void onTopSellingSeeAllTap() {
-    Get.toNamed(AppRoute.products, arguments: {'title': 'Top Selling'});
-  }
-
-  void onNewInSeeAllTap() {
-    Get.toNamed(AppRoute.products, arguments: {'title': 'New In'});
-  }
-
-void onProductTap(String productId) {
-  Get.toNamed(AppRoute.productDetail.replaceAll(':id', productId));
+void onTopSellingSeeAllTap() {
+  Get.toNamed(AppRoute.products, arguments: {
+    'title': 'Top Selling',
+    'listType': 'featured', // Matches the 'featured' case in ProductListController
+  });
 }
 
-  // method to handle favorite toggling
+void onNewInSeeAllTap() {
+  Get.toNamed(AppRoute.products, arguments: {
+    'title': 'New In',
+    'listType': 'new', // Matches the 'new' case in ProductListController
+  });
+}
+
+  void onProductTap(String productId) {
+    Get.toNamed(AppRoute.productDetail.replaceAll(':id', productId));
+  }
+
   Future<void> toggleFavorite(String productId) async {
     try {
-      // Get the current status
       final isAlreadyFavorite = isProductInWishlist(productId);
 
-      // Optimistically update UI first
       if (isAlreadyFavorite) {
-        // Remove from local wishlist immediately for UI update
         _wishlistController.wishlistItems.removeWhere(
           (item) => item.productId == productId,
         );
       } else {
-        // Add a temporary entry to local wishlist for UI update
         final tempItem = WishlistItemModel(
           id: DateTime.now().toString(),
           storeId: '',
@@ -62,22 +61,18 @@ void onProductTap(String productId) {
         _wishlistController.wishlistItems.add(tempItem);
       }
 
-      // Force UI refresh
       update();
 
-      // Then perform the actual API call
       if (isAlreadyFavorite) {
         await _wishlistController.removeFromWishlist(productId);
       } else {
         await _wishlistController.addToWishlist(productId);
       }
     } catch (e) {
-      // If there's an error, refresh the wishlist to sync with server
       await _wishlistController.fetchWishlistItems();
     }
   }
 
-  // Method to check if a product is in wishlist
   bool isProductInWishlist(String productId) {
     return _wishlistController.wishlistItems.any(
       (item) => item.productId == productId,

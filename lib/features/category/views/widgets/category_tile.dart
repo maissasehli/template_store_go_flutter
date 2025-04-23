@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 
 class CategoryTile extends StatelessWidget {
   final Category category;

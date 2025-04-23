@@ -80,7 +80,7 @@ class AddressController extends GetxController {
           city: cityController.text.trim(),
           state: stateController.text.trim(),
           zipCode: zipCodeController.text.trim(),
-          country: countryController.text.trim().isEmpty ? 'USA' : countryController.text.trim(),
+          country: countryController.text.trim().isEmpty ? 'TN':countryController.text.trim(),
           isDefault: false,
           status: 'active',
         );

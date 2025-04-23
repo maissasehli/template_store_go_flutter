@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
+import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
 import 'package:store_go/features/cart/views/widgets/cart_item_card.dart';
 import 'package:store_go/features/cart/views/widgets/cart_summary.dart';
 import 'package:store_go/features/cart/views/widgets/coupon_field.dart';
@@ -89,7 +90,7 @@ class CartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           const Text(
-            'Your Panier is Empty',
+            'Your Cart is Empty',
             style: TextStyle(
               color: Colors.black,
               fontSize: 24,
@@ -149,7 +150,7 @@ class CartScreen extends StatelessWidget {
               const Expanded(
                 child: Center(
                   child: Text(
-                    'Panier',
+                    'Cart',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -201,7 +202,7 @@ class CartScreen extends StatelessWidget {
               onPressed: controller.cartItems.isEmpty
                   ? null
                   : () {
-                      Get.toNamed('/checkout');
+                      Get.to(() => const CheckoutScreen());
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,

@@ -1,6 +1,6 @@
 class AppRoute {
   static const String settings = "/settings";
-  static const String products = "/products";
+  static const String products = "/products"; 
   static const String mainContainer = "/main";
   static const String language = "/language";
   static const String onBoarding = "/onboarding";
@@ -21,22 +21,22 @@ class AppRoute {
   
   // Product routes
   static const String productDetail = "/product/:id";
-  static const String featuredProducts = "/products/featured";
-  static const String newProducts = "/products/new";
+  static const String featuredProducts = "/products/featured"; // Optional, for specific lists
+  static const String newProducts = "/products/new"; // Optional, for specific lists
   
   // Cart and checkout
   static const String cart = "/cart";
-  static const String addCart = "/add-cart"; // Changed from add_cart
+  static const String addCart = "/add-cart";
   static const String checkout = "/checkout";
   
   // User profile
-  static const String editProfile = "/edit-profile"; // Changed from edit_profile
+  static const String editProfile = "/edit-profile";
   static const String profile = "/profile";
   static const String orders = "/orders";
   static const String wishlist = "/wishlist";
 
   // Review routes
-  static const String reviews = "/reviews/:productId"; // New route for reviews
+  static const String reviews = "/reviews/:productId";
 
   // Public routes
   static const List<String> publicRoutes = [
@@ -47,12 +47,12 @@ class AppRoute {
     forgetPassword,
   ];
   static const String address = "/address";
-  static const String addAddress = "/add-address"; // Changed from add_address
-  static const String editAddress = "/edit-address"; // Changed from edit_address
-  static const String orderDetails = "/order-details"; // Changed from order_details
+  static const String addAddress = "/add-address";
+  static const String editAddress = "/edit-address";
+  static const String orderDetails = "/order-details";
   static const String payments = "/payments";
-  static const String addPayment = "/add-payment"; // Changed from add_payment
-  static const String editPayment = "/edit-payment"; // Changed from edit_payment
+  static const String addPayment = "/add-payment";
+  static const String editPayment = "/edit-payment";
   static const String notifications = "/notifications";
   static const String filter = "/filter";
   static const String subcategoryProducts = '/subcategory-products';

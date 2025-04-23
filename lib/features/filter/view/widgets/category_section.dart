@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/subcategory/models/subcategory_model.dart';
 import 'category_button.dart';
 

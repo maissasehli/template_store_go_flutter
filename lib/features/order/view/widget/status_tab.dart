@@ -8,11 +8,11 @@ class StatusTab extends StatelessWidget {
   final VoidCallback onTap;
 
   const StatusTab({
-    Key? key,
+    super.key,
     required this.status,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

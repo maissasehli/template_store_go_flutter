@@ -1,5 +1,3 @@
-// File: lib/features/order/views/orders_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
@@ -8,13 +6,11 @@ import 'package:store_go/features/order/view/widget/error_view.dart';
 import 'package:store_go/features/order/view/widget/order_list.dart';
 import 'package:store_go/features/order/view/widget/order_status_tabs.dart';
 
-
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get the instance of the controller
     final controller = Get.find<OrderController>();
 
     return Scaffold(
@@ -22,9 +18,18 @@ class OrdersPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Get.back(),
+        leading: Container(
+          margin: const EdgeInsets.only(left: 16),
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+            onPressed: () => Get.back(),
+          ),
         ),
         centerTitle: true,
         title: const Text(

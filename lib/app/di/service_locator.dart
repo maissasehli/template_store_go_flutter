@@ -2,7 +2,6 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/services/enhanced_image_cache.dart';
 import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/features/auth/services/token_manager.dart';
-import 'package:store_go/features/category/services/category_api_service.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/core/services/image_preloader_manager.dart';
 import 'package:store_go/app/core/services/api_client.dart';
@@ -17,10 +16,7 @@ class ServiceLocator {
       UserApiService(Get.find<ApiClient>()),
       permanent: true,
     );
-    Get.put<CategoryApiService>(
-      CategoryApiService(Get.find<ApiClient>()),
-      permanent: true,
-    );
+    
     Get.put(TokenManager(), permanent: true);
     Get.put<AuthService>(AuthService(), permanent: true);
     Get.put<ThemeController>(ThemeController(), permanent: true);

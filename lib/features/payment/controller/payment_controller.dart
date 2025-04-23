@@ -1,73 +1,61 @@
 import 'package:get/get.dart';
-
-class PaymentMethodModel {
-  final String id;
-  final String type; // 'card' or 'paypal'
-  final String maskedNumber; // For cards
-  final String email; // For PayPal
-  final String cardType; // For cards: 'mastercard', 'visa', etc.
-
-  PaymentMethodModel({
-    required this.id,
-    required this.type,
-    this.maskedNumber = '',
-    this.email = '',
-    this.cardType = '',
-  });
-}
+import 'package:logger/logger.dart';
+import 'package:store_go/features/payment/repositories/payment_repository.dart';
 
 class PaymentController extends GetxController {
-  final RxList<PaymentMethodModel> paymentMethods = <PaymentMethodModel>[].obs;
+  final PaymentRepository _repository;
+  final Logger _logger = Logger();
+
+  final RxList<PaymentMethod> paymentMethods = <PaymentMethod>[].obs;
+  final Rx<PaymentMethod?> selectedPaymentMethod = Rx<PaymentMethod?>(null);
+  final RxBool isLoading = false.obs;
+  final RxBool hasError = false.obs;
+  final RxString errorMessage = ''.obs;
+
+  PaymentController({required PaymentRepository repository}) : _repository = repository;
 
   @override
   void onInit() {
     super.onInit();
-    // Load dummy data for demonstration
-    loadInitialPaymentMethods();
+    fetchPaymentMethods();
   }
 
-  void loadInitialPaymentMethods() {
-    paymentMethods.addAll([
-      PaymentMethodModel(
-        id: '1',
-        type: 'card',
-        maskedNumber: '**** 4187',
-        cardType: 'mastercard',
-      ),
-      PaymentMethodModel(
-        id: '2',
-        type: 'card',
-        maskedNumber: '**** 9387',
-        cardType: 'mastercard',
-      ),
-      PaymentMethodModel(
-        id: '3',
-        type: 'paypal',
-        email: 'Cloth@gmail.com',
-      ),
-    ]);
-  }
+  Future<void> fetchPaymentMethods() async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
 
-  void addPaymentMethod(PaymentMethodModel paymentMethod) {
-    paymentMethods.add(paymentMethod);
-    Get.back();
-    Get.snackbar('Success', 'Payment method added successfully',
-        snackPosition: SnackPosition.BOTTOM);
-  }
-
-  void editPaymentMethod(String id, PaymentMethodModel updatedMethod) {
-    final index = paymentMethods.indexWhere((method) => method.id == id);
-    if (index != -1) {
-      paymentMethods[index] = updatedMethod;
-      Get.back();
-      Get.snackbar('Success', 'Payment method updated successfully',
-          snackPosition: SnackPosition.BOTTOM);
+      final methods = await _repository.getPaymentMethods();
+      paymentMethods.value = methods;
+      selectedPaymentMethod.value = methods.firstWhereOrNull((method) => method.isDefault) ?? methods.firstOrNull;
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = e.toString();
+      _logger.e('Error fetching payment methods: $e');
+      Get.snackbar('Error', 'Failed to load payment methods', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  void deletePaymentMethod(String id) {
-    paymentMethods.removeWhere((method) => method.id == id);
-    Get.snackbar('Success', 'Payment method removed successfully',
-        snackPosition: SnackPosition.BOTTOM);
+  Future<void> addPaymentMethod(PaymentMethod method) async {
+    try {
+      isLoading.value = true;
+      final newMethod = await _repository.addPaymentMethod(method);
+      paymentMethods.add(newMethod);
+      if (newMethod.isDefault || paymentMethods.length == 1) {
+        selectedPaymentMethod.value = newMethod;
+      }
+    } catch (e) {
+      _logger.e('Error adding payment method: $e');
+      Get.snackbar('Error', 'Failed to add payment method', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void selectPaymentMethod(PaymentMethod method) {
+    selectedPaymentMethod.value = method;
   }
 }

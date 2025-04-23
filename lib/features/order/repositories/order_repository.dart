@@ -1,7 +1,6 @@
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/order/model/order_model.dart';
 
-// Updated OrderRepository with better error handling
 class OrderRepository {
   final ApiClient _apiClient;
 
@@ -12,9 +11,8 @@ class OrderRepository {
       final queryParams = status != null ? {'status': status} : null;
       final response = await _apiClient.get('/orders', queryParameters: queryParams);
 
-      // Check for 500 error
       if (response.statusCode == 500) {
-        return []; // Return empty list instead of throwing
+        return [];
       }
 
       if (response.statusCode == 200) {
@@ -24,7 +22,7 @@ class OrderRepository {
         return [];
       }
     } catch (e) {
-      return []; // Return empty list on error
+      return [];
     }
   }
 
@@ -32,7 +30,6 @@ class OrderRepository {
     try {
       final response = await _apiClient.get('/orders/$orderId');
 
-      // Check for 500 error
       if (response.statusCode == 500) {
         return null;
       }
@@ -50,15 +47,25 @@ class OrderRepository {
   Future<bool> cancelOrder(String orderId) async {
     try {
       final response = await _apiClient.post('/orders/$orderId/cancel');
-      
-      // Check for 500 error
       if (response.statusCode == 500) {
         return false;
       }
-      
       return response.statusCode == 200;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<OrderModel> createOrder(Map<String, dynamic> orderData) async {
+    try {
+      final response = await _apiClient.post('/orders', data: orderData);
+      if (response.statusCode == 201) {
+        return OrderModel.fromJson(response.data['data']);
+      } else {
+        throw Exception('Failed to create order: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to create order: $e');
     }
   }
 }

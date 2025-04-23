@@ -1,6 +1,6 @@
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:logger/logger.dart';
-import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 
 class CategoryRepository {
   final ApiClient _apiClient;

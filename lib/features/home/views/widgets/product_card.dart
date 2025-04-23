@@ -39,14 +39,10 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product image with favorite button
             Expanded(
               child: Stack(
                 children: [
-                  // Product image
                   ProductImage(product: product),
-
-                  // Favorite button
                   Positioned(
                     top: 8,
                     right: 8,
@@ -63,14 +59,11 @@ class ProductCard extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Product details
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product name
                   Text(
                     product.name,
                     maxLines: 1,
@@ -83,11 +76,8 @@ class ProductCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-
-                  // Product price
                   PriceDisplay(
                     price: product.price,
-                    // Only show special strikethrough price for product with ID '2'
                     hasDiscount: product.id == '2',
                     originalPrice: 100.00,
                   ),

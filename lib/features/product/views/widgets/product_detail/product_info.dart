@@ -1,3 +1,4 @@
+// product_info.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
@@ -18,15 +19,12 @@ class ProductInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ensure ReviewController is registered as a fallback
     if (!Get.isRegistered<ReviewController>()) {
-      print('ProductInfo: ReviewController not found, registering manually');
       Get.put(ApiClient());
       Get.put(ReviewRepository(apiClient: Get.find<ApiClient>()));
       Get.put(ReviewController(repository: Get.find<ReviewRepository>()));
     }
 
-    // Get the ReviewController instance with error handling
     ReviewController? reviewController;
     try {
       reviewController = Get.find<ReviewController>();
@@ -40,7 +38,6 @@ class ProductInfo extends StatelessWidget {
       );
     }
 
-    // Fetch reviews for this product on initialization
     WidgetsBinding.instance.addPostFrameCallback((_) {
       reviewController?.fetchReviews(product.id);
     });
@@ -48,7 +45,6 @@ class ProductInfo extends StatelessWidget {
     final bool isInStock = product.stockQuantity > 0;
 
     return Obx(() {
-      // Calculate the average rating dynamically
       double averageRating = reviewController!.reviews.isEmpty
           ? 0
           : reviewController.reviews

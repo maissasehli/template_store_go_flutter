@@ -1,3 +1,4 @@
+// color_selector.dart
 import 'package:flutter/material.dart';
 
 class ColorSelector extends StatelessWidget {
@@ -28,24 +29,20 @@ class ColorSelector extends StatelessWidget {
       return Colors.grey;
     }
 
-    // Split the colorClass (e.g., 'bg-blue-600') into parts
     final parts = colorClass.split('-');
     if (parts.length < 2) {
       return Colors.grey;
     }
 
-    // Extract color name and shade
-    String colorName = parts[1].toLowerCase(); // e.g., 'blue'
-    int? shade = parts.length > 2 ? int.tryParse(parts[2]) : null; // e.g., 600
+    String colorName = parts[1].toLowerCase();
+    int? shade = parts.length > 2 ? int.tryParse(parts[2]) : null;
 
-    // Handle special cases for color names (e.g., 'grey' vs 'gray')
     if (colorName == 'grey') {
       colorName = 'gray';
     } else if (colorName == 'bluegray') {
       colorName = 'blueGrey';
     }
 
-    // Map of color names to Flutter Colors, with flags for shade support
     final colorMap = <String, Map<String, dynamic>>{
       'red': {'color': Colors.red, 'supportsShades': true},
       'pink': {'color': Colors.pink, 'supportsShades': true},
@@ -70,43 +67,37 @@ class ColorSelector extends StatelessWidget {
       'white': {'color': Colors.white, 'supportsShades': false},
     };
 
-    // Get the color entry from the map
     final colorEntry = colorMap[colorName];
     if (colorEntry == null) {
-      return Colors.grey; // Fallback for unknown color names
+      return Colors.grey;
     }
 
     final baseColor = colorEntry['color'] as Color;
     final supportsShades = colorEntry['supportsShades'] as bool;
 
-    // If no shade is specified or the color doesn't support shades, return the base color
     if (shade == null || !supportsShades) {
       return baseColor;
     }
 
-    // Validate the shade (Flutter supports 50, 100, 200, ..., 900)
     const validShades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
     if (!validShades.contains(shade)) {
-      return baseColor; // Fallback to base color if shade is invalid
+      return baseColor;
     }
 
-    // Since we know baseColor supports shades (it's a MaterialColor), cast and access the shade
     if (baseColor is MaterialColor || baseColor is MaterialAccentColor) {
-      return (baseColor as dynamic)[shade] ?? baseColor; // Access the shade
+      return (baseColor as dynamic)[shade] ?? baseColor;
     }
 
-    return baseColor; // Fallback to base color if not a MaterialColor
+    return baseColor;
   }
 
   Color _getColor(Map<String, String> colorMap) {
     final customColor = colorMap['customColor'] ?? '';
     final colorClass = colorMap['colorClass'] ?? '';
 
-    // Prioritize customColor (hex code) if available
     if (customColor.isNotEmpty) {
       return _getColorFromHex(customColor);
     }
-    // Otherwise, use colorClass
     return _getColorFromClass(colorClass);
   }
 

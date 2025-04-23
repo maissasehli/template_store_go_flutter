@@ -12,7 +12,9 @@ class ProductController extends GetxController {
   final RxList<Product> featuredProducts = <Product>[].obs;
   final RxList<Product> newProducts = <Product>[].obs;
   final RxList<Product> searchResults = <Product>[].obs;
-  final RxBool isLoading = false.obs;
+  final RxBool isLoadingAll = false.obs;
+  final RxBool isLoadingFeatured = false.obs;
+  final RxBool isLoadingNew = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
 
@@ -28,7 +30,7 @@ class ProductController extends GetxController {
 
   Future<void> fetchAllProducts() async {
     try {
-      isLoading.value = true;
+      isLoadingAll.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -41,13 +43,13 @@ class ProductController extends GetxController {
       _logger.e('Error fetching products: $e');
       developer.log('Error fetching products: $e', name: 'ProductController.fetchAllProducts', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingAll.value = false;
     }
   }
 
   Future<void> fetchProductsByCategory(String categoryId) async {
     try {
-      isLoading.value = true;
+      isLoadingAll.value = true;
       hasError.value = false;
 
       if (categoryId.isEmpty) {
@@ -66,13 +68,39 @@ class ProductController extends GetxController {
       developer.log('Error fetching products by category: $e',
           name: 'ProductController.fetchProductsByCategory', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingAll.value = false;
+    }
+  }
+
+  Future<void> fetchProductsBySubcategory(String subcategoryId) async {
+    try {
+      isLoadingAll.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
+      if (subcategoryId.isEmpty) {
+        await fetchAllProducts();
+        return;
+      }
+
+      final subcategoryProducts = await _repository.getProductsBySubcategory(subcategoryId);
+      products.assignAll(subcategoryProducts);
+      developer.log('Fetched ${subcategoryProducts.length} products for subcategory $subcategoryId',
+          name: 'ProductController.fetchProductsBySubcategory');
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = 'Failed to load subcategory products. Please try again.';
+      _logger.e('Error fetching products by subcategory: $e');
+      developer.log('Error fetching products by subcategory: $e',
+          name: 'ProductController.fetchProductsBySubcategory', error: e);
+    } finally {
+      isLoadingAll.value = false;
     }
   }
 
   Future<void> fetchFeaturedProducts() async {
     try {
-      isLoading.value = true;
+      isLoadingFeatured.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -86,13 +114,13 @@ class ProductController extends GetxController {
       developer.log('Error fetching featured products: $e',
           name: 'ProductController.fetchFeaturedProducts', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingFeatured.value = false;
     }
   }
 
   Future<void> fetchNewProducts() async {
     try {
-      isLoading.value = true;
+      isLoadingNew.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -105,7 +133,7 @@ class ProductController extends GetxController {
       _logger.e('Error fetching new products: $e');
       developer.log('Error fetching new products: $e', name: 'ProductController.fetchNewProducts', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingNew.value = false;
     }
   }
 
@@ -116,7 +144,7 @@ class ProductController extends GetxController {
     }
 
     try {
-      isLoading.value = true;
+      isLoadingAll.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -129,7 +157,7 @@ class ProductController extends GetxController {
       _logger.e('Error searching products: $e');
       developer.log('Error searching products: $e', name: 'ProductController.searchProducts', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingAll.value = false;
     }
   }
 
@@ -185,7 +213,7 @@ class ProductController extends GetxController {
 
   Future<void> clearFilters() async {
     try {
-      isLoading.value = true;
+      isLoadingAll.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -197,19 +225,20 @@ class ProductController extends GetxController {
       _logger.e('Error clearing filters: $e');
       developer.log('Error clearing filters: $e', name: 'ProductController.clearFilters', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingAll.value = false;
     }
   }
 
   Future<void> filterProducts({
     String? category,
+    String? subcategory,
     double? minPrice,
     double? maxPrice,
     String? sortBy,
     int? rating,
   }) async {
     try {
-      isLoading.value = true;
+      isLoadingAll.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -223,6 +252,10 @@ class ProductController extends GetxController {
         filteredProducts = filteredProducts.where((p) => p.category == category).toList();
       }
 
+      if (subcategory != null && subcategory.isNotEmpty) {
+        filteredProducts = filteredProducts.where((p) => p.subcategory == subcategory).toList();
+      }
+
       if (minPrice != null && maxPrice != null) {
         filteredProducts =
             filteredProducts.where((p) => p.price >= minPrice && p.price <= maxPrice).toList();
@@ -234,6 +267,7 @@ class ProductController extends GetxController {
 
       if (sortBy != null) {
         switch (sortBy) {
+          case 'Latest':
           case 'New Today':
             filteredProducts.sort((a, b) => b.id.compareTo(a.id));
             break;
@@ -247,7 +281,10 @@ class ProductController extends GetxController {
       }
 
       products.assignAll(filteredProducts);
-      developer.log('Filtered ${filteredProducts.length} products with criteria: category=$category, minPrice=$minPrice, maxPrice=$maxPrice, sortBy=$sortBy, rating=$rating',
+      developer.log(
+          'Filtered ${filteredProducts.length} products with criteria: '
+          'category=$category, subcategory=$subcategory, minPrice=$minPrice, '
+          'maxPrice=$maxPrice, sortBy=$sortBy, rating=$rating',
           name: 'ProductController.filterProducts');
     } catch (e) {
       hasError.value = true;
@@ -255,7 +292,7 @@ class ProductController extends GetxController {
       _logger.e('Error applying filters: $e');
       developer.log('Error applying filters: $e', name: 'ProductController.filterProducts', error: e);
     } finally {
-      isLoading.value = false;
+      isLoadingAll.value = false;
     }
   }
 }

@@ -1,8 +1,7 @@
-// lib/features/category/controllers/category_controller.dart
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
-import 'package:store_go/features/category/models/category.modal.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/category/repositories/category_repository.dart';
 
 class CategoryController extends GetxController {
@@ -90,7 +89,7 @@ class CategoryController extends GetxController {
     _logger.d("Category selected: ${category.id}");
     selectedCategoryId.value = category.id;
 
-    // Navigate to the subcategory list screen instead of products
+    // Navigate to the category products screen
     Get.toNamed(AppRoute.categoryDetail, arguments: category);
   }
 

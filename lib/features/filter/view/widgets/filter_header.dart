@@ -1,4 +1,3 @@
-// widgets/filter_header.dart
 import 'package:flutter/material.dart';
 
 class FilterHeader extends StatelessWidget {

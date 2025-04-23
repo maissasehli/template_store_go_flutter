@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/features/category/models/category.modal.dart';
-import 'package:store_go/features/filter/view/screen/filter_screen.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
-import 'package:store_go/features/product/controllers/category_product_controller.dart';
-import 'package:store_go/features/product/views/widgets/category_product/category_list_view.dart';
-import 'package:store_go/features/product/views/widgets/category_product/subcategory_list_view.dart';
+import 'package:store_go/features/category_product/controller/category_product_controller.dart';
+import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
+import 'package:store_go/features/category_product/view/widgets/category_list_view.dart';
+import 'package:store_go/features/category_product/view/widgets/subcategory_list_view.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
 
 class CategoryProductsScreen extends StatefulWidget {
-final Category category;
-  CategoryProductsScreen({super.key})
-      : category = Get.arguments as Category;
+  final Category category;
+  CategoryProductsScreen({super.key}) : category = Get.arguments as Category;
 
   @override
   State<CategoryProductsScreen> createState() => _CategoryProductsScreenState();
@@ -38,9 +37,7 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
       categoryProductController = Get.find<CategoryProductController>();
     } else {
       categoryProductController = Get.put(
-        CategoryProductController(
-          repository: Get.find(),
-        ),
+        CategoryProductController(repository: Get.find()),
       );
     }
 
@@ -69,61 +66,20 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     }
   }
 
-  void applyFilters() async {
-  final result = await showModalBottomSheet<Map<String, dynamic>>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => DraggableScrollableSheet(
-      initialChildSize: 0.9,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (_, scrollController) {
-        return FilterPage();
-      },
-    ),
-  );
-
-  if (result != null) {
-    final String categoryId = result['categoryId'];
-    final String subcategoryId = result['subcategoryId'];
-    final double minPrice = result['minPrice'];
-    final double maxPrice = result['maxPrice'];
-
-    if (categoryId != widget.category.id) {
-      final newCategory = categoryController.categories.firstWhereOrNull((cat) => cat.id == categoryId);
-      if (newCategory != null) {
-        // Instead of reassigning widget.category, navigate to a new screen or update controllers
-        Get.off(() => CategoryProductsScreen(), arguments: newCategory);
-        return; // Exit early after navigation
-      }
-    }
-
-    if (subcategoryId.isNotEmpty) {
-      final newSubcategory = subcategoryController.subcategories.firstWhereOrNull((sub) => sub.id == subcategoryId);
-      if (newSubcategory != null) {
-        subcategoryController.selectSubcategory(newSubcategory);
-      }
-    } else {
-      subcategoryController.currentSubcategoryId.value = '';
-      await categoryProductController.fetchCategoryProducts(widget.category.id);
-    }
-
-    if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
-      subcategoryController.subcategoryProducts.assignAll(
-        subcategoryController.subcategoryProducts.where((product) {
-          return product.price >= minPrice && product.price <= maxPrice;
-        }).toList(),
-      );
-    } else {
-      categoryProductController.categoryProducts.assignAll(
-        categoryProductController.categoryProducts.where((product) {
-          return product.price >= minPrice && product.price <= maxPrice;
-        }).toList(),
-      );
-    }
+  void applyFilters() {
+    final filterController = Get.find<ProductFilterController>();
+    categoryProductController.applyFilters(
+      categoryId: filterController.selectedCategory.value == 'All'
+          ? widget.category.id
+          : filterController.selectedCategory.value,
+      subcategoryId: filterController.selectedSubcategoryId.value,
+      minPrice: filterController.minPrice.value,
+      maxPrice: filterController.maxPrice.value,
+      sortOption: filterController.selectedSortOption.value,
+      minRating: filterController.minRating.value.toDouble(),
+    );
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,13 +109,33 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
+                  // In CategoryProductsScreen class
+                  // Update the section containing CustomSearchBar
                   Expanded(
                     child: CustomSearchBar(
                       onSearch: (query) {
+                        if (query.isEmpty) {
+                          // Clear search results
+                          if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+                            subcategoryController.clearSearch();
+                          } else {
+                            categoryProductController.clearSearch();
+                          }
+                          return;
+                        }
+
                         if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+                          // Search only in selected subcategory
                           subcategoryController.searchSubcategoryProducts(query);
                         } else {
+                          // Search in all subcategories and current category
+                          // First, search in the category products
                           categoryProductController.searchCategoryProducts(query);
+
+                          // Then, search in all subcategories if the current search doesn't have results
+                          if (categoryProductController.filteredProducts.isEmpty) {
+                            subcategoryController.searchSubcategoryProducts(query);
+                          }
                         }
                       },
                     ),
@@ -170,15 +146,23 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
             Obx(() {
               if (subcategoryController.currentCategoryId.value == widget.category.id &&
                   subcategoryController.subcategories.isNotEmpty &&
-                  !subcategoryController.isLoading.value &&
-                  subcategoryController.subcategories.every((sub) => sub.parentCategoryId == widget.category.id)) {
-                return SubcategoryListView(applyFilters: applyFilters);
-              } else {
-                return CategoryListView(
-                  categoryProductController: categoryProductController,
-                  applyFilters: applyFilters,
-                );
+                  !subcategoryController.isLoading.value) {
+                // Check if all subcategories match this category
+                bool allBelongToCategory = true;
+                for (var sub in subcategoryController.subcategories) {
+                  if (sub.parentCategoryId != widget.category.id) {
+                    allBelongToCategory = false;
+                    break;
+                  }
+                }
+                if (allBelongToCategory) {
+                  return SubcategoryListView(applyFilters: applyFilters);
+                }
               }
+              return CategoryListView(
+                categoryProductController: categoryProductController,
+                applyFilters: applyFilters,
+              );
             }),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
@@ -188,8 +172,11 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                     : categoryProductController.categoryProducts.length;
                 final displayName = subcategoryController.currentSubcategoryId.value.isNotEmpty
                     ? subcategoryController.subcategories
-                        .firstWhereOrNull((sub) => sub.id == subcategoryController.currentSubcategoryId.value)
-                        ?.name ?? widget.category.name
+                            .firstWhereOrNull(
+                              (sub) => sub.id == subcategoryController.currentSubcategoryId.value,
+                            )
+                            ?.name ??
+                        widget.category.name
                     : widget.category.name;
                 return Text(
                   '$productCount Results Found in $displayName',

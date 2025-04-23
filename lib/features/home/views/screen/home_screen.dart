@@ -10,6 +10,7 @@ import 'package:store_go/features/home/views/widgets/product_grid.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/home/views/widgets/section_header.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
+import 'package:store_go/features/home/views/widgets/skeleton_loaders.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -33,15 +34,13 @@ class HomeScreen extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        // Refresh products data
         await controller.productController.fetchAllProducts();
         await controller.productController.fetchFeaturedProducts();
         await controller.productController.fetchNewProducts();
       },
       color: AppColors.primary(context),
       child: SingleChildScrollView(
-        physics:
-            const AlwaysScrollableScrollPhysics(), // Important for RefreshIndicator to work
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -49,8 +48,7 @@ class HomeScreen extends StatelessWidget {
 
             // Search bar
             CustomSearchBar(
-              onSearch:
-                  (query) => controller.productController.searchProducts(query),
+              onSearch: (query) => controller.productController.searchProducts(query),
             ),
 
             const SizedBox(height: UIConfig.paddingMedium),
@@ -61,22 +59,7 @@ class HomeScreen extends StatelessWidget {
               onSeeAllTap: () => controller.onCategoriesSeeAllTap(),
             ),
 
-            SizedBox(
-              height: 100,
-              child: Obx(
-                () => CategoryFilter(
-                  categories: controller.categoryController.categories,
-                  selectedCategoryId:
-                      controller.categoryController.selectedCategoryId.value,
-                  onCategorySelected:
-                      (categoryId) => controller.categoryController
-                          .selectCategoryById(categoryId),
-                ),
-              ),
-            ),
-
-            // Rest of your content...
-            // Top Selling section and New In section remain the same
+            _buildCategoriesSection(context),
 
             // Top Selling section
             SectionHeader(
@@ -84,28 +67,7 @@ class HomeScreen extends StatelessWidget {
               onSeeAllTap: () => controller.onTopSellingSeeAllTap(),
             ),
 
-            Obx(() {
-              if (controller.productController.isLoading.value) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primary(context),
-                  ),
-                );
-              }
-
-              if (controller.productController.products.isEmpty) {
-                return const SizedBox.shrink();
-              }
-
-              return ProductGrid(
-                products: controller.productController.products,
-                onProductTap: (productId) => controller.onProductTap(productId),
-                onFavoriteTap:
-                    (productId) =>
-                        controller.productController.toggleFavorite(productId),
-                isHorizontal: true,
-              );
-            }),
+            _buildTopSellingSection(context),
 
             // New In section
             SectionHeader(
@@ -113,33 +75,89 @@ class HomeScreen extends StatelessWidget {
               onSeeAllTap: () => controller.onNewInSeeAllTap(),
             ),
 
-            Obx(() {
-              if (controller.productController.isLoading.value) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primary(context),
-                  ),
-                );
-              }
+            _buildNewInSection(context),
 
-              if (controller.productController.products.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No products found.',
-                    style: TextStyle(color: AppColors.mutedForeground(context)),
-                  ),
-                );
-              }
+            const SizedBox(height: UIConfig.paddingLarge),
+          ],
+        ),
+      ),
+    );
+  }
 
-              return ProductGrid(
-                products: controller.productController.products,
-                onProductTap: (productId) => controller.onProductTap(productId),
-                onFavoriteTap:
-                    (productId) =>
-                        controller.productController.toggleFavorite(productId),
-                isHorizontal: true,
-              );
-            }),
+  Widget _buildCategoriesSection(BuildContext context) {
+    return SizedBox(
+      height: 100,
+      child: Obx(() {
+        if (controller.categoryController.isLoading.value) {
+          return const CategorySkeletonLoader();
+        }
+
+        return CategoryFilter(
+          categories: controller.categoryController.categories,
+          selectedCategoryId: controller.categoryController.selectedCategoryId.value,
+          onCategorySelected: (categoryId) => controller.categoryController.selectCategoryById(categoryId),
+        );
+      }),
+    );
+  }
+
+  Widget _buildTopSellingSection(BuildContext context) {
+    return Obx(() {
+      if (controller.productController.isLoadingFeatured.value) {
+        return const ProductSkeletonLoader(isHorizontal: true);
+      }
+
+      if (controller.productController.featuredProducts.isEmpty) {
+        return _buildEmptyState(context);
+      }
+
+      return ProductGrid(
+        products: controller.productController.featuredProducts,
+        onProductTap: (productId) => controller.onProductTap(productId),
+        onFavoriteTap: (productId) => controller.productController.toggleFavorite(productId),
+        isHorizontal: true,
+      );
+    });
+  }
+
+  Widget _buildNewInSection(BuildContext context) {
+    return Obx(() {
+      if (controller.productController.isLoadingNew.value) {
+        return const ProductSkeletonLoader(isHorizontal: true);
+      }
+
+      if (controller.productController.newProducts.isEmpty) {
+        return _buildEmptyState(context);
+      }
+
+      return ProductGrid(
+        products: controller.productController.newProducts,
+        onProductTap: (productId) => controller.onProductTap(productId),
+        onFavoriteTap: (productId) => controller.productController.toggleFavorite(productId),
+        isHorizontal: true,
+      );
+    });
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingLarge),
+        child: Column(
+          children: [
+            Icon(
+              Icons.inventory_2_outlined,
+              size: 48,
+              color: AppColors.mutedForeground(context),
+            ),
+            const SizedBox(height: UIConfig.paddingSmall),
+            Text(
+              'No products found',
+              style: TextStyle(
+                color: AppColors.mutedForeground(context),
+                fontSize: 16,
+              ),
+            ),
           ],
         ),
       ),
