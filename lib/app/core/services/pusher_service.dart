@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pusher_client_fixed/pusher_client_fixed.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store_go/app/core/config/app_notification_type.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -77,7 +79,7 @@ class PusherService {
       _storeChannel = _pusherClient!.subscribe('store-$storeId');
 
       // Add any other event listeners needed
-      _storeChannel!.bind('new-product', (event) {
+      _storeChannel!.bind(AppNotificationType.newProduct, (event) {
         if (event != null && event.data != null) {
           _handleNewProductEvent(event.data!);
         }
@@ -114,8 +116,7 @@ class PusherService {
   void _handleNewProductEvent(String eventData) {
     try {
       final data = jsonDecode(eventData);
-
-      // Use Get.snackbar which doesn't need direct Overlay access
+      final String? imageUrl = data['imageUrl'];
       Get.snackbar(
         'New Product Available!',
         '${data['productName']} is now available in the store',
@@ -124,11 +125,74 @@ class PusherService {
         backgroundColor: Colors.white,
         colorText: Colors.black,
         margin: const EdgeInsets.all(10),
+        borderRadius: 8,
+        padding: const EdgeInsets.all(12),
+        // Use a custom snackbar with image
+        titleText: Row(
+          children: [
+            const Text(
+              'New Product Available!',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ],
+        ),
+        messageText: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product image
+            if (imageUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  margin: const EdgeInsets.only(right: 12),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            // Product details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${data['productName']} is now available in the store',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Price: \$${data['price']}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         onTap: (_) {
-          Get.toNamed(
-            '/product-details',
-            arguments: {'productId': data['productId']},
-          );
+          Get.toNamed(AppRoute.productDetail.replaceAll(':id', data["productId"]));
         },
       );
     } catch (e) {
