@@ -79,9 +79,6 @@ class AuthService {
     try {
       final pusherService = Get.find<PusherService>();
 
-      // Use the immediate version instead of the debounced one
-      await pusherService.updateUserOnlineStatusImmediate(false);
-
       // Now proceed with disconnection and signout
       await pusherService.disconnect(skipStatusUpdate: true);
       await _apiClient.signOut();

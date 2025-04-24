@@ -21,10 +21,16 @@ class PusherService {
   String? _currentStoreId;
   String? _currentUserId;
 
+  // Status management
   Timer? _statusUpdateTimer;
   bool _lastReportedStatus = false;
-  final _statusLock = Lock(); 
-  bool _isAppActive = true;
+  final _statusLock = Lock();
+
+  // Simplified state tracking
+  bool _isAppInForeground = true; // Managed by LifecycleObserver
+  bool _isUserActive = true; // Managed by ActivityDetector
+
+  final Logger _logger = Logger();
 
   // Flutter notification service
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -48,9 +54,7 @@ class PusherService {
       // Initialize Pusher client
       _pusherClient = PusherClient(
         '9cc5c988880ae2d93c71',
-        PusherOptions(
-          cluster: 'eu',
-        ),
+        PusherOptions(cluster: 'eu'),
         autoConnect: false,
         enableLogging: true,
       );
@@ -60,19 +64,19 @@ class PusherService {
 
       // Setup connection status handlers
       _pusherClient!.onConnectionStateChange((state) {
-        debugPrint("Pusher connection state: ${state!.currentState}");
+        _logger.d("Pusher connection state: ${state!.currentState}");
 
         // Update online status when connection changes
         if (state.currentState == 'connected') {
-          _updateOnlineStatusWithDebounce(true);
+          _calculateAndUpdateStatus();
         } else if (state.currentState == 'disconnected' ||
             state.currentState == 'disconnecting') {
-          _updateOnlineStatusWithDebounce(false);
+          _updateStatusWithDebounce(false, force: true);
         }
       });
 
       _pusherClient!.onConnectionError((error) {
-        debugPrint("Pusher connection error: ${error!.message}");
+        _logger.e("Pusher connection error: ${error!.message}");
       });
 
       // Subscribe to a standard channel instead of presence channel
@@ -90,26 +94,81 @@ class PusherService {
       await prefs.setString('current_store_id', storeId);
 
       // Set initial online status
-      updateUserOnlineStatus(true);
+      _calculateAndUpdateStatus(force: true);
 
-      Logger().i("Pusher initialized for store: $storeId and user: $appUserId");
+      _logger.i("Pusher initialized for store: $storeId and user: $appUserId");
     } catch (e) {
-      Logger().e("Failed to initialize Pusher: $e");
+      _logger.e("Failed to initialize Pusher: $e");
     }
   }
 
+  // Calculate the effective online status based on foreground and activity states
+  void _calculateAndUpdateStatus({bool force = false}) {
+    // User is considered online if app is in foreground AND user is active
+    bool effectiveStatus = _isAppInForeground && _isUserActive;
+    _updateStatusWithDebounce(effectiveStatus, force: force);
+
+    _logger.d(
+      "Calculated status: $effectiveStatus (appForeground: $_isAppInForeground, userActive: $_isUserActive)",
+    );
+  }
+
   // Update online status with debounce to prevent too many API calls
-  void _updateOnlineStatusWithDebounce(bool isOnline) {
+  void _updateStatusWithDebounce(bool isOnline, {bool force = false}) {
     // Cancel any pending timer
     _statusUpdateTimer?.cancel();
 
     // Set a new timer (300ms debounce)
     _statusUpdateTimer = Timer(const Duration(milliseconds: 300), () {
-      // Only update if the app is active and the status has changed
-      if (_isAppActive) {
-        updateUserOnlineStatus(isOnline);
+      _sendStatusUpdate(isOnline, force: force);
+    });
+  }
+
+  // Core method to send status updates to the server
+  Future<void> _sendStatusUpdate(bool isOnline, {bool force = false}) async {
+    await _statusLock.synchronized(() async {
+      // Only update if forced or status has changed
+      if (force || _lastReportedStatus != isOnline) {
+        try {
+          _logger.i(
+            "Sending status update to server: $isOnline (force: $force)",
+          );
+
+          final payload = {
+            'isOnline': isOnline,
+            'lastSeen': DateTime.now().toIso8601String(),
+          };
+
+          final apiClient = Get.find<ApiClient>();
+          await apiClient.post('/users/status', data: payload);
+
+          _lastReportedStatus = isOnline;
+          _logger.i("User online status updated successfully to: $isOnline");
+        } catch (e) {
+          _logger.e("Failed to update online status: $e");
+        }
+      } else {
+        _logger.d("Skipping duplicate online status update: $isOnline");
       }
     });
+  }
+
+  // Public API for updating app foreground state (called by LifecycleObserver)
+  Future<void> setAppForegroundState(bool isInForeground) async {
+    _isAppInForeground = isInForeground;
+    _logger.d("App foreground state set to: $isInForeground");
+
+    // Calculate and update status
+    _calculateAndUpdateStatus(force: true);
+  }
+
+  // Public API for updating user activity state (called by ActivityDetector)
+  Future<void> setUserActivityState(bool isActive) async {
+    _isUserActive = isActive;
+    _logger.d("User activity state set to: $isActive");
+
+    // Calculate and update status
+    _calculateAndUpdateStatus(force: true);
   }
 
   // Handle new product notifications
@@ -192,18 +251,14 @@ class PusherService {
           ],
         ),
         onTap: (_) {
-          Get.toNamed(AppRoute.productDetail.replaceAll(':id', data["productId"]));
+          Get.toNamed(
+            AppRoute.productDetail.replaceAll(':id', data["productId"]),
+          );
         },
       );
     } catch (e) {
-      Logger().e("Error handling new product event: $e");
+      _logger.e("Error handling new product event: $e");
     }
-  }
-
-  // Update app active state
-  void setAppActive(bool isActive) {
-    _isAppActive = isActive;
-    updateUserOnlineStatus(isActive);
   }
 
   // Disconnect from Pusher
@@ -211,7 +266,7 @@ class PusherService {
     if (!skipStatusUpdate) {
       // Update status to offline before disconnecting
       if (_pusherClient != null && _currentUserId != null) {
-        await updateUserOnlineStatus(false);
+        await _sendStatusUpdate(false, force: true);
       }
     }
 
@@ -230,79 +285,22 @@ class PusherService {
       _currentStoreId = null;
       _currentUserId = null;
 
-      debugPrint("Pusher disconnected");
+      _logger.d("Pusher disconnected");
     }
   }
 
-  // method for immediate status updates
-  Future<void> updateUserOnlineStatusImmediate(bool isOnline) async {
-    // Cancel any pending timer to avoid race conditions
-    _statusUpdateTimer?.cancel();
-
-    await _statusLock.synchronized(() async {
-      try {
-        Logger().i(
-          "Attempting to update online status immediately to: $isOnline",
-        );
-
-        // Even if the last reported status is the same, force an update
-        final payload = {
-          'isOnline': isOnline,
-          'lastSeen': DateTime.now().toIso8601String(),
-        };
-
-        final apiClient = Get.find<ApiClient>();
-        await apiClient.post('/users/status', data: payload);
-
-        // Update the last reported status AFTER successful API call
-        _lastReportedStatus = isOnline;
-
-        Logger().i("User online status updated successfully to: $isOnline");
-      } catch (e) {
-        Logger().e("Failed to update online status immediately: $e");
-      }
-    });
+  // Reset state (useful when user logs out)
+  void resetState() {
+    _lastReportedStatus = false;
+    _isAppInForeground = true;
+    _isUserActive = true;
+    _logger.i("PusherService state reset");
   }
 
-  // the original debounced method
-  Future<void> updateUserOnlineStatus(
-    bool isOnline, {
-    bool force = false,
-  }) async {
-    // Cancel any pending timer
-    _statusUpdateTimer?.cancel();
-
-    // Set a new timer (500ms debounce)
-    _statusUpdateTimer = Timer(const Duration(milliseconds: 500), () async {
-      await _statusLock.synchronized(() async {
-        // Always update if force is true
-        if (force || _lastReportedStatus != isOnline) {
-          try {
-            final payload = {
-              'isOnline': isOnline,
-              'lastSeen': DateTime.now().toIso8601String(),
-            };
-            final apiClient = Get.find<ApiClient>();
-            await apiClient.post('/users/status', data: payload);
-            _lastReportedStatus = isOnline; // Track what we last sent
-            Logger().i("User online status updated: $isOnline");
-          } catch (e) {
-            Logger().e("Failed to update online status: $e");
-          }
-        } else {
-          Logger().d("Skipping duplicate online status update: $isOnline");
-        }
-      });
-    });
-  }
-
-  resetActivityState() {
-    _lastReportedStatus = false; // Reset to ensure next update will work
-    Logger().i("PusherService activity state reset");
-  }
-  void traceActivityState() {
-    Logger().i(
-      "ACTIVITY STATE TRACE: _lastReportedStatus=$_lastReportedStatus, _isAppActive=$_isAppActive",
+  // For debugging
+  void traceState() {
+    _logger.i(
+      "STATE TRACE: _lastReportedStatus=$_lastReportedStatus, _isAppInForeground=$_isAppInForeground, _isUserActive=$_isUserActive",
     );
   }
 }

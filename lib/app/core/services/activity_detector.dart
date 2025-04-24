@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -11,86 +12,68 @@ class ActivityDetector extends StatefulWidget {
   const ActivityDetector({
     super.key,
     required this.child,
-    this.inactivityTimeout = const Duration(
-      minutes: 3,
-    ), // Reduced from 5 to 3 min
+    this.inactivityTimeout = const Duration(minutes: 2), // 3 minute timeout
   });
 
   @override
   State<ActivityDetector> createState() => _ActivityDetectorState();
 }
 
-class _ActivityDetectorState extends State<ActivityDetector>
-    with WidgetsBindingObserver {
+class _ActivityDetectorState extends State<ActivityDetector> {
   Timer? _inactivityTimer;
-  bool _isActive = true;
   final PusherService _pusherService = Get.find<PusherService>();
+  final Logger _logger = Logger();
+  bool _isActive = true;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _startInactivityTimer();
+    // Initially set the user as active
+    _pusherService.setUserActivityState(true);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _inactivityTimer?.cancel();
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    if (state == AppLifecycleState.resumed) {
-      // App came to foreground
-      _handleUserActivity();
-      _pusherService.setAppActive(true);
-    } else if (state == AppLifecycleState.paused) {
-      // App went to background
-      setState(() {
-        _isActive = false;
-      });
-      _pusherService.setAppActive(false);
-    }
-  }
-
   void _startInactivityTimer() {
     _inactivityTimer?.cancel();
+    _logger.d(
+      "Starting inactivity timer for ${widget.inactivityTimeout.inMinutes} minutes",
+    );
     _inactivityTimer = Timer(widget.inactivityTimeout, _handleInactivity);
   }
 
- Future<void> _handleInactivity() async {
+  Future<void> _handleInactivity() async {
     if (_isActive) {
-      Logger().i(
+      _logger.i(
         "INACTIVITY DETECTED: User has been inactive for ${widget.inactivityTimeout.inMinutes} minutes",
       );
       setState(() {
         _isActive = false;
       });
-      _pusherService.traceActivityState();
-      await _pusherService.updateUserOnlineStatusImmediate(false);
-      Logger().i("Status update request sent (inactive)");
+
+      // Update user activity state in PusherService
+      await _pusherService.setUserActivityState(false);
     }
   }
 
   Future<void> _handleUserActivity() async {
+    // Reset the inactivity timer first
     _startInactivityTimer();
+
+    // Only update if user was previously inactive
     if (!_isActive) {
-      Logger().i("ACTIVITY DETECTED: User activity after inactivity period");
+      _logger.i("ACTIVITY DETECTED: User activity after inactivity period");
       setState(() {
         _isActive = true;
       });
 
-      // Make sure we wait for any pending updates to complete
-      _pusherService.traceActivityState();
-
-      // Wait for the immediate update to complete before continuing
-      await _pusherService.updateUserOnlineStatusImmediate(true);
-
-      Logger().i("Status update request sent (active)");
+      // Update user activity state in PusherService
+      await _pusherService.setUserActivityState(true);
     }
   }
 
@@ -103,5 +86,4 @@ class _ActivityDetectorState extends State<ActivityDetector>
       child: widget.child,
     );
   }
-
 }
