@@ -8,6 +8,7 @@ import 'package:store_go/features/product/controllers/product_list_controller.da
 import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/features/product/controllers/favorite_controller.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
+import 'package:store_go/features/review/repositories/review_repository.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
 
@@ -16,10 +17,12 @@ class ProductBinding extends Bindings {
   void dependencies() {
     final apiClient = Get.find<ApiClient>();
 
+   Get.lazyPut(() => ReviewRepository(apiClient: Get.find<ApiClient>()));
     // Register repositories
-    Get.lazyPut<ProductRepository>(
-      () => ProductRepository(apiClient: apiClient),
-    );
+    Get.lazyPut(() => ProductRepository(
+          apiClient: Get.find<ApiClient>(),
+          reviewRepository: Get.find<ReviewRepository>(),
+        ));
     Get.lazyPut<CategoryRepository>(
       () => CategoryRepository(apiClient: apiClient),
     );

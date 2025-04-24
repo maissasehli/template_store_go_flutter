@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'dart:developer' as developer;
 
@@ -21,8 +22,15 @@ class ProductFilterController extends GetxController {
   void onInit() {
     super.onInit();
     final args = Get.arguments;
-    if (args != null && args['subcategoryId'] != null) {
-      selectedSubcategoryId.value = args['subcategoryId'];
+    if (args != null) {
+      // Check if args is a Map
+      if (args is Map && args['subcategoryId'] != null) {
+        selectedSubcategoryId.value = args['subcategoryId'];
+      }
+      // Check if args is a Category object
+      else if (args is Category && args.id != null) {
+        selectedCategory.value = args.id;
+      }
     }
   }
 
@@ -36,20 +44,22 @@ class ProductFilterController extends GetxController {
         sortBy: selectedSortOption.value,
         rating: minRating.value,
       );
-
+      
       developer.log(
-          'Applied filters: category=${selectedCategory.value}, '
-          'subcategory=${selectedSubcategoryId.value}, '
-          'price=${minPrice.value}-${maxPrice.value}, '
-          'sort=${selectedSortOption.value}, '
-          'rating=${minRating.value}',
-          name: 'ProductFilterController.applyFilters');
-          
+        'Applied filters: category=${selectedCategory.value}, '
+        'subcategory=${selectedSubcategoryId.value}, '
+        'price=${minPrice.value}-${maxPrice.value}, '
+        'sort=${selectedSortOption.value}, '
+        'rating=${minRating.value}',
+        name: 'ProductFilterController.applyFilters'
+      );
       return;
     } catch (e) {
       _logger.e('Error applying filters: $e');
-      developer.log('Error applying filters: $e',
-          name: 'ProductFilterController.applyFilters', error: e);
+      developer.log('Error applying filters: $e', 
+        name: 'ProductFilterController.applyFilters', 
+        error: e
+      );
       throw e;
     }
   }
@@ -61,15 +71,14 @@ class ProductFilterController extends GetxController {
     minPrice.value = 0.0;
     maxPrice.value = 1000.0;
     minRating.value = 0;
-
     await productController.clearFilters();
     developer.log('Cleared all filters', name: 'ProductFilterController.clearFilters');
   }
 
   List<String> get sortOptions => [
-        'Latest',
-        'New Today',
-        'Top Sellers',
-        'New collection',
-      ];
+    'Latest',
+    'New Today',
+    'Top Sellers',
+    'New collection',
+  ];
 }

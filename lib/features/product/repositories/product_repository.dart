@@ -1,18 +1,57 @@
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/review/model/review_model.dart';
+import 'package:store_go/features/review/repositories/review_repository.dart';
 import 'dart:developer' as developer;
 
 class ProductRepository {
   final ApiClient _apiClient;
+  final ReviewRepository _reviewRepository; // Add ReviewRepository dependency
 
-  ProductRepository({required ApiClient apiClient}) : _apiClient = apiClient;
+  ProductRepository({
+    required ApiClient apiClient,
+    required ReviewRepository reviewRepository, // Inject ReviewRepository
+  })  : _apiClient = apiClient,
+        _reviewRepository = reviewRepository;
 
   final Map<String, Product> _productCache = {};
   final Map<String, List<Product>> _categoryProductsCache = {};
   final List<Product> _allProductsCache = [];
 
   static const String _productsEndpoint = '/products';
+
+  Future<List<Product>> _fetchReviewsForProducts(List<Product> products) async {
+    // Fetch reviews for each product
+    for (var i = 0; i < products.length; i++) {
+      try {
+        final reviews = await _reviewRepository.getReviewsByProductId(products[i].id);
+        products[i] = products[i].copyWith(reviews: reviews);
+      } catch (e) {
+        developer.log(
+          'Error fetching reviews for product ${products[i].id}: $e',
+          name: 'ProductRepository._fetchReviewsForProducts',
+          error: e,
+        );
+        // Continue with empty reviews if fetching fails
+        products[i] = products[i].copyWith(reviews: []);
+      }
+    }
+    return products;
+  }
+
+  Future<Product> _fetchReviewsForProduct(Product product) async {
+    try {
+      final reviews = await _reviewRepository.getReviewsByProductId(product.id);
+      return product.copyWith(reviews: reviews);
+    } catch (e) {
+      developer.log(
+        'Error fetching reviews for product ${product.id}: $e',
+        name: 'ProductRepository._fetchReviewsForProduct',
+        error: e,
+      );
+      return product.copyWith(reviews: []);
+    }
+  }
 
   Future<List<Product>> getProducts({bool forceRefresh = false}) async {
     if (_allProductsCache.isEmpty || forceRefresh) {
@@ -22,7 +61,10 @@ class ProductRepository {
 
         if (response.statusCode == 200) {
           List<dynamic> productsJson = response.data['data'] ?? [];
-          final products = productsJson.map((json) => Product.fromJson(json)).toList();
+          List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+          // Fetch reviews for all products
+          products = await _fetchReviewsForProducts(products);
 
           _allProductsCache.clear();
           _allProductsCache.addAll(products);
@@ -50,7 +92,11 @@ class ProductRepository {
         developer.log('Get product by ID response: ${response.data}', name: 'ProductRepository.getProductById');
 
         if (response.statusCode == 200) {
-          final product = Product.fromJson(response.data['data']);
+          Product product = Product.fromJson(response.data['data']);
+          
+          // Fetch reviews for the product
+          product = await _fetchReviewsForProduct(product);
+
           _productCache[productId] = product;
           return product;
         } else {
@@ -63,34 +109,36 @@ class ProductRepository {
     }
     return _productCache[productId]!;
   }
+Future<List<Product>> getProductsByCategory(String categoryId, {bool forceRefresh = false}) async {
+  if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
+    try {
+      final response = await _apiClient.get('$_productsEndpoint?category_id=$categoryId');
+      developer.log('Get products by category response: ${response.data}', name: 'ProductRepository.getProductsByCategory');
 
-  Future<List<Product>> getProductsByCategory(String categoryId, {bool forceRefresh = false}) async {
-    if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
-      try {
-        final response = await _apiClient.get('$_productsEndpoint?category_id=$categoryId');
-        developer.log('Get products by category response: ${response.data}', name: 'ProductRepository.getProductsByCategory');
+      if (response.statusCode == 200) {
+        List<dynamic> productsJson = response.data['data'] ?? []; // Fix: responsegte -> response
+        List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
 
-        if (response.statusCode == 200) {
-          List<dynamic> productsJson = response.data['data'] ?? [];
-          final products = productsJson.map((json) => Product.fromJson(json)).toList();
+        // Fetch reviews for all products
+        products = await _fetchReviewsForProducts(products);
 
-          _categoryProductsCache[categoryId] = products;
+        _categoryProductsCache[categoryId] = products;
 
-          for (var product in products) {
-            _productCache[product.id] = product;
-          }
-
-          return products;
-        } else {
-          throw Exception('Failed to load category products: ${response.statusMessage}');
+        for (var product in products) {
+          _productCache[product.id] = product;
         }
-      } catch (e) {
-        developer.log('Error fetching category products: $e', name: 'ProductRepository.getProductsByCategory', error: e);
-        throw Exception('Error fetching category products: $e');
+
+        return products;
+      } else {
+        throw Exception('Failed to load category products: ${response.statusMessage}');
       }
+    } catch (e) {
+      developer.log('Error fetching category products: $e', name: 'ProductRepository.getProductsByCategory', error: e);
+      throw Exception('Error fetching category products: $e');
     }
-    return List.from(_categoryProductsCache[categoryId] ?? []);
   }
+  return List.from(_categoryProductsCache[categoryId] ?? []);
+}
 
   Future<List<Product>> getProductsBySubcategory(String subcategoryId, {bool forceRefresh = false}) async {
     if (!_categoryProductsCache.containsKey(subcategoryId) || forceRefresh) {
@@ -99,8 +147,11 @@ class ProductRepository {
         developer.log('Get products by subcategory response: ${response.data}', name: 'ProductRepository.getProductsBySubcategory');
 
         if (response.statusCode == 200) {
-          List<dynamic> productsJson = response.data['parentCategoryId'] ?? [];
-          final products = productsJson.map((json) => Product.fromJson(json)).toList();
+          List<dynamic> productsJson = response.data['data'] ?? [];
+          List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+          // Fetch reviews for all products
+          products = await _fetchReviewsForProducts(products);
 
           _categoryProductsCache[subcategoryId] = products;
 
@@ -160,7 +211,10 @@ class ProductRepository {
 
         if (response.statusCode == 200) {
           List<dynamic> productsJson = response.data['data'] ?? [];
-          final products = productsJson.map((json) => Product.fromJson(json)).toList();
+          List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+          // Fetch reviews for all products
+          products = await _fetchReviewsForProducts(products);
 
           _categoryProductsCache[cacheKey] = products;
 
@@ -187,7 +241,12 @@ class ProductRepository {
 
       if (response.statusCode == 200) {
         List<dynamic> productsJson = response.data['data'] ?? [];
-        return productsJson.map((json) => Product.fromJson(json)).toList();
+        List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+        // Fetch reviews for all products
+        products = await _fetchReviewsForProducts(products);
+
+        return products;
       } else {
         throw Exception('Failed to load featured products: ${response.statusMessage}');
       }
@@ -204,7 +263,12 @@ class ProductRepository {
 
       if (response.statusCode == 200) {
         List<dynamic> productsJson = response.data['data'] ?? [];
-        return productsJson.map((json) => Product.fromJson(json)).toList();
+        List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+        // Fetch reviews for all products
+        products = await _fetchReviewsForProducts(products);
+
+        return products;
       } else {
         throw Exception('Failed to load new products: ${response.statusMessage}');
       }
@@ -221,7 +285,12 @@ class ProductRepository {
 
       if (response.statusCode == 200) {
         List<dynamic> productsJson = response.data['data'] ?? [];
-        return productsJson.map((json) => Product.fromJson(json)).toList();
+        List<Product> products = productsJson.map((json) => Product.fromJson(json)).toList();
+
+        // Fetch reviews for all products
+        products = await _fetchReviewsForProducts(products);
+
+        return products;
       } else {
         throw Exception('Failed to search products: ${response.statusMessage}');
       }

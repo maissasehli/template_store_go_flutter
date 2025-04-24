@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
@@ -28,9 +29,16 @@ class ProductListController extends GetxController {
     super.onInit();
     final args = Get.arguments;
     String listType = 'all';
-    if (args != null) {
+    
+    // Check the type of args and handle it accordingly
+    if (args is Map) {
+      // If args is a Map, access it using square brackets
       title.value = args['title'] ?? 'Products';
       listType = args['listType'] ?? 'all';
+    } else if (args is Category) {
+      // If args is a Category object, access its properties directly
+      title.value = args.name; // Assuming Category has a 'name' property
+      listType = 'category';
     } else {
       title.value = 'Products';
     }
@@ -50,6 +58,8 @@ class ProductListController extends GetxController {
       isLoading.value = true;
       hasError.value = false;
       errorMessage.value = '';
+      
+      final args = Get.arguments;
 
       switch (listType) {
         case 'featured':
@@ -61,7 +71,15 @@ class ProductListController extends GetxController {
           products.assignAll(productController.newProducts);
           break;
         case 'category':
-          final categoryId = Get.arguments?['categoryId'] ?? '';
+          String categoryId = '';
+          
+          // Handle different types of arguments
+          if (args is Map && args['categoryId'] != null) {
+            categoryId = args['categoryId'];
+          } else if (args is Category) {
+            categoryId = args.id; // Assuming Category has an 'id' property
+          }
+          
           if (categoryId.isNotEmpty) {
             await productController.fetchProductsByCategory(categoryId);
             products.assignAll(productController.products);
@@ -98,7 +116,15 @@ class ProductListController extends GetxController {
 
   Future<void> refreshProducts() async {
     final args = Get.arguments;
-    final listType = args?['listType'] ?? 'all';
+    String listType = 'all';
+    
+    // Check the type of args here too
+    if (args is Map) {
+      listType = args['listType'] ?? 'all';
+    } else if (args is Category) {
+      listType = 'category';
+    }
+    
     await loadProducts(listType);
   }
 

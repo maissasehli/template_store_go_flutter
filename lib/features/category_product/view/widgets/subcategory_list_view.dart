@@ -3,20 +3,42 @@ import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
-import 'package:store_go/features/subcategory/models/subcategory_model.dart';
+import 'package:store_go/features/category/controllers/category_controller.dart';
+import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
+import 'package:store_go/features/product/controllers/product_list_controller.dart';
+import 'package:store_go/features/filter/view/screen/filter_product_screen.dart';
 
 class SubcategoryListView extends GetView<SubcategoryController> {
-  final VoidCallback applyFilters;
+  final VoidCallback onApplyFilters;
+  final ProductFilterController filterController = Get.find<ProductFilterController>();
+  final ProductListController listController = Get.find<ProductListController>();
+  final CategoryController categoryController = Get.find<CategoryController>();
 
-  const SubcategoryListView({super.key, required this.applyFilters});
+  SubcategoryListView({
+    super.key,
+    required this.onApplyFilters,
+  });
+
+  void _showFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => FilterBottomSheet(
+        listController: listController,
+        filterController: filterController,
+        categoryController: categoryController,
+        subcategoryController: controller,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Filter Button
         GestureDetector(
-          onTap: applyFilters,
+          onTap: () => _showFilterBottomSheet(context),
           child: Container(
             margin: const EdgeInsets.only(left: 16, top: 8),
             height: 36,
@@ -35,21 +57,18 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                   color: Colors.white,
                 ),
                 const SizedBox(width: 8),
-                Obx(() {
-                  return Text(
-                    '${controller.subcategoryProducts.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  );
-                }),
+                Obx(() => Text(
+                      '${listController.products.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
               ],
             ),
           ),
         ),
-        // Subcategory List
         Expanded(
           child: Container(
             height: 36,
@@ -65,23 +84,22 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                 );
               }
               if (controller.subcategories.isEmpty) {
-                controller.fetchSubcategories(controller.currentCategoryId.value);
                 return const Center(child: Text('No subcategories available'));
               }
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: controller.subcategories.length,
+                itemCount: controller.subcategories.length, // Removed +1 for "All"
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemBuilder: (context, index) {
                   final subcategory = controller.subcategories[index];
-                  return Obx(() {
-                    final isSelected = subcategory.id == controller.currentSubcategoryId.value;
-                    return SubcategoryPill(
-                      subcategory: subcategory,
-                      isSelected: isSelected,
-                      onTap: () => controller.selectSubcategory(subcategory),
-                    );
-                  });
+                  return _buildSubcategoryPill(
+                    name: subcategory.name,
+                    isSelected: subcategory.id == controller.currentSubcategoryId.value,
+                    onTap: () {
+                      controller.currentSubcategoryId.value = subcategory.id;
+                      onApplyFilters();
+                    },
+                  );
                 },
               );
             }),
@@ -90,22 +108,12 @@ class SubcategoryListView extends GetView<SubcategoryController> {
       ],
     );
   }
-}
 
-class SubcategoryPill extends StatelessWidget {
-  final Subcategory subcategory;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const SubcategoryPill({
-    super.key,
-    required this.subcategory,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildSubcategoryPill({
+    required String name,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -116,7 +124,7 @@ class SubcategoryPill extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
-          subcategory.name,
+          name,
           style: TextStyle(
             color: isSelected ? Colors.white : Colors.black,
             fontWeight: FontWeight.w500,

@@ -109,8 +109,6 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // In CategoryProductsScreen class
-                  // Update the section containing CustomSearchBar
                   Expanded(
                     child: CustomSearchBar(
                       onSearch: (query) {
@@ -156,12 +154,14 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                   }
                 }
                 if (allBelongToCategory) {
-                  return SubcategoryListView(applyFilters: applyFilters);
+                  return SubcategoryListView(
+                    onApplyFilters: applyFilters,
+                  );
                 }
               }
               return CategoryListView(
                 categoryProductController: categoryProductController,
-                applyFilters: applyFilters,
+                onApplyFilters: applyFilters,
               );
             }),
             Padding(

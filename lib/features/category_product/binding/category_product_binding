@@ -10,6 +10,7 @@ import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
+import 'package:store_go/features/review/repositories/review_repository.dart';
 
 class CategoryProductsBinding extends Bindings { // Renamed from CategoryProductBinding to match usage
   @override
@@ -17,9 +18,10 @@ class CategoryProductsBinding extends Bindings { // Renamed from CategoryProduct
     final apiClient = Get.find<ApiClient>();
 
     // Register repositories
-    Get.lazyPut<ProductRepository>(
-      () => ProductRepository(apiClient: apiClient),
-    );
+ Get.lazyPut(() => ProductRepository(
+          apiClient: Get.find<ApiClient>(),
+          reviewRepository: Get.find<ReviewRepository>(),
+        ), fenix: true);
     Get.lazyPut<CategoryRepository>(
       () => CategoryRepository(apiClient: apiClient),
     );
