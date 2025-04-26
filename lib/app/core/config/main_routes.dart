@@ -5,7 +5,7 @@ import 'package:store_go/features/auth/binding/auth_binding.dart';
 import 'package:store_go/features/cart/binding/cart_binding.dart';
 import 'package:store_go/features/category/binding/category_binding.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
-import 'package:store_go/features/category_product/binding/category_product_binding';
+import 'package:store_go/features/category_product/binding/category_product_binding.dart';
 import 'package:store_go/features/category_product/view/screen/category_products_screen.dart';
 import 'package:store_go/features/home/binding/home_binding.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
