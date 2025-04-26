@@ -153,25 +153,28 @@ class _ReviewsPageState extends State<ReviewsPage> {
     });
   }
 
-  Future<void> _submitEditedReview(String reviewId) async {
-    if (_editRating.value == 0) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a rating'), backgroundColor: Colors.red),
-        );
-      }
-      return;
-    }
-    if (_isSubmitting.value) return;
-    _isSubmitting.value = true;
+ Future<void> _submitEditedReview(String reviewId) async {
+  if (_editRating.value == 0) {
+    Get.snackbar(
+      'Warning',
+      'Please select a rating',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
+    return;
+  }
+  
+  if (_isSubmitting.value) return;
+  _isSubmitting.value = true;
 
-    try {
-      final updates = {
-        'rating': _editRating.value,
-        'content': _editCommentController.text.isNotEmpty ? _editCommentController.text : null,
-      };
+  try {
+    final updates = {
+      'rating': _editRating.value,
+      'content': _editCommentController.text.isNotEmpty ? _editCommentController.text : null,
+    };
 
-      await _reviewController!.updateReview(reviewId, updates);
+    bool success = await _reviewController!.updateReview(reviewId, updates);
+    if (success) {
       setState(() {
         _editingReviewId = null;
         _editRating.value = 0;
@@ -179,97 +182,78 @@ class _ReviewsPageState extends State<ReviewsPage> {
         _filteredReviews = List.from(_reviewController!.reviews);
         _sortReviews();
       });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Review updated successfully'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      _logger.e('Error updating review: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update review'), backgroundColor: Colors.red),
-        );
-      }
-    } finally {
-      _isSubmitting.value = false;
     }
+  } catch (e) {
+    _logger.e('Error updating review: $e');
+  } finally {
+    _isSubmitting.value = false;
   }
+}
 
-  Future<void> _deleteReview(String reviewId) async {
-    if (_isSubmitting.value) return;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Review'),
-        content: const Text('Are you sure you want to delete this review?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+Future<void> _deleteReview(String reviewId) async {
+  if (_isSubmitting.value) return;
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Delete Review'),
+      content: const Text('Are you sure you want to delete this review?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
 
-    if (confirm == true) {
-      _isSubmitting.value = true;
-      try {
-        final deletedReview = _reviewController!.reviews.firstWhere((r) => r.id == reviewId);
-        await _reviewController!.deleteReview(reviewId);
+  if (confirm == true) {
+    _isSubmitting.value = true;
+    try {
+      final deletedReview = _reviewController!.reviews.firstWhere((r) => r.id == reviewId);
+      bool success = await _reviewController!.deleteReview(reviewId);
+      if (success) {
         setState(() {
           _filteredReviews = List.from(_reviewController!.reviews);
           _sortReviews();
         });
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Review deleted'),
-              backgroundColor: Colors.green,
-              action: SnackBarAction(
-                label: 'Undo',
-                textColor: Colors.white,
-                onPressed: () async {
-                  _isSubmitting.value = true;
-                  try {
-                    await _reviewController!.addReview(widget.product.id, deletedReview);
-                    await _reviewController!.fetchReviews(widget.product.id);
-                    setState(() {
-                      _filteredReviews = List.from(_reviewController!.reviews);
-                      _sortReviews();
-                    });
-                  } catch (e) {
-                    _logger.e('Error undoing delete: $e');
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to undo delete'), backgroundColor: Colors.red),
-                      );
-                    }
-                  } finally {
-                    _isSubmitting.value = false;
-                  }
-                },
-              ),
+          Get.snackbar(
+            'Action',
+            'Review deleted',
+            backgroundColor: Colors.green,
+            mainButton: TextButton(
+              child: const Text('Undo', style: TextStyle(color: Colors.white)),
+              onPressed: () async {
+                _isSubmitting.value = true;
+                try {
+                  await _reviewController!.addReview(widget.product.id, deletedReview);
+                  await _reviewController!.fetchReviews(widget.product.id);
+                  setState(() {
+                    _filteredReviews = List.from(_reviewController!.reviews);
+                    _sortReviews();
+                  });
+                } catch (e) {
+                  _logger.e('Error undoing delete: $e');
+                } finally {
+                  _isSubmitting.value = false;
+                }
+              },
             ),
           );
         }
-      } catch (e) {
-        _logger.e('Error deleting review: $e');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete review'), backgroundColor: Colors.red),
-          );
-        }
-      } finally {
-        _isSubmitting.value = false;
       }
+    } catch (e) {
+      _logger.e('Error deleting review: $e');
+    } finally {
+      _isSubmitting.value = false;
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

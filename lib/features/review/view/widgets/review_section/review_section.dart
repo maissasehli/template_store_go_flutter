@@ -392,7 +392,7 @@ Future<void> _initializeReviews() async {
       border: Border.all(color: Colors.grey[300]!),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(red: 0, green: 0, blue: 0, alpha: 0.05), // Updated
+          color: Colors.black.withValues(red: 0, green: 0, blue: 0, alpha: 0.05),
           blurRadius: 8,
           offset: const Offset(0, 2),
         ),
@@ -501,11 +501,8 @@ Future<void> _initializeReviews() async {
                     _rating.value = 0;
                     _isWritingReview.value = false;
                     _isSubmitting.value = false;
-
-                    if (!mounted) return; // Check if widget is still mounted
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Review submitted successfully'), backgroundColor: Colors.green),
-                    );
+                    
+                    // Removed duplicate success SnackBar - The controller already shows one
                   },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),

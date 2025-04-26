@@ -73,7 +73,7 @@ class ReviewController extends GetxController {
     }
   }
 
-  Future<void> addReview(String productId, Review review) async {
+  Future<bool> addReview(String productId, Review review) async {
     try {
       setLoading(true);
       clearError();
@@ -82,6 +82,7 @@ class ReviewController extends GetxController {
       if (success) {
         _logger.i('Review added successfully for product $productId');
         Get.snackbar('Success', 'Review submitted successfully', backgroundColor: Colors.green);
+        return true;
       } else {
         throw Exception('Failed to create review: Saved offline');
       }
@@ -100,12 +101,13 @@ class ReviewController extends GetxController {
       setError('Error adding review: $e');
       _logger.e('Error adding review: $e');
       Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
+      return false;
     } finally {
       setLoading(false);
     }
   }
 
-  Future<void> updateReview(String reviewId, Map<String, dynamic> updates) async {
+  Future<bool> updateReview(String reviewId, Map<String, dynamic> updates) async {
     try {
       setLoading(true);
       clearError();
@@ -126,6 +128,7 @@ class ReviewController extends GetxController {
       }
       _logger.i('Review updated: $reviewId');
       Get.snackbar('Success', 'Review updated successfully', backgroundColor: Colors.green);
+      return true;
     } catch (e) {
       String errorMsg = 'Failed to update review';
       if (e.toString().contains('Saved offline')) {
@@ -135,12 +138,13 @@ class ReviewController extends GetxController {
       setError('Error updating review: $e');
       _logger.e('Error updating review: $e');
       Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
+      return false;
     } finally {
       setLoading(false);
     }
   }
 
-  Future<void> deleteReview(String reviewId) async {
+  Future<bool> deleteReview(String reviewId) async {
     try {
       setLoading(true);
       clearError();
@@ -150,6 +154,7 @@ class ReviewController extends GetxController {
       reviews.removeWhere((r) => r.id == reviewId);
       _logger.i('Review deleted: $reviewId');
       Get.snackbar('Success', 'Review deleted successfully', backgroundColor: Colors.green);
+      return true;
     } catch (e) {
       String errorMsg = 'Failed to delete review';
       if (e.toString().contains('Saved offline')) {
@@ -160,12 +165,13 @@ class ReviewController extends GetxController {
         errorMsg = 'Review not found on server, removed locally';
         reviews.removeWhere((r) => r.id == reviewId);
         Get.snackbar('Info', errorMsg, backgroundColor: Colors.orange);
-        return;
+        return true;
       }
 
       setError('Error deleting review: $e');
       _logger.e('Error deleting review: $e');
       Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
+      return false;
     } finally {
       setLoading(false);
     }

@@ -6,7 +6,6 @@ import 'package:store_go/features/review/view/widgets/edit_review_form.dart';
 import 'package:store_go/features/review/view/widgets/no_filter_results_state.dart';
 import 'package:store_go/features/review/view/widgets/review_item.dart';
 
-
 class ReviewList extends StatelessWidget {
   final List<Review> reviews;
   final String? editingReviewId;
@@ -37,37 +36,43 @@ class ReviewList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: reviews.isEmpty
-          ? const NoFilterResultsState()
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: reviews.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
-                  final review = reviews[index];
-                  return editingReviewId == review.id
-                      ? EditReviewForm(
-                          review: review,
-                          editRating: editRating,
-                          editCommentController: editCommentController,
-                          isSubmitting: isSubmitting,
-                          onSubmit: onSubmitEdit,
-                          onCancel: onCancelEdit,
-                        )
-                      : ReviewItem(
-                          review: review,
-                          currentUserId: currentUserId,
-                          isSubmitting: isSubmitting,
-                          onEdit: onEdit,
-                          onDelete: onDelete,
-                        );
-                },
-              ),
-            ),
+    if (reviews.isEmpty) {
+      return const SliverFillRemaining(
+        child: NoFilterResultsState(),
+      );
+    }
+    
+    return SliverPadding(
+      padding: const EdgeInsets.all(16),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final review = reviews[index];
+            if (editingReviewId == review.id) {
+              return EditReviewForm(
+                review: review,
+                editRating: editRating,
+                editCommentController: editCommentController,
+                isSubmitting: isSubmitting,
+                onSubmit: onSubmitEdit,
+                onCancel: onCancelEdit,
+              );
+            } else {
+              return Padding(
+                padding: EdgeInsets.only(bottom: index < reviews.length - 1 ? 16 : 0),
+                child: ReviewItem(
+                  review: review,
+                  currentUserId: currentUserId,
+                  isSubmitting: isSubmitting,
+                  onEdit: onEdit,
+                  onDelete: onDelete,
+                ),
+              );
+            }
+          },
+          childCount: reviews.length,
+        ),
+      ),
     );
   }
 }

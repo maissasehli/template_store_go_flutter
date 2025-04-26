@@ -105,11 +105,6 @@ class ReviewItem extends StatelessWidget {
                 ),
               ),
             ),
-          if (isCurrentUser && !isSubmitting.value)
-            Padding(
-              padding: const EdgeInsets.only(top: 12.0, left: 52.0),
-             
-            ),
           if (isCurrentUser && isSubmitting.value)
             const Padding(
               padding: EdgeInsets.only(top: 12.0, left: 52.0),
@@ -159,25 +154,10 @@ class ReviewItem extends StatelessWidget {
           ),
         ),
       ),
-      // Confirmation dialog before deletion
+      // Just confirm directly without showing the dialog
+      // (since we'll handle it in the ReviewPage)
       confirmDismiss: (direction) async {
-        return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Delete Review'),
-            content: const Text('Are you sure you want to delete this review?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Delete', style: TextStyle(color: Colors.red)),
-              ),
-            ],
-          ),
-        ) ?? false;
+        return true;
       },
       // Execute deletion when dismissed
       onDismissed: (direction) {
