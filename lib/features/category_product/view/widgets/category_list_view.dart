@@ -7,25 +7,43 @@ import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/category_product/view/screen/category_products_screen.dart';
+import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
+import 'package:store_go/features/product/controllers/product_list_controller.dart';
+import 'package:store_go/features/filter/view/screen/filter_product_screen.dart';
 
 class CategoryListView extends GetView<CategoryController> {
   final CategoryProductController categoryProductController;
-  final VoidCallback applyFilters;
+  final ProductFilterController filterController = Get.find<ProductFilterController>();
+  final ProductListController listController = Get.find<ProductListController>();
+  final SubcategoryController subcategoryController = Get.find<SubcategoryController>();
+  final VoidCallback onApplyFilters;
 
-  const CategoryListView({
+  CategoryListView({
     super.key,
     required this.categoryProductController,
-    required this.applyFilters,
+    required this.onApplyFilters,
   });
+
+  void _showFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => FilterBottomSheet(
+        listController: listController,
+        filterController: filterController,
+        categoryController: controller,
+        subcategoryController: subcategoryController,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final SubcategoryController subcategoryController = Get.find<SubcategoryController>();
-
     return Row(
       children: [
         GestureDetector(
-          onTap: applyFilters,
+          onTap: () => _showFilterBottomSheet(context),
           child: Container(
             margin: const EdgeInsets.only(left: 16, top: 8),
             height: 36,
@@ -96,6 +114,9 @@ class CategoryListView extends GetView<CategoryController> {
                         // Set the category in product controller and fetch products
                         categoryProductController.setCategory(category);
                         categoryProductController.fetchCategoryProducts(category.id);
+                        
+                        // Apply filters after changing category
+                        onApplyFilters();
                         
                         // If we're on a different screen, navigate to CategoryProductsScreen with the new category
                         if (Get.currentRoute != '/category_products') {

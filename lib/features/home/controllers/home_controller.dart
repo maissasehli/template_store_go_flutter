@@ -1,17 +1,14 @@
 import 'package:get/get.dart';
-import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
-import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
 
 class HomeController extends GetxController {
   final CategoryController categoryController = Get.find<CategoryController>();
-  final ProductController productController = Get.put(
-    ProductController(repository: ProductRepository(apiClient: ApiClient())),
-  );
+final ProductController productController = Get.find<ProductController>();
+
   late WishlistController _wishlistController;
 
   @override

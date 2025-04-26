@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+
 import 'package:store_go/features/review/model/review_model.dart';
 
 class Product {
@@ -17,8 +18,8 @@ class Product {
   final String status;
   final bool isFavorite;
   final List<Review> reviews;
-  final DateTime createdAt;
-  final int? salesCount;
+  final DateTime createdAt; // New: For "New Today" sorting
+  final int? salesCount; // New: For "Top Sellers" sorting
 
   Product({
     required this.id,
