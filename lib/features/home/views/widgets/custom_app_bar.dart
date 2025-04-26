@@ -47,7 +47,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           child: Center(
             child: SvgPicture.asset(
-              AssetConfig.bagIcon,
+              AssetConfig.bag,
               color: Colors.white,
               width: 16,
               height: 16,

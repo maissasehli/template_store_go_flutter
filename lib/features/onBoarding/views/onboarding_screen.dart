@@ -1,31 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/data/onboarding_static.dart';
+import 'package:store_go/app/core/services/enhanced_image_cache.dart';
 import 'package:store_go/app/core/services/image_preloader_manager.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/onBoarding/views/widgets/onboarding_bg_icon.dart';
 import 'package:store_go/features/onBoarding/views/widgets/onboarding_carousel_image.dart';
 import 'package:store_go/features/onBoarding/controllers/onboarding_controller.dart';
+import 'package:store_go/features/onBoarding/views/widgets/skeleton_animation.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _OnboardingState createState() => _OnboardingState();
+  State<Onboarding> createState() => _OnboardingState();
 }
 
 class _OnboardingState extends State<Onboarding> {
   final PageController _pageController = PageController();
-  final ImagePreloaderManager _preloaderManager =
-      Get.find<ImagePreloaderManager>();
-  int _currentPage = 0;
-  bool _imagesLoaded = false;
-
+  final ImagePreloaderManager _preloaderManager = Get.find<ImagePreloaderManager>();
+  final RxInt _currentPage = 0.obs;
+  
+  // Clear cache on start to ensure skeleton animations are visible for demo
   @override
   void initState() {
     super.initState();
-    _preloadImages();
+    
+    // Clear any existing cache to ensure we see the skeletons
+    Get.find<EnhancedImageCache>().clearAllImages();
+    
+    // Start preloading with a delay to see the skeletons
+    Future.delayed(const Duration(milliseconds: 500), () {
+      _preloadImages();
+    });
   }
 
   Future<void> _preloadImages() async {
@@ -38,14 +45,14 @@ class _OnboardingState extends State<Onboarding> {
       imagePaths.add(page.rightImage);
     }
 
+    // Preload images with a slight delay between each to demonstrate skeletons
+    for (final path in imagePaths) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      await Get.find<EnhancedImageCache>().cacheAssetImage(context, path);
+    }
+    
     // Also preload auth images to prepare for the next screens
     await _preloaderManager.preloadAuthImages(context);
-
-    if (mounted) {
-      setState(() {
-        _imagesLoaded = true;
-      });
-    }
   }
 
   @override
@@ -59,23 +66,6 @@ class _OnboardingState extends State<Onboarding> {
     double sideImageHeight = 210.0;
     double mainImageHeight = 230.0;
 
-    if (!_imagesLoaded) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // You could show your app logo here
-              const CircularProgressIndicator(color: Colors.white),
-              const SizedBox(height: 20),
-              const Text('Getting ready...').heading1(context),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -83,9 +73,7 @@ class _OnboardingState extends State<Onboarding> {
           controller: _pageController,
           itemCount: OnboardingStatic.pages.length,
           onPageChanged: (index) {
-            setState(() {
-              _currentPage = index;
-            });
+            _currentPage.value = index;
           },
           itemBuilder: (context, index) {
             final page = OnboardingStatic.pages[index];
@@ -129,39 +117,10 @@ class _OnboardingState extends State<Onboarding> {
                   children: [
                     const SizedBox(height: 60.0), // Top spacing
                     // Image carousel with three images
-                    SizedBox(
-                      height: mainImageHeight,
-                      child: Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          // Left image (partially visible)
-                          Positioned(
-                            left: -screenWidth * 0.1,
-                            child: OnboardingCarouselImage(
-                              imagePath: page.leftImage,
-                              width: sideImageWidth,
-                              height: sideImageHeight,
-                            ),
-                          ),
-                          // Right image (partially visible)
-                          Positioned(
-                            right: -screenWidth * 0.1,
-                            child: OnboardingCarouselImage(
-                              imagePath: page.rightImage,
-                              width: sideImageWidth,
-                              height: sideImageHeight,
-                            ),
-                          ),
-                          // Main image (centered)
-                          Center(
-                            child: OnboardingCarouselImage(
-                              imagePath: page.mainImage,
-                              width: mainImageWidth,
-                              height: mainImageHeight,
-                            ),
-                          ),
-                        ],
-                      ),
+                   OnboardingImageCarousel(
+                      mainImage: page.mainImage,
+                      leftImage: page.leftImage,
+                      rightImage: page.rightImage,
                     ),
 
                     const SizedBox(height: 80.0),
@@ -199,14 +158,12 @@ class _OnboardingState extends State<Onboarding> {
                             ),
                           ),
 
-                          // Fixed spacing instead of Spacer for predictable layout
                           const SizedBox(height: 80.0),
 
                           // Get Started button
-                          ElevatedButton(
+                          Obx(() => ElevatedButton(
                             onPressed: () {
-                              if (_currentPage <
-                                  OnboardingStatic.pages.length - 1) {
+                              if (_currentPage.value < OnboardingStatic.pages.length - 1) {
                                 _pageController.nextPage(
                                   duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
@@ -224,7 +181,7 @@ class _OnboardingState extends State<Onboarding> {
                               ),
                             ),
                             child: Text(
-                              _currentPage < OnboardingStatic.pages.length - 1
+                              _currentPage.value < OnboardingStatic.pages.length - 1
                                   ? 'Next'
                                   : 'Get Started',
                               style: const TextStyle(
@@ -232,7 +189,7 @@ class _OnboardingState extends State<Onboarding> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
+                          )),
 
                           const SizedBox(height: 10.0),
 
@@ -259,8 +216,6 @@ class _OnboardingState extends State<Onboarding> {
                         ],
                       ),
                     ),
-
-                    // Bottom spacing
                   ],
                 ),
               ],

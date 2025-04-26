@@ -95,7 +95,6 @@ flutter:
      - assets/images/
      - assets/products/
      - assets/icons/
-     - assets/icons/svg/
      - .env
      - assets/svg/
      - assets/categories/

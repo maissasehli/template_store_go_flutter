@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/services/enhanced_image_cache.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 enum ImageSource { asset, network }
+enum ImageType { raster, svg }
 
 class UniversalCachedImage extends StatefulWidget {
   final String imagePath;
   final ImageSource source;
+  final ImageType type;
   final double? width;
   final double? height;
   final BoxFit fit;
@@ -23,6 +26,7 @@ class UniversalCachedImage extends StatefulWidget {
     super.key,
     required this.imagePath,
     required this.source,
+    this.type = ImageType.raster, // Default to raster image
     this.width,
     this.height,
     this.fit = BoxFit.cover,
@@ -46,10 +50,20 @@ class _UniversalCachedImageState extends State<UniversalCachedImage> {
   @override
   void initState() {
     super.initState();
-    _loadImage();
+    if (widget.type == ImageType.raster) {
+      _loadImage();
+    } else {
+      // SVG doesn't need preloading in the same way
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _loadImage() async {
+    if (widget.type == ImageType.svg) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
     final isAsset = widget.source == ImageSource.asset;
 
     // Check if already cached
@@ -89,21 +103,49 @@ class _UniversalCachedImageState extends State<UniversalCachedImage> {
       return _buildLoadingWidget(context);
     }
 
-    // Image is ready, show it
-    Widget imageWidget = Image(
-      image: _cacheService.getImageProvider(
-        widget.imagePath,
-        isAsset: widget.source == ImageSource.asset,
-      ),
-      width: widget.width,
-      height: widget.height,
-      fit: widget.fit,
-      color: widget.color,
-      colorBlendMode: widget.colorBlendMode,
-      errorBuilder: (context, error, stackTrace) {
-        return _buildErrorWidget(context);
-      },
-    );
+    // Build the appropriate image widget based on type
+    Widget imageWidget;
+    
+    if (widget.type == ImageType.svg) {
+      if (widget.source == ImageSource.asset) {
+        imageWidget = SvgPicture.asset(
+          widget.imagePath,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          colorFilter: widget.color != null 
+            ? ColorFilter.mode(widget.color!, widget.colorBlendMode ?? BlendMode.srcIn)
+            : null,
+        );
+      } else {
+        imageWidget = SvgPicture.network(
+          widget.imagePath,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          colorFilter: widget.color != null 
+            ? ColorFilter.mode(widget.color!, widget.colorBlendMode ?? BlendMode.srcIn)
+            : null,
+          placeholderBuilder: (context) => _buildLoadingWidget(context),
+        );
+      }
+    } else {
+      // Raster image handling with existing cache service
+      imageWidget = Image(
+        image: _cacheService.getImageProvider(
+          widget.imagePath,
+          isAsset: widget.source == ImageSource.asset,
+        ),
+        width: widget.width,
+        height: widget.height,
+        fit: widget.fit,
+        color: widget.color,
+        colorBlendMode: widget.colorBlendMode,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildErrorWidget(context);
+        },
+      );
+    }
 
     // Apply border radius if specified
     if (widget.borderRadius != null) {

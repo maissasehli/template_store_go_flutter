@@ -25,6 +25,7 @@ class OnboardingCarouselImage extends StatelessWidget {
       child: UniversalCachedImage(
         imagePath: imagePath,
         source: ImageSource.asset,
+        type: ImageType.raster, // These are regular images, not SVGs
         width: width,
         height: height,
         fit: BoxFit.cover,

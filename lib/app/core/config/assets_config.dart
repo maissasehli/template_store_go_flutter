@@ -12,7 +12,7 @@ class AssetConfig {
 
   // Onboarding assets
   static const String onBoardingIconLogo = '$rootIcons/app_icon.png';
-  static const String onBoardingIconBag = '$rootIcons/bag.png';
+  static const String onBoardingIconBag = '$rootSvg/bag.svg';
   static const String onBoardingHeaderMain = '$rootImages/fashion1.jpg';
   static const String onBoardingHeaderLeft = '$rootImages/fashion2.jpg';
   static const String onBoardingHeaderRight = '$rootImages/fashion.jpg';
@@ -27,7 +27,7 @@ class AssetConfig {
   static const String checkout = '$rootIcons/check-out.png';
 
   // General icons
-  static const String bagIcon = '$rootSvg/bag2.svg';
+  static const String bag = '$rootSvg/bag2.svg';
   static const String emailSentIcon = '$rootSvg/email_sent.svg';
   static const String searchIcon = '$rootSvg/searchIcon.svg';
   static const String discountShape = '$rootSvg/discountShape.svg';
@@ -66,7 +66,7 @@ class AssetConfig {
         googleIcon,
         facebookIcon,
         sendMail,
-        bagIcon,
+        bag,
         emailSentIcon,
         heartIcon,
         homeIcon,
