@@ -19,22 +19,41 @@ class SubcategoryController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxBool isSearchActive = false.obs;
 
+  // Add this flag to handle visibility during subcategory selection
+  final RxBool isLoadingProducts = false.obs;
+
   SubcategoryController({required SubcategoryRepository repository})
     : _repository = repository;
 
   void setCategory(String categoryId) {
+    // First set the category ID and reset other state
     currentCategoryId.value = categoryId;
     currentSubcategoryId.value = '';
-    subcategories.clear();
     subcategoryProducts.clear();
     searchQuery.value = '';
     isSearchActive.value = false;
-    fetchSubcategories(categoryId);
+
+    // Only set loading to true if subcategories are empty
+    if (subcategories.isEmpty) {
+      isLoading.value = true;
+    }
+
+    // Fetch subcategories in the background without blocking the UI
+    fetchSubcategories(categoryId)
+        .then((_) {
+          // Update loading status when done
+          isLoading.value = false;
+        })
+        .catchError((error) {
+          // Handle errors gracefully
+          _logger.e('Error in setCategory: $error');
+          isLoading.value = false;
+        });
   }
 
   Future<void> fetchSubcategories(String categoryId) async {
     try {
-      isLoading.value = true;
+      // Don't set isLoading here since we already did it in setCategory
       hasError.value = false;
       errorMessage.value = '';
 
@@ -54,20 +73,26 @@ class SubcategoryController extends GetxController {
         _logger.w("Some subcategories had incorrect parentCategoryId values");
       }
 
-      subcategories.assignAll(validSubcategories);
+      // Only update if the category hasn't changed during the fetch
+      if (currentCategoryId.value == categoryId) {
+        subcategories.assignAll(validSubcategories);
+      }
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error fetching subcategories for category $categoryId: $e');
-      subcategories.clear();
-    } finally {
-      isLoading.value = false;
+
+      // Only clear if the category hasn't changed
+      if (currentCategoryId.value == categoryId) {
+        subcategories.clear();
+      }
     }
   }
 
   Future<void> selectSubcategory(Subcategory subcategory) async {
     try {
-      isLoading.value = true;
+      // Use our specific product loading flag, not the general isLoading flag
+      isLoadingProducts.value = true;
       hasError.value = false;
       errorMessage.value = '';
 
@@ -92,7 +117,7 @@ class SubcategoryController extends GetxController {
       );
       subcategoryProducts.clear();
     } finally {
-      isLoading.value = false;
+      isLoadingProducts.value = false;
     }
   }
 
@@ -114,7 +139,8 @@ class SubcategoryController extends GetxController {
     }
 
     try {
-      isLoading.value = true;
+      // Use our specific product loading flag, not the general isLoading flag
+      isLoadingProducts.value = true;
       hasError.value = false;
       errorMessage.value = '';
       isSearchActive.value = true;
@@ -155,7 +181,7 @@ class SubcategoryController extends GetxController {
       errorMessage.value = e.toString();
       _logger.e('Error searching products: $e');
     } finally {
-      isLoading.value = false;
+      isLoadingProducts.value = false;
     }
   }
 
@@ -172,11 +198,13 @@ class SubcategoryController extends GetxController {
     }
   }
 
+  // Modified to maintain subcategory list
   void resetState() {
     currentSubcategoryId.value = '';
     subcategoryProducts.clear();
     searchQuery.value = '';
     isSearchActive.value = false;
+    // Note that we're NOT clearing the subcategories list here
   }
 
   @override

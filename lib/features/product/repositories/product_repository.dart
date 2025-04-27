@@ -21,26 +21,7 @@ class ProductRepository {
 
   static const String _productsEndpoint = '/products';
 
-  Future<List<Product>> _fetchReviewsForProducts(List<Product> products) async {
-    // Fetch reviews for each product
-    for (var i = 0; i < products.length; i++) {
-      try {
-        final reviews = await _reviewRepository.getReviewsByProductId(
-          products[i].id,
-        );
-        products[i] = products[i].copyWith(reviews: reviews);
-      } catch (e) {
-        developer.log(
-          'Error fetching reviews for product ${products[i].id}: $e',
-          name: 'ProductRepository._fetchReviewsForProducts',
-          error: e,
-        );
-        // Continue with empty reviews if fetching fails
-        products[i] = products[i].copyWith(reviews: []);
-      }
-    }
-    return products;
-  }
+
 
   Future<Product> _fetchReviewsForProduct(Product product) async {
     try {
@@ -70,8 +51,6 @@ class ProductRepository {
           List<Product> products =
               productsJson.map((json) => Product.fromJson(json)).toList();
 
-          // Fetch reviews for all products
-          products = await _fetchReviewsForProducts(products);
 
           _allProductsCache.clear();
           _allProductsCache.addAll(products);
@@ -138,7 +117,7 @@ class ProductRepository {
     if (!_categoryProductsCache.containsKey(categoryId) || forceRefresh) {
       try {
         final response = await _apiClient.get(
-          '$_productsEndpoint?category_id=$categoryId',
+          '$_productsEndpoint/category/$categoryId',
         );
         developer.log(
           'Get products by category response: ${response.data}',
@@ -150,8 +129,8 @@ class ProductRepository {
           List<Product> products =
               productsJson.map((json) => Product.fromJson(json)).toList();
 
-          // Fetch reviews for all products
-          products = await _fetchReviewsForProducts(products);
+      
+          
 
           _categoryProductsCache[categoryId] = products;
           _categoryProductsCache[categoryId] = products;
@@ -200,8 +179,8 @@ class ProductRepository {
           List<Product> products =
               productsJson.map((json) => Product.fromJson(json)).toList();
 
-          // Fetch reviews for all products
-          products = await _fetchReviewsForProducts(products);
+          
+          
 
           _categoryProductsCache[subcategoryId] = products;
 
@@ -282,8 +261,8 @@ class ProductRepository {
           List<Product> products =
               productsJson.map((json) => Product.fromJson(json)).toList();
 
-          // Fetch reviews for all products
-          products = await _fetchReviewsForProducts(products);
+          
+          
 
           _categoryProductsCache[cacheKey] = products;
 
@@ -323,8 +302,8 @@ class ProductRepository {
         List<Product> products =
             productsJson.map((json) => Product.fromJson(json)).toList();
 
-        // Fetch reviews for all products
-        products = await _fetchReviewsForProducts(products);
+        
+       
 
         return products;
       } else {
@@ -356,8 +335,7 @@ class ProductRepository {
         List<Product> products =
             productsJson.map((json) => Product.fromJson(json)).toList();
 
-        // Fetch reviews for all products
-        products = await _fetchReviewsForProducts(products);
+      
 
         return products;
       } else {
@@ -394,8 +372,7 @@ class ProductRepository {
         List<Product> products =
             productsJson.map((json) => Product.fromJson(json)).toList();
 
-        // Fetch reviews for all products
-        products = await _fetchReviewsForProducts(products);
+    
 
         return products;
       } else {

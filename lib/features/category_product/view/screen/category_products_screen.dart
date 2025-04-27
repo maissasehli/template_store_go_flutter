@@ -7,6 +7,7 @@ import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/category_product/view/widgets/subcategory_list_view.dart';
+import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
@@ -24,15 +25,19 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   late CategoryProductController categoryProductController;
   late SubcategoryController subcategoryController;
 
-  // Flag to track if subcategory loading has completed
-  final RxBool subcategoryLoadingCompleted = false.obs;
-
   @override
   void initState() {
     super.initState();
 
+    // Make sure controllers are properly initialized
     if (Get.isRegistered<CategoryProductController>()) {
       categoryProductController = Get.find<CategoryProductController>();
+      // Reset the controller state without clearing lists (to prevent flicker)
+      categoryProductController.isLoading.value = false;
+      categoryProductController.hasError.value = false;
+      categoryProductController.errorMessage.value = '';
+      categoryProductController.isSearchActive.value = false;
+      categoryProductController.searchQuery.value = '';
     } else {
       categoryProductController = Get.put(
         CategoryProductController(repository: Get.find()),
@@ -49,33 +54,32 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
       );
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initCategoryProducts();
-    });
+    // Trigger data loading immediately, don't wait for the first frame
+    _initDataLoading();
   }
 
-  void _initCategoryProducts() async {
+  void _initDataLoading() async {
+    // Set the category for the controllers
     categoryProductController.setCategory(widget.category);
     categoryController.selectedCategoryId.value = widget.category.id;
 
-    // Fetch category products and subcategories concurrently
-    categoryProductController.fetchCategoryProducts(widget.category.id);
+    // Start both fetches in parallel
+    final productsLoadingFuture = categoryProductController
+        .fetchCategoryProducts(widget.category.id);
 
-    // Subscribe to the loading state of subcategories
-    ever(subcategoryController.isLoading, (isLoading) {
-      if (!isLoading &&
-          subcategoryController.currentCategoryId.value == widget.category.id) {
-        // Mark that subcategory loading has completed
-        subcategoryLoadingCompleted.value = true;
-      }
-    });
+    // Set category for subcategory controller - but don't clear existing subcategories if
+    // they're already for this category (prevents flicker)
+    if (subcategoryController.currentCategoryId.value != widget.category.id) {
+      subcategoryController.setCategory(widget.category.id);
+    }
 
-    // Set category for subcategory controller
-    subcategoryController.setCategory(widget.category.id);
-
+    // Optionally fetch categories if needed
     if (categoryController.categories.isEmpty) {
       categoryController.fetchCategories();
     }
+
+    // Wait for products to load (important for user experience)
+    await productsLoadingFuture;
   }
 
   void applyFilters() {
@@ -147,20 +151,10 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                             query,
                           );
                         } else {
-                          // Search in all subcategories and current category
-                          // First, search in the category products
+                          // Search in current category
                           categoryProductController.searchCategoryProducts(
                             query,
                           );
-
-                          // Then, search in all subcategories if the current search doesn't have results
-                          if (categoryProductController
-                              .filteredProducts
-                              .isEmpty) {
-                            subcategoryController.searchSubcategoryProducts(
-                              query,
-                            );
-                          }
                         }
                       },
                     ),
@@ -168,21 +162,16 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                 ],
               ),
             ),
-            // Modified category/subcategory list rendering logic
-            Obx(() {
-              // Don't show anything until subcategory loading is complete
-              if (!subcategoryLoadingCompleted.value) {
-                return const SizedBox(height: 56);
-              }
-              return SubcategoryListView(onApplyFilters: applyFilters);
-            }),
+            // Always render the SubcategoryListView
+            SubcategoryListView(onApplyFilters: applyFilters),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
               child: Obx(() {
+                // Use the filteredProducts list instead of categoryProducts
                 final productCount =
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
                         ? subcategoryController.subcategoryProducts.length
-                        : categoryProductController.categoryProducts.length;
+                        : categoryProductController.filteredProducts.length;
                 final displayName =
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
                         ? subcategoryController.subcategories
@@ -207,11 +196,13 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                 );
               }),
             ),
+            // Main product grid
             Expanded(
               child: Obx(() {
+                // Use isLoadingProducts for subcategory controller to avoid UI flicker
                 final isLoading =
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.isLoading.value
+                        ? subcategoryController.isLoadingProducts.value
                         : categoryProductController.isLoading.value;
                 final hasError =
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
@@ -221,10 +212,15 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
                         ? subcategoryController.errorMessage.value
                         : categoryProductController.errorMessage.value;
-                final products =
+
+                // Choose the correct products list based on current selection
+                final List<Product> products =
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
                         ? subcategoryController.subcategoryProducts
+                        : categoryProductController.isSearchActive.value
+                        ? categoryProductController.filteredProducts
                         : categoryProductController.categoryProducts;
+
                 final isSearchActive =
                     subcategoryController.currentSubcategoryId.value.isNotEmpty
                         ? subcategoryController.isSearchActive.value
@@ -257,14 +253,16 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                         }
                       } else {
                         subcategoryController.resetState();
+                        // Make sure to fetch products for the selected category
                         categoryProductController.fetchCategoryProducts(
                           widget.category.id,
                         );
-                        subcategoryController.setCategory(widget.category.id);
                       }
                     },
                   );
                 }
+
+                // Render the products grid
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: GridView.builder(

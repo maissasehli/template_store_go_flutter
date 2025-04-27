@@ -41,9 +41,6 @@ class _ActivityDetectorState extends State<ActivityDetector> {
 
   void _startInactivityTimer() {
     _inactivityTimer?.cancel();
-    _logger.d(
-      "Starting inactivity timer for ${widget.inactivityTimeout.inMinutes} minutes",
-    );
     _inactivityTimer = Timer(widget.inactivityTimeout, _handleInactivity);
   }
 
