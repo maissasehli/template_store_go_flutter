@@ -4,14 +4,19 @@ import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/product/state/product_detail_state.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/review/model/review_model.dart';
+import 'package:store_go/features/review/repositories/review_repository.dart';
 
 class ProductDetailController extends GetxController {
-  final ProductRepository _repository;
+  final ProductRepository _productRepository;
+  final ReviewRepository _reviewRepository;
   final ProductDetailState state = ProductDetailState();
   final Logger _logger = Logger();
 
-  ProductDetailController({required ProductRepository repository})
-      : _repository = repository;
+  ProductDetailController({
+    required ProductRepository repository,
+    required ReviewRepository reviewRepository,
+  }) : _productRepository = repository,
+       _reviewRepository = reviewRepository;
 
   Future<void> fetchProductDetails(String productId) async {
     try {
@@ -19,7 +24,7 @@ class ProductDetailController extends GetxController {
       state.clearError();
       state.clearProduct();
 
-      final product = await _repository.getProductById(
+      final product = await _productRepository.getProductById(
         productId,
         forceRefresh: true,
       );
@@ -37,7 +42,6 @@ class ProductDetailController extends GetxController {
     }
   }
   
-
   void _initializeProductOptions() {
     final product = state.product.value;
     if (product == null) return;
@@ -85,13 +89,13 @@ class ProductDetailController extends GetxController {
     state.setQuantity(value);
   }
 
- void updateImageIndex(int index) {
-  if (state.product.value == null) return;
-  final imageCount = state.product.value!.images.length;
-  if (index >= 0 && index < imageCount) {
-    state.setCurrentImageIndex(index);
+  void updateImageIndex(int index) {
+    if (state.product.value == null) return;
+    final imageCount = state.product.value!.images.length;
+    if (index >= 0 && index < imageCount) {
+      state.setCurrentImageIndex(index);
+    }
   }
-}
 
   Future<void> toggleFavorite() async {
     if (state.product.value == null) return;
@@ -102,7 +106,7 @@ class ProductDetailController extends GetxController {
     state.setProduct(state.product.value!.copyWith(isFavorite: !currentStatus));
 
     try {
-      final success = await _repository.updateFavoriteStatus(
+      final success = await _productRepository.updateFavoriteStatus(
         productId,
         !currentStatus,
       );
@@ -122,17 +126,31 @@ class ProductDetailController extends GetxController {
 
   Future<void> addReview(Review review) async {
     if (state.product.value == null) return;
+    final productId = state.product.value!.id;
 
     try {
-      final productId = state.product.value!.id;
-      final updatedReviews = [...state.product.value!.reviews, review];
-      final updatedProduct = state.product.value!.copyWith(reviews: updatedReviews);
-
-      await _repository.updateProductReviews(productId, updatedReviews);
-
-      state.setProduct(updatedProduct);
-      _logger.i('Review added: ${review.toJson()}');
-      Get.snackbar('Success', 'Review submitted successfully');
+      // Add review through ReviewRepository
+      final success = await _reviewRepository.createReview(productId, review);
+      
+      if (success) {
+        // Update the product with the new review
+        final updatedReviews = [...state.product.value!.reviews, review];
+        final updatedProduct = state.product.value!.copyWith(reviews: updatedReviews);
+        
+        // Update the state with the new product data
+        state.setProduct(updatedProduct);
+        
+        _logger.i('Review added: ${review.toJson()}');
+        Get.snackbar('Success', 'Review submitted successfully');
+      } else {
+        _logger.w('Review saved offline, will be synced later');
+        Get.snackbar('Info', 'Review saved offline and will be synced later');
+        
+        // We can still update the UI optimistically
+        final updatedReviews = [...state.product.value!.reviews, review];
+        final updatedProduct = state.product.value!.copyWith(reviews: updatedReviews);
+        state.setProduct(updatedProduct);
+      }
     } catch (e) {
       _logger.e('Error adding review: $e');
       Get.snackbar('Error', 'Failed to submit review');
@@ -158,7 +176,7 @@ class ProductDetailController extends GetxController {
       await cartController.addToCart(
         product: product,
         quantity: quantity,
-       variantId: '',
+        variantId: '',
       );
 
       Get.snackbar(

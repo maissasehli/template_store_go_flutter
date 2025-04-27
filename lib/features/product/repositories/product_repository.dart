@@ -1,8 +1,9 @@
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/product/models/product_model.dart';
+import 'dart:developer' as developer;
+
 import 'package:store_go/features/review/model/review_model.dart';
 import 'package:store_go/features/review/repositories/review_repository.dart';
-import 'dart:developer' as developer;
 
 class ProductRepository {
   final ApiClient _apiClient;
@@ -153,7 +154,11 @@ class ProductRepository {
           products = await _fetchReviewsForProducts(products);
 
           _categoryProductsCache[categoryId] = products;
+          _categoryProductsCache[categoryId] = products;
 
+          for (var product in products) {
+            _productCache[product.id] = product;
+          }
           for (var product in products) {
             _productCache[product.id] = product;
           }
@@ -495,7 +500,6 @@ class ProductRepository {
       if (index != -1) {
         entry.value[index] = entry.value[index].copyWith(
           isFavorite: isFavorite ?? entry.value[index].isFavorite,
-          reviews: reviews ?? entry.value[index].reviews,
         );
       }
     }
