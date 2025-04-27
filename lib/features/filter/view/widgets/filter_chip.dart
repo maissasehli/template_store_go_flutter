@@ -1,12 +1,11 @@
-// widgets/sort_tab.dart
 import 'package:flutter/material.dart';
 
-class SortTab extends StatelessWidget {
+class CustomFilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const SortTab({
+  const CustomFilterChip({
     super.key,
     required this.label,
     required this.isSelected,
@@ -23,7 +22,7 @@ class SortTab extends StatelessWidget {
           color: isSelected ? Colors.black : Colors.white,
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey.shade300,
+            color: isSelected ? Colors.black : Colors.grey[300]!,
             width: 1,
           ),
         ),
@@ -31,9 +30,9 @@ class SortTab extends StatelessWidget {
           label,
           style: TextStyle(
             fontFamily: 'Poppins',
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
             color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
           ),
         ),
       ),

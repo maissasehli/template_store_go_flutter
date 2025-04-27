@@ -18,7 +18,7 @@ class CategoryProductsBinding extends Bindings {
 
     // Register repositories
  Get.lazyPut(() => ProductRepository(
-          apiClient: Get.find<ApiClient>(),
+          apiClient: Get.find<ApiClient>(), reviewRepository: ReviewRepository(apiClient: apiClient),
         ), fenix: true);
     Get.lazyPut<CategoryRepository>(
       () => CategoryRepository(apiClient: apiClient),
