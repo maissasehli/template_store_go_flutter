@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
@@ -246,5 +247,8 @@ class CategoryProductController extends GetxController {
   void onClose() {
     _logger.d("CategoryProductController closed");
     super.onClose();
+  }
+  void onProductTap(String productId) {
+    Get.toNamed(AppRoute.productDetail.replaceAll(':id', productId));
   }
 }

@@ -6,7 +6,7 @@ import 'package:store_go/features/subcategory/controllers/subcategory_controller
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/product/controllers/product_list_controller.dart';
-import 'package:store_go/features/filter/view/screen/filter_product_screen.dart';
+import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
 
 class SubcategoryListView extends GetView<SubcategoryController> {
   final VoidCallback onApplyFilters;
@@ -83,20 +83,32 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                   ),
                 );
               }
-              if (controller.subcategories.isEmpty) {
-                return const Center(child: Text('No subcategories available'));
-              }
-              return ListView.builder(
+             
+             return ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: controller.subcategories.length, // Removed +1 for "All"
+                itemCount:
+                    controller.subcategories.length + 1, // +1 for "All" option
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemBuilder: (context, index) {
-                  final subcategory = controller.subcategories[index];
+                  if (index == 0) {
+                    // "All" option
+                    return _buildSubcategoryPill(
+                      name: "All",
+                      isSelected: controller.currentSubcategoryId.value.isEmpty,
+                      onTap: () {
+                        controller.resetState(); // Reset subcategory selection
+                        onApplyFilters(); // Apply filters with no subcategory
+                      },
+                    );
+                  }
+
+                  final subcategory = controller.subcategories[index - 1];
                   return _buildSubcategoryPill(
                     name: subcategory.name,
-                    isSelected: subcategory.id == controller.currentSubcategoryId.value,
+                    isSelected:
+                        subcategory.id == controller.currentSubcategoryId.value,
                     onTap: () {
-                      controller.currentSubcategoryId.value = subcategory.id;
+                      controller.selectSubcategory(subcategory);
                       onApplyFilters();
                     },
                   );

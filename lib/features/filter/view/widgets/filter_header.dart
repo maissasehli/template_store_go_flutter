@@ -1,29 +1,38 @@
+
+// Header section with Clear, title, and Close button
 import 'package:flutter/material.dart';
+import 'package:store_go/features/product/controllers/product_list_controller.dart';
+import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 
 class FilterHeader extends StatelessWidget {
-  final VoidCallback onClear;
-  final VoidCallback onClose;
+  final ProductListController listController;
+  final SubcategoryController subcategoryController;
 
   const FilterHeader({
     super.key,
-    required this.onClear,
-    required this.onClose,
+    required this.listController,
+    required this.subcategoryController,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      padding: const EdgeInsets.only(top: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton(
-            onPressed: onClear,
+            onPressed: () {
+              listController.clearFilters();
+              subcategoryController.resetState();
+              Navigator.pop(context);
+            },
             child: const Text(
               'Clear',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                fontSize: 16,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
             ),
@@ -38,8 +47,8 @@ class FilterHeader extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: onClose,
-            icon: const Icon(Icons.close, size: 24),
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.close, color: Colors.black, size: 24),
           ),
         ],
       ),

@@ -9,7 +9,7 @@ import 'package:store_go/features/subcategory/controllers/subcategory_controller
 import 'package:store_go/features/category_product/view/screen/category_products_screen.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/product/controllers/product_list_controller.dart';
-import 'package:store_go/features/filter/view/screen/filter_product_screen.dart';
+import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
 
 class CategoryListView extends GetView<CategoryController> {
   final CategoryProductController categoryProductController;

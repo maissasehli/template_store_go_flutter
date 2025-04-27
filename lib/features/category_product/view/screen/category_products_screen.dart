@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.model.dart';
-import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
-import 'package:store_go/features/category_product/view/widgets/category_list_view.dart';
 import 'package:store_go/features/category_product/view/widgets/subcategory_list_view.dart';
-import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
@@ -23,11 +20,12 @@ class CategoryProductsScreen extends StatefulWidget {
 }
 
 class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
-  final HomeController homeController = Get.find<HomeController>();
   final CategoryController categoryController = Get.find<CategoryController>();
   late CategoryProductController categoryProductController;
   late SubcategoryController subcategoryController;
-  final ProfileController profileController = Get.find<ProfileController>();
+
+  // Flag to track if subcategory loading has completed
+  final RxBool subcategoryLoadingCompleted = false.obs;
 
   @override
   void initState() {
@@ -56,9 +54,23 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     });
   }
 
-  void _initCategoryProducts() {
+  void _initCategoryProducts() async {
     categoryProductController.setCategory(widget.category);
     categoryController.selectedCategoryId.value = widget.category.id;
+
+    // Fetch category products and subcategories concurrently
+    categoryProductController.fetchCategoryProducts(widget.category.id);
+
+    // Subscribe to the loading state of subcategories
+    ever(subcategoryController.isLoading, (isLoading) {
+      if (!isLoading &&
+          subcategoryController.currentCategoryId.value == widget.category.id) {
+        // Mark that subcategory loading has completed
+        subcategoryLoadingCompleted.value = true;
+      }
+    });
+
+    // Set category for subcategory controller
     subcategoryController.setCategory(widget.category.id);
 
     if (categoryController.categories.isEmpty) {
@@ -69,9 +81,10 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   void applyFilters() {
     final filterController = Get.find<ProductFilterController>();
     categoryProductController.applyFilters(
-      categoryId: filterController.selectedCategory.value == 'All'
-          ? widget.category.id
-          : filterController.selectedCategory.value,
+      categoryId:
+          filterController.selectedCategory.value == 'All'
+              ? widget.category.id
+              : filterController.selectedCategory.value,
       subcategoryId: filterController.selectedSubcategoryId.value,
       minPrice: filterController.minPrice.value,
       maxPrice: filterController.maxPrice.value,
@@ -114,7 +127,10 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                       onSearch: (query) {
                         if (query.isEmpty) {
                           // Clear search results
-                          if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+                          if (subcategoryController
+                              .currentSubcategoryId
+                              .value
+                              .isNotEmpty) {
                             subcategoryController.clearSearch();
                           } else {
                             categoryProductController.clearSearch();
@@ -122,17 +138,28 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                           return;
                         }
 
-                        if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+                        if (subcategoryController
+                            .currentSubcategoryId
+                            .value
+                            .isNotEmpty) {
                           // Search only in selected subcategory
-                          subcategoryController.searchSubcategoryProducts(query);
+                          subcategoryController.searchSubcategoryProducts(
+                            query,
+                          );
                         } else {
                           // Search in all subcategories and current category
                           // First, search in the category products
-                          categoryProductController.searchCategoryProducts(query);
+                          categoryProductController.searchCategoryProducts(
+                            query,
+                          );
 
                           // Then, search in all subcategories if the current search doesn't have results
-                          if (categoryProductController.filteredProducts.isEmpty) {
-                            subcategoryController.searchSubcategoryProducts(query);
+                          if (categoryProductController
+                              .filteredProducts
+                              .isEmpty) {
+                            subcategoryController.searchSubcategoryProducts(
+                              query,
+                            );
                           }
                         }
                       },
@@ -141,43 +168,34 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                 ],
               ),
             ),
+            // Modified category/subcategory list rendering logic
             Obx(() {
-              if (subcategoryController.currentCategoryId.value == widget.category.id &&
-                  subcategoryController.subcategories.isNotEmpty &&
-                  !subcategoryController.isLoading.value) {
-                // Check if all subcategories match this category
-                bool allBelongToCategory = true;
-                for (var sub in subcategoryController.subcategories) {
-                  if (sub.parentCategoryId != widget.category.id) {
-                    allBelongToCategory = false;
-                    break;
-                  }
-                }
-                if (allBelongToCategory) {
-                  return SubcategoryListView(
-                    onApplyFilters: applyFilters,
-                  );
-                }
+              // Don't show anything until subcategory loading is complete
+              if (!subcategoryLoadingCompleted.value) {
+                return const SizedBox(height: 56);
               }
-              return CategoryListView(
-                categoryProductController: categoryProductController,
-                onApplyFilters: applyFilters,
-              );
+              return SubcategoryListView(onApplyFilters: applyFilters);
             }),
             Padding(
               padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
               child: Obx(() {
-                final productCount = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.subcategoryProducts.length
-                    : categoryProductController.categoryProducts.length;
-                final displayName = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.subcategories
-                            .firstWhereOrNull(
-                              (sub) => sub.id == subcategoryController.currentSubcategoryId.value,
-                            )
-                            ?.name ??
-                        widget.category.name
-                    : widget.category.name;
+                final productCount =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.subcategoryProducts.length
+                        : categoryProductController.categoryProducts.length;
+                final displayName =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.subcategories
+                                .firstWhereOrNull(
+                                  (sub) =>
+                                      sub.id ==
+                                      subcategoryController
+                                          .currentSubcategoryId
+                                          .value,
+                                )
+                                ?.name ??
+                            widget.category.name
+                        : widget.category.name;
                 return Text(
                   '$productCount Results Found in $displayName',
                   style: const TextStyle(
@@ -191,21 +209,26 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
             ),
             Expanded(
               child: Obx(() {
-                final isLoading = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.isLoading.value
-                    : categoryProductController.isLoading.value;
-                final hasError = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.hasError.value
-                    : categoryProductController.hasError.value;
-                final errorMessage = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.errorMessage.value
-                    : categoryProductController.errorMessage.value;
-                final products = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.subcategoryProducts
-                    : categoryProductController.categoryProducts;
-                final isSearchActive = subcategoryController.currentSubcategoryId.value.isNotEmpty
-                    ? subcategoryController.isSearchActive.value
-                    : categoryProductController.isSearchActive.value;
+                final isLoading =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.isLoading.value
+                        : categoryProductController.isLoading.value;
+                final hasError =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.hasError.value
+                        : categoryProductController.hasError.value;
+                final errorMessage =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.errorMessage.value
+                        : categoryProductController.errorMessage.value;
+                final products =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.subcategoryProducts
+                        : categoryProductController.categoryProducts;
+                final isSearchActive =
+                    subcategoryController.currentSubcategoryId.value.isNotEmpty
+                        ? subcategoryController.isSearchActive.value
+                        : categoryProductController.isSearchActive.value;
 
                 if (isLoading) {
                   return const Center(
@@ -224,14 +247,19 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                   return NoSearchResult(
                     onExploreCategories: () {
                       if (isSearchActive) {
-                        if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+                        if (subcategoryController
+                            .currentSubcategoryId
+                            .value
+                            .isNotEmpty) {
                           subcategoryController.clearSearch();
                         } else {
                           categoryProductController.clearSearch();
                         }
                       } else {
                         subcategoryController.resetState();
-                        categoryProductController.fetchCategoryProducts(widget.category.id);
+                        categoryProductController.fetchCategoryProducts(
+                          widget.category.id,
+                        );
                         subcategoryController.setCategory(widget.category.id);
                       }
                     },
@@ -242,19 +270,23 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                   child: GridView.builder(
                     padding: const EdgeInsets.only(bottom: 16),
                     physics: const BouncingScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 159 / 280,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 159 / 280,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                        ),
                     itemCount: products.length,
                     itemBuilder: (context, index) {
                       final product = products[index];
                       return ProductCard(
                         product: product,
-                        onProductTap: (id) => homeController.onProductTap(id),
-                        onFavoriteTap: (id) => categoryProductController.toggleFavorite(id),
+                        onProductTap:
+                            (id) => categoryProductController.onProductTap(id),
+                        onFavoriteTap:
+                            (id) =>
+                                categoryProductController.toggleFavorite(id),
                         width: 159,
                         height: 280,
                       );
