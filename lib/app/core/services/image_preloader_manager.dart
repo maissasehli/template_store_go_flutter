@@ -5,6 +5,11 @@ import 'package:store_go/app/core/services/enhanced_image_cache.dart';
 
 class ImagePreloaderManager extends GetxService {
   final EnhancedImageCache _cacheService = Get.find<EnhancedImageCache>();
+  
+  // Observable loading status
+  final RxBool onboardingImagesLoaded = false.obs;
+  final RxBool authImagesLoaded = false.obs;
+  final RxMap<String, bool> specificImageStatus = <String, bool>{}.obs;
 
   // Preload onboarding images
   Future<void> preloadOnboardingImages(BuildContext context) async {
@@ -15,8 +20,9 @@ class ImagePreloaderManager extends GetxService {
       AssetConfig.onBoardingIconLogo,
       AssetConfig.onBoardingIconBag,
     ];
-
+    
     await _cacheService.precacheImages(context, assetImages, []);
+    onboardingImagesLoaded.value = true;
   }
 
   // Preload auth-related images
@@ -27,8 +33,9 @@ class ImagePreloaderManager extends GetxService {
       AssetConfig.facebookIcon,
       AssetConfig.sendMail,
     ];
-
+    
     await _cacheService.precacheImages(context, assetImages, []);
+    authImagesLoaded.value = true;
   }
 
   // Preload a mix of asset and network images
@@ -38,6 +45,14 @@ class ImagePreloaderManager extends GetxService {
     List<String> networkUrls,
   ) async {
     await _cacheService.precacheImages(context, assetPaths, networkUrls);
+    
+    // Update status for each image
+    for (final path in assetPaths) {
+      specificImageStatus[path] = true;
+    }
+    for (final url in networkUrls) {
+      specificImageStatus[url] = true;
+    }
   }
 
   // Preload product images (mostly network)
@@ -46,6 +61,19 @@ class ImagePreloaderManager extends GetxService {
     List<String> productImageUrls,
   ) async {
     await _cacheService.precacheImages(context, [], productImageUrls);
+    
+    // Update status for each image
+    for (final url in productImageUrls) {
+      specificImageStatus[url] = true;
+    }
+  }
+  
+  // Check if a specific image is loaded
+  bool isImageLoaded(String path, {bool isAsset = true}) {
+    if (specificImageStatus.containsKey(path)) {
+      return specificImageStatus[path] ?? false;
+    }
+    return _cacheService.isImageCached(path, isAsset: isAsset);
   }
 
   // Initialize the service
