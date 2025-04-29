@@ -1,0 +1,39 @@
+{
+    "common": {
+        "select_language": "Select Language",
+        "continue": "Continue",
+        "english": "English",
+        "arabic": "Arabic",
+        "french": "French",
+        "language": "Language"
+    },
+    "auth": {
+        "login": "Login",
+        "signup": "Signup",
+        "email": "Email",
+        "password": "Password",
+        "forgot_password": "Forgot Password?",
+        "dont_have_account?": "Don't have an Account?",
+        "create_one": "Create One",
+        "already_have_account?": "Already have account?",
+        "sign_in": "Sign In",
+        "continue_with_google": "Continue With Google",
+        "continue_with_apple": "Continue With Apple",
+        "continue_with_facebook": "Continue With Facebook"
+    },
+    "nav": {
+        "home": "Home",
+        "categories": "Categories",
+        "cart": "Cart",
+        "wishlist": "Wishlist",
+        "profile": "Profile"
+    },
+    "language": {
+        "select_a_language": "Select a language"
+    },
+    "onboarding": {
+        "discover_shopping": "Discover Seamless Shopping!",
+        "fast_delivery": "Fast Delivery, Easy Returns, And Endless Choices Await You",
+        "get_started": "Get Started"
+    }
+}
