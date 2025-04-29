@@ -15,6 +15,7 @@ import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
+import 'package:store_go/features/review/repositories/review_repository.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/repositories/wishlist_repository.dart';
 
@@ -28,7 +29,7 @@ class HomeBinding implements Bindings {
 
     // Register repositories
     Get.lazyPut(() => ProductRepository(
-          apiClient: Get.find<ApiClient>(),
+          apiClient: Get.find<ApiClient>(), reviewRepository: ReviewRepository(apiClient: apiClient),
         ));
         
     Get.put<CartRepository>(

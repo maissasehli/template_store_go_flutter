@@ -22,7 +22,7 @@ class ProductBinding extends Bindings {
     Get.lazyPut(() => ReviewRepository(apiClient: apiClient));
     
     Get.lazyPut(() => ProductRepository(
-      apiClient: apiClient,
+      apiClient: apiClient, reviewRepository: ReviewRepository(apiClient: apiClient),
     ));
     
     Get.lazyPut(() => CategoryRepository(apiClient: apiClient));

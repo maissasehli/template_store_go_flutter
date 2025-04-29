@@ -10,7 +10,7 @@ import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/skeleton_loaders.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
-import 'package:store_go/features/filter/view/screen/filter_product_screen.dart';
+import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 
 class ProductListScreen extends StatelessWidget {

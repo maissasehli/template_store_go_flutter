@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:pusher_client_fixed/pusher_client_fixed.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/config/app_notification_type.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
@@ -53,8 +54,8 @@ class PusherService {
     try {
       // Initialize Pusher client
       _pusherClient = PusherClient(
-        '9cc5c988880ae2d93c71',
-        PusherOptions(cluster: 'eu'),
+        AppConfig.publicPusherKey,
+        PusherOptions(cluster: AppConfig.publicPusherCluster),
         autoConnect: false,
         enableLogging: true,
       );

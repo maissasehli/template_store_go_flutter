@@ -1,4 +1,10 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConfig {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/mobile-app';
-  static const String storeId = '04aa487e-4fb1-44c8-868e-dffa04760aa6';
+  AppConfig._();
+  static String get baseUrl => dotenv.env['BASE_API_ENDPOINT'] ?? "";
+  static String get storeId => dotenv.env['STORE_ID'] ?? "";
+  static String get publicPusherKey => dotenv.env['PUBLIC_PUSHER_KEY'] ?? "";
+  static String get publicPusherCluster =>
+      dotenv.env['PUBLIC_PUSHER_CLUSTER'] ?? "";
 }

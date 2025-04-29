@@ -27,9 +27,9 @@ import 'package:store_go/features/order/binding/order_binding.dart';
 import 'package:store_go/features/product/binding/product_binding.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/product/controllers/product_list_controller.dart';
-import 'package:store_go/features/filter/view/screen/filter_product_screen.dart';
+import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
 import 'package:store_go/features/product/views/screens/product_detail_screen.dart';
-import 'package:store_go/features/product/views/screens/product_list_screen.dart'; // Add this import
+import 'package:store_go/features/product/views/screens/product_list_screen.dart';
 import 'package:store_go/features/profile/bindings/edit_profile_binding.dart';
 import 'package:store_go/features/profile/bindings/profile_binding.dart';
 import 'package:store_go/features/address/view/add_address.dart';

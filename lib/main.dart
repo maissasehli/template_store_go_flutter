@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:store_go/app/core/services/activity_detector.dart';
 import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:store_go/app/di/initializer.dart';
@@ -10,14 +11,18 @@ import 'package:store_go/app/core/config/main_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize Easy Localization first
+
+  // First load environment variables
+  await dotenv.load();
+
+  // Then initialize Easy Localization
   await EasyLocalization.ensureInitialized();
 
+  // Then initialize your app
   await AppInitializer.init();
 
   // Initialize lifecycle observer
   Get.put(LifecycleObserver());
-  
 
   runApp(
     EasyLocalization(
@@ -28,7 +33,6 @@ Future<void> main() async {
     ),
   );
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   
