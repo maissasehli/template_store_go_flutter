@@ -90,8 +90,6 @@ class ProductRepository {
         if (response.statusCode == 200) {
           Product product = Product.fromJson(response.data['data']);
 
-          // Fetch reviews for the product
-          product = await _fetchReviewsForProduct(product);
 
           _productCache[productId] = product;
           return product;
