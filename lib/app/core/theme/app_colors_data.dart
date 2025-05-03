@@ -16,6 +16,7 @@ class AppColorsData {
   final Color cardForeground;
   final Color border;
   final Color input;
+  final Color inputForeground;
   final Color destructive;
   final Color destructiveForeground;
   final Color productCard;
@@ -35,6 +36,7 @@ class AppColorsData {
     required this.cardForeground,
     required this.border,
     required this.input,
+    required this.inputForeground,
     required this.destructive,
     required this.destructiveForeground,
     required this.productCard,

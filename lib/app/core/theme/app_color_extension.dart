@@ -16,6 +16,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
   final Color cardForeground;
   final Color border;
   final Color input;
+  final Color inputForeground;
   final Color destructive;
   final Color destructiveForeground;
   final Color productCard;
@@ -34,6 +35,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
     required this.cardForeground,
     required this.border,
     required this.input,
+    required this.inputForeground,
     required this.destructive,
     required this.destructiveForeground,
     required this.productCard,
@@ -55,6 +57,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
     Color? cardForeground,
     Color? border,
     Color? input,
+    Color? inputForeground,
     Color? destructive,
     Color? destructiveForeground,
     Color? productCard,
@@ -74,6 +77,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       cardForeground: cardForeground ?? this.cardForeground,
       border: border ?? this.border,
       input: input ?? this.input,
+      inputForeground: inputForeground ?? this.inputForeground,
       destructive: destructive ?? this.destructive,
       destructiveForeground:
           destructiveForeground ?? this.destructiveForeground,
@@ -108,6 +112,7 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       cardForeground: Color.lerp(cardForeground, other.cardForeground, t)!,
       border: Color.lerp(border, other.border, t)!,
       input: Color.lerp(input, other.input, t)!,
+      inputForeground: Color.lerp(inputForeground, other.inputForeground, t)!,
       destructive: Color.lerp(destructive, other.destructive, t)!,
       destructiveForeground:
           Color.lerp(destructiveForeground, other.destructiveForeground, t)!,
@@ -132,11 +137,10 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       cardForeground: colors.cardForeground,
       border: colors.border,
       input: colors.input,
+      inputForeground: colors.inputForeground,
       destructive: colors.destructive,
       destructiveForeground: colors.destructiveForeground,
       productCard: colors.productCard,
     );
   }
-  
 }
-

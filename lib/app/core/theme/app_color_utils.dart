@@ -18,6 +18,7 @@ enum AppColorName {
   cardForeground,
   border,
   input,
+  inputForeground,
   destructive,
   destructiveForeground,
   productCard,
@@ -59,6 +60,8 @@ extension AppColorExtensionUtils on AppColorExtension {
         return border;
       case AppColorName.input:
         return input;
+      case AppColorName.inputForeground:
+        return inputForeground;
       case AppColorName.destructive:
         return destructive;
       case AppColorName.destructiveForeground:

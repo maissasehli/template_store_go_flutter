@@ -44,6 +44,9 @@ class AppColors {
   static Color input(BuildContext context) =>
       AppColorUtils.getThemeColor(context, AppColorName.input);
 
+  static Color inputForeground(BuildContext context) =>
+      AppColorUtils.getThemeColor(context, AppColorName.inputForeground);
+
   static Color destructive(BuildContext context) =>
       AppColorUtils.getThemeColor(context, AppColorName.destructive);
 
