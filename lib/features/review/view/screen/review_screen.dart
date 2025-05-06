@@ -38,6 +38,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
   String? _editingReviewId;
   final _editRating = 0.obs;
   final _editCommentController = TextEditingController();
+  final _editCommentFocusNode = FocusNode(); // Added FocusNode
   final _isSubmitting = false.obs;
   ReviewController? _reviewController;
   String? _currentUserId;
@@ -92,6 +93,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
   @override
   void dispose() {
     _editCommentController.dispose();
+    _editCommentFocusNode.dispose(); // Dispose the FocusNode
     super.dispose();
   }
 
@@ -156,7 +158,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
  Future<void> _submitEditedReview(String reviewId) async {
   if (_editRating.value == 0) {
     Get.snackbar(
-      'Warning',
+      'Error',
       'Please select a rating',
       backgroundColor: Colors.red,
       colorText: Colors.white,
@@ -185,6 +187,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
     }
   } catch (e) {
     _logger.e('Error updating review: $e');
+    Get.snackbar(
+      'Error',
+      'Failed to update review.',
+      backgroundColor: Colors.red,
+      colorText: Colors.white,
+    );
   } finally {
     _isSubmitting.value = false;
   }
@@ -222,12 +230,14 @@ Future<void> _deleteReview(String reviewId) async {
         });
 
         if (mounted) {
+          // Removed success message but kept the undo functionality
           Get.snackbar(
-            'Action',
+            'Error',
             'Review deleted',
-            backgroundColor: Colors.green,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
             mainButton: TextButton(
-              child: const Text('Undo', style: TextStyle(color: Colors.white)),
+              child: const Text('Undo', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               onPressed: () async {
                 _isSubmitting.value = true;
                 try {
@@ -239,6 +249,12 @@ Future<void> _deleteReview(String reviewId) async {
                   });
                 } catch (e) {
                   _logger.e('Error undoing delete: $e');
+                  Get.snackbar(
+                    'Error',
+                    'Failed to restore review.',
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
                 } finally {
                   _isSubmitting.value = false;
                 }
@@ -246,9 +262,22 @@ Future<void> _deleteReview(String reviewId) async {
             ),
           );
         }
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to delete review.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       _logger.e('Error deleting review: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to delete review.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       _isSubmitting.value = false;
     }
@@ -424,6 +453,7 @@ Future<void> _deleteReview(String reviewId) async {
                     reviewController: _reviewController!,
                     editRating: _editRating,
                     editCommentController: _editCommentController,
+                    editCommentFocusNode: _editCommentFocusNode, // Added the required parameter
                     isSubmitting: _isSubmitting,
                     onEdit: _startEditingReview,
                     onDelete: _deleteReview,

@@ -51,59 +51,29 @@ class ReviewController extends GetxController {
     }
   }
 
-  Future<void> fetchReviews(String productId) async {
+Future<void> fetchReviews(String productId) async {
     try {
-      setLoading(true);
-      clearError();
-
+      isLoading.value = true;
       final fetchedReviews = await _repository.getReviewsByProductId(productId);
       reviews.assignAll(fetchedReviews);
-      _logger.i('Fetched ${reviews.length} reviews for product $productId');
     } catch (e) {
-      setError('Error fetching reviews: $e');
-      _logger.e('Error fetching reviews: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to load reviews',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      debugPrint('Error fetching reviews: $e');
+      rethrow;
     } finally {
-      setLoading(false);
+      isLoading.value = false;
     }
   }
 
-  Future<bool> addReview(String productId, Review review) async {
+Future<void> addReview(String productId, Review review) async {
     try {
-      setLoading(true);
-      clearError();
-
-      final success = await _repository.createReview(productId, review);
-      if (success) {
-        _logger.i('Review added successfully for product $productId');
-        Get.snackbar('Success', 'Review submitted successfully', backgroundColor: Colors.green);
-        return true;
-      } else {
-        throw Exception('Failed to create review: Saved offline');
-      }
+      isLoading.value = true;
+      await _repository.createReview(productId, review);
+      reviews.add(review);
     } catch (e) {
-      String errorMsg = 'Failed to submit review';
-      if (e.toString().contains('You have already reviewed this product')) {
-        errorMsg = 'You have already reviewed this product';
-      } else if (e.toString().contains('User not authenticated')) {
-        errorMsg = 'Please log in to submit a review';
-      } else if (e.toString().contains('Product not found')) {
-        errorMsg = 'Product not found';
-      } else if (e.toString().contains('Saved offline')) {
-        errorMsg = 'Review saved offline, will sync when online';
-      }
-
-      setError('Error adding review: $e');
-      _logger.e('Error adding review: $e');
-      Get.snackbar('Error', errorMsg, backgroundColor: Colors.red);
-      return false;
+      debugPrint('Error adding review: $e');
+      rethrow;
     } finally {
-      setLoading(false);
+      isLoading.value = false;
     }
   }
 
@@ -127,7 +97,6 @@ class ReviewController extends GetxController {
         reviews.refresh();
       }
       _logger.i('Review updated: $reviewId');
-      Get.snackbar('Success', 'Review updated successfully', backgroundColor: Colors.green);
       return true;
     } catch (e) {
       String errorMsg = 'Failed to update review';
@@ -153,7 +122,6 @@ class ReviewController extends GetxController {
       await _repository.deleteReview(reviewId);
       reviews.removeWhere((r) => r.id == reviewId);
       _logger.i('Review deleted: $reviewId');
-      Get.snackbar('Success', 'Review deleted successfully', backgroundColor: Colors.green);
       return true;
     } catch (e) {
       String errorMsg = 'Failed to delete review';

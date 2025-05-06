@@ -34,26 +34,25 @@ class _OnboardingState extends State<Onboarding> {
       _preloadImages();
     });
   }
+Future<void> _preloadImages() async {
+  final List<String> imagePaths = [];
 
-  Future<void> _preloadImages() async {
-    // Gather all image paths from the onboarding pages
-    final List<String> imagePaths = [];
+  for (final page in OnboardingStatic.pages) {
+    imagePaths.add(page.mainImage);
+    imagePaths.add(page.leftImage);
+    imagePaths.add(page.rightImage);
+  }
 
-    for (final page in OnboardingStatic.pages) {
-      imagePaths.add(page.mainImage);
-      imagePaths.add(page.leftImage);
-      imagePaths.add(page.rightImage);
-    }
+  for (final path in imagePaths) {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return; // Check if the widget is still mounted
+    await Get.find<EnhancedImageCache>().cacheAssetImage(context, path);
+  }
 
-    // Preload images with a slight delay between each to demonstrate skeletons
-    for (final path in imagePaths) {
-      await Future.delayed(const Duration(milliseconds: 300));
-      await Get.find<EnhancedImageCache>().cacheAssetImage(context, path);
-    }
-    
-    // Also preload auth images to prepare for the next screens
+  if (mounted) {
     await _preloaderManager.preloadAuthImages(context);
   }
+}
 
   @override
   Widget build(BuildContext context) {

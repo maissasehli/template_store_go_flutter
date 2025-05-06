@@ -13,6 +13,7 @@ class ReviewList extends StatelessWidget {
   final ReviewController reviewController;
   final RxInt editRating;
   final TextEditingController editCommentController;
+  final FocusNode editCommentFocusNode; // Added the missing FocusNode
   final RxBool isSubmitting;
   final Function(Review) onEdit;
   final Function(String) onDelete;
@@ -27,6 +28,7 @@ class ReviewList extends StatelessWidget {
     required this.reviewController,
     required this.editRating,
     required this.editCommentController,
+    required this.editCommentFocusNode, // Added this parameter
     required this.isSubmitting,
     required this.onEdit,
     required this.onDelete,
@@ -53,6 +55,7 @@ class ReviewList extends StatelessWidget {
                 review: review,
                 editRating: editRating,
                 editCommentController: editCommentController,
+                editCommentFocusNode: editCommentFocusNode, // Added the missing parameter
                 isSubmitting: isSubmitting,
                 onSubmit: onSubmitEdit,
                 onCancel: onCancelEdit,
