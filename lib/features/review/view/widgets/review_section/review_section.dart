@@ -27,9 +27,10 @@ class ReviewSection extends StatefulWidget {
 class ReviewSectionState extends State<ReviewSection> {
   late ReviewController controller;
   final _isWritingReview = false.obs;
-  final _isSubmitting = false.obs; // Added for submission loading state
+  final _isSubmitting = false.obs;
   final _rating = 0.obs;
   final _commentController = TextEditingController();
+  final _commentFocusNode = FocusNode();
   final List<String> _quickTags = [
     'Great quality',
     'Good value',
@@ -38,47 +39,87 @@ class ReviewSectionState extends State<ReviewSection> {
     'Perfect fit',
     'Highly recommend'
   ];
-  String? _currentUserId; // Added for user authentication
+  String? _currentUserId;
+  bool _isShimmerVisible = true; 
 
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  // Fetch current user ID asynchronously
-  Get.find<AuthService>().getCurrentUserId().then((userId) {
-    setState(() {
-      _currentUserId = userId;
-      if (_currentUserId == null) {
-        debugPrint('No authenticated user found');
+    // Fetch current user ID asynchronously
+    Get.find<AuthService>().getCurrentUserId().then((userId) {
+      if (mounted) {
+        setState(() {
+          _currentUserId = userId;
+          if (_currentUserId == null) {
+            debugPrint('No authenticated user found');
+          }
+        });
       }
     });
-  });
 
-  if (!Get.isRegistered<ReviewController>()) {
-    final apiClient = Get.find<ApiClient>();
-    final repository = ReviewRepository(apiClient: apiClient);
-    Get.put(ReviewController(repository: repository));
+    if (!Get.isRegistered<ReviewController>()) {
+      final apiClient = Get.find<ApiClient>();
+      final repository = ReviewRepository(apiClient: apiClient);
+      Get.put(ReviewController(repository: repository));
+    }
+
+    controller = Get.find<ReviewController>();
+    controller.reviews.assignAll(widget.initialReviews);
+
+    // Fetch reviews
+    _initializeReviews();
+    
+    // Add listener for focus management
+    _commentFocusNode.addListener(_onFocusChange);
+  }
+  
+  void _onFocusChange() {
+    // Ensure UI updates when focus changes
+    if (mounted) {
+      setState(() {
+        // Force rebuild when focus changes
+        if (_commentFocusNode.hasFocus) {
+          _isShimmerVisible = false; // Ensure shimmer is hidden when focused
+        }
+      });
+    }
   }
 
-  controller = Get.find<ReviewController>();
-  controller.reviews.assignAll(widget.initialReviews);
-
-  // Fetch reviews (offline sync is handled in ReviewController.onInit)
-  _initializeReviews();
-}
-
-Future<void> _initializeReviews() async {
-  try {
-    await controller.fetchReviews(widget.product.id);
-  } catch (e) {
-    debugPrint('Error initializing reviews: $e');
-    Get.snackbar('Error', 'Failed to load reviews', backgroundColor: Colors.red, colorText: Colors.white);
+  Future<void> _initializeReviews() async {
+    try {
+      // Don't show loading if we already have initial reviews
+      if (widget.initialReviews.isEmpty) {
+        controller.isLoading.value = true;
+      }
+      
+      await controller.fetchReviews(widget.product.id);
+    } catch (e) {
+      debugPrint('Error initializing reviews: $e');
+      if (mounted) {
+        Get.snackbar(
+          'Error', 
+          'Failed to load reviews',
+          backgroundColor: Colors.red,
+          colorText: Colors.white
+        );
+      }
+    } finally {
+      controller.isLoading.value = false;
+      // Update shimmer visibility after loading
+      if (mounted) {
+        setState(() {
+          _isShimmerVisible = false;
+        });
+      }
+    }
   }
-}
 
   @override
   void dispose() {
+    _commentFocusNode.removeListener(_onFocusChange);
     _commentController.dispose();
+    _commentFocusNode.dispose(); 
     super.dispose();
   }
 
@@ -106,7 +147,7 @@ Future<void> _initializeReviews() async {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       child: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isLoading.value && _isShimmerVisible) {
           return _buildSkeletonLoading();
         }
         return Column(
@@ -345,8 +386,23 @@ Future<void> _initializeReviews() async {
   Widget _buildWriteReviewButton() {
     final hasReviewed = _currentUserId != null &&
         controller.reviews.any((r) => r.appUserId == _currentUserId);
+    
     return GestureDetector(
-      onTap: hasReviewed || _currentUserId == null ? null : () => _isWritingReview.value = true,
+      onTap: () {
+        if (!hasReviewed && _currentUserId != null) {
+          _isWritingReview.value = true;
+          setState(() {
+            _isShimmerVisible = false; // Ensure shimmer is hidden
+          });
+          
+          // Defer focus request to avoid conflicts
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (_commentFocusNode.canRequestFocus && mounted) {
+              _commentFocusNode.requestFocus();
+            }
+          });
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
@@ -360,9 +416,7 @@ Future<void> _initializeReviews() async {
             Icon(
               Icons.rate_review_outlined,
               size: 18,
-              color: hasReviewed || _currentUserId == null
-                  ? Colors.grey
-                  : AppColors.primary(context),
+              color: hasReviewed ? Colors.grey : AppColors.primary(context),
             ),
             const SizedBox(width: 8),
             Text(
@@ -371,9 +425,7 @@ Future<void> _initializeReviews() async {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Poppins',
-                color: hasReviewed || _currentUserId == null
-                    ? Colors.grey
-                    : AppColors.primary(context),
+                color: hasReviewed ? Colors.grey : AppColors.primary(context),
               ),
             ),
           ],
@@ -382,146 +434,194 @@ Future<void> _initializeReviews() async {
     );
   }
 
- Widget _buildReviewForm(BuildContext context) {
-  return Container(
-    margin: const EdgeInsets.only(top: 16),
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.grey[300]!),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(red: 0, green: 0, blue: 0, alpha: 0.05),
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Your Rating',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
-            ),
-            GestureDetector(
-              onTap: () {
-                _isWritingReview.value = false;
-                _rating.value = 0;
-                _commentController.clear();
-              },
-              child: Icon(Icons.close, color: Colors.grey[700], size: 20),
+  Widget _buildReviewForm(BuildContext context) {
+    // Use Material widget to ensure text input works correctly
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: const EdgeInsets.only(top: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey[300]!),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        Obx(() => Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return GestureDetector(
-                  onTap: () => _rating.value = index + 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Icon(
-                      index < _rating.value ? Icons.star_rounded : Icons.star_outline_rounded,
-                      size: 32,
-                      color: index < _rating.value ? const Color(0xFFFFCC00) : Colors.grey[300],
-                    ),
-                  ),
-                );
-              }),
-            )),
-        const SizedBox(height: 20),
-        const Text(
-          'Your Review',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: TextField(
-            controller: _commentController,
-            maxLines: 1,
-            decoration: const InputDecoration(
-              hintText: 'Share your experience with this product...',
-              hintStyle: TextStyle(color: Colors.grey, fontSize: 14, fontFamily: 'Poppins'),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.all(12),
-              alignLabelWithHint: true,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Quick Tags',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _quickTags.map((tag) => _buildQuickTag(tag)).toList(),
-        ),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: _isSubmitting.value
-                ? null
-                : () async {
-                    if (_rating.value == 0) {
-                      if (!mounted) return; // Check if widget is still mounted
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please select a rating'), backgroundColor: Colors.red),
-                      );
-                      return;
-                    }
-                    if (_isSubmitting.value) return;
-                    _isSubmitting.value = true;
-
-                    final review = Review(
-                      id: DateTime.now().toString(),
-                      userName: 'You',
-                      rating: _rating.value,
-                      content: _commentController.text.isNotEmpty ? _commentController.text : null,
-                      createdAt: DateTime.now(),
-                      appUserId: _currentUserId ?? '',
-                    );
-                    await controller.addReview(widget.product.id, review);
-                    await controller.fetchReviews(widget.product.id);
-                    _commentController.clear();
-                    _rating.value = 0;
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Your Rating',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                ),
+                GestureDetector(
+                  onTap: () {
                     _isWritingReview.value = false;
-                    _isSubmitting.value = false;
-                    
-                    // Removed duplicate success SnackBar - The controller already shows one
+                    _rating.value = 0;
+                    _commentController.clear();
                   },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary(context),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Icon(Icons.close, color: Colors.grey[700], size: 20),
+                ),
+              ],
             ),
-            child: _isSubmitting.value
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white))
-                : const Text(
-                    'Submit Review',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
-                  ),
-          ),
+            const SizedBox(height: 12),
+            Obx(() => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return GestureDetector(
+                      onTap: () => _rating.value = index + 1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Icon(
+                          index < _rating.value ? Icons.star_rounded : Icons.star_outline_rounded,
+                          size: 32,
+                          color: index < _rating.value ? const Color(0xFFFFCC00) : Colors.grey[300],
+                        ),
+                      ),
+                    );
+                  }),
+                )),
+            const SizedBox(height: 20),
+            const Text(
+              'Your Review',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: TextField( // Changed to TextField for simplicity
+                controller: _commentController,
+                focusNode: _commentFocusNode,
+                maxLines: 1,
+                textAlignVertical: TextAlignVertical.center,
+                style: const TextStyle(
+                  color: Colors.black87, 
+                  fontSize: 14, 
+                  fontFamily: 'Poppins'
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Share your experience with this product...',
+                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14, fontFamily: 'Poppins'),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(12),
+                  isDense: true,
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                ),
+                textInputAction: TextInputAction.done,
+                onTap: () {
+                  setState(() {
+                    _isShimmerVisible = false; // Ensure shimmer is hidden on tap
+                  });
+                  if (!_commentFocusNode.hasFocus && mounted) {
+                    _commentFocusNode.requestFocus();
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Quick Tags',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _quickTags.map((tag) => _buildQuickTag(tag)).toList(),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: Obx(() => ElevatedButton(
+                onPressed: _isSubmitting.value
+                    ? null
+                    : () async {
+                        if (_rating.value == 0) {
+                          Get.snackbar(
+                            'Error',
+                            'Please select a rating',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        
+                        // Validate comment text
+                        if (_commentController.text.trim().isEmpty) {
+                          Get.snackbar(
+                            'Error',
+                            'Please write a review comment',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+                        
+                        _isSubmitting.value = true;
+
+                        try {
+                          final review = Review(
+                            id: DateTime.now().millisecondsSinceEpoch.toString(),
+                            userName: 'You',
+                            rating: _rating.value,
+                            content: _commentController.text,
+                            createdAt: DateTime.now(),
+                            appUserId: _currentUserId ?? 'anonymous',
+                          );
+                          
+                          await controller.addReview(widget.product.id, review);
+                          await controller.fetchReviews(widget.product.id);
+                          
+                          _commentController.clear();
+                          _rating.value = 0;
+                          _isWritingReview.value = false;
+                          
+                         
+                        } catch (e) {
+                          debugPrint('Error submitting review: $e');
+                          Get.snackbar(
+                            'Error',
+                            'Failed to submit review',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        } finally {
+                          _isSubmitting.value = false;
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary(context),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: _isSubmitting.value
+                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white))
+                    : const Text(
+                        'Submit Review',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                      ),
+              )),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
-}
+      ),
+    );
+  }
 
   Widget _buildQuickTag(String text) {
     return GestureDetector(
@@ -532,6 +632,11 @@ Future<void> _initializeReviews() async {
           _commentController.text += '. $text';
         } else {
           _commentController.text += ' $text';
+        }
+        
+        // Ensure focus is on the text field after adding a tag
+        if (!_commentFocusNode.hasFocus && mounted) {
+          _commentFocusNode.requestFocus();
         }
       },
       child: Container(

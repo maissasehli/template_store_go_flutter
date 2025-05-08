@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class AddressPage extends StatelessWidget {
   const AddressPage({super.key});
@@ -13,28 +15,30 @@ class AddressPage extends StatelessWidget {
     controller.fetchAddresses().then((_) => isLoading.value = false);
 
     return Scaffold(
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: Container(
-          margin: const EdgeInsets.only(left: 16),
+          margin: EdgeInsets.only(left: UIConfig.marginMedium),
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.grey[200], // Grey circle background
+            color: AppColors.mutedForeground(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+            icon: Icon(Icons.arrow_back_ios, 
+              color: AppColors.foreground(context), 
+              size: 20),
             onPressed: () => Get.back(),
           ),
         ),
-        centerTitle: true,
-        title: const Text(
+        title: Text(
           'Address',
           style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+            color: AppColors.foreground(context),
+            fontSize: UIConfig.fontSizeMedium,
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
           ),
@@ -42,13 +46,15 @@ class AddressPage extends StatelessWidget {
       ),
       body: Obx(
         () => isLoading.value
-            ? const Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator(
+                color: AppColors.primary(context),
+              ))
             : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
+                    SizedBox(height: UIConfig.marginLarge),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -57,37 +63,39 @@ class AddressPage extends StatelessWidget {
                             controller.clearFields();
                             Get.toNamed('/add-address');
                           },
-                          child: const Text(
+                          child: Text(
                             'Add Address',
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: UIConfig.fontSizeMedium,
                               fontWeight: FontWeight.w700,
                               fontFamily: 'Gabarito',
-                              color: Colors.black,
+                              color: AppColors.foreground(context),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: UIConfig.marginMedium),
                     Expanded(
                       child: controller.addresses.isEmpty
-                          ? const Center(
+                          ? Center(
                               child: Text(
                                 'No addresses added yet',
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 16,
+                                  color: AppColors.mutedForeground(context),
+                                  fontSize: UIConfig.fontSizeRegular,
                                   fontFamily: 'Poppins',
                                 ),
                               ),
                             )
                           : ListView.separated(
                               itemCount: controller.addresses.length,
-                              separatorBuilder: (context, index) => const SizedBox(height: 12),
+                              separatorBuilder: (context, index) => 
+                                SizedBox(height: UIConfig.marginSmall),
                               itemBuilder: (context, index) {
                                 final address = controller.addresses[index];
                                 return _buildAddressCard(
+                                  context,
                                   address.formattedAddress,
                                   onEdit: () {
                                     controller.setAddressForEditing(address);
@@ -97,18 +105,7 @@ class AddressPage extends StatelessWidget {
                               },
                             ),
                     ),
-                    Center(
-                      child: Container(
-                        width: 134,
-                        height: 5,
-                        margin: const EdgeInsets.only(bottom: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(2.5),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
+                 
                   ],
                 ),
               ),
@@ -116,12 +113,15 @@ class AddressPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard(String address, {required VoidCallback onEdit}) {
+  Widget _buildAddressCard(BuildContext context, String address, {required VoidCallback onEdit}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: EdgeInsets.symmetric(
+        horizontal: UIConfig.paddingMedium,
+        vertical: UIConfig.paddingMedium
+      ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F4F4),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.mutedForeground(context),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -130,23 +130,23 @@ class AddressPage extends StatelessWidget {
           Expanded(
             child: Text(
               address,
-              style: const TextStyle(
-                fontSize: 14,
+              style: TextStyle(
+                fontSize: UIConfig.fontSizeRegular,
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: AppColors.foreground(context),
               ),
             ),
           ),
           GestureDetector(
             onTap: onEdit,
-            child: const Text(
+            child: Text(
               'Edit',
               style: TextStyle(
-                fontSize: 12,
+                fontSize: UIConfig.fontSizeSmall,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
-                color: Colors.black,
+                color: AppColors.foreground(context),
               ),
             ),
           ),

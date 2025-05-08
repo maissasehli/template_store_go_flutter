@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/review/model/review_model.dart';
-import 'package:store_go/features/review/view/widgets/quick_tag.dart';
 
 class EditReviewForm extends StatelessWidget {
   final Review review;
   final RxInt editRating;
   final TextEditingController editCommentController;
+  final FocusNode editCommentFocusNode;
   final RxBool isSubmitting;
   final Function(String) onSubmit;
   final VoidCallback onCancel;
 
-   EditReviewForm({
+  EditReviewForm({
     super.key,
     required this.review,
     required this.editRating,
     required this.editCommentController,
+    required this.editCommentFocusNode,
     required this.isSubmitting,
     required this.onSubmit,
     required this.onCancel,
@@ -33,6 +34,16 @@ class EditReviewForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Request focus when the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Short delay to ensure widget is fully rendered
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (editCommentFocusNode.canRequestFocus) {
+          editCommentFocusNode.requestFocus();
+        }
+      });
+    });
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -86,21 +97,38 @@ class EditReviewForm extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
           ),
           const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[300]!),
-            ),
-            child: TextField(
-              controller: editCommentController,
-              maxLines: 1,
-              decoration: const InputDecoration(
-                hintText: 'Share your experience with this product...',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 14, fontFamily: 'Poppins'),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(12),
-                alignLabelWithHint: true,
+          GestureDetector(
+            onTap: () {
+              // Ensure focus is requested when container tapped
+              if (editCommentFocusNode.canRequestFocus) {
+                editCommentFocusNode.requestFocus();
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: TextField(
+                controller: editCommentController,
+                focusNode: editCommentFocusNode,
+                maxLines: 1, // Allow multiple lines
+                textInputAction: TextInputAction.newline,
+                style: const TextStyle(
+                  color: Colors.black87, 
+                  fontSize: 14, 
+                  fontFamily: 'Poppins'
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Share your experience with this product...',
+                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14, fontFamily: 'Poppins'),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(12),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                ),
+                // Don't use onTap here since we're using a GestureDetector already
               ),
             ),
           ),
@@ -114,24 +142,13 @@ class EditReviewForm extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: _quickTags
-                .map((tag) => QuickTag(
-                      text: tag,
-                      onTap: () {
-                        if (editCommentController.text.isEmpty) {
-                          editCommentController.text = tag;
-                        } else if (!editCommentController.text.endsWith('.')) {
-                          editCommentController.text += '. $tag';
-                        } else {
-                          editCommentController.text += ' $tag';
-                        }
-                      },
-                    ))
+                .map((tag) => _buildQuickTag(tag))
                 .toList(),
           ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: Obx(() => ElevatedButton(
               onPressed: isSubmitting.value ? null : () => onSubmit(review.id),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary(context),
@@ -146,9 +163,45 @@ class EditReviewForm extends StatelessWidget {
                       'Update Review',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
                     ),
-            ),
+            )),
           ),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildQuickTag(String text) {
+    return GestureDetector(
+      onTap: () {
+        if (editCommentController.text.isEmpty) {
+          editCommentController.text = text;
+        } else if (!editCommentController.text.endsWith('.')) {
+          editCommentController.text += '. $text';
+        } else {
+          editCommentController.text += ' $text';
+        }
+        
+        // Move cursor to the end after adding tag
+        editCommentController.selection = TextSelection.fromPosition(
+          TextPosition(offset: editCommentController.text.length),
+        );
+        
+        // Refocus on the text field
+        if (editCommentFocusNode.canRequestFocus) {
+          editCommentFocusNode.requestFocus();
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 12, fontFamily: 'Poppins', color: Colors.black87),
+        ),
       ),
     );
   }
