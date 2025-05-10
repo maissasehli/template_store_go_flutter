@@ -48,6 +48,7 @@ dependencies:
   pusher_client_fixed:
     git:
       url: https://github.com/AbdoPrDZ/pusher_client_fixed.git
+  connectivity_plus: ^5.0.1
 
 dev_dependencies:
   flutter_test:

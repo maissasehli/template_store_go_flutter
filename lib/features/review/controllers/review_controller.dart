@@ -13,7 +13,8 @@ class ReviewController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
 
-  ReviewController({required ReviewRepository repository}) : _repository = repository;
+  ReviewController({required ReviewRepository repository})
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -38,7 +39,7 @@ class ReviewController extends GetxController {
     try {
       await _repository.syncOfflineReviews();
       await _repository.syncOfflineUpdatesAndDeletes();
-      _logger.i('Offline data synced successfully');
+      _logger.d('Offline data synced successfully');
     } catch (e) {
       _logger.e('Error syncing offline data: $e');
       setError('Error syncing offline data: $e');
@@ -51,7 +52,7 @@ class ReviewController extends GetxController {
     }
   }
 
-Future<void> fetchReviews(String productId) async {
+  Future<void> fetchReviews(String productId) async {
     try {
       isLoading.value = true;
       final fetchedReviews = await _repository.getReviewsByProductId(productId);
@@ -64,7 +65,7 @@ Future<void> fetchReviews(String productId) async {
     }
   }
 
-Future<void> addReview(String productId, Review review) async {
+  Future<void> addReview(String productId, Review review) async {
     try {
       isLoading.value = true;
       await _repository.createReview(productId, review);
@@ -77,7 +78,10 @@ Future<void> addReview(String productId, Review review) async {
     }
   }
 
-  Future<bool> updateReview(String reviewId, Map<String, dynamic> updates) async {
+  Future<bool> updateReview(
+    String reviewId,
+    Map<String, dynamic> updates,
+  ) async {
     try {
       setLoading(true);
       clearError();
@@ -96,7 +100,7 @@ Future<void> addReview(String productId, Review review) async {
         );
         reviews.refresh();
       }
-      _logger.i('Review updated: $reviewId');
+      _logger.d('Review updated: $reviewId');
       return true;
     } catch (e) {
       String errorMsg = 'Failed to update review';
@@ -118,10 +122,10 @@ Future<void> addReview(String productId, Review review) async {
       setLoading(true);
       clearError();
 
-      _logger.i('Attempting to delete review with ID: $reviewId');
+      _logger.d('Attempting to delete review with ID: $reviewId');
       await _repository.deleteReview(reviewId);
       reviews.removeWhere((r) => r.id == reviewId);
-      _logger.i('Review deleted: $reviewId');
+      _logger.d('Review deleted: $reviewId');
       return true;
     } catch (e) {
       String errorMsg = 'Failed to delete review';
@@ -152,7 +156,9 @@ Future<void> addReview(String productId, Review review) async {
       errorMessage.value = '';
 
       final fetchedReviews = await _repository.getReviewsByProductId(productId);
-      _logger.d('Fetched ${fetchedReviews.length} reviews for product $productId');
+      _logger.d(
+        'Fetched ${fetchedReviews.length} reviews for product $productId',
+      );
 
       reviews.assignAll(fetchedReviews);
       return fetchedReviews;

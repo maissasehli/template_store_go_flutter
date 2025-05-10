@@ -65,7 +65,7 @@ class EditProfileController extends GetxController {
       emailController.text = user.value?.email ?? '';
       phoneController.text = ''; // Phone not in the model, add if needed
 
-      logger.i('User data fetched successfully: ${user.value?.name}');
+      logger.d('User data fetched successfully: ${user.value?.name}');
     } catch (e) {
       logger.e('Error fetching user data: $e');
       hasError.value = true;

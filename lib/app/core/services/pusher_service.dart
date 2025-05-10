@@ -97,7 +97,7 @@ class PusherService {
       // Set initial online status
       _calculateAndUpdateStatus(force: true);
 
-      _logger.i("Pusher initialized for store: $storeId and user: $appUserId");
+      _logger.d("Pusher initialized for store: $storeId and user: $appUserId");
     } catch (e) {
       _logger.e("Failed to initialize Pusher: $e");
     }
@@ -131,7 +131,7 @@ class PusherService {
       // Only update if forced or status has changed
       if (force || _lastReportedStatus != isOnline) {
         try {
-          _logger.i(
+          _logger.d(
             "Sending status update to server: $isOnline (force: $force)",
           );
 
@@ -144,7 +144,7 @@ class PusherService {
           await apiClient.post('/users/status', data: payload);
 
           _lastReportedStatus = isOnline;
-          _logger.i("User online status updated successfully to: $isOnline");
+          _logger.d("User online status updated successfully to: $isOnline");
         } catch (e) {
           _logger.e("Failed to update online status: $e");
         }
@@ -295,12 +295,12 @@ class PusherService {
     _lastReportedStatus = false;
     _isAppInForeground = true;
     _isUserActive = true;
-    _logger.i("PusherService state reset");
+    _logger.d("PusherService state reset");
   }
 
   // For debugging
   void traceState() {
-    _logger.i(
+    _logger.d(
       "STATE TRACE: _lastReportedStatus=$_lastReportedStatus, _isAppInForeground=$_isAppInForeground, _isUserActive=$_isUserActive",
     );
   }

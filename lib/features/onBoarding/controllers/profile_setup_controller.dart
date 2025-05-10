@@ -39,7 +39,7 @@ class ProfileSetupController extends GetxController {
       final logger = Logger();
 
       try {
-        logger.i(
+        logger.d(
           'Updating user profile: Gender=${selectedGender.value}, Age Range=${selectedAgeRange.value}',
         );
 
@@ -66,12 +66,12 @@ class ProfileSetupController extends GetxController {
               selectedAgeRange.value, // Changed from camelCase to snake_case
         };
 
-        logger.i('Sending PUT request to /users/$userId');
+        logger.d('Sending PUT request to /users/$userId');
 
         // Update the API endpoint to match the server route
         final response = await api.put('/users/$userId', data: data);
 
-        logger.i('Profile update successful: ${response.statusCode}');
+        logger.d('Profile update successful: ${response.statusCode}');
 
         // Show success message
         Get.snackbar(

@@ -6,14 +6,18 @@ import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:store_go/app/core/services/connection_service.dart';
 
 class ApiClient {
   late dio.Dio _dio;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final _refreshLock = Lock();
+
+  // Add a getter to check connection status
+  bool get isConnected => Get.find<ConnectionService>().isConnected.value;
 
   ApiClient() {
     _dio = dio.Dio(
-      
       dio.BaseOptions(
         baseUrl: AppConfig.baseUrl,
         connectTimeout: const Duration(seconds: 15),
@@ -30,11 +34,11 @@ class ApiClient {
     _dio.interceptors.add(
       dio.InterceptorsWrapper(
         onRequest: (options, handler) async {
-          Logger().i('Interceptor onRequest has been triggered');
+          Logger().d('Interceptor onRequest has been triggered');
 
           // Bypass interceptor logic if current route is in public routes
           if (AppRoute.publicRoutes.contains(Get.currentRoute)) {
-            Logger().i(
+            Logger().d(
               'Interceptor onRequest: Bypassing interceptor logic for public route',
             );
             return handler.next(options);
@@ -62,7 +66,7 @@ class ApiClient {
             // If token is expired or about to expire (less than 5 minutes remaining)
             if (now.isAfter(expiresAt) ||
                 expiresAt.difference(now).inMinutes < 5) {
-              Logger().i(
+              Logger().d(
                 'Interceptor onRequest: Token expired or about to expire, refreshing',
               );
 
@@ -101,9 +105,22 @@ class ApiClient {
             'Interceptor onError has been triggered: ${error.message}',
           );
 
+          // First check if this is a connection error
+          if (error.type == dio.DioExceptionType.connectionError) {
+            Logger().d('Interceptor onError: Connection error detected');
+            // Handle connection errors gracefully
+            return handler.next(error);
+          }
+
           // Handle 401 errors (Unauthorized)
           if (error.response?.statusCode == 401) {
-            Logger().i(
+            // Check connection before attempting token refresh
+            if (!isConnected) {
+              Logger().d('Cannot refresh token: No internet connection');
+              return handler.next(error);
+            }
+
+            Logger().d(
               'Interceptor onError: Received 401 error, attempting token refresh',
             );
 
@@ -149,6 +166,15 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      // Check connectivity before making the request
+      if (!isConnected) {
+        throw dio.DioException(
+          requestOptions: dio.RequestOptions(path: path),
+          error: 'No internet connection',
+          type: dio.DioExceptionType.connectionError,
+        );
+      }
+
       return await _dio.get(path, queryParameters: queryParameters);
     } catch (e) {
       rethrow;
@@ -161,6 +187,15 @@ class ApiClient {
     dio.Options? options,
   }) async {
     try {
+      // Check connectivity before making the request
+      if (!isConnected) {
+        throw dio.DioException(
+          requestOptions: dio.RequestOptions(path: path),
+          error: 'No internet connection',
+          type: dio.DioExceptionType.connectionError,
+        );
+      }
+
       return await _dio.post(path, data: data, options: options);
     } catch (e) {
       rethrow;
@@ -169,6 +204,15 @@ class ApiClient {
 
   Future<dio.Response> put(String path, {dynamic data}) async {
     try {
+      // Check connectivity before making the request
+      if (!isConnected) {
+        throw dio.DioException(
+          requestOptions: dio.RequestOptions(path: path),
+          error: 'No internet connection',
+          type: dio.DioExceptionType.connectionError,
+        );
+      }
+
       return await _dio.put(path, data: data);
     } catch (e) {
       rethrow;
@@ -177,13 +221,21 @@ class ApiClient {
 
   Future<dio.Response> delete(String path) async {
     try {
+      // Check connectivity before making the request
+      if (!isConnected) {
+        throw dio.DioException(
+          requestOptions: dio.RequestOptions(path: path),
+          error: 'No internet connection',
+          type: dio.DioExceptionType.connectionError,
+        );
+      }
+
       return await _dio.delete(path);
     } catch (e) {
       rethrow;
     }
   }
 
-  final _refreshLock = Lock();
   // Add this method to your ApiClient class to handle token refreshing
   Future<bool> _refreshToken() async {
     // Use the lock to prevent concurrent refresh attempts
@@ -191,7 +243,7 @@ class ApiClient {
       try {
         // Get the CURRENT refresh token (it might have changed since we started)
         final refreshToken = await _secureStorage.read(key: 'refresh_token');
-        Logger().i('Refresh token: $refreshToken');
+        Logger().d('Refresh token: $refreshToken');
 
         if (refreshToken == null) return false;
 
@@ -226,9 +278,9 @@ class ApiClient {
           ]);
           // Initialize pusher
           final pusherService = Get.find<PusherService>();
-          pusherService.initializePusher(AppConfig.storeId,userId);
+          pusherService.initializePusher(AppConfig.storeId, userId);
 
-          Logger().i('Token refreshed successfully');
+          Logger().d('Token refreshed successfully');
           return true;
         }
         return false;

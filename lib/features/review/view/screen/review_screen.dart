@@ -14,7 +14,7 @@ import 'package:store_go/features/review/view/widgets/review_list.dart';
 class ReviewsPage extends StatefulWidget {
   final List<Review> reviews;
   final double averageRating;
-  final VoidCallback onAddReview; 
+  final VoidCallback onAddReview;
   final Product product;
 
   const ReviewsPage({
@@ -31,10 +31,22 @@ class ReviewsPage extends StatefulWidget {
 
 class _ReviewsPageState extends State<ReviewsPage> {
   String _activeFilter = 'All Reviews';
-  final List<String> _filterOptions = ['All Reviews', '5 ★', '4 ★', '3 ★', '2 ★', '1 ★'];
+  final List<String> _filterOptions = [
+    'All Reviews',
+    '5 ★',
+    '4 ★',
+    '3 ★',
+    '2 ★',
+    '1 ★',
+  ];
   late List<Review> _filteredReviews;
   String _currentSort = 'newest';
-  final List<String> _sortOptions = ['Newest', 'Oldest', 'Highest Rating', 'Lowest Rating'];
+  final List<String> _sortOptions = [
+    'Newest',
+    'Oldest',
+    'Highest Rating',
+    'Lowest Rating',
+  ];
   String? _editingReviewId;
   final _editRating = 0.obs;
   final _editCommentController = TextEditingController();
@@ -50,7 +62,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
     super.initState();
     _initialize();
   }
-  
+
   String capitalize(String value) {
     if (value.isEmpty) return value;
     return value[0].toUpperCase() + value.substring(1);
@@ -58,25 +70,29 @@ class _ReviewsPageState extends State<ReviewsPage> {
 
   Future<void> _initialize() async {
     try {
-      _logger.i('Initializing ReviewsPage...');
+      _logger.d('Initializing ReviewsPage...');
       _filteredReviews = List.from(widget.reviews);
       _sortReviews();
 
       if (!Get.isRegistered<ReviewController>()) {
         _logger.w('ReviewController not registered.');
-        Get.snackbar('Error', 'Review service not available.',
-            backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          'Error',
+          'Review service not available.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
         Get.back();
         return;
       }
       _reviewController = Get.find<ReviewController>();
-      _logger.i('ReviewController fetched successfully.');
+      _logger.d('ReviewController fetched successfully.');
 
       _currentUserId = await Get.find<AuthService>().getCurrentUserId();
       if (_currentUserId == null) {
         _logger.w('No authenticated user found');
       } else {
-        _logger.i('Current user ID: $_currentUserId');
+        _logger.d('Current user ID: $_currentUserId');
       }
 
       setState(() {
@@ -84,8 +100,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
       });
     } catch (e) {
       _logger.e('Error initializing ReviewsPage: $e');
-      Get.snackbar('Error', 'Failed to load reviews page.',
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Failed to load reviews page.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       Get.back();
     }
   }
@@ -104,7 +124,10 @@ class _ReviewsPageState extends State<ReviewsPage> {
         _filteredReviews = List.from(widget.reviews);
       } else {
         final starRating = int.parse(filter.split(' ')[0]);
-        _filteredReviews = widget.reviews.where((review) => review.rating == starRating).toList();
+        _filteredReviews =
+            widget.reviews
+                .where((review) => review.rating == starRating)
+                .toList();
       }
       _sortReviews();
     });
@@ -135,7 +158,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
       }
     } catch (e) {
       _logger.e('Error sorting reviews: $e');
-      Get.snackbar('Error', 'Failed to sort reviews.', backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Failed to sort reviews.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -155,126 +183,44 @@ class _ReviewsPageState extends State<ReviewsPage> {
     });
   }
 
- Future<void> _submitEditedReview(String reviewId) async {
-  if (_editRating.value == 0) {
-    Get.snackbar(
-      'Error',
-      'Please select a rating',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-    return;
-  }
-  
-  if (_isSubmitting.value) return;
-  _isSubmitting.value = true;
-
-  try {
-    final updates = {
-      'rating': _editRating.value,
-      'content': _editCommentController.text.isNotEmpty ? _editCommentController.text : null,
-    };
-
-    bool success = await _reviewController!.updateReview(reviewId, updates);
-    if (success) {
-      setState(() {
-        _editingReviewId = null;
-        _editRating.value = 0;
-        _editCommentController.clear();
-        _filteredReviews = List.from(_reviewController!.reviews);
-        _sortReviews();
-      });
+  Future<void> _submitEditedReview(String reviewId) async {
+    if (_editRating.value == 0) {
+      Get.snackbar(
+        'Error',
+        'Please select a rating',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
     }
-  } catch (e) {
-    _logger.e('Error updating review: $e');
-    Get.snackbar(
-      'Error',
-      'Failed to update review.',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
-  } finally {
-    _isSubmitting.value = false;
-  }
-}
 
-Future<void> _deleteReview(String reviewId) async {
-  if (_isSubmitting.value) return;
-  final confirm = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Delete Review'),
-      content: const Text('Are you sure you want to delete this review?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Delete', style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    ),
-  );
-
-  if (confirm == true) {
+    if (_isSubmitting.value) return;
     _isSubmitting.value = true;
+
     try {
-      final deletedReview = _reviewController!.reviews.firstWhere((r) => r.id == reviewId);
-      bool success = await _reviewController!.deleteReview(reviewId);
+      final updates = {
+        'rating': _editRating.value,
+        'content':
+            _editCommentController.text.isNotEmpty
+                ? _editCommentController.text
+                : null,
+      };
+
+      bool success = await _reviewController!.updateReview(reviewId, updates);
       if (success) {
         setState(() {
+          _editingReviewId = null;
+          _editRating.value = 0;
+          _editCommentController.clear();
           _filteredReviews = List.from(_reviewController!.reviews);
           _sortReviews();
         });
-
-        if (mounted) {
-          // Removed success message but kept the undo functionality
-          Get.snackbar(
-            'Error',
-            'Review deleted',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-            mainButton: TextButton(
-              child: const Text('Undo', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              onPressed: () async {
-                _isSubmitting.value = true;
-                try {
-                  await _reviewController!.addReview(widget.product.id, deletedReview);
-                  await _reviewController!.fetchReviews(widget.product.id);
-                  setState(() {
-                    _filteredReviews = List.from(_reviewController!.reviews);
-                    _sortReviews();
-                  });
-                } catch (e) {
-                  _logger.e('Error undoing delete: $e');
-                  Get.snackbar(
-                    'Error',
-                    'Failed to restore review.',
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                  );
-                } finally {
-                  _isSubmitting.value = false;
-                }
-              },
-            ),
-          );
-        }
-      } else {
-        Get.snackbar(
-          'Error',
-          'Failed to delete review.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
       }
     } catch (e) {
-      _logger.e('Error deleting review: $e');
+      _logger.e('Error updating review: $e');
       Get.snackbar(
         'Error',
-        'Failed to delete review.',
+        'Failed to update review.',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
@@ -282,14 +228,112 @@ Future<void> _deleteReview(String reviewId) async {
       _isSubmitting.value = false;
     }
   }
-}
+
+  Future<void> _deleteReview(String reviewId) async {
+    if (_isSubmitting.value) return;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Review'),
+            content: const Text('Are you sure you want to delete this review?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (confirm == true) {
+      _isSubmitting.value = true;
+      try {
+        final deletedReview = _reviewController!.reviews.firstWhere(
+          (r) => r.id == reviewId,
+        );
+        bool success = await _reviewController!.deleteReview(reviewId);
+        if (success) {
+          setState(() {
+            _filteredReviews = List.from(_reviewController!.reviews);
+            _sortReviews();
+          });
+
+          if (mounted) {
+            // Removed success message but kept the undo functionality
+            Get.snackbar(
+              'Error',
+              'Review deleted',
+              backgroundColor: Colors.red,
+              colorText: Colors.white,
+              mainButton: TextButton(
+                child: const Text(
+                  'Undo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onPressed: () async {
+                  _isSubmitting.value = true;
+                  try {
+                    await _reviewController!.addReview(
+                      widget.product.id,
+                      deletedReview,
+                    );
+                    await _reviewController!.fetchReviews(widget.product.id);
+                    setState(() {
+                      _filteredReviews = List.from(_reviewController!.reviews);
+                      _sortReviews();
+                    });
+                  } catch (e) {
+                    _logger.e('Error undoing delete: $e');
+                    Get.snackbar(
+                      'Error',
+                      'Failed to restore review.',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                    );
+                  } finally {
+                    _isSubmitting.value = false;
+                  }
+                },
+              ),
+            );
+          }
+        } else {
+          Get.snackbar(
+            'Error',
+            'Failed to delete review.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      } catch (e) {
+        _logger.e('Error deleting review: $e');
+        Get.snackbar(
+          'Error',
+          'Failed to delete review.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      } finally {
+        _isSubmitting.value = false;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_reviewController == null) {
@@ -303,7 +347,11 @@ Future<void> _deleteReview(String reviewId) async {
       appBar: AppBar(
         title: const Text(
           'Customer Reviews',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -322,14 +370,15 @@ Future<void> _deleteReview(String reviewId) async {
                 const Text('Failed to load reviews'),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => _reviewController!.fetchReviews(widget.product.id),
+                  onPressed:
+                      () => _reviewController!.fetchReviews(widget.product.id),
                   child: const Text('Retry'),
                 ),
               ],
             ),
           );
         }
-        
+
         // Use CustomScrollView since ReviewList is likely a Sliver widget
         return CustomScrollView(
           slivers: [
@@ -342,17 +391,20 @@ Future<void> _deleteReview(String reviewId) async {
                     averageRating: widget.averageRating,
                     reviews: widget.reviews,
                   ),
-                  
+
                   // Filter options
                   ReviewFilter(
                     activeFilter: _activeFilter,
                     filterOptions: _filterOptions,
                     onFilterSelected: _applyFilter,
                   ),
-                  
+
                   // Sort dropdown
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -384,35 +436,52 @@ Future<void> _deleteReview(String reviewId) async {
                             onSelected: (String newSort) {
                               _applySorting(newSort);
                             },
-                            itemBuilder: (context) => _sortOptions.map((String option) {
-                              bool isSelected = option.toLowerCase() == _currentSort;
-                              return PopupMenuItem<String>(
-                                value: option,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        option,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: 'Poppins',
-                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                                          color: isSelected ? Theme.of(context).primaryColor : null,
+                            itemBuilder:
+                                (context) =>
+                                    _sortOptions.map((String option) {
+                                      bool isSelected =
+                                          option.toLowerCase() == _currentSort;
+                                      return PopupMenuItem<String>(
+                                        value: option,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                option,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontFamily: 'Poppins',
+                                                  fontWeight:
+                                                      isSelected
+                                                          ? FontWeight.w600
+                                                          : FontWeight.normal,
+                                                  color:
+                                                      isSelected
+                                                          ? Theme.of(
+                                                            context,
+                                                          ).primaryColor
+                                                          : null,
+                                                ),
+                                              ),
+                                            ),
+                                            if (isSelected)
+                                              Icon(
+                                                Icons.check,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).primaryColor,
+                                                size: 18,
+                                              ),
+                                          ],
                                         ),
-                                      ),
-                                    ),
-                                    if (isSelected)
-                                      Icon(
-                                        Icons.check,
-                                        color: Theme.of(context).primaryColor,
-                                        size: 18,
-                                      ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
+                                      );
+                                    }).toList(),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -440,26 +509,28 @@ Future<void> _deleteReview(String reviewId) async {
                 ],
               ),
             ),
-            
+
             // Show Empty State or Review List
-            _filteredReviews.isEmpty 
+            _filteredReviews.isEmpty
                 ? SliverFillRemaining(
-                    child: EmptyState(product: widget.product),
-                  )
-                : ReviewList(  // This should be a Sliver widget
-                    reviews: _filteredReviews,
-                    editingReviewId: _editingReviewId,
-                    currentUserId: _currentUserId,
-                    reviewController: _reviewController!,
-                    editRating: _editRating,
-                    editCommentController: _editCommentController,
-                    editCommentFocusNode: _editCommentFocusNode, // Added the required parameter
-                    isSubmitting: _isSubmitting,
-                    onEdit: _startEditingReview,
-                    onDelete: _deleteReview,
-                    onSubmitEdit: _submitEditedReview,
-                    onCancelEdit: _cancelEditing,
-                  ),
+                  child: EmptyState(product: widget.product),
+                )
+                : ReviewList(
+                  // This should be a Sliver widget
+                  reviews: _filteredReviews,
+                  editingReviewId: _editingReviewId,
+                  currentUserId: _currentUserId,
+                  reviewController: _reviewController!,
+                  editRating: _editRating,
+                  editCommentController: _editCommentController,
+                  editCommentFocusNode:
+                      _editCommentFocusNode, // Added the required parameter
+                  isSubmitting: _isSubmitting,
+                  onEdit: _startEditingReview,
+                  onDelete: _deleteReview,
+                  onSubmitEdit: _submitEditedReview,
+                  onCancelEdit: _cancelEditing,
+                ),
           ],
         );
       }),

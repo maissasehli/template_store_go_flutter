@@ -12,15 +12,19 @@ class CartRepository {
   Future<List<CartItem>> getCartItems() async {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart';
-      _logger.i('Fetching cart items from: $fullUrl');
+      _logger.d('Fetching cart items from: $fullUrl');
       final response = await _apiClient.get('/products/cart');
 
       if (response.statusCode == 200) {
         final data = response.data['data'] as List? ?? [];
-        return data.map((item) => CartItem.fromJson(item as Map<String, dynamic>)).toList();
+        return data
+            .map((item) => CartItem.fromJson(item as Map<String, dynamic>))
+            .toList();
       } else if (response.statusCode == 405) {
         _logger.w('Method not allowed for $fullUrl (status: 405)');
-        throw Exception('Server does not allow GET request for cart. Check server routes.');
+        throw Exception(
+          'Server does not allow GET request for cart. Check server routes.',
+        );
       } else {
         _logger.w('Cart endpoint returned ${response.statusCode}');
         throw Exception('Failed to load cart items: ${response.statusCode}');
@@ -34,10 +38,8 @@ class CartRepository {
   Future<void> addToCart(CartItem item) async {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart/${item.productId}';
-      _logger.i('Adding to cart at: $fullUrl');
-      final data = {
-        'quantity': item.quantity,
-      };
+      _logger.d('Adding to cart at: $fullUrl');
+      final data = {'quantity': item.quantity};
       if (item.variantId.isNotEmpty) {
         data['variantId'] = item.variantId as int;
       }
@@ -51,7 +53,7 @@ class CartRepository {
   Future<void> removeFromCart(String productId) async {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart/$productId';
-      _logger.i('Removing from cart at: $fullUrl');
+      _logger.d('Removing from cart at: $fullUrl');
       await _apiClient.delete('/products/cart/$productId');
     } catch (e) {
       _logger.e('Failed to remove item from cart: $e');
@@ -62,12 +64,12 @@ class CartRepository {
   Future<void> updateCartItem(CartItem item) async {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart/${item.productId}';
-      _logger.i('Updating cart item at: $fullUrl');
-      final data = {
-        'quantity': item.quantity,
-      };
+      _logger.d('Updating cart item at: $fullUrl');
+      final data = {'quantity': item.quantity};
       if (item.variantId.isNotEmpty) {
-        data['variantId'] = item.variantId as int; // Send as String (or int.parse(item.variantId) if int is required)
+        data['variantId'] =
+            item.variantId
+                as int; // Send as String (or int.parse(item.variantId) if int is required)
       }
       await _apiClient.put('/products/cart/${item.productId}', data: data);
     } catch (e) {
@@ -79,7 +81,7 @@ class CartRepository {
   Future<void> clearCart() async {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart';
-      _logger.i('Clearing cart at: $fullUrl');
+      _logger.d('Clearing cart at: $fullUrl');
       await _apiClient.delete('/products/cart');
     } catch (e) {
       _logger.e('Failed to clear cart: $e');
@@ -90,8 +92,11 @@ class CartRepository {
   Future<double> applyCoupon(String couponCode) async {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart/coupon';
-      _logger.i('Applying coupon at: $fullUrl');
-      final response = await _apiClient.post('/products/cart/coupon', data: {'code': couponCode});
+      _logger.d('Applying coupon at: $fullUrl');
+      final response = await _apiClient.post(
+        '/products/cart/coupon',
+        data: {'code': couponCode},
+      );
       if (response.statusCode == 200) {
         return (response.data['data']['discount'] ?? 0.0).toDouble();
       }

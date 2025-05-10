@@ -2,12 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:store_go/app/core/services/activity_detector.dart';
+import 'package:store_go/app/core/services/connection_service.dart';
 import 'package:store_go/app/core/services/pusher_service.dart';
 import 'package:store_go/app/di/initializer.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/di/lifecycle_observer.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/core/config/main_routes.dart';
+import 'package:store_go/app/shared/widgets/connection_banner.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,9 @@ Future<void> main() async {
   // Initialize lifecycle observer
   Get.put(LifecycleObserver());
 
+  // Initialize services
+  await Get.putAsync(() => ConnectionService().init());
+
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar'), Locale('fr')],
@@ -33,9 +38,9 @@ Future<void> main() async {
     ),
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +52,7 @@ class MyApp extends StatelessWidget {
       builder: (themeController) {
         return ActivityDetector(
           child: GetMaterialApp(
-            navigatorKey: pusherService.navigatorKey, 
+            navigatorKey: pusherService.navigatorKey,
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
@@ -57,6 +62,12 @@ class MyApp extends StatelessWidget {
             darkTheme: themeController.theme,
             themeMode: themeController.themeMode,
             getPages: routes,
+            builder: (context, child) {
+              return ConnectionBannerWrapper(
+                considerStatusBar: true,
+                child: child ?? const SizedBox(),
+              );
+            },
           ),
         );
       },

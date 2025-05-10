@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/services/connection_service.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
@@ -48,7 +49,8 @@ class HomeScreen extends StatelessWidget {
 
             // Search bar
             CustomSearchBar(
-              onSearch: (query) => controller.productController.searchProducts(query),
+              onSearch:
+                  (query) => controller.productController.searchProducts(query),
             ),
 
             const SizedBox(height: UIConfig.paddingMedium),
@@ -94,8 +96,11 @@ class HomeScreen extends StatelessWidget {
 
         return CategoryFilter(
           categories: controller.categoryController.categories,
-          selectedCategoryId: controller.categoryController.selectedCategoryId.value,
-          onCategorySelected: (categoryId) => controller.categoryController.selectCategoryById(categoryId),
+          selectedCategoryId:
+              controller.categoryController.selectedCategoryId.value,
+          onCategorySelected:
+              (categoryId) =>
+                  controller.categoryController.selectCategoryById(categoryId),
         );
       }),
     );
@@ -114,7 +119,9 @@ class HomeScreen extends StatelessWidget {
       return ProductGrid(
         products: controller.productController.featuredProducts,
         onProductTap: (productId) => controller.onProductTap(productId),
-        onFavoriteTap: (productId) => controller.productController.toggleFavorite(productId),
+        onFavoriteTap:
+            (productId) =>
+                controller.productController.toggleFavorite(productId),
         isHorizontal: true,
       );
     });
@@ -133,7 +140,9 @@ class HomeScreen extends StatelessWidget {
       return ProductGrid(
         products: controller.productController.newProducts,
         onProductTap: (productId) => controller.onProductTap(productId),
-        onFavoriteTap: (productId) => controller.productController.toggleFavorite(productId),
+        onFavoriteTap:
+            (productId) =>
+                controller.productController.toggleFavorite(productId),
         isHorizontal: true,
       );
     });

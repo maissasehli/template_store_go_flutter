@@ -16,7 +16,7 @@ class ProfileController extends GetxController {
 
   // Constructor with dependency injection
   ProfileController({required ProfileRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -33,7 +33,7 @@ class ProfileController extends GetxController {
 
       final userData = await _repository.getCurrentUser();
       user.value = userData;
-      logger.i('User data fetched successfully: ${user.value?.name}');
+      logger.d('User data fetched successfully: ${user.value?.name}');
     } catch (e) {
       logger.e('Error fetching user: $e');
       hasError.value = true;
@@ -52,7 +52,7 @@ class ProfileController extends GetxController {
 
       final updatedUser = await _repository.updateProfile(userData);
       user.value = updatedUser;
-      logger.i('Profile updated successfully');
+      logger.d('Profile updated successfully');
     } catch (e) {
       logger.e('Error updating profile: $e');
       hasError.value = true;
@@ -71,7 +71,7 @@ class ProfileController extends GetxController {
 
       final updatedUser = await _repository.uploadAvatar(imageFile);
       user.value = updatedUser;
-      logger.i('Avatar uploaded successfully');
+      logger.d('Avatar uploaded successfully');
     } catch (e) {
       logger.e('Error uploading avatar: $e');
       hasError.value = true;

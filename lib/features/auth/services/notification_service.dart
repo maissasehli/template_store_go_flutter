@@ -8,7 +8,7 @@ class NotificationService {
 
   // Show success notification
   void showSuccess(String message) {
-    _logger.i('Success: $message');
+    _logger.d('Success: $message');
     _showSnackbar(
       message: message,
       backgroundColor: Colors.green,
@@ -39,7 +39,7 @@ class NotificationService {
 
   // Show info notification
   void showInfo(String message) {
-    _logger.i('Info: $message');
+    _logger.d('Info: $message');
     _showSnackbar(
       message: message,
       backgroundColor: Colors.blue,
@@ -95,7 +95,7 @@ class NotificationService {
     String confirmButtonText = 'OK',
     VoidCallback? onConfirm,
   }) {
-    _logger.i('Alert dialog: $title - $message');
+    _logger.d('Alert dialog: $title - $message');
 
     Get.dialog(
       AlertDialog(
@@ -125,7 +125,7 @@ class NotificationService {
     required Function() onConfirm,
     Function()? onCancel,
   }) {
-    _logger.i('Confirm dialog: $title - $message');
+    _logger.d('Confirm dialog: $title - $message');
 
     Get.dialog(
       AlertDialog(

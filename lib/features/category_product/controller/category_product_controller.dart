@@ -249,7 +249,7 @@ class CategoryProductController extends GetxController {
       categoryProducts.assignAll(products);
       filteredProducts.assignAll(products);
 
-      _logger.i('Applied filters: ${products.length} products found');
+      _logger.d('Applied filters: ${products.length} products found');
     } catch (e) {
       hasError.value = true;
       errorMessage.value = 'Failed to apply filters: $e';

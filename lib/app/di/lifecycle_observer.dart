@@ -1,4 +1,3 @@
-
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -47,7 +46,7 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
     if (!isLoggedIn) return;
 
     if (state == AppLifecycleState.resumed) {
-      _logger.i("App lifecycle: RESUMED");
+      _logger.d("App lifecycle: RESUMED");
       // Initialize Pusher if needed when app is resumed
       await _initializePusherIfNeeded();
 
@@ -55,14 +54,14 @@ class LifecycleObserver extends GetxController with WidgetsBindingObserver {
       await _pusherService.setAppForegroundState(true);
     } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      _logger.i(
+      _logger.d(
         "App lifecycle: ${state == AppLifecycleState.paused ? 'PAUSED' : 'INACTIVE'}",
       );
 
       // Update app foreground state to false (app is in background)
       await _pusherService.setAppForegroundState(false);
     } else if (state == AppLifecycleState.detached) {
-      _logger.i("App lifecycle: DETACHED");
+      _logger.d("App lifecycle: DETACHED");
 
       // Update app foreground state to false before disconnecting
       await _pusherService.setAppForegroundState(false);

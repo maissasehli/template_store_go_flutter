@@ -18,24 +18,24 @@ class TokenManager {
     final userId = session['userId'];
 
     await _secureStorage.write(key: 'access_token', value: accessToken);
-    _logger.i('access_token saved');
+    _logger.d('access_token saved');
 
     await _secureStorage.write(key: 'refresh_token', value: refreshToken);
-    _logger.i('refresh_token saved');
+    _logger.d('refresh_token saved');
 
     await _secureStorage.write(key: 'expires_at', value: expiresAt);
-    _logger.i('expires_at saved');
+    _logger.d('expires_at saved');
 
     if (userId != null) {
       await _secureStorage.write(key: 'user_id', value: userId);
-      _logger.i('user_id saved');
+      _logger.d('user_id saved');
     }
   }
 
   // Save additional user data
   Future<void> saveUserData(String key, String value) async {
     await _secureStorage.write(key: key, value: value);
-    _logger.i('$key saved');
+    _logger.d('$key saved');
   }
 
   // Get access token
@@ -56,7 +56,7 @@ class TokenManager {
   // Clear all stored tokens
   Future<void> clearAllTokens() async {
     await _secureStorage.deleteAll();
-    _logger.i('All tokens cleared');
+    _logger.d('All tokens cleared');
   }
 
   // Check if we have a valid access token
@@ -85,17 +85,17 @@ class TokenManager {
 
       // If token is already expired, try to refresh it
       if (now.isAfter(expiresAt)) {
-        _logger.i('Token expired, attempting refresh');
+        _logger.d('Token expired, attempting refresh');
         return await refreshToken();
       }
 
       // Refresh if less than 5 minutes until expiration
       if (expiresAt.difference(now).inMinutes < 5) {
-        _logger.i('Token expiring soon, attempting refresh');
+        _logger.d('Token expiring soon, attempting refresh');
         return await refreshToken();
       }
 
-      _logger.i('Token is valid');
+      _logger.d('Token is valid');
       return true;
     } catch (e) {
       _logger.e('Error checking token expiration: $e');
@@ -110,7 +110,7 @@ class TokenManager {
       try {
         // Get the CURRENT refresh token
         final refreshToken = await _secureStorage.read(key: 'refresh_token');
-        _logger.i('Refresh token: $refreshToken');
+        _logger.d('Refresh token: $refreshToken');
 
         if (refreshToken == null) return false;
 
@@ -144,7 +144,7 @@ class TokenManager {
             _secureStorage.write(key: 'expires_at', value: expiresAt),
           ]);
 
-          _logger.i('Token refreshed successfully');
+          _logger.d('Token refreshed successfully');
           return true;
         }
         return false;

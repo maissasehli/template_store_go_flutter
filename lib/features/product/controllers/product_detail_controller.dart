@@ -29,8 +29,10 @@ class ProductDetailController extends GetxController {
         forceRefresh: true,
       );
 
-      _logger.i('Fetched product: ${product.toJson()}');
-      _logger.i('Product reviews: ${product.reviews.map((r) => r.toJson()).toList()}');
+      _logger.d('Fetched product: ${product.toJson()}');
+      _logger.d(
+        'Product reviews: ${product.reviews.map((r) => r.toJson()).toList()}',
+      );
       state.setProduct(product);
 
       _initializeProductOptions();
@@ -41,27 +43,27 @@ class ProductDetailController extends GetxController {
       state.setLoading(false);
     }
   }
-  
+
   void _initializeProductOptions() {
     final product = state.product.value;
     if (product == null) return;
 
-    _logger.i('Product: ${product.name}, Variants: ${product.variants}');
-    
-    if (product.variants.containsKey('color') && 
+    _logger.d('Product: ${product.name}, Variants: ${product.variants}');
+
+    if (product.variants.containsKey('color') &&
         product.variants['color']!.isNotEmpty) {
       final defaultColor = product.variants['color']![0];
-      _logger.i('Setting default color: $defaultColor');
+      _logger.d('Setting default color: $defaultColor');
       state.setSelectedColor(defaultColor);
     } else {
       _logger.w('No colors available for this product');
       state.setSelectedColor('');
     }
 
-    if (product.variants.containsKey('size') && 
+    if (product.variants.containsKey('size') &&
         product.variants['size']!.isNotEmpty) {
       final defaultSize = product.variants['size']![0];
-      _logger.i('Setting default size: $defaultSize');
+      _logger.d('Setting default size: $defaultSize');
       state.setSelectedSize(defaultSize);
     } else {
       _logger.w('No sizes available for this product');
@@ -131,24 +133,28 @@ class ProductDetailController extends GetxController {
     try {
       // Add review through ReviewRepository
       final success = await _reviewRepository.createReview(productId, review);
-      
+
       if (success) {
         // Update the product with the new review
         final updatedReviews = [...state.product.value!.reviews, review];
-        final updatedProduct = state.product.value!.copyWith(reviews: updatedReviews);
-        
+        final updatedProduct = state.product.value!.copyWith(
+          reviews: updatedReviews,
+        );
+
         // Update the state with the new product data
         state.setProduct(updatedProduct);
-        
-        _logger.i('Review added: ${review.toJson()}');
+
+        _logger.d('Review added: ${review.toJson()}');
         Get.snackbar('Success', 'Review submitted successfully');
       } else {
         _logger.w('Review saved offline, will be synced later');
         Get.snackbar('Info', 'Review saved offline and will be synced later');
-        
+
         // We can still update the UI optimistically
         final updatedReviews = [...state.product.value!.reviews, review];
-        final updatedProduct = state.product.value!.copyWith(reviews: updatedReviews);
+        final updatedProduct = state.product.value!.copyWith(
+          reviews: updatedReviews,
+        );
         state.setProduct(updatedProduct);
       }
     } catch (e) {

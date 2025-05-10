@@ -32,22 +32,22 @@ class SplashScreenState extends State<SplashScreen> {
 
       // Check if user is authenticated AND token is still valid
       final isAuthenticated = await authService.isAuthenticated();
-      Logger().i("Checking if user is authenticated: $isAuthenticated");
+      Logger().d("Checking if user is authenticated: $isAuthenticated");
 
       if (isAuthenticated) {
         // If authenticated, check if token is valid
         final hasValidToken = await tokenManager.checkAndRefreshTokenIfNeeded();
-        Logger().i("Checking if token is valid: $hasValidToken");
+        Logger().d("Checking if token is valid: $hasValidToken");
 
         if (hasValidToken) {
           // User is authenticated with valid token, go to main app
-          Logger().i(
+          Logger().d(
             "User is authenticated with valid token, going to main container",
           );
           return Get.offAllNamed(AppRoute.mainContainer);
         } else {
           // Token is invalid and couldn't be refreshed
-          Logger().i("Token invalid and couldn't be refreshed, going to login");
+          Logger().d("Token invalid and couldn't be refreshed, going to login");
           return Get.offAllNamed(AppRoute.login);
         }
       }
@@ -58,7 +58,7 @@ class SplashScreenState extends State<SplashScreen> {
       final hasSelectedLanguage = await StorageService.hasSelectedLanguage();
       if (!hasSelectedLanguage) {
         // First-time user, show language selection
-        Logger().i("First-time user, showing language selection");
+        Logger().d("First-time user, showing language selection");
         return Get.offAllNamed(AppRoute.language);
       }
 
@@ -66,12 +66,12 @@ class SplashScreenState extends State<SplashScreen> {
       final hasSeenOnboarding = await StorageService.hasSeenOnboarding();
       if (!hasSeenOnboarding) {
         // User has selected language but not completed onboarding
-        Logger().i("User needs to complete onboarding");
+        Logger().d("User needs to complete onboarding");
         return Get.offAllNamed(AppRoute.onBoarding);
       }
 
       // If we reach here, user is not authenticated but has completed onboarding
-      Logger().i("User not authenticated, going to login");
+      Logger().d("User not authenticated, going to login");
       return Get.offAllNamed(AppRoute.login);
     } catch (e, stackTrace) {
       Logger().e("Error in _checkNavigation: $e");
@@ -79,20 +79,20 @@ class SplashScreenState extends State<SplashScreen> {
       // Fallback navigation in case of error
       Get.offAllNamed(AppRoute.login);
     }
-  } 
-  
+  }
+
   // function that logs all storage properties to the console using Logger()
 
   void _logStorageProperties() async {
-    Logger().i("Storage properties:");
-    Logger().i(
+    Logger().d("Storage properties:");
+    Logger().d(
       "hasSelectedLanguage: ${await StorageService.hasSelectedLanguage()}",
     );
-    Logger().i(
+    Logger().d(
       "hasSeenOnboarding: ${await StorageService.hasSeenOnboarding()}",
     );
-    Logger().i("isAuthenticated: ${await authService.isAuthenticated()}");
-    Logger().i("selectedLanguage: ${await StorageService.getSavedLocale()}");
+    Logger().d("isAuthenticated: ${await authService.isAuthenticated()}");
+    Logger().d("selectedLanguage: ${await StorageService.getSavedLocale()}");
   }
 
   @override

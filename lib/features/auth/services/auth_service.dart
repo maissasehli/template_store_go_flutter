@@ -85,7 +85,7 @@ class AuthService {
 
       // Proceed with sign-out
       await _tokenManager.clearAllTokens();
-      _logger.i('Log out successful');
+      _logger.d('Log out successful');
       Get.offAllNamed(AppRoute.login);
     } catch (e) {
       _logger.e('Failed to log out: $e');
@@ -108,13 +108,14 @@ class AuthService {
 
       // Decode the JWT to extract user ID
       final decodedToken = JwtDecoder.decode(accessToken);
-      final userId = decodedToken['sub']?.toString() ?? decodedToken['id']?.toString();
+      final userId =
+          decodedToken['sub']?.toString() ?? decodedToken['id']?.toString();
       if (userId == null) {
         _logger.w('User ID not found in JWT payload');
         return null;
       }
 
-      _logger.i('Retrieved user ID: $userId');
+      _logger.d('Retrieved user ID: $userId');
       return userId;
     } catch (e) {
       _logger.e('Error decoding JWT for user ID: $e');
