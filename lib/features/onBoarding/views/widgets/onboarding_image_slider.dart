@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/services/enhanced_image_cache.dart';
 
@@ -8,11 +8,11 @@ class OnboardingImageSlider extends StatefulWidget {
   final Function(int) onPageChanged;
 
   const OnboardingImageSlider({
-    Key? key,
+    super.key,
     required this.imagePaths,
     required this.currentIndex,
     required this.onPageChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<OnboardingImageSlider> createState() => _OnboardingImageSliderState();
@@ -30,9 +30,16 @@ class _OnboardingImageSliderState extends State<OnboardingImageSlider> {
   void initState() {
     super.initState();
     _pageController = PageController(
-      initialPage: widget.currentIndex,
-      viewportFraction: 0.90, // Fine-tuned for better centering
+      initialPage: 1, // Changed from widget.currentIndex to 1 (second image)
+      viewportFraction: 0.90, // Reduced to show more of adjacent slides
     );
+
+    // Force the controller to properly initialize layout after a frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {}); // Trigger rebuild after layout is complete
+      // Notify parent about the initial index
+      widget.onPageChanged(1);
+    });
   }
 
   @override
@@ -57,10 +64,10 @@ class _OnboardingImageSliderState extends State<OnboardingImageSlider> {
   Widget build(BuildContext context) {
     // Get screen width to calculate width
     final screenWidth = MediaQuery.of(context).size.width;
-    // Make the image width match viewport fraction
+    // Make the image width match viewport fraction (matching the 0.75 in PageController)
     final imageWidth = screenWidth * 0.90;
     // Use 9:16 aspect ratio
-    final imageHeight = imageWidth * 9 / 16;
+    final imageHeight = imageWidth * 9 / 14;
 
     // Calculate additional padding needed for scale transform
     final scaleFactor = 1.0;
@@ -73,6 +80,7 @@ class _OnboardingImageSliderState extends State<OnboardingImageSlider> {
         scale: scaleFactor,
         child: SizedBox(
           height: imageHeight + 60,
+          width: screenWidth,
           // Use ClipRect to ensure no overflow
           child: ClipRect(
             child: PageView.builder(
@@ -80,6 +88,7 @@ class _OnboardingImageSliderState extends State<OnboardingImageSlider> {
               itemCount: widget.imagePaths.length,
               onPageChanged: widget.onPageChanged,
               padEnds: true, // Enable padding for better centering
+              pageSnapping: true, // Ensure pages snap properly
               physics:
                   const BouncingScrollPhysics(), // Add bouncy physics for better feel
               itemBuilder: (context, index) {
@@ -93,7 +102,7 @@ class _OnboardingImageSliderState extends State<OnboardingImageSlider> {
                     }
 
                     // Reduce the scale difference so inactive images are more visible
-                    final double scaleFactor = 1.0 - (value * 0.20);
+                    final double scaleFactor = 1.0 - (value * 0.25);
 
                     return Center(
                       child: Transform.scale(
@@ -101,18 +110,17 @@ class _OnboardingImageSliderState extends State<OnboardingImageSlider> {
                         child: AnimatedOpacity(
                           duration: const Duration(milliseconds: 300),
                           opacity: 1.0 - (value * 0.4),
-                            child: Container(
-                            // Remove negative margin and use zero margin instead
-                            margin: EdgeInsets.zero,
-                            alignment: Alignment.bottomCenter, // Added alignment
+                          child: Container(
+                            alignment:
+                                Alignment.bottomCenter, // Added alignment
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: FutureBuilder<bool>(
                               future: Future.value(
-                              enhancedCache.isImageCached(
-                                widget.imagePaths[index],
-                              ),
+                                enhancedCache.isImageCached(
+                                  widget.imagePaths[index],
+                                ),
                               ),
                               builder: (context, snapshot) {
                                 final isCached = snapshot.data ?? false;

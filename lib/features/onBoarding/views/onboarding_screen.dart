@@ -99,110 +99,106 @@ class _OnboardingState extends State<Onboarding> {
                   right: -30,
                   rotationAngle: -18,
                 ),
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 60.0),
-                      OnboardingImageSlider(
-                        imagePaths: [
-                          page.mainImage,
-                          page.leftImage,
-                          page.rightImage,
-                        ],
-                        currentIndex: 0,
-                        onPageChanged: (imageIndex) {},
-                      ),
-                      const SizedBox(height: 40.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              page.mainTitle,
-                              style: const TextStyle(
-                                fontSize: 32.0,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
-                              ),
+                Column(
+                  children: [
+                    const SizedBox(height: 60.0),
+                    OnboardingImageSlider(
+                      imagePaths: [
+                        page.mainImage,
+                        page.leftImage,
+                        page.rightImage,
+                      ],
+                      currentIndex: 0,
+                      onPageChanged: (imageIndex) {},
+                    ),
+                    const SizedBox(height: 60.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            page.mainTitle,
+                            style: const TextStyle(
+                              fontSize: 32.0,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.white,
                             ),
-                            Text(
-                              page.boldTitle,
-                              style: const TextStyle(
-                                fontSize: 32.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                          ),
+                          Text(
+                            page.boldTitle,
+                            style: const TextStyle(
+                              fontSize: 32.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                            const SizedBox(height: 16.0),
-                            Text(
-                              page.subtitle,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.white70,
-                              ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Text(
+                            page.subtitle,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.white70,
                             ),
-                            const SizedBox(height: 80.0),
-                            Obx(
-                              () => ElevatedButton(
-                                onPressed: () {
-                                  if (_currentPage.value <
-                                      OnboardingStatic.pages.length - 1) {
-                                    _pageController.nextPage(
-                                      duration: const Duration(
-                                        milliseconds: 300,
-                                      ),
-                                      curve: Curves.easeInOut,
-                                    );
-                                  } else {
-                                    controller.navigateToLogin();
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: Colors.black,
-                                  minimumSize: const Size(double.infinity, 56),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(28),
-                                  ),
+                          ),
+                          const SizedBox(height: 80.0),
+                          Obx(
+                            () => ElevatedButton(
+                              onPressed: () {
+                                if (_currentPage.value <
+                                    OnboardingStatic.pages.length - 1) {
+                                  _pageController.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                } else {
+                                  controller.navigateToLogin();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.black,
+                                minimumSize: const Size(double.infinity, 56),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
                                 ),
-                                child: Text(
-                                  _currentPage.value <
-                                          OnboardingStatic.pages.length - 1
-                                      ? 'Next'
-                                      : 'Get Started',
-                                  style: const TextStyle(
-                                    fontSize: 18,
+                              ),
+                              child: Text(
+                                _currentPage.value <
+                                        OnboardingStatic.pages.length - 1
+                                    ? 'Next'
+                                    : 'Get Started',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Already have account?',
+                                style: TextStyle(color: Colors.white60),
+                              ),
+                              TextButton(
+                                onPressed: controller.nextPage,
+                                child: const Text(
+                                  'Sign in',
+                                  style: TextStyle(
+                                    color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 10.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Already have account?',
-                                  style: TextStyle(color: Colors.white60),
-                                ),
-                                TextButton(
-                                  onPressed: controller.nextPage,
-                                  child: const Text(
-                                    'Sign in',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             );
