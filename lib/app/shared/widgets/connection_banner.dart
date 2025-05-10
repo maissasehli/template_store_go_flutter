@@ -129,18 +129,25 @@ class ConnectionBannerWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        // Connection banner
-        ConnectionBanner(
-          considerStatusBar: considerStatusBar,
-          bannerColor: bannerColor,
-          icon: icon,
-          message: message,
+        // Main content fills the entire area
+        Positioned.fill(
+          child: child,
         ),
 
-        // Main content
-        Expanded(child: child),
+        // Connection banner positioned at the top
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: ConnectionBanner(
+            considerStatusBar: considerStatusBar,
+            bannerColor: bannerColor,
+            icon: icon,
+            message: message,
+          ),
+        ),
       ],
     );
   }

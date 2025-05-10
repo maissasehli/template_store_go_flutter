@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:store_go/app/di/lifecycle_observer.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/core/config/main_routes.dart';
-import 'package:store_go/app/shared/widgets/connection_banner.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,12 +61,6 @@ class MyApp extends StatelessWidget {
             darkTheme: themeController.theme,
             themeMode: themeController.themeMode,
             getPages: routes,
-            builder: (context, child) {
-              return ConnectionBannerWrapper(
-                considerStatusBar: true,
-                child: child ?? const SizedBox(),
-              );
-            },
           ),
         );
       },

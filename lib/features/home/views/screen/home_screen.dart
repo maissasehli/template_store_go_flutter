@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/services/connection_service.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
@@ -19,7 +18,6 @@ class HomeScreen extends StatelessWidget {
   final ProfileController profileController = Get.find<ProfileController>();
 
   HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
