@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/universal_cached_image.dart';
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
 
@@ -34,25 +35,27 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: UIConfig.paddingMedium),
         width: 325,
         height: 100,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(13),
+          color: AppColors.background(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
           // Shadow appears only when the item is selected
-          boxShadow:
-              isSelected
-                  ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      offset: const Offset(0, 11),
-                      blurRadius: 24,
-                      spreadRadius: 0,
-                    ),
-                  ]
-                  : [],
-          border: Border.all(color: Colors.grey.shade200, width: 1),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.foreground(context).withOpacity(0.1),
+                    offset: const Offset(0, 11),
+                    blurRadius: 24,
+                    spreadRadius: 0,
+                  ),
+                ]
+              : [],
+          border: Border.all(
+            color: AppColors.border(context),
+            width: 1,
+          ),
         ),
         child: Row(
           children: [
@@ -72,21 +75,22 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
     return Container(
       width: 70,
       height: 70,
-      margin: const EdgeInsets.all(15),
+      margin: const EdgeInsets.all(UIConfig.paddingMedium),
       clipBehavior: Clip.hardEdge,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-      child:
-          widget.item.product.imageUrls.isNotEmpty
-              ? UniversalCachedImage(
-                imagePath: widget.item.product.imageUrls[0],
-                source: ImageSource.network,
-                width: 70,
-                height: 70,
-                fit: BoxFit.cover,
-                borderRadius: BorderRadius.circular(8),
-                errorWidget: _buildFallbackImage(),
-              )
-              : _buildFallbackImage(),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
+      ),
+      child: widget.item.product.imageUrls.isNotEmpty
+          ? UniversalCachedImage(
+              imagePath: widget.item.product.imageUrls[0],
+              source: ImageSource.network,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
+              errorWidget: _buildFallbackImage(),
+            )
+          : _buildFallbackImage(),
     );
   }
 
@@ -95,11 +99,15 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
       width: 70,
       height: 70,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
         color: AppColors.muted(context),
       ),
-      child: const Center(
-        child: Icon(Icons.image_outlined, color: Colors.grey, size: 28),
+      child: Center(
+        child: Icon(
+          Icons.image_outlined,
+          color: AppColors.mutedForeground(context),
+          size: 28,
+        ),
       ),
     );
   }
@@ -107,7 +115,7 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
   Widget _buildProductDetails() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15),
+        padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,11 +126,9 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                 // Product name
                 Text(
                   widget.item.product.name,
-                  style: const TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -130,12 +136,9 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                 // Product description
                 Text(
                   widget.item.product.description ?? 'No description',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 11,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.mutedForeground(context),
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -145,11 +148,9 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
             // Price
             Text(
               '\$${widget.item.product.price.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
-              ),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
           ],
         ),
@@ -159,25 +160,29 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
 
   Widget _buildActionsColumn() {
     return Padding(
-      padding: const EdgeInsets.only(right: 15),
+      padding: const EdgeInsets.only(right: UIConfig.paddingMedium),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Close button
           Padding(
-            padding: const EdgeInsets.only(top: 15),
+            padding: const EdgeInsets.only(top: UIConfig.paddingMedium),
             child: GestureDetector(
               onTap: () => widget.onRemove(widget.item),
               child: Container(
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: AppColors.input(context),
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
-                  child: Icon(Icons.close, size: 16, color: Colors.grey),
+                child: Center(
+                  child: Icon(
+                    Icons.close,
+                    size: 16,
+                    color: AppColors.mutedForeground(context),
+                  ),
                 ),
               ),
             ),
@@ -185,13 +190,13 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
 
           // Quantity controls
           Padding(
-            padding: const EdgeInsets.only(bottom: 15),
+            padding: const EdgeInsets.only(bottom: UIConfig.paddingMedium),
             child: Container(
               width: 90,
               height: 30,
               decoration: BoxDecoration(
-                color: const Color(0xFFEEEEEE),
-                borderRadius: BorderRadius.circular(15),
+                color: AppColors.input(context),
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -210,16 +215,17 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color:
-                            quantity > 1
-                                ? Colors.grey.shade300
-                                : Colors.grey.shade200,
+                        color: quantity > 1
+                            ? AppColors.secondary(context)
+                            : AppColors.input(context),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.remove,
                         size: 16,
-                        color: quantity > 1 ? Colors.black : Colors.grey,
+                        color: quantity > 1
+                            ? AppColors.foreground(context)
+                            : AppColors.mutedForeground(context),
                       ),
                     ),
                   ),
@@ -227,10 +233,9 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                   // Quantity
                   Text(
                     quantity.toString(),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
 
                   // Plus button
@@ -245,13 +250,13 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: AppColors.secondary(context),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.add,
                         size: 16,
-                        color: Colors.black,
+                        color: AppColors.foreground(context),
                       ),
                     ),
                   ),

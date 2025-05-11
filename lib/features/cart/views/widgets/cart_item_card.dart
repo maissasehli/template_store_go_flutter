@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItem item;
@@ -24,18 +26,29 @@ class CartItemCard extends StatelessWidget {
       confirmDismiss: (direction) async {
         final result = await Get.dialog<bool>(
           AlertDialog(
-            title: const Text('Remove Item'),
-            content: const Text(
+            title: Text(
+              'Remove Item',
+              style: TextStyle(color: AppColors.foreground(context)),
+            ),
+            backgroundColor: AppColors.background(context),
+            content: Text(
               'Are you sure you want to remove this item from your cart?',
+              style: TextStyle(color: AppColors.foreground(context)),
             ),
             actions: [
               TextButton(
                 onPressed: () => Get.back(result: false),
-                child: const Text('Cancel'),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: AppColors.muted(context)),
+                ),
               ),
               TextButton(
                 onPressed: () => Get.back(result: true),
-                child: const Text('Remove'),
+                child: Text(
+                  'Remove',
+                  style: TextStyle(color: AppColors.destructive(context)),
+                ),
               ),
             ],
           ),
@@ -52,161 +65,191 @@ class CartItemCard extends StatelessWidget {
       secondaryBackground: Container(
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(13.76),
+          color: AppColors.destructive(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(right: 20.0),
+          padding: EdgeInsets.only(right: UIConfig.paddingMedium),
           child: SvgPicture.asset(
             AssetConfig.delete,
             width: 24,
             height: 24,
-            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+            colorFilter: ColorFilter.mode(
+              AppColors.destructiveForeground(context),
+              BlendMode.srcIn,
+            ),
           ),
         ),
       ),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        height: 105.87,
+        margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
+        height: 105.87, // Consider replacing with a UIConfig value
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(13.76),
+          color: AppColors.card(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 25.41,
+              color: AppColors.foreground(context).withOpacity(0.05),
+              blurRadius: 25.41, // Consider replacing with a UIConfig value
               spreadRadius: 0,
             ),
           ],
         ),
         child: Row(
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(13.76),
-                bottomLeft: Radius.circular(13.76),
-              ),
-              child: item.image.isNotEmpty
-                  ? Image.network(
-                      item.image,
-                      width: 80,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 80,
-                          height: double.infinity,
-                          color: Colors.grey[200],
-                          child: const Icon(Icons.image_not_supported),
-                        );
-                      },
-                    )
-                  : Container(
-                      width: 80,
-                      height: double.infinity,
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.image),
-                    ),
-            ),
+            _buildProductImage(context),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      item.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (item.variantId.isNotEmpty)
-                      Text(
-                        item.variantId, // Display variantId directly
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                          fontFamily: 'Poppins',
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '\$${item.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  ],
+                padding: EdgeInsets.all(UIConfig.paddingSmall),
+                child: _buildProductDetails(context),
+              ),
+            ),
+            _buildQuantityControls(context),
+            SizedBox(width: UIConfig.marginSmall),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductImage(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(UIConfig.borderRadiusLarge),
+        bottomLeft: Radius.circular(UIConfig.borderRadiusLarge),
+      ),
+      child: item.image.isNotEmpty
+          ? Image.network(
+              item.image,
+              width: 80,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 80,
+                  height: double.infinity,
+                  color: AppColors.secondary(context),
+                  child: Icon(
+                    Icons.image_not_supported,
+                    color: AppColors.muted(context),
+                  ),
+                );
+              },
+            )
+          : Container(
+              width: 80,
+              height: double.infinity,
+              color: AppColors.secondary(context),
+              child: Icon(
+                Icons.image,
+                color: AppColors.muted(context),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildProductDetails(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          item.name,
+          style: TextStyle(
+            fontSize: UIConfig.fontSizeMedium,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        if (item.variantId.isNotEmpty)
+          Text(
+            item.variantId,
+            style: TextStyle(
+              fontSize: UIConfig.fontSizeSmall,
+              color: AppColors.mutedForeground(context),
+              fontFamily: 'Poppins',
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        SizedBox(height: UIConfig.marginSmall),
+        Text(
+          '\$${item.price.toStringAsFixed(2)}',
+          style: TextStyle(
+            fontSize: UIConfig.fontSizeMedium,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuantityControls(BuildContext context) {
+    return Container(
+      width: 74.11, // Consider replacing with a UIConfig value
+      height: 31.76, // Consider replacing with a UIConfig value
+      decoration: BoxDecoration(
+        color: AppColors.secondary(context),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildQuantityButton(
+            context,
+            icon: Icons.remove,
+            onTap: () {
+              if (item.quantity > 1) {
+                onQuantityChanged(item.quantity - 1);
+              } else {
+                onRemove();
+              }
+            },
+          ),
+          SizedBox(
+            width: 24,
+            child: Center(
+              child: Text(
+                '${item.quantity}',
+                style: TextStyle(
+                  fontSize: UIConfig.fontSizeRegular,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.foreground(context),
                 ),
               ),
             ),
-            Container(
-              width: 74.11,
-              height: 31.76,
-              decoration: BoxDecoration(
-                color: const Color(0xFFEEEEEE),
-                borderRadius: BorderRadius.circular(31.76),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (item.quantity > 1) {
-                        onQuantityChanged(item.quantity - 1); // Only decrease if quantity > 1
-                      } else {
-                        onRemove(); // Remove item if quantity would be 0
-                      }
-                    },
-                    child: const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Center(
-                        child: Icon(
-                          Icons.remove,
-                          size: 16,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 24,
-                    child: Center(
-                      child: Text(
-                        '${item.quantity}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => onQuantityChanged(item.quantity + 1),
-                    child: const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Center(
-                        child: Icon(Icons.add, size: 16, color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-          ],
+          ),
+          _buildQuantityButton(
+            context,
+            icon: Icons.add,
+            onTap: () => onQuantityChanged(item.quantity + 1),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuantityButton(
+    BuildContext context, {
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: Center(
+          child: Icon(
+            icon,
+            size: 16,
+            color: AppColors.foreground(context),
+          ),
         ),
       ),
     );

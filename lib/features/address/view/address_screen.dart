@@ -17,19 +17,18 @@ class AddressPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: Container(
           margin: EdgeInsets.only(left: UIConfig.marginMedium),
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.mutedForeground(context),
+                    color: AppColors.secondary(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(
             icon: Icon(Icons.arrow_back_ios, 
-              color: AppColors.foreground(context), 
+                    color: AppColors.secondaryForeground(context),
               size: 20),
             onPressed: () => Get.back(),
           ),
@@ -82,7 +81,7 @@ class AddressPage extends StatelessWidget {
                               child: Text(
                                 'No addresses added yet',
                                 style: TextStyle(
-                                  color: AppColors.mutedForeground(context),
+                                  color: AppColors.secondaryForeground(context),
                                   fontSize: UIConfig.fontSizeRegular,
                                   fontFamily: 'Poppins',
                                 ),
@@ -120,7 +119,7 @@ class AddressPage extends StatelessWidget {
         vertical: UIConfig.paddingMedium
       ),
       decoration: BoxDecoration(
-        color: AppColors.mutedForeground(context),
+        color: AppColors.secondaryForeground(context),
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: Row(

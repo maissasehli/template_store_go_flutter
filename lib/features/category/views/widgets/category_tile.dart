@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 
 class CategoryTile extends StatelessWidget {
@@ -10,20 +11,22 @@ class CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorExtension>()!;
+    
     return Container(
       width: double.infinity,
       height: 64,
       decoration: BoxDecoration(
-        color: AppColors.foreground(context).withOpacity(0.05),
-        borderRadius: BorderRadius.circular(8),
+        color: colors.foreground.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
             child: Row(
               children: [
                 Container(
@@ -31,21 +34,14 @@ class CategoryTile extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.card(context),
+                    color: colors.card,
                   ),
-                  child: _buildCategoryIcon(category, context),
+                  child: _buildCategoryIcon(category, context, colors),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: UIConfig.paddingMedium),
                 Text(
                   category.name,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                    height: 1.0,
-                    letterSpacing: 0,
-                    color: AppColors.foreground(context),
-                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
@@ -55,7 +51,7 @@ class CategoryTile extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryIcon(Category category, BuildContext context) {
+  Widget _buildCategoryIcon(Category category, BuildContext context, AppColorExtension colors) {
     // Check if the icon is a network URL
     if (category.imageUrl != null && category.imageUrl!.startsWith('http')) {
       return ClipOval(
@@ -67,7 +63,7 @@ class CategoryTile extends StatelessWidget {
             return Icon(
               Icons.category,
               size: 24,
-              color: AppColors.mutedForeground(context),
+              color: colors.mutedForeground,
             );
           },
         ),
@@ -84,7 +80,7 @@ class CategoryTile extends StatelessWidget {
             return Icon(
               Icons.category,
               size: 24,
-              color: AppColors.mutedForeground(context),
+              color: colors.mutedForeground,
             );
           },
         ),
@@ -95,7 +91,7 @@ class CategoryTile extends StatelessWidget {
       return Icon(
         Icons.category,
         size: 24,
-        color: AppColors.mutedForeground(context),
+        color: colors.mutedForeground,
       );
     }
   }

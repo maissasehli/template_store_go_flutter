@@ -113,7 +113,7 @@ class EditReviewForm extends StatelessWidget {
               child: TextField(
                 controller: editCommentController,
                 focusNode: editCommentFocusNode,
-                maxLines: 1, // Allow multiple lines
+                maxLines: 1,
                 textInputAction: TextInputAction.newline,
                 style: const TextStyle(
                   color: Colors.black87, 
@@ -128,7 +128,6 @@ class EditReviewForm extends StatelessWidget {
                   filled: true,
                   fillColor: Colors.grey[50],
                 ),
-                // Don't use onTap here since we're using a GestureDetector already
               ),
             ),
           ),
@@ -149,7 +148,30 @@ class EditReviewForm extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: Obx(() => ElevatedButton(
-              onPressed: isSubmitting.value ? null : () => onSubmit(review.id),
+              onPressed: isSubmitting.value ? null : () {
+                // Validation
+                if (editRating.value == 0) {
+                  Get.snackbar(
+                    'Error',
+                    'Please select a rating',
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                  return;
+                }
+                
+                if (editCommentController.text.trim().isEmpty) {
+                  Get.snackbar(
+                    'Error',
+                    'Please write a review comment',
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                  );
+                  return;
+                }
+                
+                onSubmit(review.id);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary(context),
                 foregroundColor: Colors.white,

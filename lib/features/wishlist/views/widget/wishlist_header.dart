@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 
 class WishlistHeader extends StatelessWidget {
@@ -10,9 +11,9 @@ class WishlistHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 12),
+        const SizedBox(height: UIConfig.paddingSmall),
         CustomSearchBar(onSearch: onSearch),
-        const SizedBox(height: 40),
+        const SizedBox(height: UIConfig.paddingXLarge),
       ],
     );
   }

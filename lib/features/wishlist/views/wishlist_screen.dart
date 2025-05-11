@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
@@ -50,20 +52,27 @@ class _WishlistScreenState extends State<WishlistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
-        title: const Text(
+        title: Text(
           'My Wishlist',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppColors.foreground(context),
+                fontWeight: FontWeight.w500,
+              ),
         ),
         centerTitle: true,
       ),
       body: Obx(() {
         // Show loading indicator when loading
         if (_wishlistController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary(context),
+            ),
+          );
         }
 
         // Show error message when there's an error
@@ -87,11 +96,28 @@ class _WishlistScreenState extends State<WishlistPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Error: ${_wishlistController.errorMessage.value}'),
-          const SizedBox(height: 16),
+          Text(
+            'Error: ${_wishlistController.errorMessage.value}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.destructive(context),
+                ),
+          ),
+          const SizedBox(height: UIConfig.paddingMedium),
           ElevatedButton(
             onPressed: () => _wishlistController.fetchWishlistItems(),
-            child: const Text('Retry'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+              ),
+            ),
+            child: Text(
+              'Retry',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.primaryForeground(context),
+                  ),
+            ),
           ),
         ],
       ),
@@ -107,7 +133,7 @@ class _WishlistScreenState extends State<WishlistPage> {
         // Wishlist items list
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
             child: Obx(() {
               // No items after filtering (search with no results)
               if (_wishlistController.filteredWishlistItems.isEmpty && 

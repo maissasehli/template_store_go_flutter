@@ -24,12 +24,12 @@ class AddAddressPage extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.border(context),
+                    color: AppColors.secondary(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(
             icon: Icon(Icons.arrow_back_ios, 
-              color: AppColors.foreground(context), 
+                    color: AppColors.secondaryForeground(context),
               size: 20),
             onPressed: () => Get.back(),
           ),
@@ -115,7 +115,7 @@ class AddAddressPage extends StatelessWidget {
       margin: EdgeInsets.only(bottom: UIConfig.marginSmall),
       decoration: BoxDecoration(
         color: AppColors.background(context),
-        border: Border.all(color: AppColors.border(context), width: 1),
+        border: Border.all( color: AppColors.foreground(context), width: 1),
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: TextField(

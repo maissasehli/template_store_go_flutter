@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_typography_extension.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/views/widgets/category_tile.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
@@ -12,6 +14,7 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final CategoryController controller = Get.find<CategoryController>();
+    final textStyles = Theme.of(context).extension<AppTypographyExtension>()!;
 
     return Scaffold(
       backgroundColor: AppColors.background(context),
@@ -20,14 +23,18 @@ class CategoryScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+              padding: EdgeInsets.only(
+                top: UIConfig.paddingMedium, 
+                left: UIConfig.paddingMedium, 
+                right: UIConfig.paddingMedium
+              ),
               child: Row(
                 children: [
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF4F4F4),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary(context),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -39,7 +46,7 @@ class CategoryScreen extends StatelessWidget {
                       onPressed: () => Get.back(),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: UIConfig.marginSmall),
                   Expanded(
                     child: CustomSearchBar(
                       onSearch: (query) {
@@ -54,25 +61,18 @@ class CategoryScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: UIConfig.marginLarge),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
               child: Text(
                 'Shop by Categories',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  height: 1.0,
-                  letterSpacing: 0,
-                  color: AppColors.foreground(context),
-                ),
+                style: textStyles.h5,
               ),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: UIConfig.marginLarge),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
                 child: Obx(() {
                   if (controller.isLoading.value) {
                     return Center(
@@ -87,19 +87,24 @@ class CategoryScreen extends StatelessWidget {
                         children: [
                           Text(
                             controller.errorMessage.value,
-                            style: TextStyle(
+                            style: textStyles.bodyMedium.copyWith(
                               color: AppColors.destructive(context),
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: UIConfig.marginMedium),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary(context),
                               foregroundColor: AppColors.primaryForeground(context),
                             ),
                             onPressed: controller.fetchCategories,
-                            child: const Text('Retry'),
+                            child: Text(
+                              'Retry',
+                              style: textStyles.buttonText.copyWith(
+                                color: AppColors.primaryForeground(context),
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -121,7 +126,7 @@ class CategoryScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final category = controller.filteredCategories[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
+                        padding: EdgeInsets.only(bottom: UIConfig.marginSmall),
                         child: CategoryTile(
                           category: category,
                           onTap: () => controller.selectCategory(category),

@@ -49,6 +49,7 @@ dependencies:
     git:
       url: https://github.com/AbdoPrDZ/pusher_client_fixed.git
   connectivity_plus: ^5.0.1
+  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,7 @@ dev_dependencies:
   uuid: ^4.5.1
   jwt_decoder: ^2.0.1
   logger: ^1.1.0
+  timeago: ^3.6.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

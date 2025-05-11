@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
 import 'package:store_go/features/cart/views/widgets/cart_item_card.dart';
@@ -16,11 +18,15 @@ class CartScreen extends StatelessWidget {
     final cartController = Get.find<CartController>();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       body: SafeArea(
         child: Obx(() {
           if (cartController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary(context),
+              ),
+            );
           }
 
           if (cartController.isError.value) {
@@ -28,19 +34,33 @@ class CartScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
+                  Icon(
+                    Icons.error_outline, 
+                    size: 48, 
+                    color: AppColors.destructive(context),
+                  ),
+                  SizedBox(height: UIConfig.marginMedium),
                   Text(
                     cartController.errorMessage.value.isNotEmpty
                         ? cartController.errorMessage.value
                         : 'An error occurred',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
+                    style: TextStyle(color: AppColors.destructive(context)),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: UIConfig.marginMedium),
                   ElevatedButton(
                     onPressed: () => cartController.fetchCartItems(),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary(context),
+                      foregroundColor: AppColors.primaryForeground(context),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: UIConfig.paddingLarge,
+                        vertical: UIConfig.paddingMedium,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                      ),
+                    ),
                     child: const Text('Try Again'),
                   ),
                 ],
@@ -49,14 +69,14 @@ class CartScreen extends StatelessWidget {
           }
 
           return cartController.cartItems.isEmpty
-              ? _buildEmptyCart()
-              : _buildCartWithItems(cartController);
+              ? _buildEmptyCart(context)
+              : _buildCartWithItems(context, cartController);
         }),
       ),
     );
   }
 
-  Widget _buildEmptyCart() {
+  Widget _buildEmptyCart(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -65,11 +85,11 @@ class CartScreen extends StatelessWidget {
             width: 98,
             height: 98,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.background(context),
               borderRadius: BorderRadius.circular(70),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF686868).withOpacity(0.2),
+                  color: AppColors.mutedForeground(context).withOpacity(0.2),
                   spreadRadius: 0,
                   blurRadius: 26.1,
                   offset: const Offset(0, 0),
@@ -81,34 +101,37 @@ class CartScreen extends StatelessWidget {
                 AssetConfig.panierIcon,
                 width: 48,
                 height: 48,
-                colorFilter: const ColorFilter.mode(
-                  Colors.black,
+                colorFilter: ColorFilter.mode(
+                  AppColors.foreground(context),
                   BlendMode.srcIn,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 24),
-          const Text(
+          SizedBox(height: UIConfig.marginLarge),
+          Text(
             'Your Cart is Empty',
             style: TextStyle(
-              color: Colors.black,
-              fontSize: 24,
+              color: AppColors.foreground(context),
+              fontSize: UIConfig.fontSizeLarge,
               fontWeight: FontWeight.w500,
               fontFamily: 'Poppins',
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: UIConfig.marginLarge),
           ElevatedButton(
             onPressed: () {
               Get.toNamed('/categories');
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
+              padding: EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingLarge,
+                vertical: UIConfig.paddingMedium,
+              ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
               ),
               minimumSize: const Size(188, 55),
             ),
@@ -122,13 +145,13 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCartWithItems(CartController controller) {
+  Widget _buildCartWithItems(BuildContext context, CartController controller) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20),
+          SizedBox(height: UIConfig.marginMedium),
           Row(
             children: [
               GestureDetector(
@@ -137,24 +160,25 @@ class CartScreen extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: AppColors.secondary(context),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new,
                     size: 16,
-                    color: Colors.black,
+                    color: AppColors.secondaryForeground(context),
                   ),
                 ),
               ),
-              const Expanded(
+              Expanded(
                 child: Center(
                   child: Text(
                     'Cart',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: UIConfig.fontSizeMedium,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Poppins',
+                      color: AppColors.foreground(context),
                     ),
                   ),
                 ),
@@ -162,7 +186,7 @@ class CartScreen extends StatelessWidget {
               const SizedBox(width: 40),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: UIConfig.marginMedium),
           Expanded(
             child: Obx(() {
               return ListView.builder(
@@ -197,7 +221,10 @@ class CartScreen extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 55,
-            margin: const EdgeInsets.only(bottom: 24, top: 16),
+            margin: EdgeInsets.only(
+              bottom: UIConfig.marginLarge,
+              top: UIConfig.marginMedium,
+            ),
             child: ElevatedButton(
               onPressed: controller.cartItems.isEmpty
                   ? null
@@ -205,18 +232,19 @@ class CartScreen extends StatelessWidget {
                       Get.to(() => const CheckoutScreen());
                     },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                disabledBackgroundColor: Colors.grey[400],
+                backgroundColor: AppColors.primary(context),
+                foregroundColor: AppColors.primaryForeground(context),
+                disabledBackgroundColor: AppColors.muted(context),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
               ),
               child: Obx(() => Text(
                     'Checkout (\$${controller.total.value.toStringAsFixed(2)})',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+                    style: TextStyle(
+                      color: AppColors.primaryForeground(context),
+                      fontSize: UIConfig.fontSizeMedium,
                       fontWeight: FontWeight.w500,
                       fontFamily: 'Poppins',
                     ),

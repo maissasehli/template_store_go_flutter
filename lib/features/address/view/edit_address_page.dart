@@ -19,16 +19,14 @@ class EditAddressPage extends StatelessWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
-      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: Container(
           margin: EdgeInsets.only(left: UIConfig.marginMedium),
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.muted(context),
+            color: AppColors.secondary(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+
 
 class CouponField extends StatefulWidget {
   final Function(String) onApplyCoupon;
@@ -36,33 +39,36 @@ class _CouponFieldState extends State<CouponField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 56,
-      margin: const EdgeInsets.only(top: 16),
+      height: 56, // Consider replacing with a UIConfig value
+      margin: EdgeInsets.only(top: UIConfig.marginMedium),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.input(context),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: Row(
         children: [
-          const SizedBox(width: 16),
+          SizedBox(width: UIConfig.paddingMedium),
           SvgPicture.asset(
             AssetConfig.discountShape,
             width: 20,
             height: 20,
-            colorFilter: ColorFilter.mode(Colors.green[400]!, BlendMode.srcIn),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: UIConfig.paddingSmall * 1.5), // 12.0
           Expanded(
             child: TextField(
               controller: _controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Enter Coupon Code',
                 border: InputBorder.none,
                 hintStyle: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
+                  fontSize: UIConfig.fontSizeRegular,
+                  color: AppColors.mutedForeground(context),
                   fontFamily: 'Poppins',
                 ),
+              ),
+              style: TextStyle(
+                color: AppColors.inputForeground(context),
+                fontFamily: 'Poppins',
               ),
               onSubmitted: widget.isLoading ? null : widget.onApplyCoupon,
             ),
@@ -75,28 +81,34 @@ class _CouponFieldState extends State<CouponField> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: widget.isLoading ? Colors.grey : Colors.black,
+                color: widget.isLoading 
+                    ? AppColors.muted(context)
+                    : AppColors.primary(context),
                 shape: BoxShape.circle,
               ),
               child: widget.isLoading
-                  ? const Padding(
-                      padding: EdgeInsets.all(10),
+                  ? Padding(
+                      padding: EdgeInsets.all(UIConfig.paddingSmall * 1.25), // 10.0
                       child: CircularProgressIndicator(
-                        color: Colors.white,
+                        color: AppColors.mutedForeground(context),
                         strokeWidth: 2,
                       ),
                     )
                   : Padding(
-                      padding: const EdgeInsets.all(10),
+                      padding: EdgeInsets.all(UIConfig.paddingSmall * 1.25), // 10.0
                       child: SvgPicture.asset(
                         AssetConfig.arrowRight2,
                         width: 20,
                         height: 20,
+                        colorFilter: ColorFilter.mode(
+                          AppColors.primaryForeground(context),
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: UIConfig.paddingSmall),
         ],
       ),
     );

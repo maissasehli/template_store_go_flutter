@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
@@ -45,12 +47,15 @@ class CategoryListView extends GetView<CategoryController> {
         GestureDetector(
           onTap: () => _showFilterBottomSheet(context),
           child: Container(
-            margin: const EdgeInsets.only(left: 16, top: 8),
+            margin: EdgeInsets.only(
+              left: UIConfig.paddingMedium, 
+              top: UIConfig.paddingSmall
+            ),
             height: 36,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall + 4),
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(18),
+              color: AppColors.primary(context),
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -59,14 +64,14 @@ class CategoryListView extends GetView<CategoryController> {
                   AssetConfig.filter,
                   width: 20,
                   height: 20,
-                  color: Colors.white,
+                  color: AppColors.primaryForeground(context),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: UIConfig.paddingSmall),
                 Obx(() => Text(
                       '${categoryProductController.categoryProducts.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
+                      style: TextStyle(
+                        color: AppColors.primaryForeground(context),
+                        fontSize: UIConfig.fontSizeRegular,
                         fontWeight: FontWeight.bold,
                       ),
                     )),
@@ -77,25 +82,35 @@ class CategoryListView extends GetView<CategoryController> {
         Expanded(
           child: Container(
             height: 36,
-            margin: const EdgeInsets.only(top: 8),
+            margin: EdgeInsets.only(top: UIConfig.paddingSmall),
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Center(
+                return Center(
                   child: SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary(context),
+                    ),
                   ),
                 );
               }
               if (controller.categories.isEmpty) {
                 controller.fetchCategories();
-                return const Center(child: Text('No categories available'));
+                return Center(
+                  child: Text(
+                    'No categories available',
+                    style: TextStyle(
+                      color: AppColors.mutedForeground(context),
+                    ),
+                  ),
+                );
               }
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.categories.length,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
                 itemBuilder: (context, index) {
                   final category = controller.categories[index];
                   return Obx(() {
@@ -152,18 +167,25 @@ class CategoryPill extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: EdgeInsets.only(right: UIConfig.paddingSmall),
+        padding: EdgeInsets.symmetric(
+          horizontal: UIConfig.paddingMedium, 
+          vertical: UIConfig.paddingSmall
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : const Color(0xFFF4F4F4),
-          borderRadius: BorderRadius.circular(18),
+          color: isSelected 
+            ? AppColors.primary(context) 
+            : AppColors.input(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
         child: Text(
           category.name,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
+            color: isSelected 
+              ? AppColors.primaryForeground(context) 
+              : AppColors.foreground(context),
             fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontSize: UIConfig.fontSizeRegular,
           ),
         ),
       ),

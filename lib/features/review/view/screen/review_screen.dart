@@ -184,6 +184,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
   }
 
   Future<void> _submitEditedReview(String reviewId) async {
+    // Validation already happens in EditReviewForm, but double-check here
     if (_editRating.value == 0) {
       Get.snackbar(
         'Error',
@@ -194,37 +195,66 @@ class _ReviewsPageState extends State<ReviewsPage> {
       return;
     }
 
+    if (_editCommentController.text.trim().isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Please write a review comment',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     if (_isSubmitting.value) return;
     _isSubmitting.value = true;
 
     try {
+      _logger.i(
+        'Submitting edited review: $reviewId with rating ${_editRating.value}',
+      );
+
       final updates = {
         'rating': _editRating.value,
-        'content':
-            _editCommentController.text.isNotEmpty
-                ? _editCommentController.text
-                : null,
+        'content': _editCommentController.text.trim(),
       };
 
-      bool success = await _reviewController!.updateReview(reviewId, updates);
+      // Key fix: Use await here and properly handle the result
+      final success = await _reviewController!.updateReview(reviewId, updates);
+
       if (success) {
+        // Important: Reset editing state first
         setState(() {
           _editingReviewId = null;
+        });
+
+        // Update the reviews list
+        await _reviewController!.fetchReviews(widget.product.id);
+
+        // Apply filters and sorting after update
+        setState(() {
+          _filteredReviews = List.from(_reviewController!.reviews);
+          _applyFilter(_activeFilter);
+          _sortReviews();
+
+          // Clear editing state
           _editRating.value = 0;
           _editCommentController.clear();
-          _filteredReviews = List.from(_reviewController!.reviews);
-          _sortReviews();
         });
+
+        _logger.i('Review updated successfully and UI refreshed');
+      } else {
+        _logger.w('Review update returned false, UI not refreshed');
       }
     } catch (e) {
       _logger.e('Error updating review: $e');
       Get.snackbar(
         'Error',
-        'Failed to update review.',
+        'Failed to update review: ${e.toString()}',
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
     } finally {
+      // Important: Make sure isSubmitting is always set to false
       _isSubmitting.value = false;
     }
   }
@@ -265,49 +295,6 @@ class _ReviewsPageState extends State<ReviewsPage> {
             _filteredReviews = List.from(_reviewController!.reviews);
             _sortReviews();
           });
-
-          if (mounted) {
-            // Removed success message but kept the undo functionality
-            Get.snackbar(
-              'Error',
-              'Review deleted',
-              backgroundColor: Colors.red,
-              colorText: Colors.white,
-              mainButton: TextButton(
-                child: const Text(
-                  'Undo',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onPressed: () async {
-                  _isSubmitting.value = true;
-                  try {
-                    await _reviewController!.addReview(
-                      widget.product.id,
-                      deletedReview,
-                    );
-                    await _reviewController!.fetchReviews(widget.product.id);
-                    setState(() {
-                      _filteredReviews = List.from(_reviewController!.reviews);
-                      _sortReviews();
-                    });
-                  } catch (e) {
-                    _logger.e('Error undoing delete: $e');
-                    Get.snackbar(
-                      'Error',
-                      'Failed to restore review.',
-                      backgroundColor: Colors.red,
-                      colorText: Colors.white,
-                    );
-                  } finally {
-                    _isSubmitting.value = false;
-                  }
-                },
-              ),
-            );
-          }
         } else {
           Get.snackbar(
             'Error',
@@ -329,6 +316,10 @@ class _ReviewsPageState extends State<ReviewsPage> {
       }
     }
   }
+
+  // In your ReviewsPage class, make these key changes:
+
+  // 1. Modify the body build method in ReviewsPage to handle the loading state better:
 
   @override
   Widget build(BuildContext context) {
@@ -358,182 +349,172 @@ class _ReviewsPageState extends State<ReviewsPage> {
         elevation: 0.5,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: Obx(() {
-        if (_reviewController!.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (_reviewController!.hasError.value) {
-          return Center(
+      body: CustomScrollView(
+        slivers: [
+          // Header, Filter, and Sort controls
+          SliverToBoxAdapter(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Failed to load reviews'),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed:
-                      () => _reviewController!.fetchReviews(widget.product.id),
-                  child: const Text('Retry'),
+                // Review header
+                ReviewHeader(
+                  averageRating: widget.averageRating,
+                  reviews: widget.reviews,
+                ),
+
+                // Filter options
+                ReviewFilter(
+                  activeFilter: _activeFilter,
+                  filterOptions: _filterOptions,
+                  onFilterSelected: _applyFilter,
+                ),
+
+                // Sort dropdown
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${_filteredReviews.length} ${_filteredReviews.length == 1 ? 'review' : 'reviews'}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Poppins',
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[300]!),
+                          color: Colors.white,
+                        ),
+                        child: PopupMenuButton<String>(
+                          initialValue: _sortOptions.firstWhere(
+                            (option) => option.toLowerCase() == _currentSort,
+                            orElse: () => _sortOptions.first,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 4,
+                          offset: const Offset(0, 40),
+                          onSelected: (String newSort) {
+                            _applySorting(newSort);
+                          },
+                          itemBuilder:
+                              (context) =>
+                                  _sortOptions.map((String option) {
+                                    bool isSelected =
+                                        option.toLowerCase() == _currentSort;
+                                    return PopupMenuItem<String>(
+                                      value: option,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              option,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: 'Poppins',
+                                                fontWeight:
+                                                    isSelected
+                                                        ? FontWeight.w600
+                                                        : FontWeight.normal,
+                                                color:
+                                                    isSelected
+                                                        ? Theme.of(
+                                                          context,
+                                                        ).primaryColor
+                                                        : null,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isSelected)
+                                            Icon(
+                                              Icons.check,
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).primaryColor,
+                                              size: 18,
+                                            ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  capitalize(_currentSort),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  Icons.arrow_drop_down,
+                                  color: Colors.grey[700],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Add a loading indicator that appears during submission
+                Obx(
+                  () =>
+                      _isSubmitting.value
+                          ? Container(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                          : const SizedBox.shrink(),
                 ),
               ],
             ),
-          );
-        }
+          ),
 
-        // Use CustomScrollView since ReviewList is likely a Sliver widget
-        return CustomScrollView(
-          slivers: [
-            // Header, Filter, and Sort controls
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  // Review header
-                  ReviewHeader(
-                    averageRating: widget.averageRating,
-                    reviews: widget.reviews,
-                  ),
-
-                  // Filter options
-                  ReviewFilter(
-                    activeFilter: _activeFilter,
-                    filterOptions: _filterOptions,
-                    onFilterSelected: _applyFilter,
-                  ),
-
-                  // Sort dropdown
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${_filteredReviews.length} ${_filteredReviews.length == 1 ? 'review' : 'reviews'}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Poppins',
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[300]!),
-                            color: Colors.white,
-                          ),
-                          child: PopupMenuButton<String>(
-                            initialValue: _sortOptions.firstWhere(
-                              (option) => option.toLowerCase() == _currentSort,
-                              orElse: () => _sortOptions.first,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 4,
-                            offset: const Offset(0, 40),
-                            onSelected: (String newSort) {
-                              _applySorting(newSort);
-                            },
-                            itemBuilder:
-                                (context) =>
-                                    _sortOptions.map((String option) {
-                                      bool isSelected =
-                                          option.toLowerCase() == _currentSort;
-                                      return PopupMenuItem<String>(
-                                        value: option,
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                option,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontFamily: 'Poppins',
-                                                  fontWeight:
-                                                      isSelected
-                                                          ? FontWeight.w600
-                                                          : FontWeight.normal,
-                                                  color:
-                                                      isSelected
-                                                          ? Theme.of(
-                                                            context,
-                                                          ).primaryColor
-                                                          : null,
-                                                ),
-                                              ),
-                                            ),
-                                            if (isSelected)
-                                              Icon(
-                                                Icons.check,
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                                size: 18,
-                                              ),
-                                          ],
-                                        ),
-                                      );
-                                    }).toList(),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    capitalize(_currentSort),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Icon(
-                                    Icons.arrow_drop_down,
-                                    color: Colors.grey[700],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+          // Show Empty State or Review List - with proper loading state handling
+          _reviewController!.isLoading.value && !_isSubmitting.value
+              ? const SliverFillRemaining(
+                child: Center(child: CircularProgressIndicator()),
+              )
+              : _filteredReviews.isEmpty
+              ? SliverFillRemaining(child: EmptyState(product: widget.product))
+              : ReviewList(
+                reviews: _filteredReviews,
+                editingReviewId: _editingReviewId,
+                currentUserId: _currentUserId,
+                reviewController: _reviewController!,
+                editRating: _editRating,
+                editCommentController: _editCommentController,
+                editCommentFocusNode: _editCommentFocusNode,
+                isSubmitting: _isSubmitting,
+                onEdit: _startEditingReview,
+                onDelete: _deleteReview,
+                onSubmitEdit: _submitEditedReview,
+                onCancelEdit: _cancelEditing,
               ),
-            ),
-
-            // Show Empty State or Review List
-            _filteredReviews.isEmpty
-                ? SliverFillRemaining(
-                  child: EmptyState(product: widget.product),
-                )
-                : ReviewList(
-                  // This should be a Sliver widget
-                  reviews: _filteredReviews,
-                  editingReviewId: _editingReviewId,
-                  currentUserId: _currentUserId,
-                  reviewController: _reviewController!,
-                  editRating: _editRating,
-                  editCommentController: _editCommentController,
-                  editCommentFocusNode:
-                      _editCommentFocusNode, // Added the required parameter
-                  isSubmitting: _isSubmitting,
-                  onEdit: _startEditingReview,
-                  onDelete: _deleteReview,
-                  onSubmitEdit: _submitEditedReview,
-                  onCancelEdit: _cancelEditing,
-                ),
-          ],
-        );
-      }),
+        ],
+      ),
       bottomNavigationBar: ReviewBottomBar(
         currentUserId: _currentUserId,
         reviewController: _reviewController!,

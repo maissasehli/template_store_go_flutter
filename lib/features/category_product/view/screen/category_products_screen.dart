@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
@@ -99,33 +101,37 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorExtension>()!;
+    final textTheme = Theme.of(context).textTheme;
+    
     return Scaffold(
+      backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: const EdgeInsets.all(UIConfig.paddingMedium),
               child: Row(
                 children: [
                   Container(
                     width: 40,
                     height: 40,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF4F4F4),
+                    decoration: BoxDecoration(
+                      color: colors.secondary,
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.black,
+                        color: colors.foreground,
                         size: 18,
                       ),
                       padding: EdgeInsets.zero,
                       onPressed: () => Get.back(),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: UIConfig.paddingSmall + 4),
                   Expanded(
                     child: CustomSearchBar(
                       onSearch: (query) {
@@ -165,7 +171,11 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
             // Always render the SubcategoryListView
             SubcategoryListView(onApplyFilters: applyFilters),
             Padding(
-              padding: const EdgeInsets.only(left: 16, top: 16, bottom: 16),
+              padding: EdgeInsets.only(
+                left: UIConfig.paddingMedium, 
+                top: UIConfig.paddingMedium, 
+                bottom: UIConfig.paddingMedium
+              ),
               child: Obx(() {
                 // Use the filteredProducts list instead of categoryProducts
                 final productCount =
@@ -187,11 +197,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                         : widget.category.name;
                 return Text(
                   '$productCount Results Found in $displayName',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                    color: Colors.black87,
+                  style: textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
+                    color: colors.foreground.withOpacity(0.87),
                   ),
                 );
               }),
@@ -227,15 +235,15 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                         : categoryProductController.isSearchActive.value;
 
                 if (isLoading) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Colors.black),
+                  return Center(
+                    child: CircularProgressIndicator(color: colors.primary),
                   );
                 }
                 if (hasError) {
                   return Center(
                     child: Text(
                       'Error: $errorMessage',
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(color: colors.destructive),
                     ),
                   );
                 }
@@ -264,9 +272,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
 
                 // Render the products grid
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
                   child: GridView.builder(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.only(bottom: UIConfig.paddingMedium),
                     physics: const BouncingScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(

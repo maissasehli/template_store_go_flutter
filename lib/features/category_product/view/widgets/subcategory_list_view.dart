@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
@@ -44,12 +46,15 @@ class SubcategoryListView extends GetView<SubcategoryController> {
         GestureDetector(
           onTap: () => _showFilterBottomSheet(context),
           child: Container(
-            margin: const EdgeInsets.only(left: 16, top: 8),
+            margin: const EdgeInsets.only(
+              left: UIConfig.paddingMedium, 
+              top: UIConfig.paddingSmall
+            ),
             height: 36,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall),
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(18),
+              color: AppColors.primary(context),
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -58,15 +63,14 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                   AssetConfig.filter,
                   width: 20,
                   height: 20,
-                  color: Colors.white,
+                  color: AppColors.primaryForeground(context),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: UIConfig.paddingSmall),
                 Obx(
                   () => Text(
                     '${listController.products.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.primaryForeground(context),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -79,7 +83,7 @@ class SubcategoryListView extends GetView<SubcategoryController> {
         Expanded(
           child: Container(
             height: 36,
-            margin: const EdgeInsets.only(top: 8),
+            margin: const EdgeInsets.only(top: UIConfig.paddingSmall),
             child: Obx(() {
               // We'll create a local list of subcategories that persists during loading
               final displayedSubcategories = controller.subcategories;
@@ -91,12 +95,13 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                 scrollDirection: Axis.horizontal,
                 // Always show "All" plus however many subcategories we have
                 itemCount: displayedSubcategories.length + 1,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     // "All" option - always shown
                     // Use the reactive selectedSubcategoryId to determine if "All" is selected
                     return _buildSubcategoryPill(
+                      context: context,
                       name: "All",
                       isSelected: selectedSubcategoryId.isEmpty,
                       onTap: () {
@@ -118,6 +123,7 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                   // For items other than "All", show from our persisted list
                   final subcategory = displayedSubcategories[index - 1];
                   return _buildSubcategoryPill(
+                    context: context,
                     name: subcategory.name,
                     isSelected: subcategory.id == selectedSubcategoryId,
                     onTap: () {
@@ -135,6 +141,7 @@ class SubcategoryListView extends GetView<SubcategoryController> {
   }
 
   Widget _buildSubcategoryPill({
+    required BuildContext context,
     required String name,
     required bool isSelected,
     required VoidCallback onTap,
@@ -142,18 +149,24 @@ class SubcategoryListView extends GetView<SubcategoryController> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.only(right: UIConfig.paddingSmall),
+        padding: const EdgeInsets.symmetric(
+          horizontal: UIConfig.paddingMedium, 
+          vertical: UIConfig.paddingSmall
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : const Color(0xFFF4F4F4),
-          borderRadius: BorderRadius.circular(18),
+          color: isSelected 
+              ? AppColors.primary(context) 
+              : AppColors.input(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
         child: Text(
           name,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: isSelected 
+                ? AppColors.primaryForeground(context) 
+                : AppColors.foreground(context),
             fontWeight: FontWeight.w500,
-            fontSize: 14,
           ),
         ),
       ),
