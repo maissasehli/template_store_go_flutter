@@ -1,64 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class CustomFormField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
-
+  final TextInputType keyboardType;
+  final bool readOnly;
+  
   const CustomFormField({
     super.key,
     required this.label,
     required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.readOnly = false,
   });
-
+  
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 342,
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          inputDecorationTheme: InputDecorationTheme(
-            focusedBorder: InputBorder.none,
-            focusColor: Colors.transparent,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(
+            left: UIConfig.paddingSmall, 
+            bottom: UIConfig.paddingSmall / 2,
           ),
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            errorBorder: InputBorder.none,
-            disabledBorder: InputBorder.none,
-            labelText: label,
-            labelStyle: const TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w400,
-              fontSize: 12,
-              height: 16 / 10,
-              letterSpacing: 0.25,
-              color: Color(0xFF757575),
+          child: Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.mutedForeground(context),
             ),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
           ),
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-            fontSize: 14,
-            height: 18 / 14,
-            letterSpacing: 0.25,
-          ),
-          cursorColor: Colors.grey,
         ),
-      ),
+        Container(
+          width: double.infinity,
+          height: 50,
+          decoration: BoxDecoration(
+            color: AppColors.input(context),
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              inputDecorationTheme: const InputDecorationTheme(
+                focusedBorder: InputBorder.none,
+                focusColor: Colors.transparent,
+              ),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+            ),
+            child: TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              readOnly: readOnly,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                contentPadding: EdgeInsets.only(
+                  top: UIConfig.paddingSmall,
+                  bottom: 0,
+                ),
+              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.inputForeground(context),
+              ),
+              cursorColor: AppColors.primary(context),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

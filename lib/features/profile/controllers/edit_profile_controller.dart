@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/profile/models/user_model.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
+import 'package:store_go/features/profile/controllers/profile_controller.dart';  // Add import for ProfileController
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -23,6 +24,10 @@ class EditProfileController extends GetxController {
   late TextEditingController userNameController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
+  
+  // Gender and country
+  final RxString selectedCountry = "Tunisia".obs;
+  final RxString selectedGender = "Female".obs;
 
   // Constructor with dependency injection
   EditProfileController(this._repository);
@@ -30,13 +35,13 @@ class EditProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchUserData();
-
     // Initialize controllers
     fullNameController = TextEditingController();
     userNameController = TextEditingController();
     emailController = TextEditingController();
     phoneController = TextEditingController();
+    
+    fetchUserData();
   }
 
   @override
@@ -60,10 +65,18 @@ class EditProfileController extends GetxController {
 
       // Populate form controllers
       fullNameController.text = user.value?.name ?? '';
-      userNameController.text =
-          user.value?.name.split(' ').first.toLowerCase() ?? '';
+      userNameController.text = user.value?.name.split(' ').first.toLowerCase() ?? '';
       emailController.text = user.value?.email ?? '';
-      phoneController.text = ''; // Phone not in the model, add if needed
+      phoneController.text = user.value?.phone ?? ''; 
+      
+      // Set gender and country if available
+      if (user.value?.gender != null) {
+        selectedGender.value = user.value!.gender!.capitalize!;
+      }
+      
+      if (user.value?.country != null) {
+        selectedCountry.value = user.value!.country!;
+      }
 
       logger.d('User data fetched successfully: ${user.value?.name}');
     } catch (e) {
@@ -101,21 +114,15 @@ class EditProfileController extends GetxController {
   }
 
   // Upload avatar
-  Future<void> uploadAvatar() async {
-    if (selectedImage.value == null) return;
+  Future<String?> uploadAvatar() async {
+    if (selectedImage.value == null) return null;
 
     try {
       isUploading.value = true;
       final updatedUser = await _repository.uploadAvatar(selectedImage.value!);
       user.value = updatedUser;
-
-      Get.snackbar(
-        'Success',
-        'Avatar uploaded successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      
+      return updatedUser.avatar;
     } catch (e) {
       logger.e('Error uploading avatar: $e');
       Get.snackbar(
@@ -125,6 +132,7 @@ class EditProfileController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+      return null;
     } finally {
       isUploading.value = false;
     }
@@ -137,21 +145,37 @@ class EditProfileController extends GetxController {
       hasError.value = false;
       errorMessage.value = '';
 
+      String? avatarUrl;
+      
       // First upload avatar if selected
       if (selectedImage.value != null) {
-        await uploadAvatar();
+        avatarUrl = await uploadAvatar();
       }
 
       // Prepare user data for update
       final userData = {
         'name': fullNameController.text.trim(),
         'email': emailController.text.trim(),
-        // Add phone if needed: 'phone': phoneController.text.trim(),
+        'gender': selectedGender.value.toLowerCase(),
+        'country': selectedCountry.value,
       };
+      
+      // Add phone if available
+      if (phoneController.text.trim().isNotEmpty) {
+        userData['phone'] = phoneController.text.trim();
+      }
+      
+      // Add avatar if it was updated
+      if (avatarUrl != null) {
+        userData['avatar'] = avatarUrl;
+      }
 
       // Update profile
       final updatedUser = await _repository.updateProfile(userData);
       user.value = updatedUser;
+      
+      // Don't try to update ProfileController - we'll handle profile updates elsewhere
+      // This was causing the "ProfileController not found" error
 
       Get.snackbar(
         'Success',
@@ -160,11 +184,14 @@ class EditProfileController extends GetxController {
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
+      
+      // Go back to profile page after successful update
       Get.back();
     } catch (e) {
       logger.e('Error saving profile: $e');
       hasError.value = true;
       errorMessage.value = 'Failed to save profile. Please try again.';
+      
       Get.snackbar(
         'Error',
         'Failed to save profile. Please try again.',
@@ -175,5 +202,15 @@ class EditProfileController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+  
+  // Update gender value
+  void updateGender(String gender) {
+    selectedGender.value = gender;
+  }
+  
+  // Update country value
+  void updateCountry(String country) {
+    selectedCountry.value = country;
   }
 }
