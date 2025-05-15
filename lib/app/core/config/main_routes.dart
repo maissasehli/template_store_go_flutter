@@ -13,6 +13,8 @@ import 'package:store_go/features/auth/views/screen/email_confirmation_screen.da
 import 'package:store_go/features/auth/views/screen/forget_password_screen.dart';
 import 'package:store_go/features/auth/views/screen/login_screen.dart';
 import 'package:store_go/features/auth/views/screen/signup_screen.dart';
+import 'package:store_go/features/auth/views/screen/otp_verification_screen.dart';
+import 'package:store_go/features/auth/views/screen/new_reset_password_screen.dart';
 import 'package:store_go/features/payment/view/widget/add_card_screen.dart';
 import 'package:store_go/features/cart/views/screen/cart_screen.dart';
 import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
@@ -95,6 +97,16 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.forgetPassword,
     page: () => ForgetPasswordScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: AppRoute.verifyOtp,
+    page: () => OtpVerificationScreen(),
+    binding: AuthBinding(),
+  ),
+  GetPage(
+    name: AppRoute.resetPasswordNew,
+    page: () => NewResetPasswordScreen(),
     binding: AuthBinding(),
   ),
   GetPage(

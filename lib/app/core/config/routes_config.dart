@@ -43,6 +43,8 @@ class AppRoute {
 
   // Review routes
   static const String reviews = "/reviews/:productId";
+  static const String verifyOtp = "/verify-otp";
+  static const String resetPasswordNew = "/reset-password-new";
 
   // Public routes
   static const List<String> publicRoutes = [
@@ -51,6 +53,8 @@ class AppRoute {
     login,
     signup,
     forgetPassword,
+    verifyOtp,
+    resetPasswordNew,
   ];
   static const String address = "/address";
   static const String addAddress = "/add-address";

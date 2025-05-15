@@ -103,4 +103,38 @@ class AuthApiClient {
       },
     );
   }
+
+  // Request password reset OTP
+  Future<Response> requestPasswordResetOTP({required String email}) async {
+    return await _apiClient.post(
+      '/auth/request-reset',
+      data: {'email': email, 'storeId': AppConfig.storeId},
+    );
+  }
+
+  // Verify OTP code
+  Future<Response> verifyOTPCode({
+    required String email,
+    required String otpCode,
+  }) async {
+    return await _apiClient.post(
+      '/auth/verify-otp',
+      data: {'email': email, 'token': otpCode, 'storeId': AppConfig.storeId},
+    );
+  }
+
+  // Reset password
+  Future<Response> resetPassword({
+    required String userId,
+    required String newPassword,
+  }) async {
+    return await _apiClient.post(
+      '/auth/reset-password',
+      data: {
+        'userId': userId,
+        'password': newPassword,
+        'storeId': AppConfig.storeId,
+      },
+    );
+  }
 }

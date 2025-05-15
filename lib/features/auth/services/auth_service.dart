@@ -147,4 +147,65 @@ class AuthService {
       _logger.e('Error in handleAppResume: $e');
     }
   }
+
+  // Request password reset OTP
+  Future<bool> requestPasswordResetOTP(String email) async {
+    try {
+      final response = await _apiClient.requestPasswordResetOTP(email: email);
+
+      if (response.statusCode == 200) {
+        _notificationService.showSuccess('OTP code sent to your email');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      _logger.e('Failed to request password reset OTP: $e');
+      _errorHandler.handleSignInError(e);
+      return false;
+    }
+  }
+
+  // Verify OTP code
+  Future<Map<String, dynamic>?> verifyOTPCode(
+    String email,
+    String otpCode,
+  ) async {
+    try {
+      final response = await _apiClient.verifyOTPCode(
+        email: email,
+        otpCode: otpCode,
+      );
+
+      if (response.statusCode == 200) {
+        _notificationService.showSuccess('OTP verified successfully');
+        // Return the userId from response
+        return {'userId': response.data['userId']};
+      }
+      return null;
+    } catch (e) {
+      _logger.e('Failed to verify OTP code: $e');
+      _errorHandler.handleSignInError(e);
+      return null;
+    }
+  }
+
+  // Reset password
+  Future<bool> resetPassword(String userId, String newPassword) async {
+    try {
+      final response = await _apiClient.resetPassword(
+        userId: userId,
+        newPassword: newPassword,
+      );
+
+      if (response.statusCode == 200) {
+        _notificationService.showSuccess('Password reset successfully');
+        return true;
+      }
+      return false;
+    } catch (e) {
+      _logger.e('Failed to reset password: $e');
+      _errorHandler.handleSignInError(e);
+      return false;
+    }
+  }
 }

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/shared/controllers/controller_form_field_state.dart';
 import 'package:store_go/app/core/utils/valid_input.dart';
+import 'package:store_go/features/auth/services/auth_service.dart';
 
 class ForgetPasswordController extends GetxController {
   late ControllerFormFieldState emailFieldState;
   final GlobalKey<FormState> forgetPasswordFormKey = GlobalKey<FormState>();
+  final AuthService _authService = AuthService();
+  final RxBool isLoading = false.obs;
 
   @override
   void onInit() {
@@ -16,18 +20,21 @@ class ForgetPasswordController extends GetxController {
     );
   }
 
-  // Modified method to handle password reset
+  // Method to request OTP for password reset
   Future<void> goToEmailSentConfirmation() async {
     if (forgetPasswordFormKey.currentState!.validate()) {
-      // Call the resetPassword method from AuthService
-      //bool success = await _authService.resetPassword(
-      //  emailController.text.trim(),
-      //);
+      isLoading.value = true;
+      try {
+        final email = emailFieldState.controller.text.trim();
+        final success = await _authService.requestPasswordResetOTP(email);
 
-      // If password reset is successful, navigate to email sent confirmation
-      //if (success) {
-      //  Get.toNamed(AppRoute.emailResetPasswordConfirmation);
-      //}
+        if (success) {
+          // Go to OTP verification screen and pass the email
+          Get.toNamed(AppRoute.verifyOtp, arguments: {'email': email});
+        }
+      } finally {
+        isLoading.value = false;
+      }
     }
   }
 
