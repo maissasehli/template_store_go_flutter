@@ -44,6 +44,8 @@ import 'package:store_go/app/shared/screens/splash_screen.dart';
 import 'package:store_go/features/review/binding/review_binding.dart';
 import 'package:store_go/features/settings/views/setting_screen.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
+import 'package:store_go/features/settings/views/settings_language_screen.dart';
+import 'package:store_go/features/settings/bindings/settings_language_binding.dart';
 import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
 import 'package:store_go/features/wishlist/binding/wishlist_binding.dart';
 
@@ -57,11 +59,16 @@ List<GetPage<dynamic>>? routes = [
     binding: HomeBinding(),
     middlewares: [AuthMiddleware()],
   ),
-
   GetPage(
     name: AppRoute.language,
     page: () => const LanguageScreen(),
     binding: LanguageBinding(),
+  ),
+
+  GetPage(
+    name: AppRoute.settingsLanguage,
+    page: () => const SettingsLanguageScreen(),
+    binding: SettingsLanguageBinding(),
   ),
 
   GetPage(
@@ -132,7 +139,9 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoute.reviews,
     page: () {
       final productId = Get.parameters['productId'] ?? '';
-      return ProductDetailScreen(productId: productId); // Adjust if you have a ReviewScreen
+      return ProductDetailScreen(
+        productId: productId,
+      ); // Adjust if you have a ReviewScreen
     },
     bindings: [ProductBinding(), ReviewBinding()],
   ),
@@ -203,22 +212,22 @@ List<GetPage<dynamic>>? routes = [
     page: () => NotificationsPage(),
     binding: HomeBinding(),
   ),
-GetPage(
-  name: AppRoute.categoryDetail,
-  page: () => CategoryProductsScreen(),
-  transition: Transition.cupertino,
-  binding: CategoryProductsBinding() as Bindings,
-),
-GetPage(
-  name: AppRoute.filter,
-  page: () => FilterBottomSheet(
-    listController: Get.find<ProductListController>(),
-    filterController: Get.find<ProductFilterController>(),
-    categoryController: Get.find<CategoryController>(),
-    subcategoryController: Get.find<SubcategoryController>(),
+  GetPage(
+    name: AppRoute.categoryDetail,
+    page: () => CategoryProductsScreen(),
+    transition: Transition.cupertino,
+    binding: CategoryProductsBinding() as Bindings,
   ),
-  transition: Transition.cupertino,
-  binding: CategoryProductsBinding() as Bindings,
-),
-
+  GetPage(
+    name: AppRoute.filter,
+    page:
+        () => FilterBottomSheet(
+          listController: Get.find<ProductListController>(),
+          filterController: Get.find<ProductFilterController>(),
+          categoryController: Get.find<CategoryController>(),
+          subcategoryController: Get.find<SubcategoryController>(),
+        ),
+    transition: Transition.cupertino,
+    binding: CategoryProductsBinding() as Bindings,
+  ),
 ];

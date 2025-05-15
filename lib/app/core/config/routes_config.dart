@@ -2,9 +2,10 @@ class AppRoute {
   // define that the this class has no constructor
   AppRoute._();
   static const String settings = "/settings";
-  static const String products = "/products"; 
+  static const String products = "/products";
   static const String mainContainer = "/main";
   static const String language = "/language";
+  static const String settingsLanguage = "/settings-language";
   static const String onBoarding = "/onboarding";
   static const String login = "/login";
   static const String signup = "/signup";
@@ -12,25 +13,28 @@ class AppRoute {
   static const String forgetPassword = "/forget-password";
   static const String emailConfirmation = "/emailConfirmation";
   static const String resetPassword = '/reset-password';
-  static const String emailResetPasswordConfirmation = "/email-reset-password-confirmation";
+  static const String emailResetPasswordConfirmation =
+      "/email-reset-password-confirmation";
 
   // Home and navigation
   static const String home = "/home";
-  
+
   // Category routes
   static const String categories = "/categories";
   static const String categoryDetail = "/category/:id";
-  
+
   // Product routes
   static const String productDetail = "/product/:id";
-  static const String featuredProducts = "/products/featured"; // Optional, for specific lists
-  static const String newProducts = "/products/new"; // Optional, for specific lists
-  
+  static const String featuredProducts =
+      "/products/featured"; // Optional, for specific lists
+  static const String newProducts =
+      "/products/new"; // Optional, for specific lists
+
   // Cart and checkout
   static const String cart = "/cart";
   static const String addCart = "/add-cart";
   static const String checkout = "/checkout";
-  
+
   // User profile
   static const String editProfile = "/edit-profile";
   static const String profile = "/profile";

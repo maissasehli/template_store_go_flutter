@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 
@@ -61,7 +62,7 @@ class SettingsScreen extends StatelessWidget {
                   context: context,
                   title: 'Language',
                   subtitle: 'Select your preferred language',
-                  onTap: () => Get.toNamed('/language'),
+                  onTap: () => Get.toNamed(AppRoute.settingsLanguage),
                 ),
                 _buildSettingsOption(
                   context: context,
