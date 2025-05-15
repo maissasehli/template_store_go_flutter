@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 
 class CategoryFilter extends StatelessWidget {
@@ -54,7 +55,7 @@ class CategoryFilter extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                         height: 1.6,
-                        color: isSelected ? Theme.of(context).primaryColor : Colors.black,
+                        color: AppColors.foreground(context),
                       ),
                     ),
                   ],

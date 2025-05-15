@@ -176,6 +176,9 @@ class SubcategoryController extends GetxController {
         "Found ${filteredProductsList.length} products matching '$query' in category $currentCategoryId",
       );
       subcategoryProducts.assignAll(filteredProductsList);
+
+      // Force refresh the observable list to update UI
+      subcategoryProducts.refresh();
     } catch (e) {
       hasError.value = true;
       errorMessage.value = e.toString();

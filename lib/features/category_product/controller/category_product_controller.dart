@@ -157,18 +157,38 @@ class CategoryProductController extends GetxController {
       errorMessage.value = '';
 
       _logger.d(
-        "🔍 Applying filters - Category: $categoryId, Subcategory: $subcategoryId",
+        "🔍 Applying filters - Category: $categoryId, Subcategory: $subcategoryId, Price: $minPrice-$maxPrice",
       );
 
-      List<Product> products;
+      List<Product> products = [];
 
       // If returning to "All" (no subcategory) and we have the original products,
       // use them as a starting point to avoid fetching again
       if (subcategoryId.isEmpty && _originalCategoryProducts.isNotEmpty) {
         products = List<Product>.from(_originalCategoryProducts);
-        _logger.d("Using cached products for 'All' filter: ${products.length}");
+        _logger.d("Using cached products for filter: ${products.length}");
+
+        // Even when using cached products, apply client-side filtering
+        // Price filter
+        if (minPrice > 0 || maxPrice < 1000) {
+          products =
+              products
+                  .where((p) => p.price >= minPrice && p.price <= maxPrice)
+                  .toList();
+          _logger.d("After price filter: ${products.length} products");
+        }
+
+        // Rating filter
+        if (minRating > 0) {
+          products = products.where((p) => p.rating >= minRating).toList();
+          _logger.d("After rating filter: ${products.length} products");
+        }
+
+        // Apply sorting
+        _applySorting(products, sortOption);
       } else {
         try {
+          // Try server-side filtering first
           products = await _repository.getFilteredProducts(
             categoryId: categoryId.isNotEmpty ? categoryId : null,
             subcategoryId: subcategoryId.isNotEmpty ? subcategoryId : null,
@@ -177,79 +197,72 @@ class CategoryProductController extends GetxController {
             minRating: minRating > 0 ? minRating : null,
             sortOption: sortOption,
           );
+
+          _logger.d("Server filtering returned ${products.length} products");
         } catch (e) {
           _logger.w(
-            'Server-side filtering failed, falling back to client-side: $e',
+            'Server-side filtering failed, fallback to client-side: $e',
           );
 
+          // Get base products list depending on category/subcategory selection
           if (subcategoryId.isNotEmpty) {
             products = await _repository.getProductsBySubcategory(
               subcategoryId,
             );
           } else if (_originalCategoryProducts.isNotEmpty) {
-            // If we're filtering "All" products, use cached originals
             products = List<Product>.from(_originalCategoryProducts);
           } else {
             products = await _repository.getProductsByCategory(
               categoryId.isNotEmpty ? categoryId : currentCategory.value!.id,
             );
-            // Cache these if they're the originals
+
+            // Cache these original products for future filtering
             if (subcategoryId.isEmpty && _originalCategoryProducts.isEmpty) {
               _originalCategoryProducts.assignAll(products);
             }
           }
 
-          // Apply price filter
-          products =
-              products.where((product) {
-                return product.price >= minPrice && product.price <= maxPrice;
-              }).toList();
+          // Apply client-side filtering
+          // Price filter
+          if (minPrice > 0 || maxPrice < 1000) {
+            products =
+                products
+                    .where((p) => p.price >= minPrice && p.price <= maxPrice)
+                    .toList();
+            _logger.d("After price filter: ${products.length} products");
+          }
 
-          // Apply rating filter
+          // Rating filter
           if (minRating > 0) {
-            final reviewController = Get.find<ReviewController>();
-            products = await Future.wait(
-              products.map((product) async {
-                if (product.rating >= minRating) {
-                  return product;
-                }
-                final reviews = await reviewController.getReviewsByProductId(
-                  product.id,
-                );
-                final avgRating =
-                    reviews.isNotEmpty
-                        ? reviews.fold<double>(0, (sum, r) => sum + r.rating) /
-                            reviews.length
-                        : 0.0;
-                return avgRating >= minRating ? product : null;
-              }),
-            ).then((results) => results.whereType<Product>().toList());
+            products = products.where((p) => p.rating >= minRating).toList();
+            _logger.d("After rating filter: ${products.length} products");
           }
 
           // Apply sorting
-          switch (sortOption) {
-            case 'New Today':
-              products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-              break;
-            case 'Top Sellers':
-              products.sort(
-                (a, b) => (b.salesCount ?? 0).compareTo(a.salesCount ?? 0),
-              );
-              break;
-            case 'Price: Low to High':
-              products.sort((a, b) => a.price.compareTo(b.price));
-              break;
-            case 'Price: High to Low':
-              products.sort((a, b) => b.price.compareTo(a.price));
-              break;
-          }
+          _applySorting(products, sortOption);
         }
       }
 
+      // Important: Make sure to clear both lists before assigning
+      categoryProducts.clear();
+      filteredProducts.clear();
+
+      // Update both lists with new filtered products
       categoryProducts.assignAll(products);
       filteredProducts.assignAll(products);
 
-      _logger.d('Applied filters: ${products.length} products found');
+      _logger.d('Filters applied - ${products.length} products found');
+
+      // Force immediate refresh of both lists
+      categoryProducts.refresh();
+      filteredProducts.refresh();
+
+      // Schedule another refresh after a small delay to ensure UI updates
+      Future.delayed(Duration(milliseconds: 100), () {
+        categoryProducts.refresh();
+        filteredProducts.refresh();
+        update();
+      });
     } catch (e) {
       hasError.value = true;
       errorMessage.value = 'Failed to apply filters: $e';
@@ -257,6 +270,27 @@ class CategoryProductController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  // Helper method to apply sorting
+  void _applySorting(List<Product> products, String sortOption) {
+    switch (sortOption) {
+      case 'New Today':
+        products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        break;
+      case 'Top Sellers':
+        products.sort(
+          (a, b) => (b.salesCount ?? 0).compareTo(a.salesCount ?? 0),
+        );
+        break;
+      case 'Price: Low to High':
+        products.sort((a, b) => a.price.compareTo(b.price));
+        break;
+      case 'Price: High to Low':
+        products.sort((a, b) => b.price.compareTo(a.price));
+        break;
+    }
+    _logger.d("Sorting applied: $sortOption");
   }
 
   Future<void> toggleFavorite(String productId) async {

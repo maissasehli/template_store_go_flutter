@@ -22,7 +22,6 @@ class SubcategoryListView extends GetView<SubcategoryController> {
       Get.find<CategoryProductController>();
 
   SubcategoryListView({super.key, required this.onApplyFilters});
-
   void _showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -35,7 +34,13 @@ class SubcategoryListView extends GetView<SubcategoryController> {
             categoryController: categoryController,
             subcategoryController: controller,
           ),
-    );
+    ).then((_) {
+      // This will run after the bottom sheet is closed
+      // Force a refresh of the lists to update the counter
+      categoryProductController.filteredProducts.refresh();
+      listController.products.refresh();
+      controller.subcategoryProducts.refresh();
+    });
   }
 
   @override
@@ -47,14 +52,18 @@ class SubcategoryListView extends GetView<SubcategoryController> {
           onTap: () => _showFilterBottomSheet(context),
           child: Container(
             margin: const EdgeInsets.only(
-              left: UIConfig.paddingMedium, 
-              top: UIConfig.paddingSmall
+              left: UIConfig.paddingMedium,
+              top: UIConfig.paddingSmall,
             ),
             height: 36,
-            padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConfig.paddingSmall,
+            ),
             decoration: BoxDecoration(
               color: AppColors.primary(context),
-              borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+              borderRadius: BorderRadius.circular(
+                UIConfig.borderRadiusCircular,
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -66,14 +75,35 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                   color: AppColors.primaryForeground(context),
                 ),
                 const SizedBox(width: UIConfig.paddingSmall),
-                Obx(
-                  () => Text(
-                    '${listController.products.length}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.primaryForeground(context),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                GetBuilder<CategoryProductController>(
+                  init: categoryProductController,
+                  builder: (_) {
+                    return Obx(() {
+                      // Get the count from the appropriate controller for display
+                      final count =
+                          controller.currentSubcategoryId.value.isNotEmpty
+                              ? controller.subcategoryProducts.length
+                              : categoryProductController
+                                  .filteredProducts
+                                  .length;
+
+                      // Also reactively listen to listController.products.length for updates
+                      listController
+                          .products
+                          .length; // This is just to trigger rebuild when listController changes
+
+                      return Text(
+                        '$count',
+                        key: ValueKey(
+                          'filter_count_$count',
+                        ), // Key helps force rebuild
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.primaryForeground(context),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    });
+                  },
                 ),
               ],
             ),
@@ -95,7 +125,9 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                 scrollDirection: Axis.horizontal,
                 // Always show "All" plus however many subcategories we have
                 itemCount: displayedSubcategories.length + 1,
-                padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UIConfig.paddingMedium,
+                ),
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     // "All" option - always shown
@@ -151,21 +183,23 @@ class SubcategoryListView extends GetView<SubcategoryController> {
       child: Container(
         margin: const EdgeInsets.only(right: UIConfig.paddingSmall),
         padding: const EdgeInsets.symmetric(
-          horizontal: UIConfig.paddingMedium, 
-          vertical: UIConfig.paddingSmall
+          horizontal: UIConfig.paddingMedium,
+          vertical: UIConfig.paddingSmall,
         ),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? AppColors.primary(context) 
-              : AppColors.input(context),
+          color:
+              isSelected
+                  ? AppColors.primary(context)
+                  : AppColors.input(context),
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
         child: Text(
           name,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: isSelected 
-                ? AppColors.primaryForeground(context) 
-                : AppColors.foreground(context),
+            color:
+                isSelected
+                    ? AppColors.primaryForeground(context)
+                    : AppColors.foreground(context),
             fontWeight: FontWeight.w500,
           ),
         ),

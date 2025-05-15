@@ -8,6 +8,7 @@ import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
+import 'package:store_go/features/product/controllers/product_list_controller.dart';
 import 'package:store_go/features/category_product/view/widgets/subcategory_list_view.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/search/no_search_result.dart';
@@ -84,26 +85,60 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
     await productsLoadingFuture;
   }
 
-  void applyFilters() {
+  Future<void> applyFilters() async {
+    print('[CategoryProductsScreen] applyFilters() called');
+
     final filterController = Get.find<ProductFilterController>();
-    categoryProductController.applyFilters(
-      categoryId:
-          filterController.selectedCategory.value == 'All'
-              ? widget.category.id
-              : filterController.selectedCategory.value,
-      subcategoryId: filterController.selectedSubcategoryId.value,
-      minPrice: filterController.minPrice.value,
-      maxPrice: filterController.maxPrice.value,
-      sortOption: filterController.selectedSortOption.value,
-      minRating: filterController.minRating.value.toDouble(),
+    print(
+      '[CategoryProductsScreen] Before filtering: ${categoryProductController.filteredProducts.length} products',
     );
+
+    try {
+      // Apply filters and update product lists
+      await categoryProductController.applyFilters(
+        categoryId:
+            filterController.selectedCategory.value == 'All'
+                ? widget.category.id
+                : filterController.selectedCategory.value,
+        subcategoryId: filterController.selectedSubcategoryId.value,
+        minPrice: filterController.minPrice.value,
+        maxPrice: filterController.maxPrice.value,
+        sortOption: filterController.selectedSortOption.value,
+        minRating: filterController.minRating.value.toDouble(),
+      );
+
+      // Force refresh all lists to ensure UI updates
+      categoryProductController.filteredProducts.refresh();
+      categoryProductController.categoryProducts.refresh();
+
+      // If a subcategory is selected, also update its products
+      if (subcategoryController.currentSubcategoryId.value.isNotEmpty) {
+        subcategoryController.subcategoryProducts.refresh();
+      }
+
+      print(
+        '[CategoryProductsScreen] After filtering: ${categoryProductController.filteredProducts.length} products',
+      );
+
+      // Force UI update with setState
+      setState(() {});
+
+      // Additional UI refresh after a delay to ensure changes are rendered
+      Future.delayed(Duration(milliseconds: 100), () {
+        setState(() {});
+        Get.forceAppUpdate();
+      });
+    } catch (e) {
+      print('[CategoryProductsScreen] Error applying filters: $e');
+      // Show error to user if needed
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorExtension>()!;
     final textTheme = Theme.of(context).textTheme;
-    
+
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
@@ -172,9 +207,9 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
             SubcategoryListView(onApplyFilters: applyFilters),
             Padding(
               padding: EdgeInsets.only(
-                left: UIConfig.paddingMedium, 
-                top: UIConfig.paddingMedium, 
-                bottom: UIConfig.paddingMedium
+                left: UIConfig.paddingMedium,
+                top: UIConfig.paddingMedium,
+                bottom: UIConfig.paddingMedium,
               ),
               child: Obx(() {
                 // Use the filteredProducts list instead of categoryProducts
@@ -206,100 +241,125 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
             ),
             // Main product grid
             Expanded(
-              child: Obx(() {
-                // Use isLoadingProducts for subcategory controller to avoid UI flicker
-                final isLoading =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.isLoadingProducts.value
-                        : categoryProductController.isLoading.value;
-                final hasError =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.hasError.value
-                        : categoryProductController.hasError.value;
-                final errorMessage =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.errorMessage.value
-                        : categoryProductController.errorMessage.value;
+              child: GetBuilder<CategoryProductController>(
+                builder: (_) {
+                  return Obx(() {
+                    // Using GetBuilder + Obx ensures maximum reactivity
 
-                // Choose the correct products list based on current selection
-                final List<Product> products =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.subcategoryProducts
-                        : categoryProductController.isSearchActive.value
-                        ? categoryProductController.filteredProducts
-                        : categoryProductController.categoryProducts;
+                    // Choose the correct loading state
+                    final isLoading =
+                        subcategoryController
+                                .currentSubcategoryId
+                                .value
+                                .isNotEmpty
+                            ? subcategoryController.isLoadingProducts.value
+                            : categoryProductController.isLoading.value;
 
-                final isSearchActive =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.isSearchActive.value
-                        : categoryProductController.isSearchActive.value;
+                    // Choose the correct error state
+                    final hasError =
+                        subcategoryController
+                                .currentSubcategoryId
+                                .value
+                                .isNotEmpty
+                            ? subcategoryController.hasError.value
+                            : categoryProductController.hasError.value;
 
-                if (isLoading) {
-                  return Center(
-                    child: CircularProgressIndicator(color: colors.primary),
-                  );
-                }
-                if (hasError) {
-                  return Center(
-                    child: Text(
-                      'Error: $errorMessage',
-                      style: TextStyle(color: colors.destructive),
-                    ),
-                  );
-                }
-                if (products.isEmpty) {
-                  return NoSearchResult(
-                    onExploreCategories: () {
-                      if (isSearchActive) {
-                        if (subcategoryController
-                            .currentSubcategoryId
-                            .value
-                            .isNotEmpty) {
-                          subcategoryController.clearSearch();
-                        } else {
-                          categoryProductController.clearSearch();
-                        }
-                      } else {
-                        subcategoryController.resetState();
-                        // Make sure to fetch products for the selected category
-                        categoryProductController.fetchCategoryProducts(
-                          widget.category.id,
-                        );
-                      }
-                    },
-                  );
-                }
+                    final errorMessage =
+                        subcategoryController
+                                .currentSubcategoryId
+                                .value
+                                .isNotEmpty
+                            ? subcategoryController.errorMessage.value
+                            : categoryProductController.errorMessage.value;
 
-                // Render the products grid
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
-                  child: GridView.builder(
-                    padding: EdgeInsets.only(bottom: UIConfig.paddingMedium),
-                    physics: const BouncingScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 159 / 280,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      return ProductCard(
-                        product: product,
-                        onProductTap:
-                            (id) => categoryProductController.onProductTap(id),
-                        onFavoriteTap:
-                            (id) =>
-                                categoryProductController.toggleFavorite(id),
-                        width: 159,
-                        height: 280,
+                    // IMPORTANT: Get the correct products list
+                    final List<Product> products =
+                        subcategoryController
+                                .currentSubcategoryId
+                                .value
+                                .isNotEmpty
+                            ? subcategoryController.subcategoryProducts
+                            : categoryProductController.filteredProducts;
+
+                    final isSearchActive =
+                        subcategoryController
+                                .currentSubcategoryId
+                                .value
+                                .isNotEmpty
+                            ? subcategoryController.isSearchActive.value
+                            : categoryProductController.isSearchActive.value;
+
+                    print(
+                      '[CategoryProductsScreen] Rendering ${products.length} products',
+                    );
+
+                    if (isLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    if (hasError) {
+                      return Center(child: Text('Error: $errorMessage'));
+                    }
+
+                    if (products.isEmpty) {
+                      return NoSearchResult(
+                        onExploreCategories: () {
+                          if (isSearchActive) {
+                            if (subcategoryController
+                                .currentSubcategoryId
+                                .value
+                                .isNotEmpty) {
+                              subcategoryController.clearSearch();
+                            } else {
+                              categoryProductController.clearSearch();
+                            }
+                          } else {
+                            subcategoryController.resetState();
+                            categoryProductController.fetchCategoryProducts(
+                              widget.category.id,
+                            );
+                          }
+                        },
                       );
-                    },
-                  ),
-                );
-              }),
+                    }
+
+                    // Render the products grid with the filtered products
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: UIConfig.paddingMedium,
+                      ),
+                      child: GridView.builder(
+                        padding: EdgeInsets.only(
+                          bottom: UIConfig.paddingMedium,
+                        ),
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 159 / 280,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ProductCard(
+                            product: product,
+                            onProductTap:
+                                (id) =>
+                                    categoryProductController.onProductTap(id),
+                            onFavoriteTap:
+                                (id) => categoryProductController
+                                    .toggleFavorite(id),
+                            width: 159,
+                            height: 280,
+                          );
+                        },
+                      ),
+                    );
+                  });
+                },
+              ),
             ),
           ],
         ),

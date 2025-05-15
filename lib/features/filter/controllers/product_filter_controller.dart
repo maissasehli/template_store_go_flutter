@@ -36,29 +36,45 @@ class ProductFilterController extends GetxController {
 
   Future<void> applyFilters() async {
     try {
+      // Ensure price values are properly formatted for filtering
+      double finalMinPrice = minPrice.value;
+      double finalMaxPrice = maxPrice.value;
+
+      // Log current filter values before applying
+      developer.log(
+        'About to apply filters - Raw price values: min=${finalMinPrice}, max=${finalMaxPrice}',
+        name: 'ProductFilterController.applyFilters',
+      );
+
+      // Apply filters to the product controller
       await productController.filterProducts(
-        category: selectedCategory.value == 'All' ? null : selectedCategory.value,
-        subcategory: selectedSubcategoryId.value.isEmpty ? null : selectedSubcategoryId.value,
-        minPrice: minPrice.value,
-        maxPrice: maxPrice.value,
+        category:
+            selectedCategory.value == 'All' ? null : selectedCategory.value,
+        subcategory:
+            selectedSubcategoryId.value.isEmpty
+                ? null
+                : selectedSubcategoryId.value,
+        minPrice: finalMinPrice,
+        maxPrice: finalMaxPrice,
         sortBy: selectedSortOption.value,
         rating: minRating.value,
       );
-      
+
       developer.log(
         'Applied filters: category=${selectedCategory.value}, '
         'subcategory=${selectedSubcategoryId.value}, '
-        'price=${minPrice.value}-${maxPrice.value}, '
+        'price=${finalMinPrice}-${finalMaxPrice}, '
         'sort=${selectedSortOption.value}, '
         'rating=${minRating.value}',
-        name: 'ProductFilterController.applyFilters'
+        name: 'ProductFilterController.applyFilters',
       );
       return;
     } catch (e) {
       _logger.e('Error applying filters: $e');
-      developer.log('Error applying filters: $e', 
-        name: 'ProductFilterController.applyFilters', 
-        error: e
+      developer.log(
+        'Error applying filters: $e',
+        name: 'ProductFilterController.applyFilters',
+        error: e,
       );
       throw e;
     }
@@ -72,7 +88,10 @@ class ProductFilterController extends GetxController {
     maxPrice.value = 1000.0;
     minRating.value = 0;
     await productController.clearFilters();
-    developer.log('Cleared all filters', name: 'ProductFilterController.clearFilters');
+    developer.log(
+      'Cleared all filters',
+      name: 'ProductFilterController.clearFilters',
+    );
   }
 
   List<String> get sortOptions => [

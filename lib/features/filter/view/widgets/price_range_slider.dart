@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/filter/view/widgets/thumb_shape.dart';
+import 'dart:developer' as developer;
+
 class PriceRangeSlider extends StatelessWidget {
   final ProductFilterController filterController;
 
@@ -40,8 +42,16 @@ class PriceRangeSlider extends StatelessWidget {
                   '${filterController.maxPrice.value.toStringAsFixed(0)} TND',
                 ),
                 onChanged: (RangeValues values) {
+                  // Update the filter controller values with the selected range
                   filterController.minPrice.value = values.start;
                   filterController.maxPrice.value = values.end;
+                  // Log the updated values for debugging
+                  developer.log(
+                    'Price range updated: min=${values.start.toStringAsFixed(0)}, max=${values.end.toStringAsFixed(0)}',
+                    name: 'PriceRangeSlider.onChanged',
+                  );
+                  // Ensure values are properly updated in the controller
+                  filterController.update(); // Force update using GetX
                 },
               ),
             ),

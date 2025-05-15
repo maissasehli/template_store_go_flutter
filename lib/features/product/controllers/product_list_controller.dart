@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/category/models/category.model.dart';
+import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
@@ -29,7 +30,7 @@ class ProductListController extends GetxController {
     super.onInit();
     final args = Get.arguments;
     String listType = 'all';
-    
+
     // Check the type of args and handle it accordingly
     if (args is Map) {
       // If args is a Map, access it using square brackets
@@ -46,7 +47,7 @@ class ProductListController extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadProducts(listType);
     });
-    
+
     // Listen to changes in the product controller's products list
     ever(productController.products, (_) {
       products.assignAll(productController.products);
@@ -58,7 +59,7 @@ class ProductListController extends GetxController {
       isLoading.value = true;
       hasError.value = false;
       errorMessage.value = '';
-      
+
       final args = Get.arguments;
 
       switch (listType) {
@@ -72,14 +73,14 @@ class ProductListController extends GetxController {
           break;
         case 'category':
           String categoryId = '';
-          
+
           // Handle different types of arguments
           if (args is Map && args['categoryId'] != null) {
             categoryId = args['categoryId'];
           } else if (args is Category) {
             categoryId = args.id; // Assuming Category has an 'id' property
           }
-          
+
           if (categoryId.isNotEmpty) {
             await productController.fetchProductsByCategory(categoryId);
             products.assignAll(productController.products);
@@ -99,16 +100,22 @@ class ProductListController extends GetxController {
           break;
       }
 
-      developer.log('Loaded ${products.length} products for list type: $listType',
-          name: 'ProductListController.loadProducts');
+      developer.log(
+        'Loaded ${products.length} products for list type: $listType',
+        name: 'ProductListController.loadProducts',
+      );
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = productController.errorMessage.value.isNotEmpty
-          ? productController.errorMessage.value
-          : 'Failed to load products. Please try again.';
+      errorMessage.value =
+          productController.errorMessage.value.isNotEmpty
+              ? productController.errorMessage.value
+              : 'Failed to load products. Please try again.';
       _logger.e('Error loading products: $e');
-      developer.log('Error loading products: $e',
-          name: 'ProductListController.loadProducts', error: e);
+      developer.log(
+        'Error loading products: $e',
+        name: 'ProductListController.loadProducts',
+        error: e,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -117,14 +124,14 @@ class ProductListController extends GetxController {
   Future<void> refreshProducts() async {
     final args = Get.arguments;
     String listType = 'all';
-    
+
     // Check the type of args here too
     if (args is Map) {
       listType = args['listType'] ?? 'all';
     } else if (args is Category) {
       listType = 'category';
     }
-    
+
     await loadProducts(listType);
   }
 
@@ -133,10 +140,67 @@ class ProductListController extends GetxController {
       isLoading.value = true;
       hasError.value = false;
       errorMessage.value = '';
-      
+
       await filterController.applyFilters();
-      products.assignAll(productController.products);
-      
+
+      // Make sure to update the products list with the filtered products
+      developer.log(
+        'Applying filters: Updating products list with ${productController.products.length} filtered products',
+        name: 'ProductListController.applyFilters',
+      );
+      products.clear(); // Clear the list first
+      products.assignAll(
+        productController.products,
+      ); // Assign the filtered products
+      products.refresh(); // Force a refresh to ensure UI updates
+
+      // Note: We've improved the system so that the CategoryProductScreen
+      // will update through its own onApplyFilters callback when triggered
+      // from the FilterFooter. This is a fallback for when the callback doesn't work.
+      try {
+        if (Get.isRegistered<CategoryProductController>()) {
+          final categoryProductController =
+              Get.find<CategoryProductController>();
+          developer.log(
+            'Detected CategoryProductController, will update its filtered products too',
+            name: 'ProductListController.applyFilters',
+          );
+
+          // Apply the same filters to the CategoryProductController
+          await categoryProductController.applyFilters(
+            categoryId:
+                filterController.selectedCategory.value == 'All'
+                    ? categoryProductController.currentCategory.value?.id ?? ''
+                    : filterController.selectedCategory.value,
+            subcategoryId: filterController.selectedSubcategoryId.value,
+            minPrice: filterController.minPrice.value,
+            maxPrice: filterController.maxPrice.value,
+            sortOption: filterController.selectedSortOption.value,
+            minRating: filterController.minRating.value.toDouble(),
+          ); // Force all relevant controllers to update
+          categoryProductController.update();
+          update();
+
+          // Log the state of both controllers' product lists
+          developer.log(
+            'After filtering - ProductListController: ${products.length} products, ' +
+                'CategoryProductController: ${categoryProductController.filteredProducts.length} filtered products',
+            name: 'ProductListController.applyFilters',
+          );
+
+          // Make extra sure the UI updates
+          Future.delayed(Duration(milliseconds: 50), () {
+            products.refresh();
+            categoryProductController.filteredProducts.refresh();
+          });
+        }
+      } catch (innerError) {
+        developer.log(
+          'Error updating CategoryProductController: $innerError',
+          name: 'ProductListController.applyFilters',
+          error: innerError,
+        );
+      }
     } catch (e) {
       hasError.value = true;
       errorMessage.value = 'Failed to apply filters. Please try again.';
@@ -160,13 +224,17 @@ class ProductListController extends GetxController {
 
   void toggleFavorite(String productId) {
     productController.toggleFavorite(productId);
-    developer.log('Toggled favorite for product $productId',
-        name: 'ProductListController.toggleFavorite');
+    developer.log(
+      'Toggled favorite for product $productId',
+      name: 'ProductListController.toggleFavorite',
+    );
   }
 
   void onProductTap(String productId) {
     Get.toNamed('/product-details', arguments: {'productId': productId});
-    developer.log('Navigated to product details for $productId',
-        name: 'ProductListController.onProductTap');
+    developer.log(
+      'Navigated to product details for $productId',
+      name: 'ProductListController.onProductTap',
+    );
   }
 }
