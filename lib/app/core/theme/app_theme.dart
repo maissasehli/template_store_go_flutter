@@ -6,6 +6,10 @@ import 'package:store_go/app/core/theme/app_typography.dart';
 import 'package:store_go/app/core/theme/app_typography_extension.dart';
 
 class AppTheme {
+  AppTheme._();
+  static const double globalRadius = 8.0;
+  static const double globalInputsRadius = 16.0;
+  static const double globalButtonsRadius = 16.0;
   // Light theme colors
   static const lightColors = AppColorsData(
     background: Color(0xFFFFFFFF),
@@ -297,19 +301,19 @@ class AppTheme {
         fillColor: colors.input,
         filled: true,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(globalInputsRadius),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(globalInputsRadius),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(globalInputsRadius),
           borderSide: BorderSide(color: colors.primary),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(globalInputsRadius),
           borderSide: BorderSide(color: colors.destructive),
         ),
       ),
@@ -318,7 +322,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+            borderRadius: BorderRadius.circular(globalButtonsRadius),
           ),
           padding: const EdgeInsets.symmetric(
             vertical: UIConfig.paddingMedium,
@@ -331,7 +335,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(globalButtonsRadius),
           ),
         ),
       ),
@@ -339,7 +343,7 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+            borderRadius: BorderRadius.circular(globalButtonsRadius),
           ),
           padding: const EdgeInsets.symmetric(
             vertical: UIConfig.paddingMedium,

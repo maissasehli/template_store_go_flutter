@@ -1,4 +1,5 @@
 class AssetConfig {
+  AssetConfig._();
   // Root paths for assets
   static const String rootImages = 'assets/images';
   static const String rootIcons = 'assets/icons';
@@ -43,6 +44,7 @@ class AssetConfig {
   static const String success = '$rootSvg/success_icon.svg'; 
   static const String search = '$rootIcons/search.png';
   static const String reviews = '$rootIcons/review.png';
+  static const String backArrow = '$rootSvg/backArrow.svg';
 
   // Get all onboarding images as a list
   static List<String> get allOnboardingImages => [

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_color_utils.dart';
 
 class AppColors {
+  AppColors._();
   static Color background(BuildContext context) =>
       AppColorUtils.getThemeColor(context, AppColorName.background);
 

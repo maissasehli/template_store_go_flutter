@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_color_extension.dart';
 
@@ -19,7 +20,7 @@ extension StyledButton on Widget {
         foregroundColor: colors?.primary,
         side: BorderSide(color: colors?.primary ?? Colors.white),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+          borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
         ),
         padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
       ),

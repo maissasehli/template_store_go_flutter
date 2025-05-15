@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/auth/controllers/login_controller.dart';
 import 'package:store_go/app/core/utils/alert_exit_app.dart';
@@ -54,7 +55,7 @@ class Login extends GetView<LoginController> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: GestureDetector(
-                          onTap: () {},
+                          onTap: () {Get.toNamed(AppRoute.forgetPassword);},
                           child: const Text('Forgot Password?'),
                         ),
                       ),

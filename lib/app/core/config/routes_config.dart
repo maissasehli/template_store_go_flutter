@@ -1,4 +1,6 @@
 class AppRoute {
+  // define that the this class has no constructor
+  AppRoute._();
   static const String settings = "/settings";
   static const String products = "/products"; 
   static const String mainContainer = "/main";
