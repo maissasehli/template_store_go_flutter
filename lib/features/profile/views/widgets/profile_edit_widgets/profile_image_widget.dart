@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/profile/controllers/edit_profile_controller.dart';
 
 class ProfileImageWidget extends StatelessWidget {
@@ -19,8 +20,8 @@ class ProfileImageWidget extends StatelessWidget {
         alignment: Alignment.bottomRight,
         children: [
           Container(
-            width: 100.87,
-            height: 100.87,
+            width: 110,
+            height: 110,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(77),
               border: Border.all(color: AppColors.border(context), width: 2),
@@ -109,6 +110,17 @@ class ProfileImageWidget extends StatelessWidget {
         return SafeArea(
           child: Wrap(
             children: [
+              Padding(
+                padding: EdgeInsets.all(UIConfig.paddingMedium),
+                child: Text(
+                  'Select Photo',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Divider(height: 1),
               ListTile(
                 leading: Icon(
                   Icons.photo_library,

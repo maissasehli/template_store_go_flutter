@@ -1,4 +1,5 @@
 class UIConfig {
+  UIConfig._();
   // Border radius values
   static const double borderRadiusSmall = 4.0;
   static const double borderRadiusMedium = 8.0;

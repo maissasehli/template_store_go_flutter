@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class CustomDropdownField extends StatelessWidget {
   final String value;
   final List<String> items;
   final Function(String?) onChanged;
   final String hintText;
-
+  
   const CustomDropdownField({
     super.key,
     required this.value,
@@ -23,7 +24,7 @@ class CustomDropdownField extends StatelessWidget {
         color: AppColors.input(context),
         borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
@@ -57,6 +58,7 @@ class CustomDropdownField extends StatelessWidget {
               color: AppColors.mutedForeground(context),
             ),
           ),
+          dropdownColor: AppColors.input(context),
         ),
       ),
     );

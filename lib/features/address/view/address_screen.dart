@@ -23,7 +23,7 @@ class AddressPage extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-                    color: AppColors.secondary(context),
+            color: AppColors.secondary(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -43,6 +43,18 @@ class AddressPage extends StatelessWidget {
           ),
         ),
       ),
+      // Add the floating action button here
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          controller.clearFields();
+          Get.toNamed('/add-address');
+        },
+        backgroundColor: AppColors.primary(context),
+        child: Icon(
+          Icons.add,
+          color: AppColors.primaryForeground(context),
+        ),
+      ),
       body: Obx(
         () => isLoading.value
             ? Center(child: CircularProgressIndicator(
@@ -54,27 +66,7 @@ class AddressPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: UIConfig.marginLarge),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            controller.clearFields();
-                            Get.toNamed('/add-address');
-                          },
-                          child: Text(
-                            'Add Address',
-                            style: TextStyle(
-                              fontSize: UIConfig.fontSizeMedium,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'Gabarito',
-                              color: AppColors.foreground(context),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: UIConfig.marginMedium),
+                    // Removed the "Add Address" text and its row
                     Expanded(
                       child: controller.addresses.isEmpty
                           ? Center(
@@ -104,7 +96,6 @@ class AddressPage extends StatelessWidget {
                               },
                             ),
                     ),
-                 
                   ],
                 ),
               ),
@@ -119,7 +110,7 @@ class AddressPage extends StatelessWidget {
         vertical: UIConfig.paddingMedium
       ),
       decoration: BoxDecoration(
-        color: AppColors.secondaryForeground(context),
+        color: AppColors.input(context),
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: Row(
@@ -145,7 +136,7 @@ class AddressPage extends StatelessWidget {
                 fontSize: UIConfig.fontSizeSmall,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
+                color: AppColors.primary(context),
               ),
             ),
           ),

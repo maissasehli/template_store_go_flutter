@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_header.dart';
@@ -59,17 +60,29 @@ class ProfilePage extends GetView<ProfileController> {
         children: [
           Text(
             controller.errorMessage.value,
-            style: TextStyle(color: AppColors.foreground(context)),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.foreground(context),
+            ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: UIConfig.paddingMedium),
           ElevatedButton(
             onPressed: controller.fetchCurrentUser,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingLarge,
+                vertical: UIConfig.paddingSmall,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+              ),
             ),
             child: Text(
               'Retry',
-              style: TextStyle(color: AppColors.primaryForeground(context)),
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                color: AppColors.primaryForeground(context),
+              ),
             ),
           ),
         ],
@@ -84,16 +97,16 @@ class ProfilePage extends GetView<ProfileController> {
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
+              SizedBox(height: UIConfig.paddingLarge),
               // Profile Header Section
               ProfileHeader(user: controller.user.value),
               // User Details Card
               UserDetailsCard(user: controller.user.value),
-              const SizedBox(height: 24),
+              SizedBox(height: UIConfig.paddingLarge),
               // Menu Options
               ProfileMenuSection(authService: authService),
             ],

@@ -53,10 +53,29 @@ class ProfileController extends GetxController {
       final updatedUser = await _repository.updateProfile(userData);
       user.value = updatedUser;
       logger.d('Profile updated successfully');
+      
+      // Notify UI that user data has been updated
+      update();
+      
+      Get.snackbar(
+        'Success',
+        'Profile updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.secondary,
+        colorText: Get.theme.colorScheme.onSecondary,
+      );
     } catch (e) {
       logger.e('Error updating profile: $e');
       hasError.value = true;
       errorMessage.value = 'Failed to update profile. Please try again.';
+      
+      Get.snackbar(
+        'Error',
+        'Failed to update profile. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -72,10 +91,29 @@ class ProfileController extends GetxController {
       final updatedUser = await _repository.uploadAvatar(imageFile);
       user.value = updatedUser;
       logger.d('Avatar uploaded successfully');
+      
+      // Notify UI that user data has been updated
+      update();
+      
+      Get.snackbar(
+        'Success',
+        'Avatar uploaded successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.secondary,
+        colorText: Get.theme.colorScheme.onSecondary,
+      );
     } catch (e) {
       logger.e('Error uploading avatar: $e');
       hasError.value = true;
       errorMessage.value = 'Failed to upload avatar. Please try again.';
+      
+      Get.snackbar(
+        'Error',
+        'Failed to upload avatar. Please try again.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
     } finally {
       isLoading.value = false;
     }

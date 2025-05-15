@@ -5,11 +5,15 @@ import 'package:store_go/app/core/theme/colors.dart';
 class CustomFormField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
-
+  final TextInputType keyboardType;
+  final bool readOnly;
+  
   const CustomFormField({
     super.key,
     required this.label,
     required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.readOnly = false,
   });
   @override
   Widget build(BuildContext context) {
