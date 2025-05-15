@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/profile/controllers/edit_profile_controller.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/profile_image_widget.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/profile_name_display.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/profile_form.dart';
@@ -33,18 +36,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
-        title: const Text(
+        elevation: 0,
+        title: Text(
           'Edit Profile',
           style: TextStyle(
-            color: Colors.black,
+            color: AppColors.foreground(context),
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),

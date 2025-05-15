@@ -4,7 +4,7 @@ import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
-import 'package:store_go/features/auth/controllers/forget_password.dart';
+import 'package:store_go/features/auth/controllers/forget_password_controller.dart';
 import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/shared/extensions/fields/validated_fields.dart';
 

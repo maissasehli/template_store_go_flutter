@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 
 class PhoneField extends StatelessWidget {
   final TextEditingController controller;
 
   const PhoneField({super.key, required this.controller});
-
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 342,
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.input(context),
+        borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
       ),
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: Row(
@@ -21,10 +22,14 @@ class PhoneField extends StatelessWidget {
             width: 26,
             height: 26,
             decoration: BoxDecoration(
-              color: Colors.red,
+              color: AppColors.primary(context),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(Icons.phone, size: 14, color: Colors.white),
+            child: Icon(
+              Icons.phone,
+              size: 14,
+              color: AppColors.primaryForeground(context),
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -46,24 +51,25 @@ class PhoneField extends StatelessWidget {
                   errorBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
                   labelText: 'Phone number',
-                  labelStyle: const TextStyle(
+                  labelStyle: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
                     fontSize: 12,
                     height: 16 / 10,
                     letterSpacing: 0.25,
-                    color: Color(0xFF757575),
+                    color: AppColors.mutedForeground(context),
                   ),
                   contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w400,
                   fontSize: 14,
                   height: 18 / 14,
                   letterSpacing: 0.25,
+                  color: AppColors.inputForeground(context),
                 ),
-                cursorColor: Colors.grey,
+                cursorColor: AppColors.primary(context),
               ),
             ),
           ),

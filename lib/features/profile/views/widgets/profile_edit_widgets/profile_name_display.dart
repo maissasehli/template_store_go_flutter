@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/profile/controllers/edit_profile_controller.dart';
 
 class ProfileNameDisplay extends StatelessWidget {
   final EditProfileController controller;
 
   const ProfileNameDisplay({super.key, required this.controller});
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -18,6 +18,7 @@ class ProfileNameDisplay extends StatelessWidget {
               fontSize: 22,
               fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
             ),
           );
         }),
@@ -29,7 +30,7 @@ class ProfileNameDisplay extends StatelessWidget {
             '@$username',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: AppColors.mutedForeground(context),
               fontFamily: 'Poppins',
             ),
           );

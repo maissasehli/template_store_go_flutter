@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/features/profile/controllers/edit_profile_controller.dart';
 
 class SaveButton extends StatelessWidget {
   final EditProfileController controller;
 
   const SaveButton({super.key, required this.controller});
-
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 342,
       height: 55,
       decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(100),
+        color: AppColors.primary(context),
+        borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
       ),
       child: TextButton(
         onPressed: () {
@@ -23,7 +24,7 @@ class SaveButton extends StatelessWidget {
         style: TextButton.styleFrom(
           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
           ),
         ),
         child: Obx(() {
@@ -32,14 +33,14 @@ class SaveButton extends StatelessWidget {
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: AppColors.primaryForeground(context),
                   strokeWidth: 2,
                 ),
               )
-              : const Text(
+              : Text(
                 'Save',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.primaryForeground(context),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Poppins',

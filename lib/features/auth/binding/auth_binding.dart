@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:store_go/features/auth/controllers/forget_password.dart';
+import 'package:store_go/features/auth/controllers/forget_password_controller.dart';
 import 'package:store_go/features/auth/controllers/login_controller.dart';
 import 'package:store_go/features/auth/controllers/reset_password.dart';
 import 'package:store_go/features/auth/controllers/signup_controller.dart';

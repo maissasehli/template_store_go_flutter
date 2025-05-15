@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/colors.dart';
 
 class CustomDropdownField extends StatelessWidget {
   final String value;
@@ -13,31 +15,34 @@ class CustomDropdownField extends StatelessWidget {
     required this.onChanged,
     required this.hintText,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(10),
+        color: AppColors.input(context),
+        borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down),
+          icon: Icon(
+            Icons.keyboard_arrow_down,
+            color: AppColors.mutedForeground(context),
+          ),
           items:
               items.map((String item) {
                 return DropdownMenuItem<String>(
                   value: item,
                   child: Text(
                     item,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
+                      color: AppColors.inputForeground(context),
                     ),
                   ),
                 );
@@ -49,7 +54,7 @@ class CustomDropdownField extends StatelessWidget {
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
               fontSize: 10,
-              color: Color(0xFF757575),
+              color: AppColors.mutedForeground(context),
             ),
           ),
         ),
