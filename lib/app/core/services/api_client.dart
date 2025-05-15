@@ -76,7 +76,12 @@ class ApiClient {
                 // If refresh failed, if not in the public routes, redirect to login
                 if (!AppRoute.publicRoutes.contains(Get.currentRoute)) {
                   Logger().e('Interceptor onRequest: Token refresh failed');
-                  Get.offAllNamed(AppRoute.login);
+                  // Only redirect if we're not already on the login page
+                  if (Get.currentRoute != AppRoute.login) {
+                    Get.offAllNamed(AppRoute.login);
+                  } else {
+                    Logger().d('Already on login page, not redirecting');
+                  }
                 }
                 return handler.reject(
                   dio.DioException(
@@ -148,9 +153,13 @@ class ApiClient {
               // Return the new response
               return handler.resolve(response);
             } else {
-              // If refresh failed, redirect to login
+              // If refresh failed, check if we're already on login page before redirecting
               Logger().e('Interceptor onError: Token refresh failed after 401');
-              Get.offAllNamed(AppRoute.login);
+              if (Get.currentRoute != AppRoute.login) {
+                Get.offAllNamed(AppRoute.login);
+              } else {
+                Logger().d('Already on login page, not redirecting');
+              }
             }
           }
 
@@ -236,8 +245,35 @@ class ApiClient {
     }
   }
 
+  // A static counter to limit refresh attempts
+  static int _refreshAttempts = 0;
+  static DateTime? _lastRefreshAttempt;
+  static const int _maxRefreshAttempts = 3;
+  static const Duration _refreshCooldownPeriod = Duration(minutes: 5);
+
   // Add this method to your ApiClient class to handle token refreshing
   Future<bool> _refreshToken() async {
+    // Check if we've exceeded the maximum refresh attempts in a short time period
+    final now = DateTime.now();
+    if (_lastRefreshAttempt != null) {
+      final timeSinceLastRefresh = now.difference(_lastRefreshAttempt!);
+
+      // If we've made too many attempts in a short period, enforce a cooldown
+      if (_refreshAttempts >= _maxRefreshAttempts &&
+          timeSinceLastRefresh < _refreshCooldownPeriod) {
+        Logger().w('Too many refresh attempts. Cooling down. Try again later.');
+        return false;
+      }
+
+      // Reset counter if enough time has passed since the last attempt
+      if (timeSinceLastRefresh > _refreshCooldownPeriod) {
+        _refreshAttempts = 0;
+      }
+    }
+
+    _lastRefreshAttempt = now;
+    _refreshAttempts++;
+
     // Use the lock to prevent concurrent refresh attempts
     return _refreshLock.synchronized(() async {
       try {
@@ -245,12 +281,17 @@ class ApiClient {
         final refreshToken = await _secureStorage.read(key: 'refresh_token');
         Logger().d('Refresh token: $refreshToken');
 
-        if (refreshToken == null) return false;
+        if (refreshToken == null) {
+          Logger().w('No refresh token found');
+          return false;
+        }
 
         // Create a clean Dio instance for the refresh request
         final refreshDio = dio.Dio(
           dio.BaseOptions(
             baseUrl: AppConfig.baseUrl,
+            connectTimeout: const Duration(seconds: 10),
+            receiveTimeout: const Duration(seconds: 10),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
@@ -260,35 +301,59 @@ class ApiClient {
         );
 
         // Make the refresh request
+        Logger().d(
+          'Making refresh token request to ${AppConfig.baseUrl}/auth/refresh',
+        );
         final response = await refreshDio.post(
           '/auth/refresh',
           data: {'refreshToken': refreshToken},
         );
 
         if (response.statusCode == 200) {
+          // Reset attempts counter on successful refresh
+          _refreshAttempts = 0;
+
           final accessToken = response.data['session']['accessToken'];
           final newRefreshToken = response.data['session']['refreshToken'];
           final expiresAt = response.data['session']['expiresAt'];
           final userId = response.data['session']['userId'];
+
           // Store all tokens atomically
           await Future.wait([
             _secureStorage.write(key: 'access_token', value: accessToken),
             _secureStorage.write(key: 'refresh_token', value: newRefreshToken),
             _secureStorage.write(key: 'expires_at', value: expiresAt),
           ]);
+
           // Initialize pusher
-          final pusherService = Get.find<PusherService>();
-          pusherService.initializePusher(AppConfig.storeId, userId);
+          try {
+            final pusherService = Get.find<PusherService>();
+            pusherService.initializePusher(AppConfig.storeId, userId);
+          } catch (e) {
+            Logger().e('Failed to initialize Pusher after token refresh: $e');
+            // Continue anyway since token refresh was successful
+          }
 
           Logger().d('Token refreshed successfully');
           return true;
+        } else {
+          // Handle specific non-200 status codes
+          Logger().e(
+            'Token refresh failed with status: ${response.statusCode}',
+          );
+          return false;
         }
-        return false;
       } catch (e) {
         Logger().e('Error refreshing token: $e');
+
         // Disconnect Pusher
-        final pusherService = Get.find<PusherService>();
-        pusherService.disconnect();
+        try {
+          final pusherService = Get.find<PusherService>();
+          pusherService.disconnect();
+        } catch (pusherError) {
+          Logger().e('Error disconnecting Pusher: $pusherError');
+        }
+
         // If error is 'refresh_token_already_used', it means another refresh happened
         // In this case, just check if we have valid tokens
         if (e.toString().contains('refresh_token_already_used')) {
@@ -298,7 +363,7 @@ class ApiClient {
           if (expiresAtStr != null && token != null) {
             final expiresAt = DateTime.parse(expiresAtStr);
             if (DateTime.now().isBefore(expiresAt)) {
-              // We already have valid tokens from another refresh
+              Logger().d('Using existing valid token from another refresh');
               return true;
             }
           }

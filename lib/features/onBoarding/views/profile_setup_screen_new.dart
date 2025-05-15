@@ -13,6 +13,7 @@ class ProfileSetupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileSetupController controller = Get.put(ProfileSetupController());
+
     return Scaffold(
       backgroundColor: AppColors.background(context),
       body: SafeArea(
@@ -55,6 +56,7 @@ class ProfileSetupScreen extends StatelessWidget {
 
                   const Text("How Old are you?").body(context),
                   const SizedBox(height: 15),
+
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
@@ -121,7 +123,8 @@ class ProfileSetupScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                 ],
               ),
-            ), // Back Button
+            ),
+            // Back Button
             Positioned(
               top: 10,
               left: 10,

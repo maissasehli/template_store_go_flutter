@@ -83,7 +83,7 @@ class ProfileSetupController extends GetxController {
         );
 
         // Navigate to home screen
-        Get.offAllNamed(AppRoute.home);
+        Get.offAllNamed(AppRoute.mainContainer);
       } catch (e) {
         logger.e('Error updating profile: $e');
 
