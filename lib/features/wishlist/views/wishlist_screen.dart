@@ -63,22 +63,24 @@ class _WishlistScreenState extends State<WishlistPage> {
                 fontWeight: FontWeight.w500,
               ),
         ),
-        centerTitle: true,
-      ),
-      body: Obx(() {
-        // Show loading indicator when loading
-        if (_wishlistController.isLoading.value) {
-          return Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary(context),
-            ),
-          );
-        }
+        centerTitle: true,      ),
+      body: GestureDetector(
+        // Dismiss keyboard when tapping anywhere on the screen
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Obx(() {
+          // Show loading indicator when loading
+          if (_wishlistController.isLoading.value) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary(context),
+              ),
+            );
+          }
 
-        // Show error message when there's an error
-        if (_wishlistController.hasError.value) {
-          return _buildErrorView();
-        }
+          // Show error message when there's an error
+          if (_wishlistController.hasError.value) {
+            return _buildErrorView();
+          }
 
         // Show empty state when wishlist is empty
         if (_wishlistController.wishlistItems.isEmpty) {
@@ -88,7 +90,7 @@ class _WishlistScreenState extends State<WishlistPage> {
         // Show wishlist items
         return _buildWishlistContent();
       }),
-    );
+    ));
   }
 
   Widget _buildErrorView() {

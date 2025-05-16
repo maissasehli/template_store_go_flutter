@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_color_extension.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/features/search/views/search_page.dart';
 
 class CustomSearchBar extends StatefulWidget {
@@ -47,115 +48,130 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorExtension>()!;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
-      child: Container(
-        height: 36,
-        decoration: BoxDecoration(
-          color: colors.input,
-          borderRadius: BorderRadius.circular(18),
-          border:
-              _isFocused ? Border.all(color: colors.primary, width: 1.5) : null,
-        ),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: SvgPicture.asset(
-                AssetConfig.searchIcon,
-                colorFilter: ColorFilter.mode(
-                  colors.inputForeground,
-                  BlendMode.srcIn,
-                ),
-                height: 16,
-                width: 16,
-              ),
+    return GestureDetector(
+      onTap: () {
+        // Unfocus the text field when tapping outside of it
+        if (_focusNode.hasFocus) {
+          _focusNode.unfocus();
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+        child: Container(
+          height: 40, // Increased height for better vertical padding
+          decoration: BoxDecoration(
+            color: colors.input,
+            borderRadius: BorderRadius.circular(AppTheme.globalInputsRadius),
+            border: Border.all(
+              color: _isFocused ? colors.primary : Colors.transparent,
+              width: 1.5,
             ),
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                focusNode: _focusNode,
-                decoration: InputDecoration(
-                  hintText: 'Search',
-                  border: InputBorder.none,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent),
-                    borderRadius: BorderRadius.circular(18),
+          ),
+          child: Row(
+            crossAxisAlignment:
+                CrossAxisAlignment
+                    .center, // Ensure everything is centered vertically
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SvgPicture.asset(
+                  AssetConfig.searchIcon,
+                  colorFilter: ColorFilter.mode(
+                    colors.inputForeground,
+                    BlendMode.srcIn,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  hintStyle: TextStyle(
-                    color: colors.mutedForeground,
-                    fontSize: 14,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  height: 16,
+                  width: 16,
                 ),
-                onSubmitted: (value) {
-                  // Navigate to search page when search button on keyboard is pressed
-                  Get.to(() => SearchPage(initialQuery: value));
-                },
-                // Removing onChanged to prevent requests on each keystroke
-                textInputAction: TextInputAction.search,
-                style: TextStyle(fontSize: 14, color: colors.inputForeground),
               ),
-            ),
-            if (_controller.text.isNotEmpty)
-              Row(
-                children: [
-                  // Clear button
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        _controller.clear();
-                        widget.onSearch('');
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.clear,
-                          size: 16,
-                          color: colors.mutedForeground,
+              Expanded(
+                child: Center(
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    decoration: InputDecoration(
+                      hintText: 'Search',
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      isDense: true, // Helps with vertical centering
+                      hintStyle: TextStyle(
+                        color: colors.mutedForeground,
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      contentPadding: EdgeInsets.zero, // Remove all padding
+                    ),
+                    onSubmitted: (value) {
+                      // Navigate to search page when search button on keyboard is pressed
+                      Get.to(() => SearchPage(initialQuery: value));
+                    },
+                    // Removing onChanged to prevent requests on each keystroke
+                    textInputAction: TextInputAction.search,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: colors.inputForeground,
+                    ),
+                  ),
+                ),
+              ),
+              if (_controller.text.isNotEmpty)
+                Row(
+                  mainAxisSize: MainAxisSize.min, // Take only the space needed
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center, // Align vertically centered
+                  children: [
+                    // Clear button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          _controller.clear();
+                          widget.onSearch('');
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(
+                            Icons.clear,
+                            size: 16,
+                            color: colors.mutedForeground,
+                          ),
+                        ),
+                      ),
+                    ), // Search button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          // Only trigger search when the button is pressed
+                          widget.onSearch(_controller.text);
+                          Get.to(
+                            () => SearchPage(initialQuery: _controller.text),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Icon(
+                            Icons.search,
+                            size: 18,
+                            color: colors.primary,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  // Search button
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        // Only trigger search when the button is pressed
-                        widget.onSearch(_controller.text);
-                        Get.to(
-                          () => SearchPage(initialQuery: _controller.text),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        child: Icon(
-                          Icons.search,
-                          size: 18,
-                          color: colors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-          ],
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );

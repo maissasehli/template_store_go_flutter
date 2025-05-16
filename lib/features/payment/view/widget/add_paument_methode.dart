@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 
 class AddPaymentMethodPage extends StatelessWidget {
   const AddPaymentMethodPage({super.key});
@@ -7,12 +10,16 @@ class AddPaymentMethodPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
@@ -40,7 +47,7 @@ class AddPaymentMethodPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Credit/Debit Card Option
             _buildPaymentMethodOption(
               title: 'Credit/Debit Card',
@@ -48,9 +55,9 @@ class AddPaymentMethodPage extends StatelessWidget {
               icon: Icons.credit_card,
               onTap: () => Get.toNamed('/add-card'),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // PayPal Option
             _buildPaymentMethodOption(
               title: 'PayPal',
@@ -108,10 +115,7 @@ class AddPaymentMethodPage extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black54,
-                    ),
+                    style: const TextStyle(fontSize: 14, color: Colors.black54),
                   ),
                 ],
               ),

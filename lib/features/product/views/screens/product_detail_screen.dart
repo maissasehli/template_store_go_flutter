@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/favorite_button.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/product_image_gallery.dart';
@@ -23,7 +25,8 @@ class ProductDetailScreen extends StatefulWidget {
   ProductDetailScreenState createState() => ProductDetailScreenState();
 }
 
-class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTickerProviderStateMixin {
+class ProductDetailScreenState extends State<ProductDetailScreen>
+    with SingleTickerProviderStateMixin {
   final ProductDetailController detailController =
       Get.find<ProductDetailController>();
   String? selectedColor;
@@ -33,17 +36,17 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
   @override
   void initState() {
     super.initState();
-    
+
     // Animation setup for skeleton loading
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat(reverse: true);
-    
+
     _pulseAnimation = Tween<double>(begin: 0.4, end: 0.9).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    
+
     detailController.fetchProductDetails(widget.productId);
     detailController.state.product.listen((product) {
       if (product != null &&
@@ -66,7 +69,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
     final theme = Theme.of(context);
     final surfaceColor = theme.cardColor;
     final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-    
+
     return Stack(
       children: [
         // Skeleton for Product Image Gallery
@@ -81,7 +84,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
               return Container(
                 margin: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Color.lerp(hintColor, surfaceColor, _pulseAnimation.value),
+                  color: Color.lerp(
+                    hintColor,
+                    surfaceColor,
+                    _pulseAnimation.value,
+                  ),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Center(
@@ -92,14 +99,17 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                   ),
                 ),
               );
-            }
+            },
           ),
         ),
 
         // Skeleton for Top Navigation Bar
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -127,7 +137,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
           child: Padding(
             padding: const EdgeInsets.only(bottom: 420.0),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 16.0,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(3, (index) {
@@ -140,7 +153,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                         margin: const EdgeInsets.symmetric(horizontal: 3),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color.lerp(hintColor, surfaceColor, _pulseAnimation.value),
+                          color: Color.lerp(
+                            hintColor,
+                            surfaceColor,
+                            _pulseAnimation.value,
+                          ),
                         ),
                       );
                     },
@@ -166,21 +183,17 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Skeleton for Product Info
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        _buildSkeletonBox(100, 18),
-                      ],
-                    ),
+                    Row(children: [_buildSkeletonBox(100, 18)]),
                     _buildSkeletonBox(80, 14),
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Skeleton for Size Selector
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +211,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Skeleton for Color Selector
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -209,7 +222,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                       children: [
                         _buildSkeletonBox(100, 18),
                         const SizedBox(height: 8),
-                        _buildSkeletonBox(MediaQuery.of(context).size.width * 0.6, 40),
+                        _buildSkeletonBox(
+                          MediaQuery.of(context).size.width * 0.6,
+                          40,
+                        ),
                       ],
                     ),
                     Column(
@@ -223,7 +239,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Skeleton for Product Description
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +250,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Skeleton for Review Section
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,14 +269,18 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Skeleton for Add to Cart Button
                 Row(
                   children: [
                     _buildSkeletonBox(60, 20),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: _buildSkeletonBox(double.infinity, 50, borderRadius: 25),
+                      child: _buildSkeletonBox(
+                        double.infinity,
+                        50,
+                        borderRadius: 25,
+                      ),
                     ),
                   ],
                 ),
@@ -273,14 +293,18 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
     );
   }
 
-  Widget _buildSkeletonBox(double width, double height, {double borderRadius = 10}) {
+  Widget _buildSkeletonBox(
+    double width,
+    double height, {
+    double borderRadius = 10,
+  }) {
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
         final theme = Theme.of(context);
         final surfaceColor = theme.cardColor;
         final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-        
+
         return Container(
           width: width,
           height: height,
@@ -289,7 +313,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         );
-      }
+      },
     );
   }
 
@@ -300,7 +324,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
         final theme = Theme.of(context);
         final surfaceColor = theme.cardColor;
         final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-        
+
         return Container(
           width: size,
           height: size,
@@ -309,7 +333,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
             color: Color.lerp(hintColor, surfaceColor, _pulseAnimation.value),
           ),
         );
-      }
+      },
     );
   }
 
@@ -320,7 +344,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
         final theme = Theme.of(context);
         final surfaceColor = theme.cardColor;
         final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-        
+
         return Container(
           width: 40,
           height: 40,
@@ -341,7 +365,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
             size: 20,
           ),
         );
-      }
+      },
     );
   }
 
@@ -415,7 +439,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_rounded),
+            icon: ThemeAwareSvg(
+              assetPath: AssetConfig.backArrow,
+              height: 24,
+              width: 24,
+            ),
             label: const Text('Retour'),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -461,7 +489,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                         horizontal: 16.0,
                       ),
                       child: ImagePageIndicator(
-                        currentIndex: detailController.state.currentImageIndex.value,
+                        currentIndex:
+                            detailController.state.currentImageIndex.value,
                         totalImages: product.images.length,
                       ),
                     ),
@@ -519,7 +548,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                         children: [
                           Expanded(
                             child: SizeSelector(
-                              selectedSize: detailController.state.selectedSize.value,
+                              selectedSize:
+                                  detailController.state.selectedSize.value,
                               sizes: product.variants['size'] ?? [],
                               onSizeSelected: (size) {
                                 detailController.updateSize(size);
@@ -527,7 +557,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                             ),
                           ),
                           ColorSelector(
-                            selectedColor: selectedColor ??
+                            selectedColor:
+                                selectedColor ??
                                 (product.variants['color']?.isNotEmpty ?? false
                                     ? product.variants['color']![0]
                                     : ''),

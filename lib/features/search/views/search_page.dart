@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/search/controllers/search_controller.dart';
@@ -43,7 +45,11 @@ class _SearchPageState extends State<SearchPage> {
         backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           color: colors.foreground,
           onPressed: () => Get.back(),
         ),
@@ -55,46 +61,50 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CustomSearchBar(
-              initialValue: widget.initialQuery,
-              onSearch: _onSearch,
+      body: GestureDetector(
+        // Dismiss keyboard when tapping anywhere on the screen
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomSearchBar(
+                initialValue: widget.initialQuery,
+                onSearch: _onSearch,
+              ),
             ),
-          ),
-          Expanded(
-            child: Obx(() {
-              if (_searchController.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (_searchController.searchQuery.value.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Enter a search term to find products',
-                    style: TextStyle(color: colors.mutedForeground),
-                  ),
-                );
-              } else if (_searchController.hasError.value) {
-                return Center(
-                  child: Text(
-                    _searchController.errorMessage.value,
-                    style: TextStyle(color: colors.destructive),
-                    textAlign: TextAlign.center,
-                  ),
-                );
-              } else if (!_searchController.hasResults.value) {
-                return NoSearchResult(
-                  onExploreCategories: () {
-                    Get.toNamed(AppRoute.categories);
-                  },
-                );
-              } else {
-                return _buildSearchResults();
-              }
-            }),
-          ),
-        ],
+            Expanded(
+              child: Obx(() {
+                if (_searchController.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (_searchController.searchQuery.value.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Enter a search term to find products',
+                      style: TextStyle(color: colors.mutedForeground),
+                    ),
+                  );
+                } else if (_searchController.hasError.value) {
+                  return Center(
+                    child: Text(
+                      _searchController.errorMessage.value,
+                      style: TextStyle(color: colors.destructive),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else if (!_searchController.hasResults.value) {
+                  return NoSearchResult(
+                    onExploreCategories: () {
+                      Get.toNamed(AppRoute.categories);
+                    },
+                  );
+                } else {
+                  return _buildSearchResults();
+                }
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }

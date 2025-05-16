@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
@@ -17,9 +18,10 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-final CartController cartController = Get.find<CartController>();
+  final CartController cartController = Get.find<CartController>();
   final AddressController addressController = Get.find<AddressController>();
-  final PaymentController paymentController = Get.find<PaymentController>(); // Use registered instance
+  final PaymentController paymentController =
+      Get.find<PaymentController>(); // Use registered instance
   final OrderController orderController = Get.find<OrderController>();
 
   bool isOrderPlaced = false;
@@ -32,15 +34,21 @@ final CartController cartController = Get.find<CartController>();
   }
 
   Future<void> placeOrder() async {
-    if (addressController.selectedAddress.value == null || paymentController.selectedPaymentMethod.value == null) {
-      Get.snackbar('Error', 'Please select an address and payment method', snackPosition: SnackPosition.BOTTOM);
+    if (addressController.selectedAddress.value == null ||
+        paymentController.selectedPaymentMethod.value == null) {
+      Get.snackbar(
+        'Error',
+        'Please select an address and payment method',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
     try {
       // Prepare order data
       final orderData = {
-        'cartItems': cartController.cartItems.map((item) => item.toJson()).toList(),
+        'cartItems':
+            cartController.cartItems.map((item) => item.toJson()).toList(),
         'shippingAddressId': addressController.selectedAddress.value!.id,
         'paymentMethodId': paymentController.selectedPaymentMethod.value!.id,
         'subtotal': cartController.subtotal.value,
@@ -51,7 +59,10 @@ final CartController cartController = Get.find<CartController>();
       };
 
       // Send order to backend
-      final response = await Get.find<ApiClient>().post('/orders', data: orderData);
+      final response = await Get.find<ApiClient>().post(
+        '/orders',
+        data: orderData,
+      );
       if (response.statusCode == 201) {
         setState(() {
           isOrderPlaced = true;
@@ -59,10 +70,18 @@ final CartController cartController = Get.find<CartController>();
         await cartController.clearCart();
         orderController.fetchOrders(); // Refresh orders
       } else {
-        Get.snackbar('Error', 'Failed to place order', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Error',
+          'Failed to place order',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to place order: $e', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Failed to place order: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -95,10 +114,10 @@ final CartController cartController = Get.find<CartController>();
                     color: Colors.grey[100],
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 16,
-                    color: Colors.black,
+                  child: ThemeAwareSvg(
+                    assetPath: AssetConfig.backArrow,
+                    height: 24,
+                    width: 24,
                   ),
                 ),
               ),
@@ -121,143 +140,158 @@ final CartController cartController = Get.find<CartController>();
           const SizedBox(height: 30),
 
           // Shipping Address
-          Obx(() => Container(
-                width: 342,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFF4F4F4)),
-                ),
-                child: ListTile(
-                  title: const Text(
-                    'Shipping Address',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
+          Obx(
+            () => Container(
+              width: 342,
+              height: 72,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFF4F4F4)),
+              ),
+              child: ListTile(
+                title: const Text(
+                  'Shipping Address',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
-                  subtitle: Text(
-                    addressController.selectedAddress.value?.formattedAddress ?? 'Select Shipping Address',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => Get.toNamed('/address'),
                 ),
-              )),
+                subtitle: Text(
+                  addressController.selectedAddress.value?.formattedAddress ??
+                      'Select Shipping Address',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => Get.toNamed('/address'),
+              ),
+            ),
+          ),
 
           const SizedBox(height: 16),
 
           // Payment Method
-          Obx(() => Container(
-                width: 342,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFF4F4F4)),
-                ),
-                child: ListTile(
-                  title: const Text(
-                    'Payment Method',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
+          Obx(
+            () => Container(
+              width: 342,
+              height: 72,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFF4F4F4)),
+              ),
+              child: ListTile(
+                title: const Text(
+                  'Payment Method',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
                   ),
-                  subtitle: Text(
-                    paymentController.selectedPaymentMethod.value?.displayName ?? 'Select Payment Method',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => Get.to(() => PaymentMethodPage()),
                 ),
-              )),
+                subtitle: Text(
+                  paymentController.selectedPaymentMethod.value?.displayName ??
+                      'Select Payment Method',
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => Get.to(() => PaymentMethodPage()),
+              ),
+            ),
+          ),
 
           const Spacer(),
 
           // Order Summary
-          Obx(() => Container(
-                width: 342,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: Colors.grey.withOpacity(0.3), width: 1),
+          Obx(
+            () => Container(
+              width: 342,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: Colors.grey.withOpacity(0.3),
+                    width: 1,
                   ),
                 ),
-                child: Column(
-                  children: [
-                    _buildSummaryRow(
-                      'Subtotal',
-                      '\$${cartController.subtotal.value.toStringAsFixed(2)}',
-                    ),
-                    _buildSummaryRow(
-                      'Shipping Cost',
-                      '\$${cartController.shipping.value.toStringAsFixed(2)}',
-                    ),
-                    _buildSummaryRow(
-                      'Tax',
-                      '\$${cartController.tax.value.toStringAsFixed(2)}',
-                    ),
-                    _buildSummaryRow(
-                      'Discount',
-                      '-\$${cartController.discount.value.toStringAsFixed(2)}',
-                    ),
-                    _buildSummaryRow(
-                      'Total',
-                      '\$${cartController.total.value.toStringAsFixed(2)}',
-                      isTotal: true,
-                    ),
-                  ],
-                ),
-              )),
+              ),
+              child: Column(
+                children: [
+                  _buildSummaryRow(
+                    'Subtotal',
+                    '\$${cartController.subtotal.value.toStringAsFixed(2)}',
+                  ),
+                  _buildSummaryRow(
+                    'Shipping Cost',
+                    '\$${cartController.shipping.value.toStringAsFixed(2)}',
+                  ),
+                  _buildSummaryRow(
+                    'Tax',
+                    '\$${cartController.tax.value.toStringAsFixed(2)}',
+                  ),
+                  _buildSummaryRow(
+                    'Discount',
+                    '-\$${cartController.discount.value.toStringAsFixed(2)}',
+                  ),
+                  _buildSummaryRow(
+                    'Total',
+                    '\$${cartController.total.value.toStringAsFixed(2)}',
+                    isTotal: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
 
           // Place Order Button
-          Obx(() => Container(
-                width: double.infinity,
-                height: 55,
-                margin: const EdgeInsets.only(top: 24, bottom: 24),
-                child: ElevatedButton(
-                  onPressed: addressController.selectedAddress.value != null &&
-                          paymentController.selectedPaymentMethod.value != null
-                      ? placeOrder
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    disabledBackgroundColor: Colors.grey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+          Obx(
+            () => Container(
+              width: double.infinity,
+              height: 55,
+              margin: const EdgeInsets.only(top: 24, bottom: 24),
+              child: ElevatedButton(
+                onPressed:
+                    addressController.selectedAddress.value != null &&
+                            paymentController.selectedPaymentMethod.value !=
+                                null
+                        ? placeOrder
+                        : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  disabledBackgroundColor: Colors.grey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '\$${cartController.total.value.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${cartController.total.value.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
-                        const Text(
-                          'Place Order',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      ),
+                      const Text(
+                        'Place Order',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );

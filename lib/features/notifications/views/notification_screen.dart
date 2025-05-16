@@ -1,31 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/notifications/controller/notification_controller.dart';
-import 'package:store_go/features/notifications/views/widgets/empty_notification_state.dart.dart';
+import 'package:store_go/features/notifications/views/widgets/empty_notification_state.dart';
 import 'package:store_go/features/notifications/views/widgets/notification_item.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     // Controller to manage notifications state
     final controller = Get.put(NotificationsController());
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Notifications',
           style: TextStyle(
-            color: Colors.black,
+            color: AppColors.foreground(context),
             fontSize: 16,
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
@@ -33,7 +39,7 @@ class NotificationsPage extends StatelessWidget {
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
+            icon: Icon(Icons.more_vert, color: AppColors.foreground(context)),
             onSelected: (value) {
               if (value == 'mark_all_read') {
                 controller.markAllAsRead();
@@ -41,22 +47,31 @@ class NotificationsPage extends StatelessWidget {
                 _showDeleteConfirmationDialog(context, controller);
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'mark_all_read',
-                child: Text('Mark all as read'),
-              ),
-              const PopupMenuItem(
-                value: 'delete_all',
-                child: Text('Delete all'),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'mark_all_read',
+                    child: Text(
+                      'Mark all as read',
+                      style: TextStyle(color: AppColors.foreground(context)),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete_all',
+                    child: Text(
+                      'Delete all',
+                      style: TextStyle(color: AppColors.destructive(context)),
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(color: AppColors.primary(context)),
+          );
         }
 
         if (controller.hasError.value) {
@@ -64,24 +79,34 @@ class NotificationsPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Failed to load notifications',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: AppColors.foreground(context),
                   ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => controller.fetchAllNotifications(),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    backgroundColor: AppColors.primary(context),
+                    foregroundColor: AppColors.primaryForeground(context),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
                   ),
-                  child: const Text('Try Again'),
+                  child: Text(
+                    'Try Again',
+                    style: TextStyle(
+                      color: AppColors.primaryForeground(context),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -95,45 +120,67 @@ class NotificationsPage extends StatelessWidget {
       floatingActionButton: Obx(() {
         return controller.hasNotifications.value
             ? FloatingActionButton(
-                onPressed: () => controller.fetchAllNotifications(),
-                backgroundColor: Colors.black,
-                child: const Icon(Icons.refresh),
-              )
+              onPressed: () => controller.fetchAllNotifications(),
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
+              child: const Icon(Icons.refresh),
+            )
             : const SizedBox.shrink();
       }),
     );
   }
 
   Widget _buildNotificationsList(NotificationsController controller) {
-    return RefreshIndicator(
-      onRefresh: controller.refreshNotifications,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: controller.notifications.length,
-        itemBuilder: (context, index) {
-          final notification = controller.notifications[index];
-          return NotificationItem(notification: notification);
-        },
-      ),
+    return Builder(
+      builder: (BuildContext context) {
+        return RefreshIndicator(
+          onRefresh: controller.refreshNotifications,
+          color: AppColors.primary(context),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: controller.notifications.length,
+            itemBuilder: (context, index) {
+              final notification = controller.notifications[index];
+              return NotificationItem(notification: notification);
+            },
+          ),
+        );
+      },
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, NotificationsController controller) {
+  void _showDeleteConfirmationDialog(
+    BuildContext context,
+    NotificationsController controller,
+  ) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete All Notifications'),
-          content: const Text('Are you sure you want to delete all notifications? This action cannot be undone.'),
+          backgroundColor: AppColors.card(context),
+          title: Text(
+            'Delete All Notifications',
+            style: TextStyle(color: AppColors.cardForeground(context)),
+          ),
+          content: Text(
+            'Are you sure you want to delete all notifications? This action cannot be undone.',
+            style: TextStyle(color: AppColors.cardForeground(context)),
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.primary(context)),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text(
+                'Delete',
+                style: TextStyle(color: AppColors.destructive(context)),
+              ),
               onPressed: () {
                 controller.deleteAllNotifications();
                 Navigator.of(context).pop();

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/features/address/controller/address_controller.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/features/address/controller/address_controller.dart';
 
 class AddAddressPage extends StatelessWidget {
   const AddAddressPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final AddressController controller = Get.isRegistered<AddressController>()
-        ? Get.find<AddressController>()
-        : Get.put(AddressController());
+    final AddressController controller =
+        Get.isRegistered<AddressController>()
+            ? Get.find<AddressController>()
+            : Get.put(AddressController());
 
     final isLoading = false.obs;
 
@@ -24,13 +27,15 @@ class AddAddressPage extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-                    color: AppColors.secondary(context),
+            color: AppColors.secondary(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios, 
-                    color: AppColors.secondaryForeground(context),
-              size: 20),
+            icon: ThemeAwareSvg(
+              assetPath: AssetConfig.backArrow,
+              height: 24,
+              width: 24,
+            ),
             onPressed: () => Get.back(),
           ),
         ),
@@ -51,18 +56,30 @@ class AddAddressPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: UIConfig.marginLarge),
-            _buildTextField(controller.streetController, 'Street Address', context),
+            _buildTextField(
+              controller.streetController,
+              'Street Address',
+              context,
+            ),
             SizedBox(height: UIConfig.marginSmall),
             _buildTextField(controller.cityController, 'City', context),
             SizedBox(height: UIConfig.marginSmall),
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField(controller.stateController, 'State', context),
+                  child: _buildTextField(
+                    controller.stateController,
+                    'State',
+                    context,
+                  ),
                 ),
                 SizedBox(width: UIConfig.marginSmall),
                 Expanded(
-                  child: _buildTextField(controller.zipCodeController, 'Zip Code', context),
+                  child: _buildTextField(
+                    controller.zipCodeController,
+                    'Zip Code',
+                    context,
+                  ),
                 ),
               ],
             ),
@@ -73,32 +90,38 @@ class AddAddressPage extends StatelessWidget {
               margin: EdgeInsets.only(bottom: UIConfig.marginLarge),
               child: Obx(
                 () => ElevatedButton(
-                  onPressed: isLoading.value
-                      ? null
-                      : () async {
-                          isLoading.value = true;
-                          if (controller.validateInputs()) {
-                            await controller.addAddress();
-                          }
-                          isLoading.value = false;
-                        },
+                  onPressed:
+                      isLoading.value
+                          ? null
+                          : () async {
+                            isLoading.value = true;
+                            if (controller.validateInputs()) {
+                              await controller.addAddress();
+                            }
+                            isLoading.value = false;
+                          },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary(context),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                      borderRadius: BorderRadius.circular(
+                        UIConfig.borderRadiusCircular,
+                      ),
                     ),
                   ),
-                  child: isLoading.value
-                      ? CircularProgressIndicator(color: AppColors.primaryForeground(context))
-                      : Text(
-                          'Save',
-                          style: TextStyle(
+                  child:
+                      isLoading.value
+                          ? CircularProgressIndicator(
                             color: AppColors.primaryForeground(context),
-                            fontSize: UIConfig.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',
+                          )
+                          : Text(
+                            'Save',
+                            style: TextStyle(
+                              color: AppColors.primaryForeground(context),
+                              fontSize: UIConfig.fontSizeMedium,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins',
+                            ),
                           ),
-                        ),
                 ),
               ),
             ),
@@ -108,14 +131,18 @@ class AddAddressPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, BuildContext context) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint,
+    BuildContext context,
+  ) {
     return Container(
       width: double.infinity,
       height: 56,
       margin: EdgeInsets.only(bottom: UIConfig.marginSmall),
       decoration: BoxDecoration(
         color: AppColors.background(context),
-        border: Border.all( color: AppColors.foreground(context), width: 1),
+        border: Border.all(color: AppColors.foreground(context), width: 1),
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
       ),
       child: TextField(
@@ -128,8 +155,8 @@ class AddAddressPage extends StatelessWidget {
         ),
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(
-            horizontal: UIConfig.paddingMedium, 
-            vertical: UIConfig.paddingMedium
+            horizontal: UIConfig.paddingMedium,
+            vertical: UIConfig.paddingMedium,
           ),
           border: InputBorder.none,
           focusedBorder: InputBorder.none,

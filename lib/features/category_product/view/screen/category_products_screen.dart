@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_color_extension.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/home/views/widgets/product_card.dart';
@@ -138,173 +140,42 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorExtension>()!;
     final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       backgroundColor: colors.background,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(UIConfig.paddingMedium),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: colors.secondary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: colors.foreground,
-                        size: 18,
+      body: GestureDetector(
+        // Dismiss keyboard when tapping anywhere on the screen
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(UIConfig.paddingMedium),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: colors.secondary,
+                        shape: BoxShape.circle,
                       ),
-                      padding: EdgeInsets.zero,
-                      onPressed: () => Get.back(),
+                      child: IconButton(
+                        icon: ThemeAwareSvg(
+                          assetPath: AssetConfig.backArrow,
+                          height: 24,
+                          width: 24,
+                        ),
+                        padding: EdgeInsets.zero,
+                        onPressed: () => Get.back(),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: UIConfig.paddingSmall + 4),
-                  Expanded(
-                    child: CustomSearchBar(
-                      onSearch: (query) {
-                        if (query.isEmpty) {
-                          // Clear search results
-                          if (subcategoryController
-                              .currentSubcategoryId
-                              .value
-                              .isNotEmpty) {
-                            subcategoryController.clearSearch();
-                          } else {
-                            categoryProductController.clearSearch();
-                          }
-                          return;
-                        }
-
-                        if (subcategoryController
-                            .currentSubcategoryId
-                            .value
-                            .isNotEmpty) {
-                          // Search only in selected subcategory
-                          subcategoryController.searchSubcategoryProducts(
-                            query,
-                          );
-                        } else {
-                          // Search in current category
-                          categoryProductController.searchCategoryProducts(
-                            query,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Always render the SubcategoryListView
-            SubcategoryListView(onApplyFilters: applyFilters),
-            Padding(
-              padding: EdgeInsets.only(
-                left: UIConfig.paddingMedium,
-                top: UIConfig.paddingMedium,
-                bottom: UIConfig.paddingMedium,
-              ),
-              child: Obx(() {
-                // Use the filteredProducts list instead of categoryProducts
-                final productCount =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.subcategoryProducts.length
-                        : categoryProductController.filteredProducts.length;
-                final displayName =
-                    subcategoryController.currentSubcategoryId.value.isNotEmpty
-                        ? subcategoryController.subcategories
-                                .firstWhereOrNull(
-                                  (sub) =>
-                                      sub.id ==
-                                      subcategoryController
-                                          .currentSubcategoryId
-                                          .value,
-                                )
-                                ?.name ??
-                            widget.category.name
-                        : widget.category.name;
-                return Text(
-                  '$productCount Results Found in $displayName',
-                  style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: colors.foreground.withOpacity(0.87),
-                  ),
-                );
-              }),
-            ),
-            // Main product grid
-            Expanded(
-              child: GetBuilder<CategoryProductController>(
-                builder: (_) {
-                  return Obx(() {
-                    // Using GetBuilder + Obx ensures maximum reactivity
-
-                    // Choose the correct loading state
-                    final isLoading =
-                        subcategoryController
-                                .currentSubcategoryId
-                                .value
-                                .isNotEmpty
-                            ? subcategoryController.isLoadingProducts.value
-                            : categoryProductController.isLoading.value;
-
-                    // Choose the correct error state
-                    final hasError =
-                        subcategoryController
-                                .currentSubcategoryId
-                                .value
-                                .isNotEmpty
-                            ? subcategoryController.hasError.value
-                            : categoryProductController.hasError.value;
-
-                    final errorMessage =
-                        subcategoryController
-                                .currentSubcategoryId
-                                .value
-                                .isNotEmpty
-                            ? subcategoryController.errorMessage.value
-                            : categoryProductController.errorMessage.value;
-
-                    // IMPORTANT: Get the correct products list
-                    final List<Product> products =
-                        subcategoryController
-                                .currentSubcategoryId
-                                .value
-                                .isNotEmpty
-                            ? subcategoryController.subcategoryProducts
-                            : categoryProductController.filteredProducts;
-
-                    final isSearchActive =
-                        subcategoryController
-                                .currentSubcategoryId
-                                .value
-                                .isNotEmpty
-                            ? subcategoryController.isSearchActive.value
-                            : categoryProductController.isSearchActive.value;
-
-                    print(
-                      '[CategoryProductsScreen] Rendering ${products.length} products',
-                    );
-
-                    if (isLoading) {
-                      return Center(child: CircularProgressIndicator());
-                    }
-
-                    if (hasError) {
-                      return Center(child: Text('Error: $errorMessage'));
-                    }
-
-                    if (products.isEmpty) {
-                      return NoSearchResult(
-                        onExploreCategories: () {
-                          if (isSearchActive) {
+                    const SizedBox(width: UIConfig.paddingSmall + 4),
+                    Expanded(
+                      child: CustomSearchBar(
+                        onSearch: (query) {
+                          if (query.isEmpty) {
+                            // Clear search results
                             if (subcategoryController
                                 .currentSubcategoryId
                                 .value
@@ -313,55 +184,195 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                             } else {
                               categoryProductController.clearSearch();
                             }
+                            return;
+                          }
+
+                          if (subcategoryController
+                              .currentSubcategoryId
+                              .value
+                              .isNotEmpty) {
+                            // Search only in selected subcategory
+                            subcategoryController.searchSubcategoryProducts(
+                              query,
+                            );
                           } else {
-                            subcategoryController.resetState();
-                            categoryProductController.fetchCategoryProducts(
-                              widget.category.id,
+                            // Search in current category
+                            categoryProductController.searchCategoryProducts(
+                              query,
                             );
                           }
                         },
-                      );
-                    }
-
-                    // Render the products grid with the filtered products
-                    return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: UIConfig.paddingMedium,
                       ),
-                      child: GridView.builder(
-                        padding: EdgeInsets.only(
-                          bottom: UIConfig.paddingMedium,
-                        ),
-                        physics: const BouncingScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 159 / 280,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 8,
-                            ),
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final product = products[index];
-                          return ProductCard(
-                            product: product,
-                            onProductTap:
-                                (id) =>
-                                    categoryProductController.onProductTap(id),
-                            onFavoriteTap:
-                                (id) => categoryProductController
-                                    .toggleFavorite(id),
-                            width: 159,
-                            height: 280,
-                          );
-                        },
-                      ),
-                    );
-                  });
-                },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              // Always render the SubcategoryListView
+              SubcategoryListView(onApplyFilters: applyFilters),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: UIConfig.paddingMedium,
+                  top: UIConfig.paddingMedium,
+                  bottom: UIConfig.paddingMedium,
+                ),
+                child: Obx(() {
+                  // Use the filteredProducts list instead of categoryProducts
+                  final productCount =
+                      subcategoryController
+                              .currentSubcategoryId
+                              .value
+                              .isNotEmpty
+                          ? subcategoryController.subcategoryProducts.length
+                          : categoryProductController.filteredProducts.length;
+                  final displayName =
+                      subcategoryController
+                              .currentSubcategoryId
+                              .value
+                              .isNotEmpty
+                          ? subcategoryController.subcategories
+                                  .firstWhereOrNull(
+                                    (sub) =>
+                                        sub.id ==
+                                        subcategoryController
+                                            .currentSubcategoryId
+                                            .value,
+                                  )
+                                  ?.name ??
+                              widget.category.name
+                          : widget.category.name;
+                  return Text(
+                    '$productCount Results Found in $displayName',
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: colors.foreground.withOpacity(0.87),
+                    ),
+                  );
+                }),
+              ),
+              // Main product grid
+              Expanded(
+                child: GetBuilder<CategoryProductController>(
+                  builder: (_) {
+                    return Obx(() {
+                      // Using GetBuilder + Obx ensures maximum reactivity
+
+                      // Choose the correct loading state
+                      final isLoading =
+                          subcategoryController
+                                  .currentSubcategoryId
+                                  .value
+                                  .isNotEmpty
+                              ? subcategoryController.isLoadingProducts.value
+                              : categoryProductController.isLoading.value;
+
+                      // Choose the correct error state
+                      final hasError =
+                          subcategoryController
+                                  .currentSubcategoryId
+                                  .value
+                                  .isNotEmpty
+                              ? subcategoryController.hasError.value
+                              : categoryProductController.hasError.value;
+
+                      final errorMessage =
+                          subcategoryController
+                                  .currentSubcategoryId
+                                  .value
+                                  .isNotEmpty
+                              ? subcategoryController.errorMessage.value
+                              : categoryProductController.errorMessage.value;
+
+                      // IMPORTANT: Get the correct products list
+                      final List<Product> products =
+                          subcategoryController
+                                  .currentSubcategoryId
+                                  .value
+                                  .isNotEmpty
+                              ? subcategoryController.subcategoryProducts
+                              : categoryProductController.filteredProducts;
+
+                      final isSearchActive =
+                          subcategoryController
+                                  .currentSubcategoryId
+                                  .value
+                                  .isNotEmpty
+                              ? subcategoryController.isSearchActive.value
+                              : categoryProductController.isSearchActive.value;
+
+                      print(
+                        '[CategoryProductsScreen] Rendering ${products.length} products',
+                      );
+
+                      if (isLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      if (hasError) {
+                        return Center(child: Text('Error: $errorMessage'));
+                      }
+
+                      if (products.isEmpty) {
+                        return NoSearchResult(
+                          onExploreCategories: () {
+                            if (isSearchActive) {
+                              if (subcategoryController
+                                  .currentSubcategoryId
+                                  .value
+                                  .isNotEmpty) {
+                                subcategoryController.clearSearch();
+                              } else {
+                                categoryProductController.clearSearch();
+                              }
+                            } else {
+                              subcategoryController.resetState();
+                              categoryProductController.fetchCategoryProducts(
+                                widget.category.id,
+                              );
+                            }
+                          },
+                        );
+                      }
+
+                      // Render the products grid with the filtered products
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: UIConfig.paddingMedium,
+                        ),
+                        child: GridView.builder(
+                          padding: EdgeInsets.only(
+                            bottom: UIConfig.paddingMedium,
+                          ),
+                          physics: const BouncingScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 159 / 280,
+                                crossAxisSpacing: 8,
+                                mainAxisSpacing: 8,
+                              ),
+                          itemCount: products.length,
+                          itemBuilder: (context, index) {
+                            final product = products[index];
+                            return ProductCard(
+                              product: product,
+                              onProductTap:
+                                  (id) => categoryProductController
+                                      .onProductTap(id),
+                              onFavoriteTap:
+                                  (id) => categoryProductController
+                                      .toggleFavorite(id),
+                              width: 159,
+                              height: 280,
+                            );
+                          },
+                        ),
+                      );
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

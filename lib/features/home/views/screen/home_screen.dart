@@ -29,26 +29,31 @@ class HomeScreen extends StatelessWidget {
       body: _buildContent(context),
     );
   }
-
   Widget _buildContent(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        await controller.productController.fetchAllProducts();
-        await controller.productController.fetchFeaturedProducts();
-        await controller.productController.fetchNewProducts();
+    return GestureDetector(
+      // Dismiss keyboard when tapping anywhere on the screen
+      onTap: () {
+        // Unfocus any focused text field
+        FocusScope.of(context).unfocus();
       },
-      color: AppColors.primary(context),
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: UIConfig.paddingMedium),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await controller.productController.fetchAllProducts();
+          await controller.productController.fetchFeaturedProducts();
+          await controller.productController.fetchNewProducts();
+        },
+        color: AppColors.primary(context),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: UIConfig.paddingMedium),
 
-            // Search bar
-            CustomSearchBar(
-              onSearch:
-                  (query) => controller.productController.searchProducts(query),
+              // Search bar
+              CustomSearchBar(
+                onSearch:
+                    (query) => controller.productController.searchProducts(query),
             ),
 
             const SizedBox(height: UIConfig.paddingMedium),
@@ -81,7 +86,7 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildCategoriesSection(BuildContext context) {

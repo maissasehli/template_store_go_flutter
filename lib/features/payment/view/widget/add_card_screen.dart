@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 
 class AddCardPage extends StatelessWidget {
   const AddCardPage({super.key});
@@ -7,12 +10,16 @@ class AddCardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
@@ -32,31 +39,27 @@ class AddCardPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            
+
             // Card Number Field
             _buildTextField('Card Number'),
             const SizedBox(height: 12),
-            
+
             // CVV and Exp fields in a row
             Row(
               children: [
-                Expanded(
-                  child: _buildTextField('CVV'),
-                ),
+                Expanded(child: _buildTextField('CVV')),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _buildTextField('Exp'),
-                ),
+                Expanded(child: _buildTextField('Exp')),
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Cardholder Name field
             _buildTextField('Cardholder Name'),
-            
+
             // Spacer to push button to bottom
             const Spacer(),
-            
+
             // Save Button
             Container(
               width: double.infinity,
@@ -83,7 +86,7 @@ class AddCardPage extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // Bottom navigation indicator
             Center(
               child: Container(
@@ -112,7 +115,10 @@ class AddCardPage extends StatelessWidget {
       ),
       child: TextField(
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 18,
+          ),
           border: InputBorder.none,
           hintText: hint,
           hintStyle: TextStyle(

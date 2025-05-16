@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/search/no_search_result.dart';
@@ -59,10 +61,10 @@ class _SubcategoryListScreenState extends State<SubcategoryListScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: AppColors.foreground(context),
-                        size: 20,
+                      icon: ThemeAwareSvg(
+                        assetPath: AssetConfig.backArrow,
+                        height: 24,
+                        width: 24,
                       ),
                       onPressed: () => Get.back(),
                     ),
@@ -119,24 +121,28 @@ class _SubcategoryListScreenState extends State<SubcategoryListScreen> {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary(context),
-                              foregroundColor: AppColors.primaryForeground(context),
+                              foregroundColor: AppColors.primaryForeground(
+                                context,
+                              ),
                             ),
-                            onPressed: () => subcategoryController.fetchSubcategories(widget.category.id),
+                            onPressed:
+                                () => subcategoryController.fetchSubcategories(
+                                  widget.category.id,
+                                ),
                             child: const Text('Retry'),
                           ),
                         ],
                       ),
                     );
                   } else if (subcategoryController.subcategories.isEmpty) {
-                    return const NoSearchResult(
-                      onExploreCategories: null,
-                    );
+                    return const NoSearchResult(onExploreCategories: null);
                   }
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: subcategoryController.subcategories.length,
                     itemBuilder: (context, index) {
-                      final subcategory = subcategoryController.subcategories[index];
+                      final subcategory =
+                          subcategoryController.subcategories[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
@@ -152,7 +158,10 @@ class _SubcategoryListScreenState extends State<SubcategoryListScreen> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          onTap: () => subcategoryController.selectSubcategory(subcategory),
+                          onTap:
+                              () => subcategoryController.selectSubcategory(
+                                subcategory,
+                              ),
                         ),
                       );
                     },

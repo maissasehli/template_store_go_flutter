@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/extensions/full_width_extension.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/settings/controllers/settings_language_controller.dart';
 import 'package:store_go/features/settings/views/widgets/settings_language_card.dart';
 
@@ -27,7 +29,11 @@ class SettingsLanguageScreen extends GetView<SettingsLanguageController> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.foreground(context)),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
       ),

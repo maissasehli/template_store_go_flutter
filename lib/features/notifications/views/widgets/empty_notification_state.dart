@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class EmptyNotificationState extends StatelessWidget {
   const EmptyNotificationState({super.key});
@@ -17,47 +18,46 @@ class EmptyNotificationState extends StatelessWidget {
             width: 110,
             height: 110,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.card(context),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF686868).withOpacity(0.2),
+                  color: AppColors.foreground(context).withOpacity(0.1),
                   spreadRadius: 0,
                   blurRadius: 26.1,
                   offset: const Offset(0, 0),
                 ),
               ],
             ),
-            child: Center(
-              child: _buildBellIcon(),
-            ),
+            child: Center(child: _buildBellIcon(context)),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No Notification yet',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w400,
               fontFamily: 'Poppins',
-              color: Colors.black,
+              color: AppColors.foreground(context),
             ),
           ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => Get.toNamed('/categories'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
             ),
-            child: const Text(
+            child: Text(
               'Explore Categories',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w400,
-                color: Colors.white,
+                color: AppColors.primaryForeground(context),
                 fontFamily: 'Poppins',
               ),
             ),
@@ -67,7 +67,7 @@ class EmptyNotificationState extends StatelessWidget {
     );
   }
 
-  Widget _buildBellIcon() {
+  Widget _buildBellIcon(BuildContext context) {
     try {
       // Use Image.asset for PNG files
       return Image.asset(
@@ -75,20 +75,20 @@ class EmptyNotificationState extends StatelessWidget {
         width: 70,
         height: 70,
         errorBuilder: (context, error, stackTrace) {
-          return _buildFallbackIcon();
+          return _buildFallbackIcon(context);
         },
       );
     } catch (e) {
       // Fallback in case of any other error
-      return _buildFallbackIcon();
+      return _buildFallbackIcon(context);
     }
   }
 
-  Widget _buildFallbackIcon() {
-    return const Icon(
+  Widget _buildFallbackIcon(BuildContext context) {
+    return Icon(
       Icons.notifications_outlined,
       size: 47,
-      color: Colors.grey,
+      color: AppColors.muted(context),
     );
   }
 }

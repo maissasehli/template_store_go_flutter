@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/category/controllers/category_controller.dart';
 import 'package:store_go/features/product/controllers/product_list_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
@@ -18,14 +20,15 @@ class ProductListScreen extends StatelessWidget {
   late final ProductFilterController filterController;
   late final ProductListController listController;
   final CategoryController categoryController = Get.find<CategoryController>();
-  final SubcategoryController subcategoryController = Get.find<SubcategoryController>();
+  final SubcategoryController subcategoryController =
+      Get.find<SubcategoryController>();
 
   ProductListScreen({super.key}) {
     // Initialize controllers
     filterController = Get.put(
       ProductFilterController(productController: productController),
     );
-    
+
     listController = Get.put(
       ProductListController(
         productController: productController,
@@ -59,10 +62,10 @@ class ProductListScreen extends StatelessWidget {
         ),
       ),
       leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back_ios,
-          color: AppColors.foreground(context),
-          size: 20,
+        icon: ThemeAwareSvg(
+          assetPath: AssetConfig.backArrow,
+          height: 24,
+          width: 24,
         ),
         onPressed: () => Get.back(),
       ),
@@ -245,12 +248,13 @@ class ProductListScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => FilterBottomSheet(
-        listController: listController,
-        filterController: filterController,
-        categoryController: categoryController,
-        subcategoryController: subcategoryController,
-      ),
+      builder:
+          (context) => FilterBottomSheet(
+            listController: listController,
+            filterController: filterController,
+            categoryController: categoryController,
+            subcategoryController: subcategoryController,
+          ),
     );
   }
 }
@@ -312,7 +316,8 @@ class _LoadingGrid extends StatelessWidget {
                     const SizedBox(height: 6),
                     SkeletonContainer.rectangular(
                       width: constraints.maxWidth * 0.5,
-                      height: 12),
+                      height: 12,
+                    ),
                     const SizedBox(height: 6),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

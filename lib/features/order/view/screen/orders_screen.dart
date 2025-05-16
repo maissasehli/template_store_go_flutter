@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
 import 'package:store_go/features/order/view/widget/empty_order_state.dart';
 import 'package:store_go/features/order/view/widget/error_view.dart';
@@ -27,7 +29,11 @@ class OrdersPage extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+            icon: ThemeAwareSvg(
+              assetPath: AssetConfig.backArrow,
+              height: 24,
+              width: 24,
+            ),
             onPressed: () => Get.back(),
           ),
         ),
@@ -49,9 +55,10 @@ class OrdersPage extends StatelessWidget {
           children: [
             // Order Status Tabs
             Obx(
-              () => controller.isLoading.value && controller.orders.isEmpty
-                  ? const SizedBox.shrink()
-                  : OrderStatusTabs(controller: controller),
+              () =>
+                  controller.isLoading.value && controller.orders.isEmpty
+                      ? const SizedBox.shrink()
+                      : OrderStatusTabs(controller: controller),
             ),
             // Orders List, Loading Indicator, or Empty State
             Expanded(

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
 import 'package:store_go/features/cart/views/widgets/cart_item_card.dart';
@@ -35,8 +36,8 @@ class CartScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.error_outline, 
-                    size: 48, 
+                    Icons.error_outline,
+                    size: 48,
                     color: AppColors.destructive(context),
                   ),
                   SizedBox(height: UIConfig.marginMedium),
@@ -58,7 +59,9 @@ class CartScreen extends StatelessWidget {
                         vertical: UIConfig.paddingMedium,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                        borderRadius: BorderRadius.circular(
+                          UIConfig.borderRadiusCircular,
+                        ),
                       ),
                     ),
                     child: const Text('Try Again'),
@@ -131,7 +134,9 @@ class CartScreen extends StatelessWidget {
                 vertical: UIConfig.paddingMedium,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                borderRadius: BorderRadius.circular(
+                  UIConfig.borderRadiusCircular,
+                ),
               ),
               minimumSize: const Size(188, 55),
             ),
@@ -163,10 +168,10 @@ class CartScreen extends StatelessWidget {
                     color: AppColors.secondary(context),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    Icons.arrow_back_ios_new,
-                    size: 16,
-                    color: AppColors.secondaryForeground(context),
+                  child: ThemeAwareSvg(
+                    assetPath: AssetConfig.backArrow,
+                    height: 16,
+                    width: 16,
                   ),
                 ),
               ),
@@ -195,29 +200,35 @@ class CartScreen extends StatelessWidget {
                   final item = controller.cartItems[index];
                   return CartItemCard(
                     item: item,
-                    onQuantityChanged: (quantity) =>
-                        controller.updateQuantity(item.productId, quantity),
+                    onQuantityChanged:
+                        (quantity) =>
+                            controller.updateQuantity(item.productId, quantity),
                     onRemove: () => controller.removeFromCart(item.productId),
                   );
                 },
               );
             }),
           ),
-          Obx(() => CartSummary(
-                subtotal: controller.subtotal.value,
-                shippingCost: controller.shipping.value,
-                tax: controller.tax.value,
-                discount: controller.discount.value,
-                total: controller.total.value,
-                couponCode: controller.couponCode.value.isNotEmpty
-                    ? controller.couponCode.value
-                    : null,
-              )),
-          Obx(() => CouponField(
-                onApplyCoupon: controller.applyCoupon,
-                initialValue: controller.couponCode.value,
-                isLoading: controller.isLoading.value,
-              )),
+          Obx(
+            () => CartSummary(
+              subtotal: controller.subtotal.value,
+              shippingCost: controller.shipping.value,
+              tax: controller.tax.value,
+              discount: controller.discount.value,
+              total: controller.total.value,
+              couponCode:
+                  controller.couponCode.value.isNotEmpty
+                      ? controller.couponCode.value
+                      : null,
+            ),
+          ),
+          Obx(
+            () => CouponField(
+              onApplyCoupon: controller.applyCoupon,
+              initialValue: controller.couponCode.value,
+              isLoading: controller.isLoading.value,
+            ),
+          ),
           Container(
             width: double.infinity,
             height: 55,
@@ -226,29 +237,34 @@ class CartScreen extends StatelessWidget {
               top: UIConfig.marginMedium,
             ),
             child: ElevatedButton(
-              onPressed: controller.cartItems.isEmpty
-                  ? null
-                  : () {
-                      Get.to(() => const CheckoutScreen());
-                    },
+              onPressed:
+                  controller.cartItems.isEmpty
+                      ? null
+                      : () {
+                        Get.to(() => const CheckoutScreen());
+                      },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary(context),
                 foregroundColor: AppColors.primaryForeground(context),
                 disabledBackgroundColor: AppColors.muted(context),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                  borderRadius: BorderRadius.circular(
+                    UIConfig.borderRadiusCircular,
+                  ),
                 ),
                 padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
               ),
-              child: Obx(() => Text(
-                    'Checkout (\$${controller.total.value.toStringAsFixed(2)})',
-                    style: TextStyle(
-                      color: AppColors.primaryForeground(context),
-                      fontSize: UIConfig.fontSizeMedium,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Poppins',
-                    ),
-                  )),
+              child: Obx(
+                () => Text(
+                  'Checkout (\$${controller.total.value.toStringAsFixed(2)})',
+                  style: TextStyle(
+                    color: AppColors.primaryForeground(context),
+                    fontSize: UIConfig.fontSizeMedium,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
             ),
           ),
         ],

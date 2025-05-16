@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
 
 class EditAddressPage extends StatelessWidget {
@@ -9,7 +11,7 @@ class EditAddressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   final AddressController controller = Get.find<AddressController>();
+    final AddressController controller = Get.find<AddressController>();
     final isLoading = false.obs;
 
     if (controller.selectedAddress.value == null) {
@@ -30,9 +32,11 @@ class EditAddressPage extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios, 
-              color: AppColors.foreground(context), 
-              size: 20),
+            icon: ThemeAwareSvg(
+              assetPath: AssetConfig.backArrow,
+              height: 24,
+              width: 24,
+            ),
             onPressed: () => Get.back(),
           ),
         ),
@@ -48,14 +52,17 @@ class EditAddressPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete_outline, 
-              color: AppColors.destructive(context)),
+            icon: Icon(
+              Icons.delete_outline,
+              color: AppColors.destructive(context),
+            ),
             onPressed: () {
               if (controller.selectedAddress.value != null) {
                 Get.dialog(
                   AlertDialog(
                     backgroundColor: AppColors.background(context),
-                    title: Text('Delete Address',
+                    title: Text(
+                      'Delete Address',
                       style: TextStyle(
                         color: AppColors.foreground(context),
                         fontSize: UIConfig.fontSizeMedium,
@@ -72,7 +79,8 @@ class EditAddressPage extends StatelessWidget {
                     actions: [
                       TextButton(
                         onPressed: () => Get.back(),
-                        child: Text('Cancel',
+                        child: Text(
+                          'Cancel',
                           style: TextStyle(
                             color: AppColors.mutedForeground(context),
                           ),
@@ -81,12 +89,15 @@ class EditAddressPage extends StatelessWidget {
                       TextButton(
                         onPressed: () async {
                           isLoading.value = true;
-                          await controller.deleteAddress(controller.selectedAddress.value!.id);
+                          await controller.deleteAddress(
+                            controller.selectedAddress.value!.id,
+                          );
                           isLoading.value = false;
                           Get.back();
                           Get.back();
                         },
-                        child: Text('Delete',
+                        child: Text(
+                          'Delete',
                           style: TextStyle(
                             color: AppColors.destructive(context),
                           ),
@@ -106,18 +117,30 @@ class EditAddressPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: UIConfig.marginLarge),
-            _buildTextField(context, controller.streetController, 'Street Address'),
+            _buildTextField(
+              context,
+              controller.streetController,
+              'Street Address',
+            ),
             SizedBox(height: UIConfig.marginSmall),
             _buildTextField(context, controller.cityController, 'City'),
             SizedBox(height: UIConfig.marginSmall),
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField(context, controller.stateController, 'State'),
+                  child: _buildTextField(
+                    context,
+                    controller.stateController,
+                    'State',
+                  ),
                 ),
                 SizedBox(width: UIConfig.marginSmall),
                 Expanded(
-                  child: _buildTextField(context, controller.zipCodeController, 'Zip Code'),
+                  child: _buildTextField(
+                    context,
+                    controller.zipCodeController,
+                    'Zip Code',
+                  ),
                 ),
               ],
             ),
@@ -128,32 +151,38 @@ class EditAddressPage extends StatelessWidget {
               margin: EdgeInsets.only(bottom: UIConfig.marginLarge),
               child: Obx(
                 () => ElevatedButton(
-                  onPressed: isLoading.value
-                      ? null
-                      : () async {
-                          isLoading.value = true;
-                          if (controller.validateInputs()) {
-                            await controller.updateAddress();
-                          }
-                          isLoading.value = false;
-                        },
+                  onPressed:
+                      isLoading.value
+                          ? null
+                          : () async {
+                            isLoading.value = true;
+                            if (controller.validateInputs()) {
+                              await controller.updateAddress();
+                            }
+                            isLoading.value = false;
+                          },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary(context),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                      borderRadius: BorderRadius.circular(
+                        UIConfig.borderRadiusCircular,
+                      ),
                     ),
                   ),
-                  child: isLoading.value
-                      ? CircularProgressIndicator(color: AppColors.primaryForeground(context))
-                      : Text(
-                          'Save Changes',
-                          style: TextStyle(
+                  child:
+                      isLoading.value
+                          ? CircularProgressIndicator(
                             color: AppColors.primaryForeground(context),
-                            fontSize: UIConfig.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',
+                          )
+                          : Text(
+                            'Save Changes',
+                            style: TextStyle(
+                              color: AppColors.primaryForeground(context),
+                              fontSize: UIConfig.fontSizeMedium,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins',
+                            ),
                           ),
-                        ),
                 ),
               ),
             ),
@@ -163,7 +192,11 @@ class EditAddressPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(BuildContext context, TextEditingController controller, String hint) {
+  Widget _buildTextField(
+    BuildContext context,
+    TextEditingController controller,
+    String hint,
+  ) {
     return Container(
       width: double.infinity,
       height: 56,

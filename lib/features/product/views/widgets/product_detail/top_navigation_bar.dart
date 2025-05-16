@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 
 class TopNavigationBar extends StatelessWidget {
   final VoidCallback onBackPressed;
@@ -29,10 +30,10 @@ class TopNavigationBar extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: Icon(
-                Icons.chevron_left,
-                size: 24,
-                color: AppColors.foreground(context),
+              icon: ThemeAwareSvg(
+                assetPath: AssetConfig.backArrow,
+                height: 24,
+                width: 24,
               ),
               padding: EdgeInsets.zero,
               onPressed: onBackPressed,

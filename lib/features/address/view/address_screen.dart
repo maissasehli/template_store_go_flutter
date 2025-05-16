@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 
 class AddressPage extends StatelessWidget {
   const AddressPage({super.key});
@@ -27,9 +29,11 @@ class AddressPage extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios, 
-                    color: AppColors.secondaryForeground(context),
-              size: 20),
+            icon: ThemeAwareSvg(
+              assetPath: AssetConfig.backArrow,
+              height: 20,
+              width: 20,
+            ),
             onPressed: () => Get.back(),
           ),
         ),
@@ -50,64 +54,77 @@ class AddressPage extends StatelessWidget {
           Get.toNamed('/add-address');
         },
         backgroundColor: AppColors.primary(context),
-        child: Icon(
-          Icons.add,
-          color: AppColors.primaryForeground(context),
-        ),
+        child: Icon(Icons.add, color: AppColors.primaryForeground(context)),
       ),
       body: Obx(
-        () => isLoading.value
-            ? Center(child: CircularProgressIndicator(
-                color: AppColors.primary(context),
-              ))
-            : Padding(
-                padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: UIConfig.marginLarge),
-                    // Removed the "Add Address" text and its row
-                    Expanded(
-                      child: controller.addresses.isEmpty
-                          ? Center(
-                              child: Text(
-                                'No addresses added yet',
-                                style: TextStyle(
-                                  color: AppColors.secondaryForeground(context),
-                                  fontSize: UIConfig.fontSizeRegular,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            )
-                          : ListView.separated(
-                              itemCount: controller.addresses.length,
-                              separatorBuilder: (context, index) => 
-                                SizedBox(height: UIConfig.marginSmall),
-                              itemBuilder: (context, index) {
-                                final address = controller.addresses[index];
-                                return _buildAddressCard(
-                                  context,
-                                  address.formattedAddress,
-                                  onEdit: () {
-                                    controller.setAddressForEditing(address);
-                                    Get.toNamed('/edit-address');
+        () =>
+            isLoading.value
+                ? Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primary(context),
+                  ),
+                )
+                : Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: UIConfig.paddingLarge,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: UIConfig.marginLarge),
+                      // Removed the "Add Address" text and its row
+                      Expanded(
+                        child:
+                            controller.addresses.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No addresses added yet',
+                                    style: TextStyle(
+                                      color: AppColors.secondaryForeground(
+                                        context,
+                                      ),
+                                      fontSize: UIConfig.fontSizeRegular,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                )
+                                : ListView.separated(
+                                  itemCount: controller.addresses.length,
+                                  separatorBuilder:
+                                      (context, index) => SizedBox(
+                                        height: UIConfig.marginSmall,
+                                      ),
+                                  itemBuilder: (context, index) {
+                                    final address = controller.addresses[index];
+                                    return _buildAddressCard(
+                                      context,
+                                      address.formattedAddress,
+                                      onEdit: () {
+                                        controller.setAddressForEditing(
+                                          address,
+                                        );
+                                        Get.toNamed('/edit-address');
+                                      },
+                                    );
                                   },
-                                );
-                              },
-                            ),
-                    ),
-                  ],
+                                ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
       ),
     );
   }
 
-  Widget _buildAddressCard(BuildContext context, String address, {required VoidCallback onEdit}) {
+  Widget _buildAddressCard(
+    BuildContext context,
+    String address, {
+    required VoidCallback onEdit,
+  }) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: UIConfig.paddingMedium,
-        vertical: UIConfig.paddingMedium
+        vertical: UIConfig.paddingMedium,
       ),
       decoration: BoxDecoration(
         color: AppColors.input(context),

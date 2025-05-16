@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
 import 'package:store_go/features/order/model/order_model.dart';
 
@@ -18,7 +20,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   @override
   void initState() {
     super.initState();
-    
+
     try {
       // Try to find the controller first
       controller = Get.find<OrderController>();
@@ -26,7 +28,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     } catch (e) {
       // If controller not found, we'll handle this in the post-frame callback
     }
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeOrderDetails();
     });
@@ -35,23 +37,23 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   void _initializeOrderDetails() {
     // Get arguments safely
     final args = Get.arguments;
-    
+
     // Check if arguments are null
     if (args == null) {
       _showError('Order ID not provided');
       return;
     }
-    
+
     // Try to convert arguments to String
     try {
       orderId = args as String;
-      
+
       // Check if ID is empty
       if (orderId.isEmpty) {
         _showError('Invalid order ID');
         return;
       }
-      
+
       // Try to find or initialize the controller if not done already
       if (!isInitialized) {
         try {
@@ -62,7 +64,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return;
         }
       }
-      
+
       // Fetch order details
       controller.fetchOrderDetails(orderId);
     } catch (e) {
@@ -89,14 +91,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         appBar: AppBar(
           title: const Text('Order Details'),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
+            icon: ThemeAwareSvg(
+              assetPath: AssetConfig.backArrow,
+              height: 24,
+              width: 24,
+            ),
             onPressed: () => Get.back(),
           ),
         ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-    
+
     // Normal UI with initialized controller
     return Scaffold(
       backgroundColor: Colors.white,
@@ -104,7 +110,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
@@ -125,7 +135,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         if (!isInitialized) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (controller.isLoadingDetails.value) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -202,34 +212,26 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       {
         'status': 'Order Confirmed',
         'isActive': order.status != 'Cancelled',
-        'isLast': false
+        'isLast': false,
       },
       {
         'status': 'Shipped',
         'isActive': ['Shipped', 'Delivered'].contains(order.status),
-        'isLast': false
+        'isLast': false,
       },
       {
         'status': 'Delivered',
         'isActive': order.status == 'Delivered',
-        'isLast': true
+        'isLast': true,
       },
     ];
 
     if (order.status == 'Cancelled') {
-      steps.add({
-        'status': 'Cancelled',
-        'isActive': true,
-        'isLast': true,
-      });
+      steps.add({'status': 'Cancelled', 'isActive': true, 'isLast': true});
     }
 
     if (order.status == 'Returns') {
-      steps.add({
-        'status': 'Returned',
-        'isActive': true,
-        'isLast': true,
-      });
+      steps.add({'status': 'Returned', 'isActive': true, 'isLast': true});
     }
 
     return Column(
@@ -244,12 +246,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           ),
         ),
         const SizedBox(height: 12),
-        ...steps.map((step) => _buildTimelineItem(
-              step['status'],
-              order.formattedDate,
-              isActive: step['isActive'],
-              isLast: step['isLast'],
-            )),
+        ...steps.map(
+          (step) => _buildTimelineItem(
+            step['status'],
+            order.formattedDate,
+            isActive: step['isActive'],
+            isLast: step['isLast'],
+          ),
+        ),
       ],
     );
   }
@@ -334,10 +338,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Display the first 2 items directly
           ...order.items.take(2).map((item) => _buildOrderItemRow(item)),
-          
+
           // If there are more items, show a "View All" button
           if (order.items.length > 2) ...[
             const SizedBox(height: 12),
@@ -373,23 +377,25 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       margin: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          // Product image 
+          // Product image
           Container(
             width: 60,
             height: 60,
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
-              image: item.product.imageUrls.isNotEmpty
-                  ? DecorationImage(
-                      image: NetworkImage(item.product.imageUrls.first),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+              image:
+                  item.product.imageUrls.isNotEmpty
+                      ? DecorationImage(
+                        image: NetworkImage(item.product.imageUrls.first),
+                        fit: BoxFit.cover,
+                      )
+                      : null,
             ),
-            child: item.product.imageUrls.isEmpty
-                ? const Icon(Icons.image_not_supported, color: Colors.grey)
-                : null,
+            child:
+                item.product.imageUrls.isEmpty
+                    ? const Icon(Icons.image_not_supported, color: Colors.grey)
+                    : null,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -499,9 +505,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildSummaryRow('Subtotal', '\$${_calculateSubtotal(order).toStringAsFixed(2)}'),
+          _buildSummaryRow(
+            'Subtotal',
+            '\$${_calculateSubtotal(order).toStringAsFixed(2)}',
+          ),
           _buildSummaryRow('Shipping Fee', '\$5.00'),
-          _buildSummaryRow('Tax', '\$${_calculateTax(order).toStringAsFixed(2)}'),
+          _buildSummaryRow(
+            'Tax',
+            '\$${_calculateTax(order).toStringAsFixed(2)}',
+          ),
           const Divider(height: 24),
           _buildSummaryRow(
             'Total',
@@ -609,9 +621,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           foregroundColor: Colors.red,
           side: const BorderSide(color: Colors.red),
           padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: const Text(
           'Cancel Order',
@@ -638,20 +648,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         ),
         content: const Text(
           'Are you sure you want to cancel this order? This action cannot be undone.',
-          style: TextStyle(
-            fontSize: 14,
-            fontFamily: 'Poppins',
-          ),
+          style: TextStyle(fontSize: 14, fontFamily: 'Poppins'),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child: const Text(
               'No, Keep Order',
-              style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'Poppins',
-              ),
+              style: TextStyle(color: Colors.black, fontFamily: 'Poppins'),
             ),
           ),
           ElevatedButton(
@@ -665,9 +669,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
             child: const Text(
               'Yes, Cancel Order',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-              ),
+              style: TextStyle(fontFamily: 'Poppins'),
             ),
           ),
         ],
