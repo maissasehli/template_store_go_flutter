@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/review/model/review_model.dart';
 
 class ReviewHeader extends StatelessWidget {
@@ -16,8 +17,8 @@ class ReviewHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+        color: AppColors.background(context),
+        border: Border(bottom: BorderSide(color: AppColors.border(context))),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -25,9 +26,9 @@ class ReviewHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: AppColors.card(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: AppColors.border(context)),
             ),
             child: Column(
               children: [
@@ -37,23 +38,29 @@ class ReviewHeader extends StatelessWidget {
                     fontSize: 36,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Poppins',
-                    color: Colors.grey[850],
+                    color: AppColors.foreground(context),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: List.generate(5, (index) {
                     return Icon(
-                      index < averageRating.round() ? Icons.star_rounded : Icons.star_outline_rounded,
+                      index < averageRating.round()
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
                       size: 18,
-                      color: const Color(0xFFFFCC00),
+                      color: AppColors.accent(context),
                     );
                   }),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   '${reviews.length} ${reviews.length == 1 ? 'review' : 'reviews'}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[600], fontFamily: 'Poppins'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontFamily: 'Poppins',
+                  ),
                 ),
               ],
             ),
@@ -63,8 +70,12 @@ class ReviewHeader extends StatelessWidget {
             child: Column(
               children: List.generate(5, (index) {
                 final ratingCount = 5 - index;
-                final reviewsWithThisRating = reviews.where((r) => r.rating == ratingCount).length;
-                final percentage = reviews.isEmpty ? 0.0 : reviewsWithThisRating / reviews.length;
+                final reviewsWithThisRating =
+                    reviews.where((r) => r.rating == ratingCount).length;
+                final percentage =
+                    reviews.isEmpty
+                        ? 0.0
+                        : reviewsWithThisRating / reviews.length;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3.0),
@@ -88,7 +99,9 @@ class ReviewHeader extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: percentage,
                             backgroundColor: Colors.grey[200],
-                            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFFCC00)),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Color(0xFFFFCC00),
+                            ),
                             minHeight: 8,
                           ),
                         ),
@@ -98,7 +111,10 @@ class ReviewHeader extends StatelessWidget {
                         width: 20,
                         child: Text(
                           '$reviewsWithThisRating',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ),
                     ],

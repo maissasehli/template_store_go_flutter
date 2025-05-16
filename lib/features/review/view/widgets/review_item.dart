@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/review/model/review_model.dart';
 
 class ReviewItem extends StatelessWidget {
@@ -23,15 +24,16 @@ class ReviewItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy');
     final formattedDate = dateFormat.format(review.createdAt);
-    final isCurrentUser = currentUserId != null && review.appUserId == currentUserId;
+    final isCurrentUser =
+        currentUserId != null && review.appUserId == currentUserId;
 
     // Base review content
     Widget reviewContent = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: AppColors.card(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,13 +42,15 @@ class ReviewItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                backgroundColor: Colors.grey[200],
+                backgroundColor: AppColors.muted(context),
                 radius: 20,
                 child: Text(
-                  review.userName.isNotEmpty ? review.userName[0].toUpperCase() : '?',
-                  style: const TextStyle(
+                  review.userName.isNotEmpty
+                      ? review.userName[0].toUpperCase()
+                      : '?',
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.black54,
+                    color: AppColors.mutedForeground(context),
                     fontSize: 16,
                   ),
                 ),
@@ -60,17 +64,20 @@ class ReviewItem extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          review.userName.isNotEmpty ? review.userName : 'Anonymous',
-                          style: const TextStyle(
+                          review.userName.isNotEmpty
+                              ? review.userName
+                              : 'Anonymous',
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                             fontFamily: 'Poppins',
+                            color: AppColors.foreground(context),
                           ),
                         ),
                         Text(
                           formattedDate,
                           style: TextStyle(
-                            color: Colors.grey[600],
+                            color: AppColors.mutedForeground(context),
                             fontSize: 12,
                             fontFamily: 'Poppins',
                           ),
@@ -81,9 +88,11 @@ class ReviewItem extends StatelessWidget {
                     Row(
                       children: List.generate(5, (index) {
                         return Icon(
-                          index < review.rating ? Icons.star : Icons.star_border,
+                          index < review.rating
+                              ? Icons.star
+                              : Icons.star_border,
                           size: 16,
-                          color: const Color(0xFFFFCC00),
+                          color: AppColors.accent(context),
                         );
                       }),
                     ),
@@ -97,10 +106,10 @@ class ReviewItem extends StatelessWidget {
               padding: const EdgeInsets.only(top: 12.0, left: 52.0),
               child: Text(
                 review.content!,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontFamily: 'Poppins',
-                  color: Colors.black87,
+                  color: AppColors.foreground(context),
                   height: 1.4,
                 ),
               ),
@@ -134,10 +143,10 @@ class ReviewItem extends StatelessWidget {
         child: Container(
           alignment: Alignment.centerLeft,
           padding: const EdgeInsets.only(left: 20),
-          color: Colors.red,
-          child: const Icon(
+          color: AppColors.destructive(context),
+          child: Icon(
             Icons.delete_outline,
-            color: Colors.white,
+            color: AppColors.destructiveForeground(context),
           ),
         ),
       ),
@@ -147,10 +156,10 @@ class ReviewItem extends StatelessWidget {
         child: Container(
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.only(right: 20),
-          color: Colors.red,
-          child: const Icon(
+          color: AppColors.destructive(context),
+          child: Icon(
             Icons.delete_outline,
-            color: Colors.white,
+            color: AppColors.destructiveForeground(context),
           ),
         ),
       ),

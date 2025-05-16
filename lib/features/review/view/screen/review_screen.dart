@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/review/controllers/review_controller.dart';
@@ -326,7 +327,6 @@ class _ReviewsPageState extends State<ReviewsPage> {
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-
     if (_reviewController == null) {
       return const Scaffold(
         body: Center(child: Text('Error: Review service not available')),
@@ -334,20 +334,21 @@ class _ReviewsPageState extends State<ReviewsPage> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Customer Reviews',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: AppColors.foreground(context)),
       ),
       body: CustomScrollView(
         slivers: [
@@ -383,14 +384,14 @@ class _ReviewsPageState extends State<ReviewsPage> {
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           fontFamily: 'Poppins',
-                          color: Colors.grey[700],
+                          color: AppColors.mutedForeground(context),
                         ),
                       ),
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey[300]!),
-                          color: Colors.white,
+                          border: Border.all(color: AppColors.border(context)),
+                          color: AppColors.card(context),
                         ),
                         child: PopupMenuButton<String>(
                           initialValue: _sortOptions.firstWhere(
@@ -456,16 +457,17 @@ class _ReviewsPageState extends State<ReviewsPage> {
                               children: [
                                 Text(
                                   capitalize(_currentSort),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.w500,
+                                    color: AppColors.foreground(context),
                                   ),
                                 ),
                                 const SizedBox(width: 4),
                                 Icon(
                                   Icons.arrow_drop_down,
-                                  color: Colors.grey[700],
+                                  color: AppColors.mutedForeground(context),
                                 ),
                               ],
                             ),

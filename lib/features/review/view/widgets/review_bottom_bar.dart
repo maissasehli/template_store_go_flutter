@@ -20,36 +20,44 @@ class ReviewBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final hasReviewed = currentUserId != null &&
+      final hasReviewed =
+          currentUserId != null &&
           reviewController.reviews.any((r) => r.appUserId == currentUserId);
 
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background(context),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(red: 0, green: 0, blue: 0, alpha: 0.05),
+              color: AppColors.foreground(context).withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
           ],
-          border: Border(top: BorderSide(color: Colors.grey[200]!)),
+          border: Border(top: BorderSide(color: AppColors.border(context))),
         ),
         child: ElevatedButton(
           onPressed: hasReviewed || currentUserId == null ? null : onAddReview,
           style: ElevatedButton.styleFrom(
-            backgroundColor: hasReviewed || currentUserId == null
-                ? Colors.grey
-                : AppColors.primary(context),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            backgroundColor:
+                hasReviewed || currentUserId == null
+                    ? AppColors.muted(context)
+                    : AppColors.primary(context),
+            foregroundColor: AppColors.background(context),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
             padding: const EdgeInsets.symmetric(vertical: 16),
             elevation: 0,
           ),
           child: Text(
             hasReviewed ? 'You Already Reviewed' : 'Write a Review',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
           ),
         ),
       );

@@ -7,10 +7,7 @@ class EmptyState extends StatelessWidget {
   final Product product;
   final Logger _logger = Logger();
 
-   EmptyState({
-    super.key,
-    required this.product,
-  });
+  EmptyState({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +15,11 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.rate_review_outlined, size: 80, color: Colors.grey[300]),
+          Icon(
+            Icons.rate_review_outlined,
+            size: 80,
+            color: AppColors.muted(context),
+          ),
           const SizedBox(height: 24),
           Text(
             'No Reviews Yet',
@@ -26,22 +27,26 @@ class EmptyState extends StatelessWidget {
               fontSize: 20,
               fontWeight: FontWeight.w600,
               fontFamily: 'Poppins',
-              color: Colors.grey[800],
+              color: AppColors.foreground(context),
             ),
           ),
           const SizedBox(height: 12),
           Text(
             'Be the first to share your experience',
-            style: TextStyle(fontSize: 16, color: Colors.grey[600], fontFamily: 'Poppins'),
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.mutedForeground(context),
+              fontFamily: 'Poppins',
+            ),
           ),
           const SizedBox(height: 40),
           Container(
             padding: const EdgeInsets.all(16),
             width: 280,
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: AppColors.card(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: AppColors.border(context)),
             ),
             child: Row(
               children: [
@@ -50,17 +55,23 @@ class EmptyState extends StatelessWidget {
                   child: Container(
                     width: 60,
                     height: 60,
-                    color: Colors.grey[200],
-                    child: product.images.isNotEmpty
-                        ? Image.network(
-                            product.images[0],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              _logger.e('Error loading product image: $error');
-                              return const Icon(Icons.broken_image, color: Colors.grey);
-                            },
-                          )
-                        : const Icon(Icons.image, color: Colors.grey),
+                    color: AppColors.muted(context),
+                    child:
+                        product.images.isNotEmpty
+                            ? Image.network(
+                              product.images[0],
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                _logger.e(
+                                  'Error loading product image: $error',
+                                );
+                                return Icon(
+                                  Icons.broken_image,
+                                  color: AppColors.mutedForeground(context),
+                                );
+                              },
+                            )
+                            : const Icon(Icons.image, color: Colors.grey),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -71,7 +82,10 @@ class EmptyState extends StatelessWidget {
                       Text(
                         product.name,
                         style: const TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 14, fontFamily: 'Poppins'),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          fontFamily: 'Poppins',
+                        ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -29,7 +29,7 @@ class EditReviewForm extends StatelessWidget {
     'Fast shipping',
     'As described',
     'Perfect fit',
-    'Highly recommend'
+    'Highly recommend',
   ];
 
   @override
@@ -47,12 +47,12 @@ class EditReviewForm extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card(context),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(color: AppColors.border(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: AppColors.foreground(context).withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -64,37 +64,57 @@ class EditReviewForm extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Edit Your Review',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                  color: AppColors.foreground(context),
+                ),
               ),
               GestureDetector(
                 onTap: onCancel,
-                child: Icon(Icons.close, color: Colors.grey[700], size: 20),
+                child: Icon(
+                  Icons.close,
+                  color: AppColors.mutedForeground(context),
+                  size: 20,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          Obx(() => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return GestureDetector(
-                    onTap: () => editRating.value = index + 1,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: Icon(
-                        index < editRating.value ? Icons.star_rounded : Icons.star_outline_rounded,
-                        size: 32,
-                        color: index < editRating.value ? const Color(0xFFFFCC00) : Colors.grey[300],
-                      ),
+          Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return GestureDetector(
+                  onTap: () => editRating.value = index + 1,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Icon(
+                      index < editRating.value
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      size: 32,
+                      color:
+                          index < editRating.value
+                              ? const Color(0xFFFFCC00)
+                              : Colors.grey[300],
                     ),
-                  );
-                }),
-              )),
+                  ),
+                );
+              }),
+            ),
+          ),
           const SizedBox(height: 20),
           const Text(
             'Your Review',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
           ),
           const SizedBox(height: 8),
           GestureDetector(
@@ -116,13 +136,17 @@ class EditReviewForm extends StatelessWidget {
                 maxLines: 1,
                 textInputAction: TextInputAction.newline,
                 style: const TextStyle(
-                  color: Colors.black87, 
-                  fontSize: 14, 
-                  fontFamily: 'Poppins'
+                  color: Colors.black87,
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
                 ),
                 decoration: InputDecoration(
                   hintText: 'Share your experience with this product...',
-                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14, fontFamily: 'Poppins'),
+                  hintStyle: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                  ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.all(12),
                   filled: true,
@@ -134,64 +158,81 @@ class EditReviewForm extends StatelessWidget {
           const SizedBox(height: 16),
           const Text(
             'Quick Tags',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'Poppins'),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Poppins',
+            ),
           ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _quickTags
-                .map((tag) => _buildQuickTag(tag))
-                .toList(),
+            children: _quickTags.map((tag) => _buildQuickTag(tag)).toList(),
           ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: Obx(() => ElevatedButton(
-              onPressed: isSubmitting.value ? null : () {
-                // Validation
-                if (editRating.value == 0) {
-                  Get.snackbar(
-                    'Error',
-                    'Please select a rating',
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                  );
-                  return;
-                }
-                
-                if (editCommentController.text.trim().isEmpty) {
-                  Get.snackbar(
-                    'Error',
-                    'Please write a review comment',
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                  );
-                  return;
-                }
-                
-                onSubmit(review.id);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary(context),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Obx(
+              () => ElevatedButton(
+                onPressed:
+                    isSubmitting.value
+                        ? null
+                        : () {
+                          // Validation
+                          if (editRating.value == 0) {
+                            Get.snackbar(
+                              'Error',
+                              'Please select a rating',
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+
+                          if (editCommentController.text.trim().isEmpty) {
+                            Get.snackbar(
+                              'Error',
+                              'Please write a review comment',
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                            return;
+                          }
+
+                          onSubmit(review.id);
+                        },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary(context),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child:
+                    isSubmitting.value
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                        : const Text(
+                          'Update Review',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
               ),
-              child: isSubmitting.value
-                  ? const SizedBox(
-                      width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white))
-                  : const Text(
-                      'Update Review',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
-                    ),
-            )),
+            ),
           ),
         ],
       ),
     );
   }
-  
+
   Widget _buildQuickTag(String text) {
     return GestureDetector(
       onTap: () {
@@ -202,12 +243,12 @@ class EditReviewForm extends StatelessWidget {
         } else {
           editCommentController.text += ' $text';
         }
-        
+
         // Move cursor to the end after adding tag
         editCommentController.selection = TextSelection.fromPosition(
           TextPosition(offset: editCommentController.text.length),
         );
-        
+
         // Refocus on the text field
         if (editCommentFocusNode.canRequestFocus) {
           editCommentFocusNode.requestFocus();
@@ -222,7 +263,11 @@ class EditReviewForm extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: const TextStyle(fontSize: 12, fontFamily: 'Poppins', color: Colors.black87),
+          style: const TextStyle(
+            fontSize: 12,
+            fontFamily: 'Poppins',
+            color: Colors.black87,
+          ),
         ),
       ),
     );
