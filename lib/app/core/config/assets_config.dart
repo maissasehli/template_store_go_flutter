@@ -39,40 +39,40 @@ class AssetConfig {
   static const String filter = '$rootSvg/filter.svg';
   static const String notification = '$rootSvg/notification.svg';
   static const String bell = '$rootIcons/bell 1.png';
-  static const String logout = '$rootSvg/logout.svg'; 
+  static const String logout = '$rootSvg/Logout.svg';
   static const String location = '$rootSvg/location.svg';
-  static const String success = '$rootSvg/success_icon.svg'; 
+  static const String success = '$rootSvg/Success Icon.svg';
   static const String search = '$rootIcons/search.png';
   static const String reviews = '$rootIcons/review.png';
   static const String backArrow = '$rootSvg/backArrow.svg';
 
   // Get all onboarding images as a list
   static List<String> get allOnboardingImages => [
-        onBoardingIconLogo,
-        onBoardingIconBag,
-        onBoardingHeaderMain,
-        onBoardingHeaderLeft,
-        onBoardingHeaderRight,
-      ];
+    onBoardingIconLogo,
+    onBoardingIconBag,
+    onBoardingHeaderMain,
+    onBoardingHeaderLeft,
+    onBoardingHeaderRight,
+  ];
 
   // Get all auth images
   static List<String> get allAuthImages => [
-        appleIcon,
-        googleIcon,
-        facebookIcon,
-      ];
+    appleIcon,
+    googleIcon,
+    facebookIcon,
+  ];
 
   // Get all icons
   static List<String> get allIcons => [
-        appleIcon,
-        googleIcon,
-        facebookIcon,
-        sendMail,
-        bag,
-        emailSentIcon,
-        heartIcon,
-        homeIcon,
-        profileIcon,
-        searchIcon,
-      ];
+    appleIcon,
+    googleIcon,
+    facebookIcon,
+    sendMail,
+    bag,
+    emailSentIcon,
+    heartIcon,
+    homeIcon,
+    profileIcon,
+    searchIcon,
+  ];
 }

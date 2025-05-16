@@ -117,16 +117,6 @@ class NotificationsPage extends StatelessWidget {
             ? _buildNotificationsList(controller)
             : const EmptyNotificationState();
       }),
-      floatingActionButton: Obx(() {
-        return controller.hasNotifications.value
-            ? FloatingActionButton(
-              onPressed: () => controller.fetchAllNotifications(),
-              backgroundColor: AppColors.primary(context),
-              foregroundColor: AppColors.primaryForeground(context),
-              child: const Icon(Icons.refresh),
-            )
-            : const SizedBox.shrink();
-      }),
     );
   }
 
