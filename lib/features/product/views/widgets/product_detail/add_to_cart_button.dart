@@ -1,5 +1,6 @@
-// add_to_cart_button.dart
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class AddToCartButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -15,43 +16,44 @@ class AddToCartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    
     return Row(
       children: [
         Text(
           '\$${price.toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 20,
+          style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: AppColors.foreground(context),
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: UIConfig.paddingMedium),
         Expanded(
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
+              padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.shopping_bag_outlined,
                   size: 16,
-                  color: Colors.white,
+                  color: AppColors.primaryForeground(context),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: UIConfig.paddingSmall),
                 Text(
                   buttonText,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    fontFamily: 'Poppins',
+                    color: AppColors.primaryForeground(context),
                   ),
                 ),
               ],

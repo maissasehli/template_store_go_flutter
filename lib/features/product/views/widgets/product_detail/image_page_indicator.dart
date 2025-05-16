@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class ImagePageIndicator extends StatelessWidget {
   final int currentIndex;
@@ -22,8 +23,13 @@ class ImagePageIndicator extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 3),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: index == currentIndex ? Colors.white : Colors.grey.withOpacity(0.5),
-            border: Border.all(color: Colors.white, width: 1),
+            color: index == currentIndex 
+                ? AppColors.primaryForeground(context) 
+                : AppColors.muted(context).withOpacity(0.5),
+            border: Border.all(
+              color: AppColors.primaryForeground(context), 
+              width: 1
+            ),
           ),
         ),
       ),

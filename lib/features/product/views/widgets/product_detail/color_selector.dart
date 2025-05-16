@@ -1,5 +1,6 @@
-// color_selector.dart
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class ColorSelector extends StatelessWidget {
   final String selectedColor;
@@ -24,86 +25,123 @@ class ColorSelector extends StatelessWidget {
     }
   }
 
-  Color _getColorFromClass(String? colorClass) {
-    if (colorClass == null || colorClass.isEmpty || !colorClass.startsWith('bg-')) {
+  Color _getColorFromClass(String? colorClass, BuildContext context) {
+    if (colorClass == null || colorClass.isEmpty) {
       return Colors.grey;
     }
 
-    final parts = colorClass.split('-');
-    if (parts.length < 2) {
-      return Colors.grey;
+    // Handle theme color references
+    if (colorClass.startsWith('theme-')) {
+      final parts = colorClass.split('-');
+      if (parts.length < 2) {
+        return Colors.grey;
+      }
+
+      String colorName = parts[1].toLowerCase();
+      
+      // Map theme color names to app color methods
+      switch (colorName) {
+        case 'primary':
+          return AppColors.primary(context);
+        case 'secondary':
+          return AppColors.secondary(context);
+        case 'accent':
+          return AppColors.accent(context);
+        case 'muted':
+          return AppColors.muted(context);
+        case 'background':
+          return AppColors.background(context);
+        case 'foreground':
+          return AppColors.foreground(context);
+        case 'destructive':
+          return AppColors.destructive(context);
+        case 'border':
+          return AppColors.border(context);
+        default:
+          return Colors.grey;
+      }
     }
 
-    String colorName = parts[1].toLowerCase();
-    int? shade = parts.length > 2 ? int.tryParse(parts[2]) : null;
+    // Handle tailwind-style color classes
+    if (colorClass.startsWith('bg-')) {
+      final parts = colorClass.split('-');
+      if (parts.length < 2) {
+        return Colors.grey;
+      }
 
-    if (colorName == 'grey') {
-      colorName = 'gray';
-    } else if (colorName == 'bluegray') {
-      colorName = 'blueGrey';
-    }
+      String colorName = parts[1].toLowerCase();
+      int? shade = parts.length > 2 ? int.tryParse(parts[2]) : null;
 
-    final colorMap = <String, Map<String, dynamic>>{
-      'red': {'color': Colors.red, 'supportsShades': true},
-      'pink': {'color': Colors.pink, 'supportsShades': true},
-      'purple': {'color': Colors.purple, 'supportsShades': true},
-      'deepPurple': {'color': Colors.deepPurple, 'supportsShades': true},
-      'indigo': {'color': Colors.indigo, 'supportsShades': true},
-      'blue': {'color': Colors.blue, 'supportsShades': true},
-      'lightBlue': {'color': Colors.lightBlue, 'supportsShades': true},
-      'cyan': {'color': Colors.cyan, 'supportsShades': true},
-      'teal': {'color': Colors.teal, 'supportsShades': true},
-      'green': {'color': Colors.green, 'supportsShades': true},
-      'lightGreen': {'color': Colors.lightGreen, 'supportsShades': true},
-      'lime': {'color': Colors.lime, 'supportsShades': true},
-      'yellow': {'color': Colors.yellow, 'supportsShades': true},
-      'amber': {'color': Colors.amber, 'supportsShades': true},
-      'orange': {'color': Colors.orange, 'supportsShades': true},
-      'deepOrange': {'color': Colors.deepOrange, 'supportsShades': true},
-      'brown': {'color': Colors.brown, 'supportsShades': true},
-      'gray': {'color': Colors.grey, 'supportsShades': true},
-      'blueGrey': {'color': Colors.blueGrey, 'supportsShades': true},
-      'black': {'color': Colors.black, 'supportsShades': false},
-      'white': {'color': Colors.white, 'supportsShades': false},
-    };
+      if (colorName == 'grey') {
+        colorName = 'gray';
+      } else if (colorName == 'bluegray') {
+        colorName = 'blueGrey';
+      }
 
-    final colorEntry = colorMap[colorName];
-    if (colorEntry == null) {
-      return Colors.grey;
-    }
+      final colorMap = <String, Map<String, dynamic>>{
+        'red': {'color': Colors.red, 'supportsShades': true},
+        'pink': {'color': Colors.pink, 'supportsShades': true},
+        'purple': {'color': Colors.purple, 'supportsShades': true},
+        'deepPurple': {'color': Colors.deepPurple, 'supportsShades': true},
+        'indigo': {'color': Colors.indigo, 'supportsShades': true},
+        'blue': {'color': Colors.blue, 'supportsShades': true},
+        'lightBlue': {'color': Colors.lightBlue, 'supportsShades': true},
+        'cyan': {'color': Colors.cyan, 'supportsShades': true},
+        'teal': {'color': Colors.teal, 'supportsShades': true},
+        'green': {'color': Colors.green, 'supportsShades': true},
+        'lightGreen': {'color': Colors.lightGreen, 'supportsShades': true},
+        'lime': {'color': Colors.lime, 'supportsShades': true},
+        'yellow': {'color': Colors.yellow, 'supportsShades': true},
+        'amber': {'color': Colors.amber, 'supportsShades': true},
+        'orange': {'color': Colors.orange, 'supportsShades': true},
+        'deepOrange': {'color': Colors.deepOrange, 'supportsShades': true},
+        'brown': {'color': Colors.brown, 'supportsShades': true},
+        'gray': {'color': Colors.grey, 'supportsShades': true},
+        'blueGrey': {'color': Colors.blueGrey, 'supportsShades': true},
+        'black': {'color': Colors.black, 'supportsShades': false},
+        'white': {'color': Colors.white, 'supportsShades': false},
+      };
 
-    final baseColor = colorEntry['color'] as Color;
-    final supportsShades = colorEntry['supportsShades'] as bool;
+      final colorEntry = colorMap[colorName];
+      if (colorEntry == null) {
+        return Colors.grey;
+      }
 
-    if (shade == null || !supportsShades) {
+      final baseColor = colorEntry['color'] as Color;
+      final supportsShades = colorEntry['supportsShades'] as bool;
+
+      if (shade == null || !supportsShades) {
+        return baseColor;
+      }
+
+      const validShades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
+      if (!validShades.contains(shade)) {
+        return baseColor;
+      }
+
+      if (baseColor is MaterialColor || baseColor is MaterialAccentColor) {
+        return (baseColor as dynamic)[shade] ?? baseColor;
+      }
+
       return baseColor;
     }
 
-    const validShades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
-    if (!validShades.contains(shade)) {
-      return baseColor;
-    }
-
-    if (baseColor is MaterialColor || baseColor is MaterialAccentColor) {
-      return (baseColor as dynamic)[shade] ?? baseColor;
-    }
-
-    return baseColor;
+    return Colors.grey;
   }
 
-  Color _getColor(Map<String, String> colorMap) {
+  Color _getColor(Map<String, String> colorMap, BuildContext context) {
     final customColor = colorMap['customColor'] ?? '';
     final colorClass = colorMap['colorClass'] ?? '';
 
     if (customColor.isNotEmpty) {
       return _getColorFromHex(customColor);
     }
-    return _getColorFromClass(colorClass);
+    return _getColorFromClass(colorClass, context);
   }
 
   bool _isLightColor(Color color) {
-    final luminance = (0.299 * color.r + 0.587 * color.g + 0.114 * color.b);
-    return luminance > 128;
+    final luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
+    return luminance > 0.5;
   }
 
   @override
@@ -117,12 +155,12 @@ class ColorSelector extends StatelessWidget {
 
     return Container(
       width: 35,
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingSmall),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        color: AppColors.background(context),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         border: Border.all(
-          color: const Color(0xFFDDDDDD),
+          color: AppColors.border(context),
           width: 1,
         ),
       ),
@@ -131,11 +169,11 @@ class ColorSelector extends StatelessWidget {
         children: colors.map((colorMap) {
           final colorValue = colorMap['value'] ?? '';
           final isSelected = selectedColor == colorValue;
-          final color = _getColor(colorMap);
+          final color = _getColor(colorMap, context);
           final isLight = _isLightColor(color);
 
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingSmall),
             child: GestureDetector(
               onTap: () => onColorSelected(colorValue),
               child: Container(

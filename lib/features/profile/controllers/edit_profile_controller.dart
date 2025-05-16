@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/profile/models/user_model.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
-import 'package:store_go/features/profile/controllers/profile_controller.dart';  // Add import for ProfileController
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 

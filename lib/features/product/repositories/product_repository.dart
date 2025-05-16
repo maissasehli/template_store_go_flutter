@@ -7,13 +7,11 @@ import 'package:store_go/features/review/repositories/review_repository.dart';
 
 class ProductRepository {
   final ApiClient _apiClient;
-  final ReviewRepository _reviewRepository;
 
   ProductRepository({
     required ApiClient apiClient,
     required ReviewRepository reviewRepository,
-  }) : _apiClient = apiClient,
-       _reviewRepository = reviewRepository;
+  }) : _apiClient = apiClient;
 
   final Map<String, Product> _productCache = {};
   final Map<String, List<Product>> _categoryProductsCache = {};
@@ -23,19 +21,6 @@ class ProductRepository {
 
 
 
-  Future<Product> _fetchReviewsForProduct(Product product) async {
-    try {
-      final reviews = await _reviewRepository.getReviewsByProductId(product.id);
-      return product.copyWith(reviews: reviews);
-    } catch (e) {
-      developer.log(
-        'Error fetching reviews for product ${product.id}: $e',
-        name: 'ProductRepository._fetchReviewsForProduct',
-        error: e,
-      );
-      return product.copyWith(reviews: []);
-    }
-  }
 
   Future<List<Product>> getProducts({bool forceRefresh = false}) async {
     if (_allProductsCache.isEmpty || forceRefresh) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class SizeSelector extends StatelessWidget {
   final String selectedSize;
@@ -22,21 +24,19 @@ class SizeSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Size',
-          style: TextStyle(
-            fontSize: 18,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-            color: Colors.black,
+            color: AppColors.foreground(context),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: UIConfig.paddingSmall),
         Row(
           children: sizes.map((size) {
             final isSelected = selectedSize == size;
             return Padding(
-              padding: const EdgeInsets.only(right: 12.0),
+              padding: EdgeInsets.only(right: UIConfig.paddingMedium - 4),
               child: GestureDetector(
                 onTap: () => onSizeSelected(size),
                 child: Container(
@@ -44,9 +44,13 @@ class SizeSelector extends StatelessWidget {
                   height: 35,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isSelected ? Colors.black : Colors.transparent,
+                    color: isSelected 
+                        ? AppColors.primary(context) 
+                        : Colors.transparent,
                     border: Border.all(
-                      color: isSelected ? Colors.black : Colors.grey.withOpacity(0.5),
+                      color: isSelected 
+                          ? AppColors.primary(context) 
+                          : AppColors.border(context),
                       width: 1,
                     ),
                   ),
@@ -54,9 +58,11 @@ class SizeSelector extends StatelessWidget {
                     child: Text(
                       size,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: UIConfig.fontSizeMedium,
                         fontWeight: FontWeight.w500,
-                        color: isSelected ? Colors.white : Colors.black,
+                        color: isSelected 
+                            ? AppColors.primaryForeground(context) 
+                            : AppColors.foreground(context),
                       ),
                     ),
                   ),

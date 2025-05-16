@@ -15,6 +15,8 @@ import 'package:store_go/features/product/views/widgets/product_detail/image_pag
 import 'package:store_go/features/product/views/widgets/product_detail/draggable_info_sheet.dart';
 import 'package:store_go/features/review/view/widgets/review_section/review_section.dart';
 
+
+
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
   const ProductDetailScreen({super.key, required this.productId});
@@ -23,9 +25,9 @@ class ProductDetailScreen extends StatefulWidget {
   ProductDetailScreenState createState() => ProductDetailScreenState();
 }
 
-class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTickerProviderStateMixin {
-  final ProductDetailController detailController =
-      Get.find<ProductDetailController>();
+class ProductDetailScreenState extends State<ProductDetailScreen> 
+    with SingleTickerProviderStateMixin {
+  final ProductDetailController detailController = Get.find<ProductDetailController>();
   String? selectedColor;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -33,8 +35,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
   @override
   void initState() {
     super.initState();
-    
-    // Animation setup for skeleton loading
+    _initializeAnimation();
+    _initializeProduct();
+  }
+
+  void _initializeAnimation() {
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -43,7 +48,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
     _pulseAnimation = Tween<double>(begin: 0.4, end: 0.9).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    
+  }
+
+  void _initializeProduct() {
     detailController.fetchProductDetails(widget.productId);
     detailController.state.product.listen((product) {
       if (product != null &&
@@ -62,7 +69,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
     super.dispose();
   }
 
-  Widget _buildSkeletonLoading(BuildContext context) {
+   Widget _buildSkeletonLoading(BuildContext context) {
     final theme = Theme.of(context);
     final surfaceColor = theme.cardColor;
     final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
@@ -273,19 +280,20 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
     );
   }
 
+
   Widget _buildSkeletonBox(double width, double height, {double borderRadius = 10}) {
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
-        final theme = Theme.of(context);
-        final surfaceColor = theme.cardColor;
-        final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-        
         return Container(
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: Color.lerp(hintColor, surfaceColor, _pulseAnimation.value),
+            color: Color.lerp(
+              AppColors.muted(context).withOpacity(0.08),
+              AppColors.card(context),
+              _pulseAnimation.value,
+            ),
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         );
@@ -297,16 +305,16 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
-        final theme = Theme.of(context);
-        final surfaceColor = theme.cardColor;
-        final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-        
         return Container(
           width: size,
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Color.lerp(hintColor, surfaceColor, _pulseAnimation.value),
+            color: Color.lerp(
+              AppColors.muted(context).withOpacity(0.08),
+              AppColors.card(context),
+              _pulseAnimation.value,
+            ),
           ),
         );
       }
@@ -314,34 +322,25 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
   }
 
   Widget _buildNavButton(IconData icon) {
-    return AnimatedBuilder(
-      animation: _pulseAnimation,
-      builder: (context, child) {
-        final theme = Theme.of(context);
-        final surfaceColor = theme.cardColor;
-        final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
-        
-        return Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color.lerp(hintColor, surfaceColor, _pulseAnimation.value),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 5,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.card(context),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.muted(context).withOpacity(0.05),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
           ),
-          child: Icon(
-            icon,
-            color: theme.colorScheme.onSurface.withOpacity(0.2),
-            size: 20,
-          ),
-        );
-      }
+        ],
+      ),
+      child: Icon(
+        icon,
+        color: AppColors.mutedForeground(context),
+        size: 20,
+      ),
     );
   }
 
@@ -353,26 +352,26 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
           Icon(
             Icons.error_outline_rounded,
             size: 64,
-            color: Theme.of(context).colorScheme.error,
+            color: AppColors.destructive(context),
           ),
           const SizedBox(height: 16),
           Text(
-            'Erreur: $errorMessage',
+            'Error: $errorMessage',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.error,
+              color: AppColors.destructive(context),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () {
-              detailController.fetchProductDetails(widget.productId);
-            },
+            onPressed: () => detailController.fetchProductDetails(widget.productId),
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Réessayer'),
+            label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -392,23 +391,23 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
           Icon(
             Icons.inventory_2_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: AppColors.mutedForeground(context),
           ),
           const SizedBox(height: 16),
           Text(
-            'Produit non trouvé',
+            'Product Not Found',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: AppColors.foreground(context),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Le produit demandé n\'existe pas ou a été supprimé',
+            'The requested product does not exist or has been removed',
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: AppColors.mutedForeground(context),
             ),
             textAlign: TextAlign.center,
           ),
@@ -416,8 +415,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
           ElevatedButton.icon(
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.arrow_back_rounded),
-            label: const Text('Retour'),
+            label: const Text('Back'),
             style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary(context),
+              foregroundColor: AppColors.primaryForeground(context),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -428,6 +429,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -495,11 +497,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen> with SingleTic
                           Expanded(
                             child: Text(
                               product.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
                                 fontFamily: 'Poppins',
-                                color: Colors.black,
+                                color: AppColors.foreground(context),
                               ),
                             ),
                           ),

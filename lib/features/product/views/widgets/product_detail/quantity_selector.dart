@@ -1,5 +1,6 @@
-// quantity_selector.dart
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class QuantitySelector extends StatelessWidget {
   final int quantity;
@@ -14,10 +15,15 @@ class QuantitySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: UIConfig.paddingSmall, 
+        vertical: 4
+      ),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withOpacity(0.5)),
-        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.border(context),
+        ),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -26,17 +32,28 @@ class QuantitySelector extends StatelessWidget {
             onTap: () {
               if (quantity > 1) onQuantityChanged(quantity - 1);
             },
-            child: const Icon(Icons.remove, size: 20, color: Colors.black),
+            child: Icon(
+              Icons.remove, 
+              size: 20, 
+              color: AppColors.foreground(context),
+            ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: UIConfig.paddingSmall),
           Text(
             '$quantity',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.foreground(context),
+            ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: UIConfig.paddingSmall),
           GestureDetector(
             onTap: () => onQuantityChanged(quantity + 1),
-            child: const Icon(Icons.add, size: 20, color: Colors.black),
+            child: Icon(
+              Icons.add, 
+              size: 20, 
+              color: AppColors.foreground(context),
+            ),
           ),
         ],
       ),

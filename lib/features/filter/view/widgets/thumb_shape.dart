@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomThumbShape extends SliderComponentShape {
+  const CustomThumbShape();
+  
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
     return const Size(24, 24);
@@ -22,22 +24,18 @@ class CustomThumbShape extends SliderComponentShape {
     required Size sizeWithOverflow,
   }) {
     final Canvas canvas = context.canvas;
-
+    
     // Draw outer white circle
-    final Paint outerPaint =
-        Paint()
-          ..color = Colors.white
-          ..style = PaintingStyle.fill;
-
+    final Paint outerPaint = Paint()
+      ..color = sliderTheme.thumbColor!
+      ..style = PaintingStyle.fill;
     canvas.drawCircle(center, 12, outerPaint);
-
+    
     // Draw border
-    final Paint borderPaint =
-        Paint()
-          ..color = Colors.grey[300]!
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1;
-
+    final Paint borderPaint = Paint()
+      ..color = sliderTheme.inactiveTrackColor!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
     canvas.drawCircle(center, 12, borderPaint);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 
 class ProductImageGallery extends StatefulWidget {
@@ -31,14 +32,20 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
     return Container(
       width: double.infinity,
       height: MediaQuery.of(context).size.height * widget.height,
-      color: Colors.grey[300],
+      color: AppColors.secondary(context),
       child: _buildProductImageGallery(context),
     );
   }
 
   Widget _buildProductImageGallery(BuildContext context) {
     if (widget.product.images.isEmpty) {
-      return const Center(child: Icon(Icons.image_not_supported, size: 50));
+      return Center(
+        child: Icon(
+          Icons.image_not_supported, 
+          size: 50,
+          color: AppColors.mutedForeground(context),
+        ),
+      );
     }
 
     return PageView.builder(
@@ -50,7 +57,13 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
           widget.product.images[index],
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return const Center(child: Icon(Icons.broken_image, size: 40));
+            return Center(
+              child: Icon(
+                Icons.broken_image, 
+                size: 40,
+                color: AppColors.mutedForeground(context),
+              ),
+            );
           },
         );
       },
