@@ -1,7 +1,7 @@
-// product_info.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/review/controllers/review_controller.dart';
 import 'package:store_go/features/review/repositories/review_repository.dart';
@@ -30,10 +30,10 @@ class ProductInfo extends StatelessWidget {
       reviewController = Get.find<ReviewController>();
     } catch (e) {
       print('ProductInfo: Error finding ReviewController: $e');
-      return const Center(
+      return Center(
         child: Text(
           'Error: Review service not available',
-          style: TextStyle(color: Colors.red),
+          style: TextStyle(color: AppColors.destructive(context)),
         ),
       );
     }
@@ -57,13 +57,11 @@ class ProductInfo extends StatelessWidget {
         children: [
           Text(
             subtitle,
-            style: TextStyle(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.mutedForeground(context),
-              fontSize: 12,
-              fontFamily: 'Poppins',
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: UIConfig.paddingSmall),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -78,16 +76,14 @@ class ProductInfo extends StatelessWidget {
                         size: 18,
                         color: index < averageRating.round()
                             ? const Color(0xFFFFCC00)
-                            : Colors.grey[300],
+                            : AppColors.border(context),
                       );
                     }),
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4),
                   Text(
                     '(${reviewController.reviews.length} Review${reviewController.reviews.length == 1 ? '' : 's'})',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.mutedForeground(context),
                     ),
                   ),
@@ -95,11 +91,9 @@ class ProductInfo extends StatelessWidget {
               ),
               Text(
                 isInStock ? 'Available in stock' : 'Out of stock',
-                style: TextStyle(
-                  fontSize: 14,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                  color: isInStock ? Colors.green : Colors.red,
+                  color: isInStock ? Colors.green : AppColors.destructive(context),
                 ),
               ),
             ],

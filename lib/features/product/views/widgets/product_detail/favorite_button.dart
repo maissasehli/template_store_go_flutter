@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 
 class FavoriteButton extends StatelessWidget {
@@ -15,17 +16,17 @@ class FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WishlistController wishlistController = Get.find<WishlistController>();
-    // Using a local Rx variable to immediately respond to tap
+    final WishlistController wishlistController = Get.find();
     final RxBool isFavoriteLocal = RxBool(wishlistController.isProductInWishlist(productId));
 
     return Obx(() {
       return Container(
         width: 35,
         height: 35,
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: AppColors.card(context),
           shape: BoxShape.circle,
+          // Remove the borderRadius since we're using shape: BoxShape.circle
         ),
         child: InkWell(
           onTap: () {
@@ -52,9 +53,12 @@ class FavoriteButton extends StatelessWidget {
               AssetConfig.heartIcon,
               width: 18,
               height: 17,
-              color: isFavoriteLocal.value
-                  ? AppColors.destructive(context)
-                  : const Color(0xFF130F26),
+              colorFilter: ColorFilter.mode(
+                isFavoriteLocal.value
+                    ? AppColors.destructive(context)
+                    : const Color(0xFF130F26),
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ),

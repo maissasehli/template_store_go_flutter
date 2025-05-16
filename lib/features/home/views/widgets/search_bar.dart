@@ -6,17 +6,19 @@ import 'package:store_go/app/core/theme/app_color_extension.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/features/search/views/search_page.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/app_typography_extension.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
   final String initialValue;
-
+  
   const CustomSearchBar({
     super.key,
     required this.onSearch,
     this.initialValue = '',
   });
-
+  
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
 }
@@ -36,7 +38,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       });
     });
   }
-
+  
   @override
   void dispose() {
     _controller.dispose();

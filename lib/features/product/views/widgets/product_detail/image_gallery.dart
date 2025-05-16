@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 
 class ImageGallery extends StatefulWidget {
@@ -57,7 +58,7 @@ class _ImageGalleryState extends State<ImageGallery> {
           ),
         ),
 
-        const SizedBox(height: UIConfig.paddingMedium),
+        SizedBox(height: UIConfig.paddingMedium),
 
         // Thumbnail row
         if (widget.imageUrls.length > 1)
@@ -84,7 +85,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                       border: Border.all(
                         color:
                             isSelected
-                                ? Theme.of(context).primaryColor
+                                ? AppColors.primary(context)
                                 : Colors.transparent,
                         width: 2,
                       ),
@@ -118,8 +119,8 @@ class _ImageGalleryState extends State<ImageGallery> {
                     shape: BoxShape.circle,
                     color:
                         index == _currentPage
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey.shade300,
+                            ? AppColors.primary(context)
+                            : AppColors.border(context),
                   ),
                 ),
               ),

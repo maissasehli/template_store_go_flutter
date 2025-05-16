@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class ProductDescription extends StatelessWidget {
   final String description;
@@ -15,21 +17,18 @@ class ProductDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Description',
-          style: TextStyle(
-            fontSize: 18,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-            color: Colors.black,
+            color: AppColors.foreground(context),
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: UIConfig.paddingSmall),
         Text(
           description,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppColors.mutedForeground(context),
           ),
         ),
       ],

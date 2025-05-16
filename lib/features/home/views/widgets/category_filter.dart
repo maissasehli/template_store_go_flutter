@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/category/models/category.model.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_color_extension.dart';
+import 'package:store_go/app/core/theme/app_typography_extension.dart';
 
 class CategoryFilter extends StatelessWidget {
   final List<Category> categories;
@@ -16,8 +19,12 @@ class CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get theme extensions for colors and typography
+    final colors = Theme.of(context).extension<AppColorExtension>()!;
+    final typography = Theme.of(context).extension<AppTypographyExtension>()!;
+    
     return SizedBox(
-      height: 120, // Increased height to accommodate larger icons
+      height: 120,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -25,35 +32,33 @@ class CategoryFilter extends StatelessWidget {
             final isSelected = category.id == selectedCategoryId;
 
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall + 2),
               child: GestureDetector(
                 onTap: () => onCategorySelected(category.id),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 60, // Increased from 56
-                      height: 60, // Increased from 56
+                      width: 60,
+                      height: 60,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Theme.of(context).primaryColor.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.1),
+                            ? colors.primary.withOpacity(0.1)
+                            : colors.muted.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: _buildCategoryIcon(
                         category.imageUrl,
                         isSelected,
                         context,
+                        colors,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: UIConfig.paddingSmall),
                     Text(
                       category.name,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
+                      style: typography.subtitle2.copyWith(
                         height: 1.6,
                         color: AppColors.foreground(context),
                       ),
@@ -72,12 +77,13 @@ class CategoryFilter extends StatelessWidget {
     String? iconPath,
     bool isSelected,
     BuildContext context,
+    AppColorExtension colors,
   ) {
     if (iconPath == null || iconPath.isEmpty || iconPath == "none") {
       return Icon(
         Icons.category,
-        color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-        size: 45, // Increased from 28
+        color: isSelected ? colors.primary : colors.muted,
+        size: 45,
       );
     }
 
@@ -86,14 +92,14 @@ class CategoryFilter extends StatelessWidget {
       return Center(
         child: Image.asset(
           path,
-          width: 60, // Increased from 28
-          height: 60, // Increased from 28
-          fit: BoxFit.contain, // Added to ensure image looks good
+          width: 60,
+          height: 60,
+          fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return Icon(
               Icons.category,
-              color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-              size: 45, // Increased from 28
+              color: isSelected ? colors.primary : colors.muted,
+              size: 45,
             );
           },
         ),
@@ -101,17 +107,17 @@ class CategoryFilter extends StatelessWidget {
     } else if (iconPath.startsWith('http://') || iconPath.startsWith('https://')) {
       return Center(
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(100),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           child: Image.network(
             iconPath,
-            width: 50, // Increased from 28
-            height: 50, // Increased from 28
+            width: 50,
+            height: 50,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Icon(
                 Icons.category,
-                color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-                size: 45, // Increased from 28
+                color: isSelected ? colors.primary : colors.muted,
+                size: 45,
               );
             },
             loadingBuilder: (context, child, loadingProgress) {
@@ -120,7 +126,7 @@ class CategoryFilter extends StatelessWidget {
                 value: loadingProgress.expectedTotalBytes != null
                     ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                     : null,
-                color: Theme.of(context).primaryColor,
+                color: colors.primary,
                 strokeWidth: 2.0,
               );
             },
@@ -130,8 +136,8 @@ class CategoryFilter extends StatelessWidget {
     } else {
       return Icon(
         Icons.category,
-        color: isSelected ? Theme.of(context).primaryColor : Colors.grey,
-        size: 45, // Increased from 28
+        color: isSelected ? colors.primary : colors.muted,
+        size: 45,
       );
     }
   }

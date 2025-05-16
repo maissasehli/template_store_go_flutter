@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 
 class CustomFilterChip extends StatelessWidget {
   final String label;
@@ -17,12 +19,15 @@ class CustomFilterChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 11),
+        padding: const EdgeInsets.symmetric(
+          horizontal: UIConfig.paddingLarge,
+          vertical: UIConfig.paddingSmall + 3, // 11 equivalent
+        ),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.white,
-          borderRadius: BorderRadius.circular(50),
+          color: isSelected ? AppColors.primary(context) : AppColors.background(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
           border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey[300]!,
+            color: isSelected ? AppColors.primary(context) : AppColors.border(context),
             width: 1,
           ),
         ),
@@ -30,9 +35,9 @@ class CustomFilterChip extends StatelessWidget {
           label,
           style: TextStyle(
             fontFamily: 'Poppins',
-            color: isSelected ? Colors.white : Colors.black,
+            color: isSelected ? AppColors.primaryForeground(context) : AppColors.foreground(context),
             fontWeight: FontWeight.w500,
-            fontSize: 14,
+            fontSize: UIConfig.fontSizeRegular,
           ),
         ),
       ),
