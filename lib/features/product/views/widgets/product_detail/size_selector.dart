@@ -33,43 +33,47 @@ class SizeSelector extends StatelessWidget {
         ),
         SizedBox(height: UIConfig.paddingSmall),
         Row(
-          children: sizes.map((size) {
-            final isSelected = selectedSize == size;
-            return Padding(
-              padding: EdgeInsets.only(right: UIConfig.paddingMedium - 4),
-              child: GestureDetector(
-                onTap: () => onSizeSelected(size),
-                child: Container(
-                  width: 35,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected 
-                        ? AppColors.primary(context) 
-                        : Colors.transparent,
-                    border: Border.all(
-                      color: isSelected 
-                          ? AppColors.primary(context) 
-                          : AppColors.border(context),
-                      width: 1,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      size,
-                      style: TextStyle(
-                        fontSize: UIConfig.fontSizeMedium,
-                        fontWeight: FontWeight.w500,
-                        color: isSelected 
-                            ? AppColors.primaryForeground(context) 
-                            : AppColors.foreground(context),
+          children:
+              sizes.map((size) {
+                final isSelected = selectedSize == size;
+                return Padding(
+                  padding: EdgeInsets.only(right: UIConfig.paddingMedium - 4),
+                  child: GestureDetector(
+                    onTap: () => onSizeSelected(size),
+                    child: Container(
+                      height: 35,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(17.5),
+                        color:
+                            isSelected
+                                ? AppColors.primary(context)
+                                : Colors.transparent,
+                        border: Border.all(
+                          color:
+                              isSelected
+                                  ? AppColors.primary(context)
+                                  : AppColors.border(context),
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          size,
+                          style: TextStyle(
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                isSelected
+                                    ? AppColors.primaryForeground(context)
+                                    : AppColors.foreground(context),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ],
     );
