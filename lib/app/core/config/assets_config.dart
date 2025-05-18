@@ -39,7 +39,7 @@ class AssetConfig {
   static const String filter = '$rootSvg/filter.svg';
   static const String notification = '$rootSvg/notification.svg';
   static const String bell = '$rootIcons/bell 1.png';
-  static const String logout = '$rootSvg/logout.svg';
+  static const String logout = '$rootSvg/Logout.svg';
   static const String location = '$rootSvg/location.svg';
   static const String success = '$rootSvg/Success Icon.svg';
   static const String search = '$rootIcons/search.png';

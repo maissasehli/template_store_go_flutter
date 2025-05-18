@@ -39,16 +39,6 @@ class SettingsLanguageController extends GetxController {
     // Force GetX to update the UI
     Get.updateLocale(locale);
     update();
-
-    // Show a short feedback toast
-    Get.snackbar(
-      'Language Changed',
-      'App language has been updated',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.7),
-      colorText: Colors.white,
-    );
   }
 
   // Save language and return to settings
