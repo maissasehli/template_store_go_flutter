@@ -6,6 +6,7 @@ import 'package:store_go/features/auth/services/token_manager.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/core/services/image_preloader_manager.dart';
 import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/app/core/services/theme_aware_snackbar_service.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 
@@ -21,10 +22,18 @@ class ServiceLocator {
     Get.put(TokenManager(), permanent: true);
     Get.put<AuthService>(AuthService(), permanent: true);
     Get.put<ThemeController>(ThemeController(), permanent: true);
-    Get.put<NavigationController>(NavigationController(), permanent: true);
-
-    //  register PusherService
+    Get.put<NavigationController>(
+      NavigationController(),
+      permanent: true,
+    ); //  register PusherService
     Get.put<PusherService>(PusherService(), permanent: true);
+
+    // Register ThemeAwareSnackbarService
+    Get.put<ThemeAwareSnackbarService>(
+      ThemeAwareSnackbarService(),
+      permanent: true,
+    );
+
     // Initialize image services
     await Get.putAsync<EnhancedImageCache>(
       () => EnhancedImageCache().init(),

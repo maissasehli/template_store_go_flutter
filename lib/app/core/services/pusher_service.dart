@@ -1,3 +1,4 @@
+// filepath: c:\Users\wassi\OneDrive\Documents\Projects\mobile\fashion_template\lib\app\core\services\pusher_service.dart
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/config/app_notification_type.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
+import 'package:store_go/app/core/services/theme_aware_snackbar_service.dart';
 import 'package:synchronized/synchronized.dart';
 
 class PusherService {
@@ -184,80 +186,15 @@ class PusherService {
     try {
       final data = jsonDecode(eventData);
       final String? imageUrl = data['imageUrl'];
-      Get.snackbar(
-        'New Product Available!',
-        '${data['productName']} is now available in the store',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 5),
-        backgroundColor: Colors.white,
-        colorText: Colors.black,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 8,
-        padding: const EdgeInsets.all(12),
-        // Use a custom snackbar with image
-        titleText: Row(
-          children: [
-            const Text(
-              'New Product Available!',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ],
-        ),
-        messageText: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product image
-            if (imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  margin: const EdgeInsets.only(right: 12),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[200],
-                        child: const Icon(
-                          Icons.image_not_supported,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        color: Colors.grey[200],
-                        child: const Center(child: CircularProgressIndicator()),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            // Product details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${data['productName']} is now available in the store',
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Price: \$${data['price']}',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      
+      // Use the theme-aware service from GetX dependency injection
+      final snackbarService = Get.find<ThemeAwareSnackbarService>();
+      
+      snackbarService.showProductNotification(
+        title: 'New Product Available!',
+        message: '${data['productName']} is now available in the store',
+        imageUrl: imageUrl,
+        data: data,
         onTap: (_) {
           Get.toNamed(
             AppRoute.productDetail.replaceAll(':id', data["productId"]),
@@ -276,134 +213,16 @@ class PusherService {
       final String? imageUrl = data['promotionImage'];
       final String promotionId = data['promotionId'] ?? '';
       final String? discountDisplay = data['discountDisplay'];
-
-      Get.snackbar(
-        'New Promotion Available!',
-        '${data['name']} - Limited time offer',
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 5),
-        backgroundColor: Colors.white,
-        colorText: Colors.black,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 8,
-        padding: const EdgeInsets.all(12),
-        // Use a custom snackbar with image
-        titleText: Row(
-          children: [
-            const Text(
-              'New Promotion Available!',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ],
-        ),
-        messageText: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Promotion image
-            if (imageUrl != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Center(
-                    child: Image.network(
-                      imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.orange.withOpacity(0.2),
-                          child: const Icon(
-                            Icons.local_offer_outlined,
-                            color: Colors.orange,
-                            size: 30,
-                          ),
-                        );
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.orange.withOpacity(0.2),
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.orange,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              )
-            else
-              // Fallback icon when no image is provided
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  margin: const EdgeInsets.only(right: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.local_offer_outlined,
-                      color: Colors.orange,
-                      size: 30,
-                    ),
-                  ),
-                ),
-              ),
-            // Promotion details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data['name'] ?? 'New Promotion',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (data['description'] != null)
-                    Text(
-                      data['description'],
-                      style: const TextStyle(fontSize: 13),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      discountDisplay ?? 'Special Offer',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      
+      // Use the theme-aware service from GetX dependency injection
+      final snackbarService = Get.find<ThemeAwareSnackbarService>();
+      
+      snackbarService.showPromotionNotification(
+        title: 'New Promotion Available!',
+        message: '${data['name']} - Limited time offer',
+        imageUrl: imageUrl,
+        discountDisplay: discountDisplay,
+        data: data,
         onTap: (_) {
           // Navigate to promotion details or promotions list
           if (promotionId.isNotEmpty) {
