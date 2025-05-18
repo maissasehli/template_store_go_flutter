@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class AppTypography {
   // Font families
-  static const String primaryFont = 'Inter';
-  static const String secondaryFont = 'Poppins';
+  static const String primaryFont = 'Poppins';
+  static const String secondaryFont = 'Gabarito';
+  static const String arabicFont = 'NotoKufiArabic';
 
   // Font weights
   static const FontWeight thin = FontWeight.w100;

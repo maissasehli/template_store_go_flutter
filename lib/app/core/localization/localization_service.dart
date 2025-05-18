@@ -1,7 +1,7 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/localization/language_font_utility.dart';
 import 'package:store_go/app/core/services/storage_service.dart';
 
 class LocalizationService {
@@ -16,13 +16,13 @@ class LocalizationService {
     {
       "name": "Arabic",
       "code": "ar",
-      "nativeName": "العربية",
+      "nativeName": "???????",
       "icon": Icons.language,
     },
     {
       "name": "French",
       "code": "fr",
-      "nativeName": "Français",
+      "nativeName": "Fran�ais",
       "icon": Icons.language,
     },
   ];
@@ -72,5 +72,23 @@ class LocalizationService {
     return isRtl(context)
         ? EdgeInsets.fromLTRB(end, top, start, bottom)
         : EdgeInsets.fromLTRB(start, top, end, bottom);
+  }
+
+  // Get the appropriate font family based on the current locale
+  static String getFontFamilyForContext(BuildContext context) {
+    return LanguageFontUtility.getFontFamilyForLanguage(
+      context.locale.languageCode,
+    );
+  }
+
+  // Apply the appropriate font to a text style based on context
+  static TextStyle getLocalizedTextStyle(
+    BuildContext context,
+    TextStyle baseStyle,
+  ) {
+    return LanguageFontUtility.getTextStyle(
+      context: context,
+      baseStyle: baseStyle,
+    );
   }
 }

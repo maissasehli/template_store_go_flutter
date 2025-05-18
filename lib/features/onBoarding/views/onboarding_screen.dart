@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/data/onboarding_static.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/services/enhanced_image_cache.dart';
 import 'package:store_go/app/core/services/image_preloader_manager.dart';
 import 'package:store_go/features/onBoarding/views/widgets/onboarding_bg_icon.dart';
@@ -118,27 +120,36 @@ class _OnboardingState extends State<Onboarding> {
                         children: [
                           Text(
                             page.mainTitle,
-                            style: const TextStyle(
-                              fontSize: 32.0,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.white,
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              const TextStyle(
+                                fontSize: 32.0,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           Text(
                             page.boldTitle,
-                            style: const TextStyle(
-                              fontSize: 32.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              const TextStyle(
+                                fontSize: 32.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 16.0),
                           Text(
                             page.subtitle,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.white70,
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              const TextStyle(
+                                fontSize: 16.0,
+                                color: Colors.white70,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 80.0),
@@ -166,12 +177,16 @@ class _OnboardingState extends State<Onboarding> {
                               child: Text(
                                 _currentPage.value <
                                         OnboardingStatic.pages.length - 1
-                                    ? 'Next'
-                                    : 'Get Started',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                    ? 'common.continue'.translate()
+                                    : 'onboarding.get_started'.translate(),
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                               ),
                             ),
                           ),
@@ -180,17 +195,25 @@ class _OnboardingState extends State<Onboarding> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Already have account?',
-                                style: TextStyle(color: Colors.white60),
+                                'auth.already_have_account'.translate(),
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      TextStyle(color: Colors.white60),
+                                    ),
                               ),
                               TextButton(
                                 onPressed: controller.nextPage,
-                                child: const Text(
-                                  'Sign in',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                child: Text(
+                                  'auth.sign_in'.translate(),
+                                  style:
+                                      LocalizationService.getLocalizedTextStyle(
+                                        context,
+                                        const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                 ),
                               ),
                             ],
