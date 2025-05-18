@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
@@ -170,8 +171,8 @@ class CartScreen extends StatelessWidget {
                   ),
                   child: ThemeAwareSvg(
                     assetPath: AssetConfig.backArrow,
-                    height: 16,
-                    width: 16,
+                    height: 8,
+                    width: 8,
                   ),
                 ),
               ),

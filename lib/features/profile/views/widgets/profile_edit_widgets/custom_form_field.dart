@@ -15,19 +15,20 @@ class CustomFormField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
   });
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 342,
-      height: 50,
+      width: MediaQuery.of(context).size.width * 2,
+      height: 60,
       decoration: BoxDecoration(
         color: AppColors.input(context),
         borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Theme(
         data: Theme.of(context).copyWith(
-          inputDecorationTheme: InputDecorationTheme(
+          inputDecorationTheme: const InputDecorationTheme(
             focusedBorder: InputBorder.none,
             focusColor: Colors.transparent,
           ),
@@ -36,6 +37,8 @@ class CustomFormField extends StatelessWidget {
         ),
         child: TextField(
           controller: controller,
+          keyboardType: keyboardType,
+          readOnly: readOnly,
           decoration: InputDecoration(
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
@@ -46,7 +49,7 @@ class CustomFormField extends StatelessWidget {
             labelStyle: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w400,
-              fontSize: 12,
+              fontSize: 16,
               height: 16 / 10,
               letterSpacing: 0.25,
               color: AppColors.mutedForeground(context),

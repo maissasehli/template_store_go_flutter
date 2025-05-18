@@ -5,37 +5,45 @@ import 'package:store_go/app/core/theme/colors.dart';
 class PhoneField extends StatelessWidget {
   final TextEditingController controller;
 
-  const PhoneField({super.key, required this.controller});
+  const PhoneField({
+    super.key, 
+    required this.controller
+  });
+  
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 342,
-      height: 50,
+      width: MediaQuery.of(context).size.width * 0.95,
+      height: 60,
       decoration: BoxDecoration(
         color: AppColors.input(context),
         borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
       ),
-      padding: const EdgeInsets.only(left: 16, right: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
+          // Phone icon in a circular container
           Container(
             width: 26,
             height: 26,
             decoration: BoxDecoration(
               color: AppColors.primary(context),
-              borderRadius: BorderRadius.circular(16),
+              shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.phone,
-              size: 14,
-              color: AppColors.primaryForeground(context),
+            child: Center(
+              child: Icon(
+                Icons.phone,
+                size: 14,
+                color: AppColors.primaryForeground(context),
+              ),
             ),
           ),
           const SizedBox(width: 8),
+          // Text field for phone number
           Expanded(
             child: Theme(
               data: Theme.of(context).copyWith(
-                inputDecorationTheme: InputDecorationTheme(
+                inputDecorationTheme: const InputDecorationTheme(
                   focusedBorder: InputBorder.none,
                   focusColor: Colors.transparent,
                 ),
@@ -44,6 +52,7 @@ class PhoneField extends StatelessWidget {
               ),
               child: TextField(
                 controller: controller,
+                keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -54,11 +63,12 @@ class PhoneField extends StatelessWidget {
                   labelStyle: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.w400,
-                    fontSize: 12,
+                    fontSize: 16,
                     height: 16 / 10,
                     letterSpacing: 0.25,
                     color: AppColors.mutedForeground(context),
                   ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
                 ),
                 style: TextStyle(

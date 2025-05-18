@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 
 class FavoriteButton extends StatelessWidget {

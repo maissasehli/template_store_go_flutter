@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
+import 'package:store_go/features/product/state/product_detail_state.dart';
+import 'package:store_go/features/promotion/repositories/promotion_repository.dart';
 import 'dart:developer' as developer;
 
 class ProductController extends GetxController {
@@ -17,9 +19,15 @@ class ProductController extends GetxController {
   final RxBool isLoadingNew = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
+  final PromotionRepository _promotionRepository;
 
-  ProductController({required ProductRepository repository}) : _repository = repository;
 
+
+  ProductController({
+    required ProductRepository repository,
+    required PromotionRepository promotionRepository,
+  })  : _repository = repository,
+        _promotionRepository = promotionRepository;
   @override
   void onInit() {
     super.onInit();

@@ -26,27 +26,35 @@ class ProfileForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Full name field
         CustomFormField(
           label: 'Full name',
           controller: controller.fullNameController,
         ),
-        SizedBox(height: UIConfig.marginMedium),
+        SizedBox(height: UIConfig.marginLarge),
+        
+        // Nick name field
         CustomFormField(
           label: 'Nick name',
           controller: controller.userNameController,
-          readOnly: true,
         ),
-        SizedBox(height: UIConfig.marginMedium),
+        SizedBox(height: UIConfig.marginLarge),
+        
+        // Email field
         CustomFormField(
-          label: 'Email', 
+          label: 'Email',
           controller: controller.emailController,
           keyboardType: TextInputType.emailAddress,
         ),
-        SizedBox(height: UIConfig.marginMedium),
+        SizedBox(height: UIConfig.marginLarge),
+        
+        // Phone field with custom icon
         PhoneField(
           controller: controller.phoneController,
         ),
-        SizedBox(height: UIConfig.marginMedium),
+        SizedBox(height: UIConfig.marginLarge),
+        
+        // Country and Gender dropdowns
         DropdownRow(
           selectedCountry: selectedCountry,
           selectedGender: selectedGender,

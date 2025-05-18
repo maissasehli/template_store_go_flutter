@@ -21,7 +21,6 @@ class ProductRepository {
 
 
 
-
   Future<List<Product>> getProducts({bool forceRefresh = false}) async {
     if (_allProductsCache.isEmpty || forceRefresh) {
       try {

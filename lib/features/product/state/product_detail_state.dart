@@ -1,55 +1,72 @@
 import 'package:get/get.dart';
-import 'package:store_go/features/product/models/product_model.dart';
+import 'package:store_go/features/promotion/models/promotion_model.dart';
 
-/// State management class for product details
 class ProductDetailState {
-  // Observable states for product details
-  final Rx<Product?> product = Rx<Product?>(null);
-  final RxBool isLoading = false.obs;
-  final RxBool hasError = false.obs;
-  final RxString errorMessage = ''.obs;
+  // Product details state
+  final Rx<dynamic> product = Rx<dynamic>(null);
+  final RxBool isLoading = RxBool(false);
+  final RxBool hasError = RxBool(false);
+  final RxString errorMessage = RxString('');
 
-  // UI state for product details screen
-  final RxInt currentImageIndex = 0.obs;
+  
+  // Selected options
   final RxString selectedSize = RxString('');
-  final RxString selectedColor = RxString('Black');
-  final RxInt quantity = 1.obs;
-
-  void setLoading(bool loading) {
-    isLoading.value = loading;
+  final RxString selectedColor = RxString('');
+  final RxInt quantity = RxInt(1);
+  final RxInt currentImageIndex = RxInt(0);
+  
+  // Promotions state
+  final RxList<Promotion> promotions = RxList<Promotion>([]);
+  final RxBool isLoadingPromotions = RxBool(false);
+  
+  // Product setters
+  void setProduct(dynamic value) {
+    product.value = value;
   }
-
-  void setError(String message) {
-    hasError.value = true;
-    errorMessage.value = message;
-  }
-
-  void clearError() {
-    hasError.value = false;
-    errorMessage.value = '';
-  }
-
-  void setProduct(Product newProduct) {
-    product.value = newProduct;
-  }
-
+  
   void clearProduct() {
     product.value = null;
   }
-
-  void setCurrentImageIndex(int index) {
-    currentImageIndex.value = index;
+  
+  // Loading state setters
+  void setLoading(bool value) {
+    isLoading.value = value;
   }
-
-  void setSelectedSize(String size) {
-    selectedSize.value = size;
+  
+  // Error state setters
+  void setError(String message) {
+    errorMessage.value = message;
+    hasError.value = true;
   }
-
-  void setSelectedColor(String color) {
-    selectedColor.value = color;
+  
+  void clearError() {
+    errorMessage.value = '';
+    hasError.value = false;
   }
-
+  
+  // Option setters
+  void setSelectedSize(String value) {
+    selectedSize.value = value;
+  }
+  
+  void setSelectedColor(String value) {
+    selectedColor.value = value;
+  }
+  
   void setQuantity(int value) {
     quantity.value = value;
+  }
+  
+  void setCurrentImageIndex(int value) {
+    currentImageIndex.value = value;
+  }
+  
+  // Promotions setters
+  void setPromotions(List<Promotion> value) {
+    promotions.value = value;
+  }
+  
+  void setLoadingPromotions(bool value) {
+    isLoadingPromotions.value = value;
   }
 }

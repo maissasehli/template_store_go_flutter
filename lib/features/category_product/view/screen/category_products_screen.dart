@@ -10,7 +10,6 @@ import 'package:store_go/features/home/views/widgets/product_card.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
-import 'package:store_go/features/product/controllers/product_list_controller.dart';
 import 'package:store_go/features/category_product/view/widgets/subcategory_list_view.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/search/no_search_result.dart';
@@ -88,7 +87,6 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   }
 
   Future<void> applyFilters() async {
-    print('[CategoryProductsScreen] applyFilters() called');
 
     final filterController = Get.find<ProductFilterController>();
     print(

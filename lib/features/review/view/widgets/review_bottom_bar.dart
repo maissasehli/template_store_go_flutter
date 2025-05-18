@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/review/controllers/review_controller.dart';
 
 class ReviewBottomBar extends StatelessWidget {
@@ -20,18 +21,17 @@ class ReviewBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final hasReviewed =
-          currentUserId != null &&
+      final hasReviewed = currentUserId != null &&
           reviewController.reviews.any((r) => r.appUserId == currentUserId);
 
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(UIConfig.paddingMedium),
         decoration: BoxDecoration(
           color: AppColors.background(context),
           boxShadow: [
             BoxShadow(
               color: AppColors.foreground(context).withOpacity(0.05),
-              blurRadius: 10,
+              blurRadius: UIConfig.elevationLarge,
               offset: const Offset(0, -2),
             ),
           ],
@@ -40,21 +40,20 @@ class ReviewBottomBar extends StatelessWidget {
         child: ElevatedButton(
           onPressed: hasReviewed || currentUserId == null ? null : onAddReview,
           style: ElevatedButton.styleFrom(
-            backgroundColor:
-                hasReviewed || currentUserId == null
-                    ? AppColors.muted(context)
-                    : AppColors.primary(context),
+            backgroundColor: hasReviewed || currentUserId == null
+                ? AppColors.muted(context)
+                : AppColors.primary(context),
             foregroundColor: AppColors.background(context),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
             ),
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
             elevation: 0,
           ),
           child: Text(
             hasReviewed ? 'You Already Reviewed' : 'Write a Review',
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: UIConfig.fontSizeMedium,
               fontWeight: FontWeight.w600,
               fontFamily: 'Poppins',
             ),

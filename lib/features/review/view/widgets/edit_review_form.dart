@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/review/model/review_model.dart';
 
 class EditReviewForm extends StatelessWidget {
@@ -44,16 +45,17 @@ class EditReviewForm extends StatelessWidget {
       });
     });
 
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(UIConfig.paddingMedium),
       decoration: BoxDecoration(
         color: AppColors.card(context),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
         border: Border.all(color: AppColors.border(context)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.foreground(context).withOpacity(0.05),
-            blurRadius: 8,
+            color: AppColors.foreground(context).withAlpha(13), // 0.05 * 255
+            blurRadius: UIConfig.elevationLarge,
             offset: const Offset(0, 2),
           ),
         ],
@@ -61,215 +63,233 @@ class EditReviewForm extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Edit Your Review',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                  color: AppColors.foreground(context),
-                ),
-              ),
-              GestureDetector(
-                onTap: onCancel,
-                child: Icon(
-                  Icons.close,
-                  color: AppColors.mutedForeground(context),
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return GestureDetector(
-                  onTap: () => editRating.value = index + 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Icon(
-                      index < editRating.value
-                          ? Icons.star_rounded
-                          : Icons.star_outline_rounded,
-                      size: 32,
-                      color:
-                          index < editRating.value
-                              ? const Color(0xFFFFCC00)
-                              : Colors.grey[300],
-                    ),
-                  ),
-                );
-              }),
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Your Review',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: () {
-              // Ensure focus is requested when container tapped
-              if (editCommentFocusNode.canRequestFocus) {
-                editCommentFocusNode.requestFocus();
-              }
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: TextField(
-                controller: editCommentController,
-                focusNode: editCommentFocusNode,
-                maxLines: 1,
-                textInputAction: TextInputAction.newline,
-                style: const TextStyle(
-                  color: Colors.black87,
-                  fontSize: 14,
-                  fontFamily: 'Poppins',
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Share your experience with this product...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.all(12),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Quick Tags',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _quickTags.map((tag) => _buildQuickTag(tag)).toList(),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: Obx(
-              () => ElevatedButton(
-                onPressed:
-                    isSubmitting.value
-                        ? null
-                        : () {
-                          // Validation
-                          if (editRating.value == 0) {
-                            Get.snackbar(
-                              'Error',
-                              'Please select a rating',
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                            );
-                            return;
-                          }
-
-                          if (editCommentController.text.trim().isEmpty) {
-                            Get.snackbar(
-                              'Error',
-                              'Please write a review comment',
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                            );
-                            return;
-                          }
-
-                          onSubmit(review.id);
-                        },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary(context),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child:
-                    isSubmitting.value
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(color: Colors.white),
-                        )
-                        : const Text(
-                          'Update Review',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-              ),
-            ),
-          ),
+          _buildHeader(context),
+          SizedBox(height: UIConfig.paddingSmall),
+          _buildRatingSelector(context),
+          SizedBox(height: UIConfig.paddingLarge),
+          _buildReviewInput(context),
+          SizedBox(height: UIConfig.paddingMedium),
+          _buildQuickTagsSection(context),
+          SizedBox(height: UIConfig.paddingLarge),
+          _buildSubmitButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildQuickTag(String text) {
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Edit Your Review',
+          style: TextStyle(
+            fontSize: UIConfig.fontSizeMedium,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
+          ),
+        ),
+        GestureDetector(
+          onTap: onCancel,
+          child: Icon(
+            Icons.close,
+            color: AppColors.mutedForeground(context),
+            size: UIConfig.fontSizeLarge,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRatingSelector(BuildContext context) {
+    return Obx(() => Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) {
+        return GestureDetector(
+          onTap: () => editRating.value = index + 1,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall/2),
+            child: Icon(
+              index < editRating.value
+                  ? Icons.star_rounded
+                  : Icons.star_outline_rounded,
+              size: UIConfig.fontSize2XLarge,
+              color: index < editRating.value
+                  ? AppColors.accent(context)
+                  : AppColors.muted(context),
+            ),
+          ),
+        );
+      }),
+    ));
+  }
+
+  Widget _buildReviewInput(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (editCommentController.text.isEmpty) {
-          editCommentController.text = text;
-        } else if (!editCommentController.text.endsWith('.')) {
-          editCommentController.text += '. $text';
-        } else {
-          editCommentController.text += ' $text';
-        }
-
-        // Move cursor to the end after adding tag
-        editCommentController.selection = TextSelection.fromPosition(
-          TextPosition(offset: editCommentController.text.length),
-        );
-
-        // Refocus on the text field
         if (editCommentFocusNode.canRequestFocus) {
           editCommentFocusNode.requestFocus();
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[300]!),
+          color: AppColors.input(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+          border: Border.all(color: AppColors.border(context)),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 12,
+        child: TextField(
+          controller: editCommentController,
+          focusNode: editCommentFocusNode,
+          maxLines: 1,
+          textInputAction: TextInputAction.newline,
+          style: TextStyle(
+            color: AppColors.inputForeground(context),
+            fontSize: UIConfig.fontSizeRegular,
             fontFamily: 'Poppins',
-            color: Colors.black87,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Share your experience with this product...',
+            hintStyle: TextStyle(
+              color: AppColors.mutedForeground(context),
+              fontSize: UIConfig.fontSizeRegular,
+              fontFamily: 'Poppins',
+            ),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(UIConfig.paddingSmall),
+            filled: true,
+            fillColor: AppColors.input(context),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildQuickTagsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Tags',
+          style: TextStyle(
+            fontSize: UIConfig.fontSizeRegular,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
+          ),
+        ),
+        SizedBox(height: UIConfig.paddingSmall),
+        Wrap(
+          spacing: UIConfig.paddingSmall,
+          runSpacing: UIConfig.paddingSmall,
+          children: _quickTags.map((tag) => _buildQuickTag(tag, context)).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickTag(String text, BuildContext context) {
+    return GestureDetector(
+      onTap: () => _handleQuickTagTap(text),
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: UIConfig.paddingSmall * 1.5,
+          vertical: UIConfig.paddingSmall,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.card(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusXLarge),
+          border: Border.all(color: AppColors.border(context)),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: UIConfig.fontSizeSmall,
+            fontFamily: 'Poppins',
+            color: AppColors.foreground(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Obx(() => ElevatedButton(
+        onPressed: isSubmitting.value ? null : () => _handleSubmit(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary(context),
+          foregroundColor: AppColors.primaryForeground(context),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+          ),
+          padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
+        ),
+        child: _buildButtonContent(context),
+      )),
+    );
+  }
+
+  Widget _buildButtonContent(BuildContext context) {
+    return isSubmitting.value
+        ? SizedBox(
+            width: UIConfig.fontSizeLarge,
+            height: UIConfig.fontSizeLarge,
+            child: CircularProgressIndicator(
+              color: AppColors.primaryForeground(context),
+            ),
+          )
+        : Text(
+            'Update Review',
+            style: TextStyle(
+              fontSize: UIConfig.fontSizeMedium,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
+          );
+  }
+
+  void _handleQuickTagTap(String text) {
+    if (editCommentController.text.isEmpty) {
+      editCommentController.text = text;
+    } else if (!editCommentController.text.endsWith('.')) {
+      editCommentController.text += '. $text';
+    } else {
+      editCommentController.text += ' $text';
+    }
+
+    editCommentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: editCommentController.text.length),
+    );
+
+    if (editCommentFocusNode.canRequestFocus) {
+      editCommentFocusNode.requestFocus();
+    }
+  }
+
+  void _handleSubmit(BuildContext context) {
+    if (editRating.value == 0) {
+      _showError(context, 'Please select a rating');
+      return;
+    }
+
+    if (editCommentController.text.trim().isEmpty) {
+      _showError(context, 'Please write a review comment');
+      return;
+    }
+
+    onSubmit(review.id);
+  }
+
+  void _showError(BuildContext context, String message) {
+    Get.snackbar(
+      'Error',
+      message,
+      backgroundColor: AppColors.destructive(context),
+      colorText: AppColors.destructiveForeground(context),
+      snackPosition: SnackPosition.BOTTOM,
+      margin: EdgeInsets.all(UIConfig.paddingMedium),
     );
   }
 }

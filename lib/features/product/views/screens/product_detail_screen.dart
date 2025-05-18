@@ -5,6 +5,7 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/favorite_button.dart';
+import 'package:store_go/features/product/views/widgets/product_detail/product_description.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/product_image_gallery.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/product_info.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/top_navigation_bar.dart';
@@ -12,12 +13,11 @@ import 'package:store_go/features/product/views/widgets/product_detail/size_sele
 import 'package:store_go/features/product/views/widgets/product_detail/color_selector.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/quantity_selector.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/add_to_cart_button.dart';
-import 'package:store_go/features/product/views/widgets/product_detail/product_description.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/image_page_indicator.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/draggable_info_sheet.dart';
+import 'package:store_go/features/promotion/controller/promotion_controller.dart';
+import 'package:store_go/features/promotion/views/product_promotion.dart';
 import 'package:store_go/features/review/view/widgets/review_section/review_section.dart';
-
-
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -31,6 +31,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
     
     with SingleTickerProviderStateMixin {
   final ProductDetailController detailController = Get.find<ProductDetailController>();
+  final promotionController = Get.put(
+    PromotionController(promotionRepository: Get.find()),
+  );
   String? selectedColor;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -507,6 +510,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                   ),
                 ),
               ),
+              
+
               DraggableInfoSheet(
                 child: SingleChildScrollView(
                   child: Column(
@@ -534,8 +539,16 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                       
+                      
                       ProductInfo(product: product),
+                      const SizedBox(height: 8),
+
+
+                      ProductPromotionView(
+                        productId: product.id,
+                        controller: promotionController,
+                      ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -568,6 +581,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                       const SizedBox(height: 8),
                       ProductDescription(description: product.description),
                       const SizedBox(height: 8),
+
                       ReviewSection(
                         initialReviews: product.reviews,
                         product: product,

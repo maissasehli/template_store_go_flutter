@@ -15,6 +15,7 @@ import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
+import 'package:store_go/features/promotion/repositories/promotion_repository.dart';
 import 'package:store_go/features/review/repositories/review_repository.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/repositories/wishlist_repository.dart';
@@ -26,6 +27,11 @@ class HomeBinding implements Bindings {
 
     // Register ApiClient (if not already registered elsewhere)
     Get.put(apiClient, permanent: true);
+
+    // Ensure PromotionRepository exists before any controller depends on it
+    if (!Get.isRegistered<PromotionRepository>()) {
+      Get.put(PromotionRepository(apiClient: apiClient), permanent: true);
+    }
 
     // Register repositories
     Get.lazyPut(() => ProductRepository(
@@ -69,7 +75,10 @@ class HomeBinding implements Bindings {
 
     // Register controllers
     Get.lazyPut<ProductController>(
-      () => ProductController(repository: Get.find<ProductRepository>()),
+      () => ProductController(
+        repository: Get.find<ProductRepository>(),
+        promotionRepository: Get.find(), // Make sure PromotionRepository is registered in your dependencies
+      ),
       fenix: true,
     );
     
@@ -107,10 +116,6 @@ class HomeBinding implements Bindings {
       PaymentController(repository: Get.find<PaymentRepository>()),
       permanent: true,
     );
-    
-    Get.put<AddressController>(
-      AddressController(addressRepository: Get.find<AddressRepository>()),
-      permanent: true,
-    );
   }
-}
+  
+} 

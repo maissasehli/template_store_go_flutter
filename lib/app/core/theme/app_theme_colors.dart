@@ -56,4 +56,8 @@ class AppColors {
 
   static Color productCard(BuildContext context) =>
       AppColorUtils.getThemeColor(context, AppColorName.productCard);
+
+  static success(BuildContext context) {}
+
+  static successForeground(BuildContext context) {}
 }

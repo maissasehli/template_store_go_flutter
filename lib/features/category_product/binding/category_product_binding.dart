@@ -8,6 +8,7 @@ import 'package:store_go/features/product/controllers/product_list_controller.da
 import 'package:store_go/features/product/repositories/product_repository.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
+import 'package:store_go/features/promotion/repositories/promotion_repository.dart';
 import 'package:store_go/features/review/repositories/review_repository.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
@@ -33,7 +34,10 @@ class CategoryProductsBinding extends Bindings {
 
     // Register controllers
     Get.lazyPut<ProductController>(
-      () => ProductController(repository: Get.find<ProductRepository>()),
+      () => ProductController(
+        repository: Get.find<ProductRepository>(),
+        promotionRepository: Get.find<PromotionRepository>(),
+      ),
     );
     Get.lazyPut<CategoryController>(
       () => CategoryController(repository: Get.find<CategoryRepository>()),
