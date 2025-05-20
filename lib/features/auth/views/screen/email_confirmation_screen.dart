@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:store_go/features/auth/controllers/email_reset_password.dart';
 import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class EmailSentConfirmationResetPassword extends StatelessWidget {
   const EmailSentConfirmationResetPassword({super.key});
@@ -37,13 +39,14 @@ class EmailSentConfirmationResetPassword extends StatelessWidget {
                         AssetConfig.sendMail, // Use a constant from AssetConfig
                         height: 250,
                         width: 250,
-                      ),
-
-                      // Verification text
+                      ),                      // Verification text
                       Text(
-                        'We Sent you an Email\nto reset your password',
-                        style: AppColor.headingMedium.copyWith(
-                          color: AppColor.inputTextColor,
+                        'auth.email_sent_message'.translate(),
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          AppColor.headingMedium.copyWith(
+                            color: AppColor.inputTextColor,
+                          ),
                         ),
                         textAlign: TextAlign.center,
                       ),

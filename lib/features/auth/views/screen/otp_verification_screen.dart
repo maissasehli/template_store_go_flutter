@@ -7,6 +7,8 @@ import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/auth/controllers/otp_verification_controller.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class OtpVerificationScreen extends StatelessWidget {
   OtpVerificationScreen({super.key});
@@ -20,16 +22,35 @@ class OtpVerificationScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.background(context),
-        appBar: AppBar(
-          leading: IconButton(
-            icon: ThemeAwareSvg(
-              assetPath: AssetConfig.backArrow,
-              height: 24,
-              width: 24,
-            ),
-            onPressed: () => Get.back(),
-          ),
+        backgroundColor: AppColors.background(context),        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: !LocalizationService.isRtl(context)
+              ? IconButton(
+                  icon: ThemeAwareSvg(
+                    assetPath: AssetConfig.backArrow,
+                    height: 24,
+                    width: 24,
+                  ),
+                  onPressed: () => Get.back(),
+                )
+              : null,
+          actions: LocalizationService.isRtl(context)
+              ? [
+                  IconButton(
+                    icon: Transform(
+                      alignment: Alignment.center,
+                      // Flip the icon horizontally for RTL
+                      transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                      child: ThemeAwareSvg(
+                        assetPath: AssetConfig.backArrow,
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                    onPressed: () => Get.back(),
+                  ),
+                ]
+              : null,
           elevation: 0,
         ),
         body: SafeArea(
@@ -39,13 +60,15 @@ class OtpVerificationScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: AppColor.spacingM),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'OTP Verification',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.foreground(context),
+                children: [                  Text(
+                    'auth.otp_verification'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.foreground(context),
+                      ),
                     ),
                   ),
                   SizedBox(height: AppColor.spacingM),

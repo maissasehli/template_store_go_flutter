@@ -17,9 +17,14 @@
         "create_one": "Créer un compte",
         "already_have_account": "Vous avez déjà un compte?",
         "sign_in": "Connectez-vous",
+        "first_name": "Prénom",
+        "last_name": "Nom de famille",
         "continue_with_google": "Continuer avec Google",
         "continue_with_apple": "Continuer avec Apple",
-        "continue_with_facebook": "Continuer avec Facebook"
+        "continue_with_facebook": "Continuer avec Facebook",
+        "otp_verification": "Vérification OTP",
+        "reset_password": "Réinitialiser le mot de passe",
+        "email_sent_message": "Nous vous avons envoyé un e-mail\npour réinitialiser votre mot de passe"
     },
     "nav": {
         "home": "Accueil",
@@ -35,5 +40,16 @@
         "discover_shopping": "Découvrez un shopping fluide !",
         "fast_delivery": "Livraison rapide, retours faciles et un choix infini vous attendent",
         "get_started": "Commencer"
+    },
+    "validation": {
+        "empty": "Ce champ ne peut pas être vide",
+        "too_short": "Ne peut pas être inférieur à {min} caractères",
+        "too_long": "Ne peut pas être supérieur à {max} caractères",
+        "invalid_username": "Le nom d'utilisateur ne peut contenir que des lettres, des chiffres et des underscores",
+        "invalid_email": "Adresse e-mail invalide",
+        "password_too_short": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_requirement": "Le mot de passe doit contenir à la fois des lettres et des chiffres",
+        "invalid_phone": "Numéro de téléphone invalide",
+        "phone_length": "Le numéro de téléphone doit contenir 8 chiffres"
     }
 }

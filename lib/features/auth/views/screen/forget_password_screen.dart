@@ -7,6 +7,8 @@ import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/auth/controllers/forget_password_controller.dart';
 import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/shared/extensions/fields/validated_fields.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   final ForgetPasswordController controller = Get.put(
@@ -19,16 +21,35 @@ class ForgetPasswordScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: AppColors.background(context),
-        appBar: AppBar(
-          leading: IconButton(
-            icon: ThemeAwareSvg(
-              assetPath: AssetConfig.backArrow,
-              height: 24,
-              width: 24,
-            ),
-            onPressed: () => Get.back(),
-          ),
+        backgroundColor: AppColors.background(context),        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: !LocalizationService.isRtl(context)
+              ? IconButton(
+                  icon: ThemeAwareSvg(
+                    assetPath: AssetConfig.backArrow,
+                    height: 24,
+                    width: 24,
+                  ),
+                  onPressed: () => Get.back(),
+                )
+              : null,
+          actions: LocalizationService.isRtl(context)
+              ? [
+                  IconButton(
+                    icon: Transform(
+                      alignment: Alignment.center,
+                      // Flip the icon horizontally for RTL
+                      transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                      child: ThemeAwareSvg(
+                        assetPath: AssetConfig.backArrow,
+                        height: 24,
+                        width: 24,
+                      ),
+                    ),
+                    onPressed: () => Get.back(),
+                  ),
+                ]
+              : null,
           elevation: 0,
         ),
         body: SafeArea(
@@ -39,13 +60,15 @@ class ForgetPasswordScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: AppColor.spacingM),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Forgot Password',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.foreground(context),
+                children: [                  Text(
+                    'auth.forgot_password'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.foreground(context),
+                      ),
                     ),
                   ),
                   SizedBox(height: AppColor.spacingL),

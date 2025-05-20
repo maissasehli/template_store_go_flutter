@@ -16,26 +16,48 @@ class SettingsLanguageScreen extends GetView<SettingsLanguageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background(context),
-      appBar: AppBar(
+      backgroundColor: AppColors.background(context),      appBar: AppBar(
         backgroundColor: AppColors.background(context),
         elevation: 0,
         title: Text(
           'language.select_a_language'.translate(),
-          style: TextStyle(
-            color: AppColors.foreground(context),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        leading: IconButton(
-          icon: ThemeAwareSvg(
-            assetPath: AssetConfig.backArrow,
-            height: 24,
-            width: 24,
-          ),
-          onPressed: () => Get.back(),
-        ),
+        automaticallyImplyLeading: false,
+        leading: !LocalizationService.isRtl(context)
+            ? IconButton(
+                icon: ThemeAwareSvg(
+                  assetPath: AssetConfig.backArrow,
+                  height: 24,
+                  width: 24,
+                ),
+                onPressed: () => Get.back(),
+              )
+            : null,
+        actions: LocalizationService.isRtl(context)
+            ? [
+                IconButton(
+                  icon: Transform(
+                    alignment: Alignment.center,
+                    // Flip the icon horizontally for RTL
+                    transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                    child: ThemeAwareSvg(
+                      assetPath: AssetConfig.backArrow,
+                      height: 24,
+                      width: 24,
+                    ),
+                  ),
+                  onPressed: () => Get.back(),
+                ),
+              ]
+            : null,
       ),
       body: Container(
         padding: const EdgeInsets.all(16),

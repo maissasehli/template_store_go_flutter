@@ -4,6 +4,7 @@ import 'package:store_go/app/core/theme/app_color_extension.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_typography.dart';
 import 'package:store_go/app/core/theme/app_typography_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class AppTheme {
   AppTheme._();
@@ -287,16 +288,22 @@ class AppTheme {
             colors.background.computeLuminance() > 0.5
                 ? Brightness.light
                 : Brightness.dark,
-      ),
-
-      // global input decoration theme
+      ), // global input decoration theme
       inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: UIConfig.paddingLarge,
           vertical: UIConfig.paddingSmall,
         ),
-        hintStyle: textStyles.bodyMedium.copyWith(
-          color: colors.mutedForeground,
+        // Apply language-specific font to hint text
+        hintStyle: LocalizationService.createThemedTextStyle(
+          textStyles.bodyMedium.copyWith(color: colors.mutedForeground),
+        ),
+        // Apply language-specific font to error text
+        errorStyle: LocalizationService.createThemedTextStyle(
+          TextStyle(
+            color: colors.destructive,
+            fontSize: UIConfig.fontSizeSmall,
+          ),
         ),
         fillColor: colors.input,
         filled: true,

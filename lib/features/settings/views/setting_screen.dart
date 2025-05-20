@@ -5,6 +5,9 @@ import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/shared/widgets/rtl_aware_app_bar.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -14,26 +17,48 @@ class SettingsScreen extends StatelessWidget {
     final themeController = Get.find<ThemeController>();
 
     return Scaffold(
-      backgroundColor: AppColors.background(context),
-      appBar: AppBar(
+      backgroundColor: AppColors.background(context),      appBar: AppBar(
         backgroundColor: AppColors.background(context),
         title: Text(
-          'Settings',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: AppColors.foreground(context),
+          'settings.title'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
         elevation: 0,
-        leading: IconButton(
-          icon: ThemeAwareSvg(
-            assetPath: AssetConfig.backArrow,
-            height: 24,
-            width: 24,
-          ),
-          onPressed: () => Get.back(),
-        ),
+        automaticallyImplyLeading: false,
+        leading: !LocalizationService.isRtl(context)
+            ? IconButton(
+                icon: ThemeAwareSvg(
+                  assetPath: AssetConfig.backArrow,
+                  height: 24,
+                  width: 24,
+                ),
+                onPressed: () => Get.back(),
+              )
+            : null,
+        actions: LocalizationService.isRtl(context)
+            ? [
+                IconButton(
+                  icon: Transform(
+                    alignment: Alignment.center,
+                    // Flip the icon horizontally for RTL
+                    transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                    child: ThemeAwareSvg(
+                      assetPath: AssetConfig.backArrow,
+                      height: 24,
+                      width: 24,
+                    ),
+                  ),
+                  onPressed: () => Get.back(),
+                ),
+              ]
+            : null,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

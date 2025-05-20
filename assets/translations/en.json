@@ -17,9 +17,14 @@
         "create_one": "Create One",
         "already_have_account": "Already have account?",
         "sign_in": "Sign In",
+        "first_name": "First Name",
+        "last_name": "Last Name",
         "continue_with_google": "Continue With Google",
         "continue_with_apple": "Continue With Apple",
-        "continue_with_facebook": "Continue With Facebook"
+        "continue_with_facebook": "Continue With Facebook",
+        "otp_verification": "OTP Verification",
+        "reset_password": "Reset Password",
+        "email_sent_message": "We Sent you an Email\nto reset your password"
     },
     "nav": {
         "home": "Home",
@@ -35,5 +40,16 @@
         "discover_shopping": "Discover Seamless Shopping!",
         "fast_delivery": "Fast Delivery, Easy Returns, And Endless Choices Await You",
         "get_started": "Get Started"
+    },
+    "validation": {
+        "empty": "Can't be empty",
+        "too_short": "Can't be less than {min} characters",
+        "too_long": "Can't be more than {max} characters",
+        "invalid_username": "Username can only contain letters, numbers and underscore",
+        "invalid_email": "Not a valid email",
+        "password_too_short": "Password must be at least 8 characters",
+        "password_requirement": "Password must contain both letters and numbers",
+        "invalid_phone": "Not a valid phone number",
+        "phone_length": "Phone number must be 8 digits"
     }
 }

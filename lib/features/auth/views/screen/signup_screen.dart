@@ -6,6 +6,8 @@ import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/auth/controllers/signup_controller.dart';
 import 'package:store_go/app/core/theme/colors.dart';
 import 'package:store_go/app/core/utils/alert_exit_app.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
 import 'package:store_go/app/shared/extensions/fields/validated_fields.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
@@ -15,6 +17,8 @@ class Signup extends GetView<SignupController> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async => await alertExitApp(context),
@@ -23,16 +27,28 @@ class Signup extends GetView<SignupController> {
         child: Scaffold(
           backgroundColor: AppColors.background(context),
           appBar: AppBar(
-            backgroundColor: AppColors.background(context),
+           backgroundColor: AppColors.background(context),
+            elevation: 0,
+            automaticallyImplyLeading: false,
             leading: IconButton(
-              icon: ThemeAwareSvg(
-                assetPath: AssetConfig.backArrow,
-                height: 24,
-                width: 24,
-              ),
+              icon:
+                  LocalizationService.isRtl(context)
+                      ? Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
+                        child: ThemeAwareSvg(
+                          assetPath: AssetConfig.backArrow,
+                          height: 24,
+                          width: 24,
+                        ),
+                      )
+                      : ThemeAwareSvg(
+                        assetPath: AssetConfig.backArrow,
+                        height: 24,
+                        width: 24,
+                      ),
               onPressed: () => Get.back(),
             ),
-            elevation: 0,
           ),
           body: SafeArea(
             child: Obx(() {
@@ -51,56 +67,82 @@ class Signup extends GetView<SignupController> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 20),
-                        const Text('Create Account').heading3(context),
+                        Text('auth.signup'.translate()).heading3(context),
                         const SizedBox(height: 20),
                         // First Name Field
-                        "First name".textField(
+                        'auth.first_name'.translate().textField(
                           context,
                           fieldState: controller.firstNameFieldState,
                         ),
                         const SizedBox(height: 20),
                         // Last Name Field
-                        "Last name".textField(
+                        'auth.last_name'.translate().textField(
                           context,
                           fieldState: controller.lastNameFieldState,
                         ),
                         const SizedBox(height: 20),
                         // Email Field
-                        "Email Address".emailField(
+                        'auth.email'.translate().emailField(
                           context,
                           fieldState: controller.emailFieldState,
                         ),
                         const SizedBox(height: 20),
                         // Password Field
-                        "Password".passwordField(
+                        'auth.password'.translate().passwordField(
                           context,
                           fieldState: controller.passwordFieldState,
                         ),
                         const SizedBox(height: 20),
                         // Signup Button
-                        const Text(
-                          'Continue',
-                        ).primaryButton(context, onPressed: controller.signUp),
-                        const SizedBox(height: 20), // Already have account row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Already have an account? ',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            GestureDetector(
-                              onTap: () => Get.back(),
-                              child: Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: AppColors.primary(context),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                        Text(
+                          'common.continue'.translate(),
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            const TextStyle(),
+                          ),
+                        ).primaryButton(
+                          context,
+                          onPressed: controller.signUp,
+                          isLoading: controller.isLoading.value,
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Already have account row - fixed for RTL
+                        Align(
+                          alignment:
+                              isRtl
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // LTR order (text first, then login link)
+                              Text(
+                                'auth.already_have_account'.translate(),
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      const TextStyle(fontSize: 14),
+                                    ),
+                              ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () => Get.back(),
+                                child: Text(
+                                  'auth.login'.translate(),
+                                  style:
+                                      LocalizationService.getLocalizedTextStyle(
+                                        context,
+                                        TextStyle(
+                                          color: AppColors.primary(context),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 40),
                       ],

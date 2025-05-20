@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/shared/controllers/controller_form_field_state.dart';
 
 extension FormFieldExtensions on String {
@@ -20,13 +21,17 @@ extension FormFieldExtensions on String {
         decoration: InputDecoration(
           hintText: this,
           errorText: fieldState.error,
+          // Apply the correct font styling to error text
+          errorStyle: LocalizationService.createThemedTextStyle(
+            Theme.of(context).inputDecorationTheme.errorStyle ??
+                TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,
         ),
         onChanged: (value) {
           if (fieldState.touched.value) {
-            fieldState
-                .validateNow(); // Assuming you implement validateNow as shown earlier
+            fieldState.validateNow();
           }
         },
         onEditingComplete: () {
@@ -50,6 +55,7 @@ extension FormFieldExtensions on String {
       keyboardType: TextInputType.emailAddress,
     );
   }
+
   Widget textField(
     BuildContext context, {
     required ControllerFormFieldState fieldState,

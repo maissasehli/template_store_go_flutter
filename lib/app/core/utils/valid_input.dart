@@ -1,52 +1,60 @@
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 String? validInput(String val, int min, int max, String type) {
-  // Vérification si vide
+  // Check if empty
   if (val.isEmpty) {
-    return "Can't be empty";
+    return 'validation.empty'.translate();
   }
 
-  // Vérification de la longueur
+  // Check length
   if (val.length < min) {
-    return "Can't be less than $min characters";
+    return 'validation.too_short'.translate().replaceAll(
+      '{min}',
+      min.toString(),
+    );
   }
   if (val.length > max) {
-    return "Can't be more than $max characters";
+    return 'validation.too_long'.translate().replaceAll(
+      '{max}',
+      max.toString(),
+    );
   }
 
-  // Validation selon le type
+  // Validate according to type
   switch (type) {
     case "username":
       if (!GetUtils.isUsername(val)) {
-        return "Username can only contain letters, numbers and underscore";
+        return 'validation.invalid_username'.translate();
       }
       break;
 
     case "email":
       if (!GetUtils.isEmail(val)) {
-        return "Not a valid email";
+        return 'validation.invalid_email'.translate();
       }
       break;
 
     case "password":
-      // GetUtils n'a pas de méthode spécifique pour la validation de mot de passe
-      // Nous utilisons donc isLengthGreaterOrEqual pour la longueur minimale
+      // We don't have a specific method in GetUtils for password validation
+      // So we use isLengthGreaterOrEqual for minimum length
       if (!GetUtils.isLengthGreaterOrEqual(val, 8)) {
-        return "Password must be at least 8 characters";
+        return 'validation.password_too_short'.translate();
       }
-      // Vérifie si contient au moins une lettre et un chiffre
-      if (!val.contains(RegExp(r'[A-Za-z]')) || !val.contains(RegExp(r'[0-9]'))) {
-        return "Password must contain both letters and numbers";
+      // Check if contains at least one letter and one number
+      if (!val.contains(RegExp(r'[A-Za-z]')) ||
+          !val.contains(RegExp(r'[0-9]'))) {
+        return 'validation.password_requirement'.translate();
       }
       break;
 
     case "phone":
       if (!GetUtils.isPhoneNumber(val)) {
-        return "Not a valid phone number";
+        return 'validation.invalid_phone'.translate();
       }
-      // Vérifie spécifiquement la longueur de 8 chiffres
+      // Check specifically for length of 8 digits
       if (val.length != 8) {
-        return "Phone number must be 8 digits";
+        return 'validation.phone_length'.translate();
       }
       break;
   }

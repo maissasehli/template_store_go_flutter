@@ -17,9 +17,14 @@
         "create_one": "أنشئ حسابًا",
         "already_have_account": "لديك حساب بالفعل؟",
         "sign_in": "سجل دخولك",
+        "first_name": "الاسم الأول",
+        "last_name": "اسم العائلة",
         "continue_with_google": "واصل باستخدام جوجل",
         "continue_with_apple": "واصل باستخدام آبل",
-        "continue_with_facebook": "واصل باستخدام فيسبوك"
+        "continue_with_facebook": "واصل باستخدام فيسبوك",
+        "otp_verification": "التحقق من رمز التفعيل",
+        "reset_password": "إعادة تعيين كلمة المرور",
+        "email_sent_message": "لقد أرسلنا إليك بريدًا إلكترونيًا\nلإعادة تعيين كلمة المرور"
     },
     "nav": {
         "home": "الرئيسية",
@@ -35,5 +40,16 @@
         "discover_shopping": "اكتشف تجربة تسوق سلسة!",
         "fast_delivery": "توصيل سريع وإرجاع سهل وخيارات لا حصر لها في انتظارك",
         "get_started": "ابدأ الآن"
+    },
+    "validation": {
+        "empty": "لا يمكن أن يكون فارغاً",
+        "too_short": "لا يمكن أن يكون أقل من {min} أحرف",
+        "too_long": "لا يمكن أن يكون أكثر من {max} حرف",
+        "invalid_username": "اسم المستخدم يمكن أن يحتوي فقط على أحرف وأرقام وشرطة سفلية",
+        "invalid_email": "البريد الإلكتروني غير صالح",
+        "password_too_short": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+        "password_requirement": "يجب أن تحتوي كلمة المرور على أحرف وأرقام",
+        "invalid_phone": "رقم الهاتف غير صالح",
+        "phone_length": "يجب أن يتكون رقم الهاتف من 8 أرقام"
     }
 }
