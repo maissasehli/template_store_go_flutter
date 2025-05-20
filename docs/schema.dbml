@@ -1,0 +1,546 @@
+enum built_type {
+  quick_build
+  advanced_build
+}
+
+enum store_template_status {
+  active
+  inactive
+  draft
+  archived
+}
+
+enum age_range_enum {
+  "13-18"
+  "19-25"
+  "26-35"
+  "36-45"
+  "46-60"
+  "60+"
+}
+
+enum app_user_auth_type {
+  email_password
+  oauth
+}
+
+enum app_user_notification_type {
+  order_status_update
+  delivery_update
+  payment_confirmation
+  price_drop
+  back_in_stock
+  new_promotion
+  order_shipped
+  review_reminder
+  welcome_message
+  cart_reminder
+  personalized_offer
+  return_status_update
+  new_product
+}
+
+enum discount_type {
+  percentage
+  fixed_amount
+  free_shipping
+  buy_x_get_y
+}
+
+enum generation_job_status {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum product_status {
+  draft
+  published
+  out_of_stock
+  archived
+}
+
+enum store_notification_type {
+  new_review
+  new_order
+  product_out_of_stock
+  order_status_change
+  payment_received
+  promotion_created
+  low_inventory
+  high_traffic_alert
+  sales_milestone
+  new_app_user_registration
+  abandoned_cart
+  refund_request
+  customer_support_inquiry
+  order_fulfillment_delay
+  security_alert
+  app_usage_analytics
+}
+
+enum store_template_type {
+  fashion
+  electronic
+  shoes
+}
+
+enum target_gender {
+  male
+  female
+  unisex
+}
+
+table account {
+  id text [pk, not null]
+  account_id text [not null]
+  provider_id text [not null]
+  user_id text [not null]
+  access_token text
+  refresh_token text
+  id_token text
+  access_token_expires_at timestamp
+  refresh_token_expires_at timestamp
+  scope text
+  password text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+table verification {
+  id text [pk, not null]
+  identifier text [not null]
+  value text [not null]
+  expires_at timestamp [not null]
+  created_at timestamp
+  updated_at timestamp
+}
+
+table user {
+  id text [pk, not null]
+  name text [not null]
+  email text [not null, unique]
+  email_verified boolean [not null]
+  image text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+table session {
+  id text [pk, not null]
+  expires_at timestamp [not null]
+  token text [not null, unique]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+  ip_address text
+  user_agent text
+  user_id text [not null]
+}
+
+table generation_jobs {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  store_template_id uuid
+  custom_store_template_id uuid
+  status generation_job_status [not null, default: 'PENDING']
+  created_at timestamp [not null, default: `now()`]
+  completed_at timestamp
+  config jsonb
+  download_url varchar(500)
+}
+
+table stores {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  userId text [not null]
+  category_id uuid [not null]
+  name varchar(100) [not null]
+  logo_url varchar(500)
+  app_url varchar(500)
+  currency varchar(3) [not null, default: 'TND']
+  last_generated_at timestamp
+  created_at timestamp [not null, default: `now()`]
+}
+
+table store_category {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  userId text [not null]
+  name varchar(50)
+  description text
+  imageUrl varchar(500)
+  updated_at timestamp [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table store_notification {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  type store_notification_type [not null]
+  title varchar(255) [not null]
+  content text [not null]
+  data json [default: `{}`]
+  is_read boolean [not null, default: false]
+  created_at timestamp [not null, default: `now()`]
+  read_at timestamp
+}
+
+table custom_store_template {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  userId text [not null]
+  storeId uuid [not null]
+  storeTemplateId uuid [not null]
+  name varchar [not null]
+  built_type built_type [not null]
+  is_building json [not null, default: false]
+  is_built json [not null, default: false]
+  template_config json [default: `{}`]
+  updated_at timestamp [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table store_template {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  userId text [not null]
+  name text [not null]
+  store_template_type store_template_type [not null]
+  description text
+  status store_template_status [not null, default: 'inactive']
+  template_config json [default: `{}`]
+  images json [not null, default: `[]`]
+  updated_at timestamp [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table app_user {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  name varchar(255) [not null]
+  email varchar(255) [not null]
+  password varchar(255)
+  avatar varchar(500)
+  gender varchar(10)
+  age_range age_range_enum
+  auth_type app_user_auth_type [not null, default: 'email_password']
+  auth_provider varchar(50)
+  provider_user_id varchar(255)
+  is_online boolean [default: false]
+  last_seen timestamp
+  status boolean [default: true]
+  stripe_customer_id varchar(255)
+  created_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+table app_address {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  app_user_id uuid [not null]
+  street varchar(255) [not null]
+  city varchar(100) [not null]
+  state varchar(100) [not null]
+  postalCode varchar(20) [not null]
+  country varchar(100) [not null]
+  isDefault boolean [default: false]
+  status varchar(50) [default: 'active']
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table app_cart {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  app_user_id uuid [not null]
+  product_id uuid [not null]
+  quantity integer [not null, default: 1]
+  variants json [default: `{}`]
+  added_at timestamp [default: `now()`]
+  updated_at timestamp [default: `now()`]
+}
+
+table app_wishlist {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  app_user_id uuid [not null]
+  product_id uuid [not null]
+  added_at timestamp [not null, default: `now()`]
+}
+
+table app_notification {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  type app_user_notification_type [not null]
+  title varchar(255) [not null]
+  content text [not null]
+  data json [default: `{}`]
+  created_at timestamp [not null, default: `now()`]
+  is_global boolean [not null, default: true]
+}
+
+table app_user_notification_status {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  app_user_id uuid [not null]
+  notification_id uuid [not null]
+  is_read boolean [not null, default: false]
+  is_deleted boolean [not null, default: false]
+  read_at timestamp
+  created_at timestamp [not null, default: `now()`]
+}
+
+table app_payment_method {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  app_user_id uuid [not null]
+  type varchar(50) [not null]
+  is_default boolean [default: false]
+  details jsonb [default: `{}`]
+  payment_token varchar(255)
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table app_product {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  store_id uuid [not null]
+  category_id uuid [not null]
+  subcategory_id uuid
+  name varchar(255) [not null]
+  description text
+  price "numeric(10, 2)" [not null]
+  attributes json [default: `{}`]
+  colors json [default: `{}`]
+  size json [default: `{}`]
+  image_urls json [default: `[]`]
+  stock_quantity integer [not null, default: 0]
+  status product_status [not null, default: 'draft']
+  target_gender target_gender [not null, default: 'unisex']
+  units_sold integer [not null, default: 0]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table app_category {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  store_id uuid [not null]
+  name varchar(255) [not null]
+  description text
+  imageUrl text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table app_subcategory {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id text [not null]
+  store_id uuid [not null]
+  parent_category_id uuid [not null]
+  name varchar(255) [not null]
+  description text
+  imageUrl text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table app_review {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  app_user_id uuid [not null]
+  product_id uuid [not null]
+  rating integer [not null]
+  content text
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table app_promotion {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  user_id text [not null]
+  name varchar(255) [not null]
+  description text
+  discount_type discount_type [not null]
+  discount_value "numeric(10, 2)" [not null]
+  coupon_code varchar(50)
+  minimum_purchase "numeric(10, 2)" [not null, default: '0']
+  buy_quantity integer
+  get_quantity integer
+  same_product_only boolean [default: true]
+  promotion_image varchar(500)
+  usage_count integer [not null, default: 0]
+  start_date timestamp [not null]
+  end_date timestamp [not null]
+  is_active boolean [not null, default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table promotion_category {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  promotion_id uuid [not null]
+  category_id uuid [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table promotion_product {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  promotion_id uuid [not null]
+  product_id uuid [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table promotion_y_category {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  promotion_id uuid [not null]
+  category_id uuid [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table promotion_y_product {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  promotion_id uuid [not null]
+  product_id uuid [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+table order_item {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  product_id uuid [not null]
+  order_id uuid [not null]
+  quantity integer [not null]
+  variants json [default: `{}`]
+  unit_price "numeric(10, 2)" [not null]
+  subtotal "numeric(10, 2)" [not null]
+}
+
+table app_order {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  app_user_id uuid [not null]
+  address_id uuid [not null]
+  data_amount "numeric(10, 2)" [not null]
+  order_date timestamp [not null, default: `now()`]
+  status varchar(50) [not null]
+  payment_status varchar(50) [not null]
+}
+
+table app_payment {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  store_id uuid [not null]
+  order_id uuid [not null]
+  amount "numeric(10, 2)" [not null]
+  payment_method varchar(50) [not null]
+  stripe_payment_intent_id varchar(255)
+  client_secret varchar(255)
+  status varchar(50) [not null, default: 'pending']
+  error_message varchar(255)
+  error_code varchar(50)
+  idempotency_key varchar(255) [unique]
+  payment_date timestamp [default: `now()`]
+}
+
+ref: account.user_id > user.id
+
+ref: session.user_id > user.id
+
+ref: generation_jobs.store_id - stores.id
+
+ref: generation_jobs.store_template_id > store_template.id
+
+ref: generation_jobs.custom_store_template_id > custom_store_template.id
+
+ref: stores.category_id > store_category.id
+
+ref: stores.userId - user.id
+
+ref: store_notification.store_id - stores.id
+
+ref: custom_store_template.userId - user.id
+
+ref: custom_store_template.storeId - stores.id
+
+ref: custom_store_template.storeTemplateId > store_template.id
+
+ref: store_template.userId - user.id
+
+ref: app_user.store_id - stores.id
+
+ref: app_address.store_id - stores.id
+
+ref: app_address.app_user_id - app_user.id
+
+ref: app_cart.product_id - app_product.id
+
+ref: app_cart.app_user_id - app_user.id
+
+ref: app_cart.store_id - stores.id
+
+ref: app_wishlist.product_id - app_product.id
+
+ref: app_wishlist.app_user_id - app_user.id
+
+ref: app_wishlist.store_id - stores.id
+
+ref: app_notification.store_id - stores.id
+
+ref: app_user_notification_status.app_user_id - app_user.id
+
+ref: app_user_notification_status.notification_id - app_notification.id
+
+ref: app_payment_method.app_user_id - app_user.id
+
+ref: app_payment_method.store_id - stores.id
+
+ref: app_product.category_id - app_category.id
+
+ref: app_product.subcategory_id - app_subcategory.id
+
+ref: app_product.store_id - stores.id
+
+ref: app_product.user_id - user.id
+
+ref: app_category.user_id - user.id
+
+ref: app_category.store_id - stores.id
+
+ref: app_subcategory.user_id - user.id
+
+ref: app_subcategory.store_id - stores.id
+
+ref: app_subcategory.parent_category_id - app_category.id
+
+ref: app_review.product_id > app_product.id
+
+ref: app_review.app_user_id - app_user.id
+
+ref: app_review.store_id - stores.id
+
+ref: app_promotion.store_id - stores.id
+
+ref: app_promotion.user_id - user.id
+
+ref: promotion_category.promotion_id > app_promotion.id
+
+ref: promotion_category.category_id - app_category.id
+
+ref: promotion_product.promotion_id > app_promotion.id
+
+ref: promotion_product.product_id - app_product.id
+
+ref: promotion_y_category.promotion_id > app_promotion.id
+
+ref: promotion_y_category.category_id - app_category.id
+
+ref: promotion_y_product.promotion_id > app_promotion.id
+
+ref: promotion_y_product.product_id - app_product.id
+
+ref: order_item.order_id - app_order.id
+
+ref: order_item.product_id - app_product.id
+
+ref: app_order.app_user_id - app_user.id
+
+ref: app_order.address_id - app_address.id
+
+ref: app_payment.order_id - app_order.id
