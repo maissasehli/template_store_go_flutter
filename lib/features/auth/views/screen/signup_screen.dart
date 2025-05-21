@@ -27,23 +27,19 @@ class Signup extends GetView<SignupController> {
         child: Scaffold(
           backgroundColor: AppColors.background(context),
           appBar: AppBar(
-           backgroundColor: AppColors.background(context),
+            backgroundColor: AppColors.background(context),
             elevation: 0,
             automaticallyImplyLeading: false,
             leading: IconButton(
               icon:
                   LocalizationService.isRtl(context)
-                      ? Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
-                        child: ThemeAwareSvg(
-                          assetPath: AssetConfig.backArrow,
-                          height: 24,
-                          width: 24,
-                        ),
+                      ? ThemeAwareSvg(
+                        assetPath: AssetConfig.arrowRight,
+                        height: 24,
+                        width: 24,
                       )
                       : ThemeAwareSvg(
-                        assetPath: AssetConfig.backArrow,
+                        assetPath: AssetConfig.arrowLeft,
                         height: 24,
                         width: 24,
                       ),

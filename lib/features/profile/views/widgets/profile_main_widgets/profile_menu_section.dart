@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_menu_item.dart';
 import 'package:store_go/features/profile/views/widgets/profile_main_widgets/logout_dialog.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class ProfileMenuSection extends StatelessWidget {
   final AuthService authService;
@@ -17,32 +17,32 @@ class ProfileMenuSection extends StatelessWidget {
       children: [
         ProfileMenuItem(
           icon: AssetConfig.location,
-          title: 'Address',
+          title: 'profile.address'.translate(),
           onTap: () => Get.toNamed('/address'),
         ),
         ProfileMenuItem(
           icon: AssetConfig.receipt,
-          title: 'My orders',
+          title: 'profile.my_orders'.translate(),
           onTap: () => Get.toNamed('/orders'),
         ),
         ProfileMenuItem(
           icon: AssetConfig.receipt,
-          title: 'Payments',
+          title: 'profile.payments'.translate(),
           onTap: () => Get.toNamed('/payments'),
         ),
         ProfileMenuItem(
           icon: AssetConfig.notification,
-          title: 'Notifications',
+          title: 'profile.notifications'.translate(),
           onTap: () => Get.toNamed('/notifications'),
         ),
         ProfileMenuItem(
           icon: AssetConfig.setting,
-          title: 'Settings',
+          title: 'profile.settings'.translate(),
           onTap: () => Get.toNamed('/settings'),
         ),
         ProfileMenuItem(
           icon: AssetConfig.logout,
-          title: 'Logout',
+          title: 'profile.logout'.translate(),
           onTap: () => showLogoutDialog(context, authService),
         ),
       ],

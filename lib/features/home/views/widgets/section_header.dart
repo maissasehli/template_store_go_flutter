@@ -1,7 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -21,22 +22,28 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Gabarito',
-              color: AppColors.foreground(context),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Gabarito',
+                color: AppColors.foreground(context),
+              ),
             ),
           ),
           if (onSeeAllTap != null)
             TextButton(
               onPressed: onSeeAllTap,
               child: Text(
-                'See All',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  color: AppColors.primary(context),
+                'common.see_all'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
+                    color: AppColors.primary(context),
+                  ),
                 ),
               ),
             ),

@@ -1,8 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/profile/models/user_model.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class UserDetailsCard extends StatelessWidget {
   final UserModel? user;
@@ -11,6 +12,10 @@ class UserDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+    final TextDirection textDirection =
+        isRtl ? TextDirection.rtl : TextDirection.ltr;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -18,55 +23,70 @@ class UserDetailsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
+        crossAxisAlignment:
+            isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Row(
+            textDirection: textDirection,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                user?.name ?? 'User',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.foreground(context),
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Gabarito',
+                user?.name ?? 'profile.user'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: 16,
+                    color: AppColors.foreground(context),
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Gabarito',
+                  ),
                 ),
               ),
               _buildEditProfileButton(context),
             ],
           ),
           Align(
-            alignment: Alignment.centerLeft,
+            alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
             child: Text(
               user?.email ?? 'email@example.com',
-              style: TextStyle(
-                fontSize: 15,
-                color: AppColors.mutedForeground(context),
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (user?.gender != null)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Gender: ${user?.gender}',
-                style: TextStyle(
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
                   fontSize: 15,
                   color: AppColors.mutedForeground(context),
                   fontFamily: 'Poppins',
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 4),
+          if (user?.gender != null)
+            Align(
+              alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+              child: Text(
+                '${'profile.gender'.translate()}: ${user?.gender}',
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: 15,
+                    color: AppColors.mutedForeground(context),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
           if (user?.ageRange != null)
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
               child: Text(
-                'Age Range: ${user?.ageRange}',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: AppColors.mutedForeground(context),
-                  fontFamily: 'Poppins',
+                '${'profile.age_range'.translate()}: ${user?.ageRange}',
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: 15,
+                    color: AppColors.mutedForeground(context),
+                    fontFamily: 'Poppins',
+                  ),
                 ),
               ),
             ),
@@ -89,11 +109,14 @@ class UserDetailsCard extends StatelessWidget {
         ),
       ),
       child: Text(
-        'Edit Profile',
-        style: TextStyle(
-          fontSize: 12,
-          color: AppColors.primaryForeground(context),
-          fontFamily: 'Poppins',
+        'profile.edit_profile'.translate(),
+        style: LocalizationService.getLocalizedTextStyle(
+          context,
+          TextStyle(
+            fontSize: 12,
+            color: AppColors.primaryForeground(context),
+            fontFamily: 'Poppins',
+          ),
         ),
       ),
     );

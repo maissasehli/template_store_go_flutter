@@ -11,6 +11,8 @@ import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/home/views/widgets/section_header.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/home/views/widgets/skeleton_loaders.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -54,39 +56,40 @@ class HomeScreen extends StatelessWidget {
               CustomSearchBar(
                 onSearch:
                     (query) => controller.productController.searchProducts(query),
-            ),
+              ),
 
-            const SizedBox(height: UIConfig.paddingMedium),
+              const SizedBox(height: UIConfig.paddingMedium),
 
-            // Categories section
-            SectionHeader(
-              title: 'Categories',
-              onSeeAllTap: () => controller.onCategoriesSeeAllTap(),
-            ),
+              // Categories section
+              SectionHeader(
+                title: 'home.categories'.translate(),
+                onSeeAllTap: () => controller.onCategoriesSeeAllTap(),
+              ),
 
-            _buildCategoriesSection(context),
+              _buildCategoriesSection(context),
 
-            // Top Selling section
-            SectionHeader(
-              title: 'Top Selling',
-              onSeeAllTap: () => controller.onTopSellingSeeAllTap(),
-            ),
+              // Top Selling section
+              SectionHeader(
+                title: 'home.top_selling'.translate(),
+                onSeeAllTap: () => controller.onTopSellingSeeAllTap(),
+              ),
 
-            _buildTopSellingSection(context),
+              _buildTopSellingSection(context),
 
-            // New In section
-            SectionHeader(
-              title: 'New In',
-              onSeeAllTap: () => controller.onNewInSeeAllTap(),
-            ),
+              // New In section
+              SectionHeader(
+                title: 'home.new_in'.translate(),
+                onSeeAllTap: () => controller.onNewInSeeAllTap(),
+              ),
 
-            _buildNewInSection(context),
+              _buildNewInSection(context),
 
-            const SizedBox(height: UIConfig.paddingLarge),
-          ],
+              const SizedBox(height: UIConfig.paddingLarge),
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildCategoriesSection(BuildContext context) {
@@ -164,10 +167,13 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: UIConfig.paddingSmall),
             Text(
-              'No products found',
-              style: TextStyle(
-                color: AppColors.mutedForeground(context),
-                fontSize: 16,
+              'home.no_products_found'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  color: AppColors.mutedForeground(context),
+                  fontSize: 16,
+                ),
               ),
             ),
           ],

@@ -5,6 +5,8 @@ import 'package:store_go/app/core/theme/app_color_utils.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CouponField extends StatefulWidget {
   final Function(String) onApplyCoupon;
@@ -47,6 +49,8 @@ class _CouponFieldState extends State<CouponField> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Container(
       height: 48, // Adjusted for consistent height
       margin: EdgeInsets.only(top: UIConfig.marginMedium),
@@ -59,6 +63,7 @@ class _CouponFieldState extends State<CouponField> {
         ),
       ),
       child: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(width: UIConfig.paddingMedium),
@@ -76,23 +81,31 @@ class _CouponFieldState extends State<CouponField> {
             child: TextField(
               controller: _controller,
               focusNode: _focusNode,
+              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+              textAlign: isRtl ? TextAlign.right : TextAlign.left,
               decoration: InputDecoration(
-                hintText: 'Enter Coupon Code',
+                hintText: 'cart.enter_coupon'.translate(),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 isDense: true, // Helps with vertical centering
                 contentPadding: EdgeInsets.zero,
-                hintStyle: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.mutedForeground(context),
-                  fontFamily: 'Poppins',
+                hintStyle: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: 14,
+                    color: AppColors.mutedForeground(context),
+                    fontFamily: 'Poppins',
+                  ),
                 ),
               ),
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.inputForeground(context),
-                fontFamily: 'Poppins',
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontSize: 14,
+                  color: AppColors.inputForeground(context),
+                  fontFamily: 'Poppins',
+                ),
               ),
               onSubmitted: widget.isLoading ? null : widget.onApplyCoupon,
             ),
@@ -106,7 +119,6 @@ class _CouponFieldState extends State<CouponField> {
               width: 36,
               height: 36,
               margin: const EdgeInsets.symmetric(horizontal: 6),
-
               child:
                   widget.isLoading
                       ? Padding(
@@ -118,7 +130,10 @@ class _CouponFieldState extends State<CouponField> {
                       )
                       : Center(
                         child: ThemeAwareSvg(
-                          assetPath: AssetConfig.arrowRight,
+                          assetPath:
+                              isRtl
+                                  ? AssetConfig.arrowLeft
+                                  : AssetConfig.arrowRight,
                           width: 16,
                           height: 16,
                           colorName: AppColorName.foreground,

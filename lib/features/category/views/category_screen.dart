@@ -9,6 +9,8 @@ import 'package:store_go/features/category/controllers/category_controller.dart'
 import 'package:store_go/features/category/views/widgets/category_tile.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/search/no_search_result.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({super.key});
@@ -42,11 +44,18 @@ class CategoryScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: ThemeAwareSvg(
-                          assetPath: AssetConfig.backArrow,
-                          height: 24,
-                          width: 24,
-                        ),
+                        icon:
+                            LocalizationService.isRtl(context)
+                                ? ThemeAwareSvg(
+                                  assetPath: AssetConfig.arrowRight,
+                                  height: 24,
+                                  width: 24,
+                                )
+                                : ThemeAwareSvg(
+                                  assetPath: AssetConfig.arrowLeft,
+                                  height: 24,
+                                  width: 24,
+                                ),
                         onPressed: () => Get.back(),
                       ),
                     ),
@@ -70,7 +79,13 @@ class CategoryScreen extends StatelessWidget {
                 padding: EdgeInsets.symmetric(
                   horizontal: UIConfig.paddingLarge,
                 ),
-                child: Text('Shop by Categories', style: textStyles.h5),
+                child: Text(
+                  'category.shop_by_categories'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    textStyles.h5,
+                  ),
+                ),
               ),
               SizedBox(height: UIConfig.marginLarge),
               Expanded(
@@ -92,8 +107,11 @@ class CategoryScreen extends StatelessWidget {
                           children: [
                             Text(
                               controller.errorMessage.value,
-                              style: textStyles.bodyMedium.copyWith(
-                                color: AppColors.destructive(context),
+                              style: LocalizationService.getLocalizedTextStyle(
+                                context,
+                                textStyles.bodyMedium.copyWith(
+                                  color: AppColors.destructive(context),
+                                ),
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -107,10 +125,16 @@ class CategoryScreen extends StatelessWidget {
                               ),
                               onPressed: controller.fetchCategories,
                               child: Text(
-                                'Retry',
-                                style: textStyles.buttonText.copyWith(
-                                  color: AppColors.primaryForeground(context),
-                                ),
+                                'common.retry'.translate(),
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      textStyles.buttonText.copyWith(
+                                        color: AppColors.primaryForeground(
+                                          context,
+                                        ),
+                                      ),
+                                    ),
                               ),
                             ),
                           ],

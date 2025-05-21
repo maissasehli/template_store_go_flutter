@@ -7,6 +7,10 @@ import 'package:store_go/features/home/views/screen/home_screen.dart';
 import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
 import 'package:store_go/features/cart/views/screen/cart_screen.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class MainContainerScreen extends StatelessWidget {
   final NavigationController navigationController =
@@ -38,20 +42,33 @@ class MainContainerScreen extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               height: !isConnected ? 36 : 0,
               width: double.infinity,
-              color: Colors.red.shade700,
+              decoration: BoxDecoration(
+                color: AppColors.destructive(context),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(AppTheme.globalRadius),
+                  topRight: Radius.circular(AppTheme.globalRadius),
+                ),
+              ),
               child:
                   !isConnected
                       ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.wifi_off, color: Colors.white, size: 18),
+                          Icon(
+                            Icons.wifi_off,
+                            color: AppColors.destructiveForeground(context),
+                            size: 18,
+                          ),
                           SizedBox(width: 8),
                           Text(
-                            'No Internet Connection',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
+                            'common.no_internet_connection'.translate(),
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              TextStyle(
+                                color: AppColors.destructiveForeground(context),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                         ],

@@ -8,6 +8,8 @@ import 'package:store_go/features/profile/controllers/profile_controller.dart';
 import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_header.dart';
 import 'package:store_go/features/profile/views/widgets/profile_main_widgets/user_details_card.dart';
 import 'package:store_go/features/profile/views/widgets/profile_main_widgets/profile_menu_section.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   const ProfilePage({super.key});
@@ -60,8 +62,11 @@ class ProfilePage extends GetView<ProfileController> {
         children: [
           Text(
             controller.errorMessage.value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.foreground(context),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.foreground(context),
+              ) ?? TextStyle(color: AppColors.foreground(context)),
             ),
           ),
           SizedBox(height: UIConfig.paddingMedium),
@@ -75,13 +80,18 @@ class ProfilePage extends GetView<ProfileController> {
                 vertical: UIConfig.paddingSmall,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                borderRadius: BorderRadius.circular(
+                  UIConfig.borderRadiusCircular,
+                ),
               ),
             ),
             child: Text(
-              'Retry',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: AppColors.primaryForeground(context),
+              'common.retry'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColors.primaryForeground(context),
+                ) ?? TextStyle(color: AppColors.primaryForeground(context)),
               ),
             ),
           ),

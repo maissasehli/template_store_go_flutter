@@ -5,7 +5,11 @@
         "english": "English",
         "arabic": "Arabic",
         "french": "French",
-        "language": "Language"
+        "language": "Language",
+        "no_internet_connection": "No Internet Connection",
+        "search": "Search",
+        "see_all": "See All",
+        "retry": "Retry"
     },
     "auth": {
         "login": "Login",
@@ -33,6 +37,12 @@
         "wishlist": "Wishlist",
         "profile": "Profile"
     },
+    "home": {
+        "categories": "Categories",
+        "top_selling": "Top Selling",
+        "new_in": "New In",
+        "no_products_found": "No products found"
+    },
     "language": {
         "select_a_language": "Select a language"
     },
@@ -51,5 +61,40 @@
         "password_requirement": "Password must contain both letters and numbers",
         "invalid_phone": "Not a valid phone number",
         "phone_length": "Phone number must be 8 digits"
+    },
+    "category": {
+        "shop_by_categories": "Shop by Categories"
+    },
+    "profile": {
+        "address": "Address",
+        "my_orders": "My orders",
+        "payments": "Payments",
+        "notifications": "Notifications",
+        "settings": "Settings",
+        "logout": "Logout",
+        "edit_profile": "Edit Profile",
+        "user": "User",
+        "gender": "Gender",
+        "age_range": "Age Range"
+    },
+    "cart": {
+        "title": "Cart",
+        "clear_cart": "Clear Cart",
+        "load_error": "Failed to load cart items",
+        "try_again": "Try Again",
+        "empty_cart": "Your Cart is Empty",
+        "explore_categories": "Explore Categories",
+        "checkout": "Checkout",
+        "subtotal": "Subtotal",
+        "shipping_cost": "Shipping Cost",
+        "tax": "Tax",
+        "discount": "Discount",
+        "total": "Total",
+        "enter_coupon": "Enter Coupon Code",
+        "clear_cart_confirmation": "Are you sure you want to remove all items from your cart? This action cannot be undone.",
+        "cancel": "Cancel",
+        "clear": "Clear",
+        "remove_item": "Remove Item",
+        "remove_item_confirmation": "Are you sure you want to remove this item from your cart?"
     }
 }

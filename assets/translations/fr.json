@@ -5,7 +5,11 @@
         "english": "Anglais",
         "arabic": "Arabe",
         "french": "Français",
-        "language": "Langue"
+        "language": "Langue",
+        "no_internet_connection": "Pas de connexion Internet",
+        "search": "Rechercher",
+        "see_all": "Voir tout",
+        "retry": "Réessayer"
     },
     "auth": {
         "login": "Connexion",
@@ -33,6 +37,12 @@
         "wishlist": "Favoris",
         "profile": "Profil"
     },
+    "home": {
+        "categories": "Catégories",
+        "top_selling": "Meilleures ventes",
+        "new_in": "Nouveautés",
+        "no_products_found": "Aucun produit trouvé"
+    },
     "language": {
         "select_a_language": "Selectionnez un language"
     },
@@ -51,5 +61,40 @@
         "password_requirement": "Le mot de passe doit contenir à la fois des lettres et des chiffres",
         "invalid_phone": "Numéro de téléphone invalide",
         "phone_length": "Le numéro de téléphone doit contenir 8 chiffres"
+    },
+    "category": {
+        "shop_by_categories": "Acheter par catégories"
+    },
+    "profile": {
+        "address": "Adresse",
+        "my_orders": "Mes commandes",
+        "payments": "Paiements",
+        "notifications": "Notifications",
+        "settings": "Paramètres",
+        "logout": "Déconnexion",
+        "edit_profile": "Modifier le profil",
+        "user": "Utilisateur",
+        "gender": "Genre",
+        "age_range": "Tranche d'âge"
+    },
+    "cart": {
+        "title": "Panier",
+        "clear_cart": "Vider le panier",
+        "load_error": "Échec du chargement des articles du panier",
+        "try_again": "Réessayer",
+        "empty_cart": "Votre panier est vide",
+        "explore_categories": "Explorer les catégories",
+        "checkout": "Passer à la caisse",
+        "subtotal": "Sous-total",
+        "shipping_cost": "Frais de livraison",
+        "tax": "Taxes",
+        "discount": "Réduction",
+        "total": "Total",
+        "enter_coupon": "Entrez le code promo",
+        "clear_cart_confirmation": "Êtes-vous sûr de vouloir supprimer tous les articles de votre panier? Cette action ne peut pas être annulée.",
+        "cancel": "Annuler",
+        "clear": "Vider",
+        "remove_item": "Supprimer l'article",
+        "remove_item_confirmation": "Êtes-vous sûr de vouloir supprimer cet article de votre panier?"
     }
 }

@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
@@ -11,6 +10,8 @@ import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
 import 'package:store_go/features/cart/views/widgets/cart_item_card.dart';
 import 'package:store_go/features/cart/views/widgets/cart_summary.dart';
 import 'package:store_go/features/cart/views/widgets/coupon_field.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -18,6 +19,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartController = Get.find<CartController>();
+    final bool isRtl = LocalizationService.isRtl(context);
 
     return Scaffold(
       backgroundColor: AppColors.background(context),
@@ -26,7 +28,7 @@ class CartScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: ThemeAwareSvg(
-            assetPath: AssetConfig.backArrow,
+            assetPath: isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
             height: 24,
             width: 24,
           ),
@@ -34,12 +36,15 @@ class CartScreen extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          'Cart',
-          style: TextStyle(
-            color: AppColors.foreground(context),
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+          'cart.title'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
           ),
         ),
         actions: [
@@ -50,24 +55,26 @@ class CartScreen extends StatelessWidget {
                 _showClearCartConfirmationDialog(context, cartController);
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'clear_cart',
-                child: Text(
-                  'Clear Cart',
-                  style: TextStyle(color: AppColors.destructive(context)),
-                ),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'clear_cart',
+                    child: Text(
+                      'cart.clear_cart'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(color: AppColors.destructive(context)),
+                      ),
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
       body: Obx(() {
         if (cartController.isLoading.value) {
           return Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary(context),
-            ),
+            child: CircularProgressIndicator(color: AppColors.primary(context)),
           );
         }
 
@@ -79,11 +86,14 @@ class CartScreen extends StatelessWidget {
                 Text(
                   cartController.errorMessage.value.isNotEmpty
                       ? cartController.errorMessage.value
-                      : 'Failed to load cart items',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.foreground(context),
+                      : 'cart.load_error'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.foreground(context),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -101,9 +111,10 @@ class CartScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Try Again',
-                    style: TextStyle(
-                      color: AppColors.primaryForeground(context),
+                    'cart.try_again'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(color: AppColors.primaryForeground(context)),
                     ),
                   ),
                 ),
@@ -153,12 +164,15 @@ class CartScreen extends StatelessWidget {
           ),
           SizedBox(height: UIConfig.marginLarge),
           Text(
-            'Your Cart is Empty',
-            style: TextStyle(
-              color: AppColors.foreground(context),
-              fontSize: UIConfig.fontSizeLarge,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
+            'cart.empty_cart'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                color: AppColors.foreground(context),
+                fontSize: UIConfig.fontSizeLarge,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
+              ),
             ),
           ),
           SizedBox(height: UIConfig.marginLarge),
@@ -180,9 +194,12 @@ class CartScreen extends StatelessWidget {
               ),
               minimumSize: const Size(188, 55),
             ),
-            child: const Text(
-              'Explore Categories',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            child: Text(
+              'cart.explore_categories'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
         ],
@@ -191,10 +208,13 @@ class CartScreen extends StatelessWidget {
   }
 
   Widget _buildCartWithItems(BuildContext context, CartController controller) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Obx(() {
@@ -210,8 +230,11 @@ class CartScreen extends StatelessWidget {
                     final item = controller.cartItems[index];
                     return CartItemCard(
                       item: item,
-                      onQuantityChanged: (quantity) =>
-                          controller.updateQuantity(item.productId, quantity),
+                      onQuantityChanged:
+                          (quantity) => controller.updateQuantity(
+                            item.productId,
+                            quantity,
+                          ),
                       onRemove: () => controller.removeFromCart(item.productId),
                     );
                   },
@@ -226,9 +249,10 @@ class CartScreen extends StatelessWidget {
               tax: controller.tax.value,
               discount: controller.discount.value,
               total: controller.total.value,
-              couponCode: controller.couponCode.value.isNotEmpty
-                  ? controller.couponCode.value
-                  : null,
+              couponCode:
+                  controller.couponCode.value.isNotEmpty
+                      ? controller.couponCode.value
+                      : null,
             ),
           ),
           Obx(
@@ -246,11 +270,12 @@ class CartScreen extends StatelessWidget {
               top: UIConfig.marginMedium,
             ),
             child: ElevatedButton(
-              onPressed: controller.cartItems.isEmpty
-                  ? null
-                  : () {
-                      Get.to(() => const CheckoutScreen());
-                    },
+              onPressed:
+                  controller.cartItems.isEmpty
+                      ? null
+                      : () {
+                        Get.to(() => const CheckoutScreen());
+                      },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary(context),
                 foregroundColor: AppColors.primaryForeground(context),
@@ -264,12 +289,15 @@ class CartScreen extends StatelessWidget {
               ),
               child: Obx(
                 () => Text(
-                  'Checkout (\$${controller.total.value.toStringAsFixed(2)})',
-                  style: TextStyle(
-                    color: AppColors.primaryForeground(context),
-                    fontSize: UIConfig.fontSizeMedium,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Poppins',
+                  '${'cart.checkout'.translate()} (\$${controller.total.value.toStringAsFixed(2)})',
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      color: AppColors.primaryForeground(context),
+                      fontSize: UIConfig.fontSizeMedium,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
               ),
@@ -290,18 +318,27 @@ class CartScreen extends StatelessWidget {
         return AlertDialog(
           backgroundColor: AppColors.card(context),
           title: Text(
-            'Clear Cart',
-            style: TextStyle(color: AppColors.cardForeground(context)),
+            'cart.clear_cart'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: AppColors.cardForeground(context)),
+            ),
           ),
           content: Text(
-            'Are you sure you want to remove all items from your cart? This action cannot be undone.',
-            style: TextStyle(color: AppColors.cardForeground(context)),
+            'cart.clear_cart_confirmation'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: AppColors.cardForeground(context)),
+            ),
           ),
           actions: <Widget>[
             TextButton(
               child: Text(
-                'Cancel',
-                style: TextStyle(color: AppColors.primary(context)),
+                'cart.cancel'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(color: AppColors.primary(context)),
+                ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -309,8 +346,11 @@ class CartScreen extends StatelessWidget {
             ),
             TextButton(
               child: Text(
-                'Clear',
-                style: TextStyle(color: AppColors.destructive(context)),
+                'cart.clear'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(color: AppColors.destructive(context)),
+                ),
               ),
               onPressed: () {
                 controller.clearCart();

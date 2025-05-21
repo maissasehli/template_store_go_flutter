@@ -6,17 +6,19 @@ import 'package:store_go/app/core/theme/app_color_extension.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/features/search/views/search_page.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final Function(String) onSearch;
   final String initialValue;
-  
+
   const CustomSearchBar({
     super.key,
     required this.onSearch,
     this.initialValue = '',
   });
-  
+
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
 }
@@ -36,7 +38,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
       });
     });
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
@@ -68,9 +70,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
             ),
           ),
           child: Row(
-            crossAxisAlignment:
-                CrossAxisAlignment
-                    .center, // Ensure everything is centered vertically
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -90,27 +90,28 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                     controller: _controller,
                     focusNode: _focusNode,
                     decoration: InputDecoration(
-                      hintText: 'Search',
+                      hintText: 'common.search'.translate(),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
-                      isDense: true, // Helps with vertical centering
-                      hintStyle: TextStyle(
-                        color: colors.mutedForeground,
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
+                      isDense: true,
+                      hintStyle: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          color: colors.mutedForeground,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal,
+                        ),
                       ),
-                      contentPadding: EdgeInsets.zero, // Remove all padding
+                      contentPadding: EdgeInsets.zero,
                     ),
                     onSubmitted: (value) {
-                      // Navigate to search page when search button on keyboard is pressed
                       Get.to(() => SearchPage(initialQuery: value));
                     },
-                    // Removing onChanged to prevent requests on each keystroke
                     textInputAction: TextInputAction.search,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colors.inputForeground,
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(fontSize: 14, color: colors.inputForeground),
                     ),
                   ),
                 ),

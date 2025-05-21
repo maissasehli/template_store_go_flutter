@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:store_go/app/core/theme/app_color_utils.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 
 class ProfileMenuItem extends StatelessWidget {
   final String icon;
@@ -16,6 +20,8 @@ class ProfileMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -35,15 +41,20 @@ class ProfileMenuItem extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: AppColors.foreground(context),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: AppColors.foreground(context),
+        trailing: ThemeAwareSvg(
+          assetPath: isRtl ? AssetConfig.arrowLeft : AssetConfig.arrowRight,
+          height: 24,
+          width: 24,
+          colorName: AppColorName.foreground,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       ),

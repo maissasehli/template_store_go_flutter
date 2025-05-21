@@ -5,7 +5,11 @@
         "english": "الإنجليزية",
         "arabic": "العربية",
         "french": "الفرنسية",
-        "language": "اللغة"
+        "language": "اللغة",
+        "no_internet_connection": "لا يوجد اتصال بالإنترنت",
+        "search": "بحث",
+        "see_all": "عرض الكل",
+        "retry": "إعادة المحاولة"
     },
     "auth": {
         "login": "تسجيل الدخول",
@@ -33,6 +37,12 @@
         "wishlist": "المفضلة",
         "profile": "الملف الشخصي"
     },
+    "home": {
+        "categories": "الفئات",
+        "top_selling": "الأكثر مبيعًا",
+        "new_in": "وصل حديثًا",
+        "no_products_found": "لم يتم العثور على منتجات"
+    },
     "language": {
         "select_a_language": "إختر لغتك"
     },
@@ -51,5 +61,40 @@
         "password_requirement": "يجب أن تحتوي كلمة المرور على أحرف وأرقام",
         "invalid_phone": "رقم الهاتف غير صالح",
         "phone_length": "يجب أن يتكون رقم الهاتف من 8 أرقام"
+    },
+    "category": {
+        "shop_by_categories": "تسوق حسب الفئات"
+    },
+    "profile": {
+        "address": "العنوان",
+        "my_orders": "طلباتي",
+        "payments": "المدفوعات",
+        "notifications": "الإشعارات",
+        "settings": "الإعدادات",
+        "logout": "تسجيل الخروج",
+        "edit_profile": "تعديل الملف الشخصي",
+        "user": "المستخدم",
+        "gender": "الجنس",
+        "age_range": "الفئة العمرية"
+    },
+    "cart": {
+        "title": "عربة التسوق",
+        "clear_cart": "تفريغ العربة",
+        "load_error": "فشل في تحميل عناصر العربة",
+        "try_again": "حاول مرة أخرى",
+        "empty_cart": "عربة التسوق فارغة",
+        "explore_categories": "استكشاف الفئات",
+        "checkout": "إتمام الشراء",
+        "subtotal": "المجموع الفرعي",
+        "shipping_cost": "تكلفة الشحن",
+        "tax": "الضريبة",
+        "discount": "الخصم",
+        "total": "الإجمالي",
+        "enter_coupon": "أدخل رمز القسيمة",
+        "clear_cart_confirmation": "هل أنت متأكد أنك تريد إزالة جميع العناصر من سلة التسوق؟ لا يمكن التراجع عن هذا الإجراء.",
+        "cancel": "إلغاء",
+        "clear": "تفريغ",
+        "remove_item": "إزالة العنصر",
+        "remove_item_confirmation": "هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق الخاصة بك؟"
     }
 }

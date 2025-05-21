@@ -3,6 +3,8 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_color_utils.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -42,9 +44,13 @@ class BottomNavBar extends StatelessWidget {
         tabs: [
           // Home Tab
           GButton(
-            icon: Icons.home_outlined, // Keep this for now
-            text: 'Home',
+            icon: Icons.home_outlined,
+            text: 'nav.home'.translate(),
             textColor: Theme.of(context).colorScheme.onPrimary,
+            textStyle: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
             leading: ThemeAwareSvg(
               assetPath: AssetConfig.homeIcon,
               width: 24,
@@ -57,9 +63,13 @@ class BottomNavBar extends StatelessWidget {
           ),
           // Wishlist Tab
           GButton(
-            icon: Icons.favorite_border, // Keep this for now
-            text: 'Wishlist',
+            icon: Icons.favorite_border,
+            text: 'nav.wishlist'.translate(),
             textColor: Theme.of(context).colorScheme.onPrimary,
+            textStyle: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
             leading: ThemeAwareSvg(
               assetPath: AssetConfig.heartIcon,
               width: 24,
@@ -73,8 +83,12 @@ class BottomNavBar extends StatelessWidget {
           // Cart Tab
           GButton(
             icon: Icons.shopping_cart_outlined,
-            text: 'Cart',
+            text: 'nav.cart'.translate(),
             textColor: Theme.of(context).colorScheme.onPrimary,
+            textStyle: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
             leading: ThemeAwareSvg(
               assetPath: AssetConfig.bag,
               width: 24,
@@ -88,8 +102,12 @@ class BottomNavBar extends StatelessWidget {
           // Profile Tab
           GButton(
             icon: Icons.person_outline,
-            text: 'Profile',
+            text: 'nav.profile'.translate(),
             textColor: Theme.of(context).colorScheme.onPrimary,
+            textStyle: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            ),
             leading: ThemeAwareSvg(
               assetPath: AssetConfig.profileIcon,
               width: 24,
