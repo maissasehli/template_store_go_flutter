@@ -31,7 +31,7 @@ class AssetConfig {
   static const String bag = '$rootSvg/bag2.svg';
   static const String emailSentIcon = '$rootSvg/email_sent.svg';
   static const String searchIcon = '$rootSvg/searchIcon.svg';
-  static const String discountShape = '$rootSvg/discountShape.svg';
+  static const String discountShape = '$rootSvg/discountshape.svg';
   static const String delete = '$rootSvg/delete.svg';
   static const String arrowRight2 = '$rootSvg/arrowRight2.svg';
   static const String setting = '$rootSvg/setting-2.svg';
@@ -45,6 +45,8 @@ class AssetConfig {
   static const String search = '$rootIcons/search.png';
   static const String reviews = '$rootIcons/review.png';
   static const String backArrow = '$rootSvg/backArrow.svg';
+  static const String arrowRight = '$rootSvg/arrow-right.svg';
+  static const String arrowLeft = '$rootSvg/arrow-left.svg';
 
   // Get all onboarding images as a list
   static List<String> get allOnboardingImages => [
