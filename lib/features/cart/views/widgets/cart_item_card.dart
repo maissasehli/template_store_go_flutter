@@ -60,24 +60,28 @@ class CartItemCard extends StatelessWidget {
         return false;
       },
       background: Container(
-        color: Colors.transparent,
+        margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
+        ),
       ),
       secondaryBackground: Container(
-        alignment: Alignment.centerRight,
+        margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
+        height: 105.87, // Match the height of the card
         decoration: BoxDecoration(
           color: AppColors.destructive(context),
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
         ),
-        child: Padding(
-          padding: EdgeInsets.only(right: UIConfig.paddingMedium),
-          child: SvgPicture.asset(
-            AssetConfig.delete,
-            width: 24,
-            height: 24,
-            colorFilter: ColorFilter.mode(
-              AppColors.destructiveForeground(context),
-              BlendMode.srcIn,
-            ),
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(right: UIConfig.paddingMedium),
+        child: SvgPicture.asset(
+          AssetConfig.delete,
+          width: 24,
+          height: 24,
+          colorFilter: ColorFilter.mode(
+            AppColors.destructiveForeground(context),
+            BlendMode.srcIn,
           ),
         ),
       ),
@@ -118,33 +122,31 @@ class CartItemCard extends StatelessWidget {
         topLeft: Radius.circular(UIConfig.borderRadiusLarge),
         bottomLeft: Radius.circular(UIConfig.borderRadiusLarge),
       ),
-      child: item.image.isNotEmpty
-          ? Image.network(
-              item.image,
-              width: 80,
-              height: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: 80,
-                  height: double.infinity,
-                  color: AppColors.secondary(context),
-                  child: Icon(
-                    Icons.image_not_supported,
-                    color: AppColors.muted(context),
-                  ),
-                );
-              },
-            )
-          : Container(
-              width: 80,
-              height: double.infinity,
-              color: AppColors.secondary(context),
-              child: Icon(
-                Icons.image,
-                color: AppColors.muted(context),
+      child:
+          item.image.isNotEmpty
+              ? Image.network(
+                item.image,
+                width: 80,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 80,
+                    height: double.infinity,
+                    color: AppColors.secondary(context),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      color: AppColors.muted(context),
+                    ),
+                  );
+                },
+              )
+              : Container(
+                width: 80,
+                height: double.infinity,
+                color: AppColors.secondary(context),
+                child: Icon(Icons.image, color: AppColors.muted(context)),
               ),
-            ),
     );
   }
 
@@ -245,11 +247,7 @@ class CartItemCard extends StatelessWidget {
         width: 24,
         height: 24,
         child: Center(
-          child: Icon(
-            icon,
-            size: 16,
-            color: AppColors.foreground(context),
-          ),
+          child: Icon(icon, size: 16, color: AppColors.foreground(context)),
         ),
       ),
     );

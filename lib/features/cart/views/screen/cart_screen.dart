@@ -21,62 +21,101 @@ class CartScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background(context),
-      body: SafeArea(
-        child: Obx(() {
-          if (cartController.isLoading.value) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primary(context),
+      appBar: AppBar(
+        backgroundColor: AppColors.background(context),
+        elevation: 0,
+        leading: IconButton(
+          icon: ThemeAwareSvg(
+            assetPath: AssetConfig.backArrow,
+            height: 24,
+            width: 24,
+          ),
+          onPressed: () => Get.back(),
+        ),
+        centerTitle: true,
+        title: Text(
+          'Cart',
+          style: TextStyle(
+            color: AppColors.foreground(context),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: AppColors.foreground(context)),
+            onSelected: (value) {
+              if (value == 'clear_cart') {
+                _showClearCartConfirmationDialog(context, cartController);
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'clear_cart',
+                child: Text(
+                  'Clear Cart',
+                  style: TextStyle(color: AppColors.destructive(context)),
+                ),
               ),
-            );
-          }
-
-          if (cartController.isError.value) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: AppColors.destructive(context),
-                  ),
-                  SizedBox(height: UIConfig.marginMedium),
-                  Text(
-                    cartController.errorMessage.value.isNotEmpty
-                        ? cartController.errorMessage.value
-                        : 'An error occurred',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: AppColors.destructive(context)),
-                  ),
-                  SizedBox(height: UIConfig.marginMedium),
-                  ElevatedButton(
-                    onPressed: () => cartController.fetchCartItems(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary(context),
-                      foregroundColor: AppColors.primaryForeground(context),
-                      padding: EdgeInsets.symmetric(
-                        horizontal: UIConfig.paddingLarge,
-                        vertical: UIConfig.paddingMedium,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          UIConfig.borderRadiusCircular,
-                        ),
-                      ),
-                    ),
-                    child: const Text('Try Again'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return cartController.cartItems.isEmpty
-              ? _buildEmptyCart(context)
-              : _buildCartWithItems(context, cartController);
-        }),
+            ],
+          ),
+        ],
       ),
+      body: Obx(() {
+        if (cartController.isLoading.value) {
+          return Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary(context),
+            ),
+          );
+        }
+
+        if (cartController.isError.value) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  cartController.errorMessage.value.isNotEmpty
+                      ? cartController.errorMessage.value
+                      : 'Failed to load cart items',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.foreground(context),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => cartController.fetchCartItems(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary(context),
+                    foregroundColor: AppColors.primaryForeground(context),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+                  child: Text(
+                    'Try Again',
+                    style: TextStyle(
+                      color: AppColors.primaryForeground(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return cartController.cartItems.isEmpty
+            ? _buildEmptyCart(context)
+            : _buildCartWithItems(context, cartController);
+      }),
     );
   }
 
@@ -157,56 +196,26 @@ class CartScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: UIConfig.marginMedium),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => Get.back(),
-                child: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.secondary(context),
-                    shape: BoxShape.circle,
-                  ),
-                  child: ThemeAwareSvg(
-                    assetPath: AssetConfig.backArrow,
-                    height: 8,
-                    width: 8,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Cart',
-                    style: TextStyle(
-                      fontSize: UIConfig.fontSizeMedium,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
-                      color: AppColors.foreground(context),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 40),
-            ],
-          ),
-          SizedBox(height: UIConfig.marginMedium),
           Expanded(
             child: Obx(() {
-              return ListView.builder(
-                itemCount: controller.cartItems.length,
-                itemBuilder: (context, index) {
-                  final item = controller.cartItems[index];
-                  return CartItemCard(
-                    item: item,
-                    onQuantityChanged:
-                        (quantity) =>
-                            controller.updateQuantity(item.productId, quantity),
-                    onRemove: () => controller.removeFromCart(item.productId),
-                  );
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await controller.fetchCartItems();
                 },
+                color: AppColors.primary(context),
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  itemCount: controller.cartItems.length,
+                  itemBuilder: (context, index) {
+                    final item = controller.cartItems[index];
+                    return CartItemCard(
+                      item: item,
+                      onQuantityChanged: (quantity) =>
+                          controller.updateQuantity(item.productId, quantity),
+                      onRemove: () => controller.removeFromCart(item.productId),
+                    );
+                  },
+                ),
               );
             }),
           ),
@@ -217,10 +226,9 @@ class CartScreen extends StatelessWidget {
               tax: controller.tax.value,
               discount: controller.discount.value,
               total: controller.total.value,
-              couponCode:
-                  controller.couponCode.value.isNotEmpty
-                      ? controller.couponCode.value
-                      : null,
+              couponCode: controller.couponCode.value.isNotEmpty
+                  ? controller.couponCode.value
+                  : null,
             ),
           ),
           Obx(
@@ -238,12 +246,11 @@ class CartScreen extends StatelessWidget {
               top: UIConfig.marginMedium,
             ),
             child: ElevatedButton(
-              onPressed:
-                  controller.cartItems.isEmpty
-                      ? null
-                      : () {
-                        Get.to(() => const CheckoutScreen());
-                      },
+              onPressed: controller.cartItems.isEmpty
+                  ? null
+                  : () {
+                      Get.to(() => const CheckoutScreen());
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary(context),
                 foregroundColor: AppColors.primaryForeground(context),
@@ -270,6 +277,49 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showClearCartConfirmationDialog(
+    BuildContext context,
+    CartController controller,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.card(context),
+          title: Text(
+            'Clear Cart',
+            style: TextStyle(color: AppColors.cardForeground(context)),
+          ),
+          content: Text(
+            'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+            style: TextStyle(color: AppColors.cardForeground(context)),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.primary(context)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                'Clear',
+                style: TextStyle(color: AppColors.destructive(context)),
+              ),
+              onPressed: () {
+                controller.clearCart();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
