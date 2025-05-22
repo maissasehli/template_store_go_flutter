@@ -1,15 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/core/theme/colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
-class PhoneField extends StatelessWidget {
+class PhoneField extends StatefulWidget {
   final TextEditingController controller;
 
-  const PhoneField({
-    super.key, 
-    required this.controller
-  });
-  
+  const PhoneField({super.key, required this.controller});
+
+  @override
+  State<PhoneField> createState() => _PhoneFieldState();
+}
+
+class _PhoneFieldState extends State<PhoneField> {
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -17,7 +40,11 @@ class PhoneField extends StatelessWidget {
       height: 60,
       decoration: BoxDecoration(
         color: AppColors.input(context),
-        borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
+        borderRadius: BorderRadius.circular(AppTheme.globalInputsRadius),
+        border: Border.all(
+          color: _isFocused ? AppColors.primary(context) : Colors.transparent,
+          width: 1.5,
+        ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
@@ -51,33 +78,38 @@ class PhoneField extends StatelessWidget {
                 highlightColor: Colors.transparent,
               ),
               child: TextField(
-                controller: controller,
+                controller: widget.controller,
                 keyboardType: TextInputType.phone,
+                focusNode: _focusNode,
                 decoration: InputDecoration(
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   errorBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
-                  labelText: 'Phone number',
-                  labelStyle: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                    height: 16 / 10,
-                    letterSpacing: 0.25,
-                    color: AppColors.mutedForeground(context),
+                  labelText: 'profile.phone_number'.translate(),
+                  labelStyle: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      height: 16 / 10,
+                      letterSpacing: 0.25,
+                      color: AppColors.mutedForeground(context),
+                    ),
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   contentPadding: const EdgeInsets.only(top: 8, bottom: 0),
                 ),
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  height: 18 / 14,
-                  letterSpacing: 0.25,
-                  color: AppColors.inputForeground(context),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    height: 18 / 14,
+                    letterSpacing: 0.25,
+                    color: AppColors.inputForeground(context),
+                  ),
                 ),
                 cursorColor: AppColors.primary(context),
               ),

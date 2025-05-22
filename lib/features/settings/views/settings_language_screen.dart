@@ -16,7 +16,8 @@ class SettingsLanguageScreen extends GetView<SettingsLanguageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background(context),      appBar: AppBar(
+      backgroundColor: AppColors.background(context),
+      appBar: AppBar(
         backgroundColor: AppColors.background(context),
         elevation: 0,
         title: Text(
@@ -31,45 +32,33 @@ class SettingsLanguageScreen extends GetView<SettingsLanguageController> {
           ),
         ),
         automaticallyImplyLeading: false,
-        leading: !LocalizationService.isRtl(context)
-            ? IconButton(
-                icon: ThemeAwareSvg(
-                  assetPath: AssetConfig.backArrow,
-                  height: 24,
-                  width: 24,
-                ),
-                onPressed: () => Get.back(),
-              )
-            : null,
-        actions: LocalizationService.isRtl(context)
-            ? [
-                IconButton(
-                  icon: Transform(
-                    alignment: Alignment.center,
-                    // Flip the icon horizontally for RTL
-                    transform: Matrix4.identity()..scale(-1.0, 1.0, 1.0),
-                    child: ThemeAwareSvg(
-                      assetPath: AssetConfig.backArrow,
-                      height: 24,
-                      width: 24,
-                    ),
-                  ),
-                  onPressed: () => Get.back(),
-                ),
-              ]
-            : null,
+        leading: IconButton(
+          icon: ThemeAwareSvg(
+            assetPath:
+                LocalizationService.isRtl(context)
+                    ? AssetConfig.arrowRight
+                    : AssetConfig.arrowLeft,
+            height: 24,
+            width: 24,
+          ),
+          onPressed: () => Get.back(),
+        ),
+        actions: null,
       ),
       body: Container(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Explanation text
+            // Explanation text with proper font styling
             Text(
-              'Select your preferred language for the app',
-              style: TextStyle(
-                color: AppColors.mutedForeground(context),
-                fontSize: 14,
+              'language.explanation'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  color: AppColors.mutedForeground(context),
+                  fontSize: 14,
+                ),
               ),
             ),
             const SizedBox(height: 24), // Language list
@@ -97,10 +86,19 @@ class SettingsLanguageScreen extends GetView<SettingsLanguageController> {
               ),
             ),
             const SizedBox(height: 20),
-            // Save button at the bottom
+            // Save button with appropriate font styling
             Text(
-              "Save",
-            ).primaryButton(context, onPressed: () => Get.back()).fullWidth(),
+                  'common.save'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    const TextStyle(),
+                  ),
+                )
+                .primaryButton(
+                  context,
+                  onPressed: () => controller.saveAndReturn(),
+                )
+                .fullWidth(),
           ],
         ),
       ),

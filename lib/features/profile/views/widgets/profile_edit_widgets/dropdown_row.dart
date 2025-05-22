@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/custom_dropdown_field.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class DropdownRow extends StatelessWidget {
   final String selectedCountry;
@@ -26,19 +28,36 @@ class DropdownRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: UIConfig.paddingSmall, bottom: 4.0),
+                padding: EdgeInsets.only(
+                  left: UIConfig.paddingSmall,
+                  bottom: 4.0,
+                ),
                 child: Text(
-                  'Country',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.mutedForeground(context),
-                      ),
+                  'profile.country'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      color: AppColors.mutedForeground(context),
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
               CustomDropdownField(
                 value: selectedCountry,
-                items: ['Tunisia', 'Algeria', 'Morocco', 'Egypt', 'Libya', 'USA', 'Canada', 'UK', 'France'],
+                items: [
+                  'Tunisia',
+                  'Algeria',
+                  'Morocco',
+                  'Egypt',
+                  'Libya',
+                  'USA',
+                  'Canada',
+                  'UK',
+                  'France',
+                ],
                 onChanged: onCountryChanged,
-                hintText: 'Select country',
+                hintText: 'profile.select_country'.translate(),
               ),
             ],
           ),
@@ -49,19 +68,26 @@ class DropdownRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.only(left: UIConfig.paddingSmall, bottom: 4.0),
+                padding: EdgeInsets.only(
+                  left: UIConfig.paddingSmall,
+                  bottom: 4.0,
+                ),
                 child: Text(
-                  'Gender',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.mutedForeground(context),
-                      ),
+                  'profile.gender'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      color: AppColors.mutedForeground(context),
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
               CustomDropdownField(
                 value: selectedGender,
                 items: ['Male', 'Female', 'Other'],
                 onChanged: onGenderChanged,
-                hintText: 'Select gender',
+                hintText: 'profile.select_gender'.translate(),
               ),
             ],
           ),

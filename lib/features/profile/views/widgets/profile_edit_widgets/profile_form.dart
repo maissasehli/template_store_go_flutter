@@ -4,6 +4,8 @@ import 'package:store_go/features/profile/controllers/edit_profile_controller.da
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/custom_form_field.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/dropdown_row.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/phone_field.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ProfileForm extends StatelessWidget {
   final EditProfileController controller;
@@ -28,32 +30,30 @@ class ProfileForm extends StatelessWidget {
       children: [
         // Full name field
         CustomFormField(
-          label: 'Full name',
+          label: 'profile.full_name'.translate(),
           controller: controller.fullNameController,
         ),
         SizedBox(height: UIConfig.marginLarge),
-        
+
         // Nick name field
         CustomFormField(
-          label: 'Nick name',
+          label: 'profile.nick_name'.translate(),
           controller: controller.userNameController,
         ),
         SizedBox(height: UIConfig.marginLarge),
-        
+
         // Email field
         CustomFormField(
-          label: 'Email',
+          label: 'auth.email'.translate(),
           controller: controller.emailController,
           keyboardType: TextInputType.emailAddress,
         ),
         SizedBox(height: UIConfig.marginLarge),
-        
+
         // Phone field with custom icon
-        PhoneField(
-          controller: controller.phoneController,
-        ),
+        PhoneField(controller: controller.phoneController),
         SizedBox(height: UIConfig.marginLarge),
-        
+
         // Country and Gender dropdowns
         DropdownRow(
           selectedCountry: selectedCountry,

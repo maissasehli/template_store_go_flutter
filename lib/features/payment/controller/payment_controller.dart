@@ -17,7 +17,6 @@ class PaymentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchPaymentMethods();
   }
 
   Future<void> fetchPaymentMethods() async {

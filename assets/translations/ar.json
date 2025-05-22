@@ -9,7 +9,8 @@
         "no_internet_connection": "لا يوجد اتصال بالإنترنت",
         "search": "بحث",
         "see_all": "عرض الكل",
-        "retry": "إعادة المحاولة"
+        "retry": "إعادة المحاولة",
+        "save": "حفظ"
     },
     "auth": {
         "login": "تسجيل الدخول",
@@ -44,7 +45,8 @@
         "no_products_found": "لم يتم العثور على منتجات"
     },
     "language": {
-        "select_a_language": "إختر لغتك"
+        "select_a_language": "إختر لغتك",
+        "explanation": "حدد لغتك المفضلة للتطبيق"
     },
     "onboarding": {
         "discover_shopping": "اكتشف تجربة تسوق سلسة!",
@@ -75,7 +77,13 @@
         "edit_profile": "تعديل الملف الشخصي",
         "user": "المستخدم",
         "gender": "الجنس",
-        "age_range": "الفئة العمرية"
+        "age_range": "الفئة العمرية",
+        "full_name": "الاسم الكامل",
+        "nick_name": "الاسم المستعار",
+        "phone_number": "رقم الهاتف",
+        "country": "البلد",
+        "select_country": "اختر البلد",
+        "select_gender": "اختر الجنس"
     },
     "cart": {
         "title": "عربة التسوق",
@@ -168,5 +176,40 @@
         "reviews_count": "{count} تقييمات",
         "review_singular": "تقييم",
         "review_plural": "تقييمات"
+    },
+    "settings": {
+        "title": "الإعدادات",
+        "appearance": "المظهر",
+        "account": "الحساب",
+        "general": "عام",
+        "theme": {
+            "title": "السمة",
+            "dark_mode": "الوضع الداكن",
+            "light_mode": "الوضع الفاتح"
+        },
+        "change_password": {
+            "title": "تغيير كلمة المرور",
+            "subtitle": "تحديث كلمة المرور الخاصة بك للأمان"
+        },
+        "email_preferences": {
+            "title": "تفضيلات البريد الإلكتروني",
+            "subtitle": "إدارة إشعارات البريد الإلكتروني"
+        },
+        "language": {
+            "title": "اللغة",
+            "subtitle": "اختر لغتك المفضلة"
+        },
+        "privacy_policy": {
+            "title": "سياسة الخصوصية",
+            "subtitle": "اقرأ سياسة الخصوصية الخاصة بنا"
+        },
+        "terms": {
+            "title": "شروط الخدمة",
+            "subtitle": "اقرأ شروط الخدمة الخاصة بنا"
+        },
+        "about": {
+            "title": "حول",
+            "subtitle": "إصدار التطبيق والمعلومات"
+        }
     }
 }

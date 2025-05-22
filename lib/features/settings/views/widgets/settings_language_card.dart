@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/settings/controllers/settings_language_controller.dart';
 
@@ -23,49 +24,63 @@ class SettingsLanguageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<SettingsLanguageController>();
 
-    return InkWell(
-      onTap: () => controller.changeLanguage(context, languageCode),
+    return GestureDetector(
+      onTap: () {
+        controller.changeLanguage(context, languageCode);
+      },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         decoration: BoxDecoration(
+          color:
+              isSelected
+                  ? AppColors.primary(context).withOpacity(0.1)
+                  : AppColors.background(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color:
                 isSelected
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).dividerColor,
-            width: 1.5,
+                    ? AppColors.primary(context)
+                    : AppColors.muted(context),
+            width: 1,
           ),
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.secondary(context),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: AppColors.secondaryForeground(context)),
+            Icon(
+              icon,
+              color:
+                  isSelected
+                      ? AppColors.primary(context)
+                      : AppColors.mutedForeground(context),
+              size: 24,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Apply localized text style to title
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.foreground(context),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        color: AppColors.foreground(context),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  // Apply localized text style to subtitle
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.mutedForeground(context),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        color: AppColors.mutedForeground(context),
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],
@@ -74,7 +89,8 @@ class SettingsLanguageCard extends StatelessWidget {
             if (isSelected)
               Icon(
                 Icons.check_circle,
-                color: Theme.of(context).colorScheme.primary,
+                color: AppColors.primary(context),
+                size: 24,
               ),
           ],
         ),

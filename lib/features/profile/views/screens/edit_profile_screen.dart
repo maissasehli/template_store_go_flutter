@@ -8,6 +8,9 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/profile_form.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/profile_image_widget.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/profile_name_display.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -24,6 +27,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _selectedCountry = "Tunisia";
   String _selectedGender = "Female";
 
+  // Create focus node list to manage focus
+  final List<FocusNode> _focusNodes = [];
+
   @override
   void initState() {
     super.initState();
@@ -34,33 +40,60 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   @override
+  void dispose() {
+    // Clean up all focus nodes
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  // Helper method to unfocus all text fields
+  void _unfocusAll() {
+    FocusScope.of(context).unfocus();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background(context),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: ThemeAwareSvg(
-            assetPath: AssetConfig.backArrow,
-            height: 24,
-            width: 24,
+    return GestureDetector(
+      onTap: _unfocusAll, // Unfocus all fields when tapping outside
+      child: Scaffold(
+        backgroundColor: AppColors.background(context),
+        appBar: AppBar(
+          backgroundColor: AppColors.background(context),
+          leading: IconButton(
+            icon: ThemeAwareSvg(
+              assetPath:
+                  LocalizationService.isRtl(context)
+                      ? AssetConfig.arrowRight
+                      : AssetConfig.arrowLeft,
+              height: 24,
+              width: 24,
+            ),
+            onPressed: () => Get.back(),
           ),
-          onPressed: () => Get.back(),
-        ),
-        elevation: 0,
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(
-            color: AppColors.foreground(context),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+          elevation: 0,
+          title: Text(
+            'profile.edit_profile'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                color: AppColors.foreground(context),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary(context),
+              ),
+            );
+          }
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -84,6 +117,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       selectedCountry: _selectedCountry,
                       selectedGender: _selectedGender,
                       onCountryChanged: (value) {
+                        _unfocusAll(); // Also unfocus when changing dropdown
                         if (value != null) {
                           setState(() {
                             _selectedCountry = value;
@@ -91,6 +125,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         }
                       },
                       onGenderChanged: (value) {
+                        _unfocusAll(); // Also unfocus when changing dropdown
                         if (value != null) {
                           setState(() {
                             _selectedGender = value;
@@ -108,7 +143,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
           );
         }),
-      );
+      ),
+    );
   }
 
   Widget _buildSaveButton(BuildContext context) {
@@ -117,10 +153,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       height: 55,
       decoration: BoxDecoration(
         color: AppColors.primary(context),
-        borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+        borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
       ),
       child: TextButton(
         onPressed: () {
+          _unfocusAll(); // Unfocus before saving
           controller.saveProfile();
         },
         style: TextButton.styleFrom(
@@ -129,26 +166,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
             vertical: UIConfig.paddingMedium,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+            borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
           ),
         ),
         child: Obx(() {
           return controller.isUploading.value
               ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryForeground(context),
-                    strokeWidth: 2,
-                  ),
-                )
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryForeground(context),
+                  strokeWidth: 2,
+                ),
+              )
               : Text(
-                  'Save',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: AppColors.primaryForeground(context),
-                        fontWeight: FontWeight.bold,
-                      ),
-                );
+                'common.save'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryForeground(context),
+                  ),
+                ),
+              );
         }),
       ),
     );

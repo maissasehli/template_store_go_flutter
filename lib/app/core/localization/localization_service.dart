@@ -17,13 +17,13 @@ class LocalizationService {
     {
       "name": "Arabic",
       "code": "ar",
-      "nativeName": "???????",
+      "nativeName": "العربية",
       "icon": Icons.language,
     },
     {
       "name": "French",
       "code": "fr",
-      "nativeName": "Fran�ais",
+      "nativeName": "Français",
       "icon": Icons.language,
     },
   ];

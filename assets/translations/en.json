@@ -9,7 +9,8 @@
         "no_internet_connection": "No Internet Connection",
         "search": "Search",
         "see_all": "See All",
-        "retry": "Retry"
+        "retry": "Retry",
+        "save": "Save"
     },
     "auth": {
         "login": "Login",
@@ -44,7 +45,8 @@
         "no_products_found": "No products found"
     },
     "language": {
-        "select_a_language": "Select a language"
+        "select_a_language": "Select a language",
+        "explanation": "Select your preferred language for the app"
     },
     "onboarding": {
         "discover_shopping": "Discover Seamless Shopping!",
@@ -75,7 +77,13 @@
         "edit_profile": "Edit Profile",
         "user": "User",
         "gender": "Gender",
-        "age_range": "Age Range"
+        "age_range": "Age Range",
+        "full_name": "Full Name",
+        "nick_name": "Nick Name",
+        "phone_number": "Phone Number",
+        "country": "Country",
+        "select_country": "Select country",
+        "select_gender": "Select gender"
     },
     "cart": {
         "title": "Cart",
@@ -168,5 +176,40 @@
         "reviews_count": "{count} reviews",
         "review_singular": "review",
         "review_plural": "reviews"
+    },
+    "settings": {
+        "title": "Settings",
+        "appearance": "Appearance",
+        "account": "Account",
+        "general": "General",
+        "theme": {
+            "title": "Theme",
+            "dark_mode": "Dark Mode",
+            "light_mode": "Light Mode"
+        },
+        "change_password": {
+            "title": "Change Password",
+            "subtitle": "Update your password for security"
+        },
+        "email_preferences": {
+            "title": "Email Preferences",
+            "subtitle": "Manage email notifications"
+        },
+        "language": {
+            "title": "Language",
+            "subtitle": "Select your preferred language"
+        },
+        "privacy_policy": {
+            "title": "Privacy Policy",
+            "subtitle": "Read our privacy policy"
+        },
+        "terms": {
+            "title": "Terms of Service",
+            "subtitle": "Read our terms of service"
+        },
+        "about": {
+            "title": "About",
+            "subtitle": "App version and information"
+        }
     }
 }

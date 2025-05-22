@@ -9,7 +9,8 @@
         "no_internet_connection": "Pas de connexion Internet",
         "search": "Rechercher",
         "see_all": "Voir tout",
-        "retry": "Réessayer"
+        "retry": "Réessayer",
+        "save": "Enregistrer"
     },
     "auth": {
         "login": "Connexion",
@@ -44,7 +45,8 @@
         "no_products_found": "Aucun produit trouvé"
     },
     "language": {
-        "select_a_language": "Selectionnez un language"
+        "select_a_language": "Selectionnez un language",
+        "explanation": "Sélectionnez votre langue préférée pour l'application"
     },
     "onboarding": {
         "discover_shopping": "Découvrez un shopping fluide !",
@@ -75,7 +77,13 @@
         "edit_profile": "Modifier le profil",
         "user": "Utilisateur",
         "gender": "Genre",
-        "age_range": "Tranche d'âge"
+        "age_range": "Tranche d'âge",
+        "full_name": "Nom complet",
+        "nick_name": "Surnom",
+        "phone_number": "Numéro de téléphone",
+        "country": "Pays",
+        "select_country": "Sélectionnez un pays",
+        "select_gender": "Sélectionnez un genre"
     },
     "cart": {
         "title": "Panier",
@@ -168,5 +176,40 @@
         "reviews_count": "{count} avis",
         "review_singular": "avis",
         "review_plural": "avis"
+    },
+    "settings": {
+        "title": "Paramètres",
+        "appearance": "Apparence",
+        "account": "Compte",
+        "general": "Général",
+        "theme": {
+            "title": "Thème",
+            "dark_mode": "Mode Sombre",
+            "light_mode": "Mode Clair"
+        },
+        "change_password": {
+            "title": "Changer le Mot de Passe",
+            "subtitle": "Mettez à jour votre mot de passe pour plus de sécurité"
+        },
+        "email_preferences": {
+            "title": "Préférences d'Email",
+            "subtitle": "Gérer les notifications par email"
+        },
+        "language": {
+            "title": "Langue",
+            "subtitle": "Sélectionnez votre langue préférée"
+        },
+        "privacy_policy": {
+            "title": "Politique de Confidentialité",
+            "subtitle": "Lisez notre politique de confidentialité"
+        },
+        "terms": {
+            "title": "Conditions d'Utilisation",
+            "subtitle": "Lisez nos conditions d'utilisation"
+        },
+        "about": {
+            "title": "À Propos",
+            "subtitle": "Version et informations de l'application"
+        }
     }
 }

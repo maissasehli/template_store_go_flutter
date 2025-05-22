@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/core/theme/colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CustomDropdownField extends StatelessWidget {
   final String value;
   final List<String> items;
   final Function(String?) onChanged;
   final String hintText;
-  
+
   const CustomDropdownField({
     super.key,
     required this.value,
@@ -16,13 +17,14 @@ class CustomDropdownField extends StatelessWidget {
     required this.onChanged,
     required this.hintText,
   });
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 50,
       decoration: BoxDecoration(
         color: AppColors.input(context),
-        borderRadius: BorderRadius.circular(AppColor.globalBorderRadius),
+        borderRadius: BorderRadius.circular(AppTheme.globalInputsRadius),
       ),
       padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
       child: DropdownButtonHideUnderline(
@@ -39,11 +41,13 @@ class CustomDropdownField extends StatelessWidget {
                   value: item,
                   child: Text(
                     item,
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 14,
-                      color: AppColors.inputForeground(context),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: AppColors.inputForeground(context),
+                      ),
                     ),
                   ),
                 );
@@ -51,11 +55,13 @@ class CustomDropdownField extends StatelessWidget {
           onChanged: onChanged,
           hint: Text(
             hintText,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w400,
-              fontSize: 10,
-              color: AppColors.mutedForeground(context),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 10,
+                color: AppColors.mutedForeground(context),
+              ),
             ),
           ),
           dropdownColor: AppColors.input(context),
