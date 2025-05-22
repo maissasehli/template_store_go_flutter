@@ -10,7 +10,9 @@
         "search": "بحث",
         "see_all": "عرض الكل",
         "retry": "إعادة المحاولة",
-        "save": "حفظ"
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "delete": "حذف"
     },
     "auth": {
         "login": "تسجيل الدخول",
@@ -211,5 +213,23 @@
             "title": "حول",
             "subtitle": "إصدار التطبيق والمعلومات"
         }
+    },
+    "notifications": {
+        "title": "الإشعارات",
+        "mark_all_read": "تحديد الكل كمقروء",
+        "delete_all": "حذف الكل",
+        "load_error": "فشل في تحميل الإشعارات",
+        "empty_state": "لا توجد إشعارات حتى الآن",
+        "explore_categories": "استكشاف الفئات",
+        "unknown_date": "تاريخ غير معروف",
+        "delete_confirmation_title": "حذف جميع الإشعارات",
+        "delete_confirmation_message": "هل أنت متأكد أنك تريد حذف جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.",
+        "new_product_title": "منتج جديد متاح!",
+        "new_product_message": "{productName} متاح الآن في المتجر",
+        "new_promotion_title": "عرض ترويجي جديد متاح!",
+        "new_promotion_message": "{name} - عرض محدود الوقت",
+        "price": "السعر: ${price}",
+        "special_offer": "عرض خاص",
+        "new_promotion": "عرض ترويجي جديد"
     }
 }

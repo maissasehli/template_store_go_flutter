@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class EmptyNotificationState extends StatelessWidget {
   const EmptyNotificationState({super.key});
@@ -33,12 +35,14 @@ class EmptyNotificationState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No Notification yet',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'Poppins',
-              color: AppColors.foreground(context),
+            'notifications.empty_state'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                color: AppColors.foreground(context),
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -53,12 +57,14 @@ class EmptyNotificationState extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Explore Categories',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w400,
-                color: AppColors.primaryForeground(context),
-                fontFamily: 'Poppins',
+              'notifications.explore_categories'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.primaryForeground(context),
+                ),
               ),
             ),
           ),

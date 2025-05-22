@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/notifications/controller/notification_controller.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 
 class NotificationBadge extends StatelessWidget {
   final Widget child;
@@ -21,18 +22,15 @@ class NotificationBadge extends StatelessWidget {
         return Stack(
           alignment: Alignment.center,
           children: [
-            GestureDetector(
-              onTap: onTap,
-              child: child,
-            ),
+            GestureDetector(onTap: onTap, child: child),
             if (controller.unreadCount.value > 0)
               Positioned(
                 top: 0,
                 right: 0,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
+                  decoration: BoxDecoration(
+                    color: AppColors.destructive(context),
                     shape: BoxShape.circle,
                   ),
                   constraints: const BoxConstraints(
@@ -40,11 +38,11 @@ class NotificationBadge extends StatelessWidget {
                     minHeight: 16,
                   ),
                   child: Text(
-                    controller.unreadCount.value > 9 
-                        ? '9+' 
+                    controller.unreadCount.value > 9
+                        ? '9+'
                         : controller.unreadCount.value.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: AppColors.destructiveForeground(context),
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),

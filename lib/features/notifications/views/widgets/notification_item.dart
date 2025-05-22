@@ -4,6 +4,8 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/notifications/controller/notification_controller.dart';
 import 'package:store_go/features/notifications/model/notification_model.dart';
 import 'package:intl/intl.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class NotificationItem extends StatefulWidget {
   final NotificationModel notification;
@@ -62,6 +64,7 @@ class _NotificationItemState extends State<NotificationItem>
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<NotificationsController>();
+    final bool isRtl = LocalizationService.isRtl(context);
 
     // Format the date
     String formattedDate = '';
@@ -69,7 +72,7 @@ class _NotificationItemState extends State<NotificationItem>
       final dateTime = DateTime.parse(widget.notification.createdAt);
       formattedDate = DateFormat('MMM d, yyyy • h:mm a').format(dateTime);
     } catch (e) {
-      formattedDate = 'Unknown date';
+      formattedDate = 'notifications.unknown_date'.translate();
     }
 
     return Container(
@@ -77,8 +80,8 @@ class _NotificationItemState extends State<NotificationItem>
       child: Dismissible(
         key: Key(widget.notification.id),
         background: Container(
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 20),
+          alignment: isRtl ? Alignment.centerLeft : Alignment.centerRight,
+          padding: EdgeInsets.only(right: isRtl ? 0 : 20, left: isRtl ? 20 : 0),
           decoration: BoxDecoration(
             color: AppColors.destructive(context).withOpacity(0.5),
             borderRadius: BorderRadius.circular(8),
@@ -88,7 +91,8 @@ class _NotificationItemState extends State<NotificationItem>
             color: AppColors.destructiveForeground(context),
           ),
         ),
-        direction: DismissDirection.endToStart,
+        direction:
+            isRtl ? DismissDirection.startToEnd : DismissDirection.endToStart,
         onDismissed: (_) {
           controller.deleteNotification(widget.notification.id);
         },
@@ -128,45 +132,60 @@ class _NotificationItemState extends State<NotificationItem>
                 ),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        isRtl
+                            ? CrossAxisAlignment.start
+                            : CrossAxisAlignment.end,
                     children: [
                       _getNotificationIcon(widget.notification.type, context),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment:
+                              isRtl
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
                           children: [
                             Text(
                               widget.notification.title,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight:
-                                    _isRead ? FontWeight.w500 : FontWeight.w600,
-                                fontFamily: 'Poppins',
-                                color: AppColors.foreground(context),
+                              style: LocalizationService.getLocalizedTextStyle(
+                                context,
+                                TextStyle(
+                                  fontSize: 15,
+                                  fontWeight:
+                                      _isRead
+                                          ? FontWeight.w500
+                                          : FontWeight.w600,
+                                  color: AppColors.foreground(context),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               widget.notification.content,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Poppins',
-                                color: AppColors.mutedForeground(context),
+                              style: LocalizationService.getLocalizedTextStyle(
+                                context,
+                                TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.mutedForeground(context),
+                                ),
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               formattedDate,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Poppins',
-                                color: AppColors.mutedForeground(context),
+                              style: LocalizationService.getLocalizedTextStyle(
+                                context,
+                                TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.mutedForeground(context),
+                                ),
                               ),
                             ),
                           ],
@@ -199,13 +218,11 @@ class _NotificationItemState extends State<NotificationItem>
     switch (type.toLowerCase()) {
       case 'order':
         iconData = Icons.shopping_bag_outlined;
-        iconColor =
-            Colors.green; // Keep this color for better visual distinction
+        iconColor = Colors.green; // Keep color for visual distinction
         break;
       case 'promo':
         iconData = Icons.local_offer_outlined;
-        iconColor =
-            Colors.orange; // Keep this color for better visual distinction
+        iconColor = Colors.orange; // Keep color for visual distinction
         break;
       case 'system':
         iconData = Icons.info_outline;

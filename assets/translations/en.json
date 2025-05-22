@@ -10,7 +10,9 @@
         "search": "Search",
         "see_all": "See All",
         "retry": "Retry",
-        "save": "Save"
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete"
     },
     "auth": {
         "login": "Login",
@@ -211,5 +213,23 @@
             "title": "About",
             "subtitle": "App version and information"
         }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "mark_all_read": "Mark all as read",
+        "delete_all": "Delete all",
+        "load_error": "Failed to load notifications",
+        "empty_state": "No Notification yet",
+        "explore_categories": "Explore Categories",
+        "unknown_date": "Unknown date",
+        "delete_confirmation_title": "Delete All Notifications",
+        "delete_confirmation_message": "Are you sure you want to delete all notifications? This action cannot be undone.",
+        "new_product_title": "New Product Available!",
+        "new_product_message": "{productName} is now available in the store",
+        "new_promotion_title": "New Promotion Available!",
+        "new_promotion_message": "{name} - Limited time offer",
+        "price": "Price: ${price}",
+        "special_offer": "Special Offer",
+        "new_promotion": "New Promotion"
     }
 }

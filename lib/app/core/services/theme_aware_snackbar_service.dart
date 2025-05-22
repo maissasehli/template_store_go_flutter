@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_color_extension.dart';
 import 'package:store_go/app/shared/controllers/theme_controller.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class ThemeAwareSnackbarService {
   // Singleton pattern
@@ -24,6 +26,7 @@ class ThemeAwareSnackbarService {
 
     // Get colors from theme extension
     final appColors = currentTheme.extension<AppColorExtension>()!;
+    final bool isRtl = LocalizationService.isRtl(Get.context!);
 
     // Use theme colors from AppColorExtension
     final backgroundColor = appColors.card;
@@ -41,18 +44,23 @@ class ThemeAwareSnackbarService {
       borderRadius: 8,
       padding: const EdgeInsets.all(12),
       titleText: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: textColor,
+            style: LocalizationService.getLocalizedTextStyle(
+              Get.context!,
+              TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: textColor,
+              ),
             ),
           ),
         ],
       ),
       messageText: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Product image
@@ -62,7 +70,10 @@ class ThemeAwareSnackbarService {
               child: Container(
                 width: 60,
                 height: 60,
-                margin: const EdgeInsets.only(right: 12),
+                margin: EdgeInsets.only(
+                  right: isRtl ? 0 : 12,
+                  left: isRtl ? 12 : 0,
+                ),
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
@@ -89,18 +100,31 @@ class ThemeAwareSnackbarService {
           // Content column
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
-                Text(message, style: TextStyle(fontSize: 14, color: textColor)),
+                Text(
+                  message,
+                  style: LocalizationService.getLocalizedTextStyle(
+                    Get.context!,
+                    TextStyle(fontSize: 14, color: textColor),
+                  ),
+                ),
                 if (data.containsKey('price'))
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      'Price: \$${data['price']}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+                      'notifications.price'.translate().replaceAll(
+                        '{price}',
+                        '${data['price']}',
+                      ),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        Get.context!,
+                        TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
                       ),
                     ),
                   ),
@@ -125,6 +149,7 @@ class ThemeAwareSnackbarService {
     // Get theme controller
     final ThemeController themeController = Get.find<ThemeController>();
     final ThemeData currentTheme = themeController.theme;
+    final bool isRtl = LocalizationService.isRtl(Get.context!);
 
     // Get colors from theme extension
     final appColors = currentTheme.extension<AppColorExtension>()!;
@@ -145,18 +170,23 @@ class ThemeAwareSnackbarService {
       borderRadius: 8,
       padding: const EdgeInsets.all(12),
       titleText: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: textColor,
+            style: LocalizationService.getLocalizedTextStyle(
+              Get.context!,
+              TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: textColor,
+              ),
             ),
           ),
         ],
       ),
       messageText: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Promotion image
@@ -165,7 +195,10 @@ class ThemeAwareSnackbarService {
             child: Container(
               width: 60,
               height: 60,
-              margin: const EdgeInsets.only(right: 12),
+              margin: EdgeInsets.only(
+                right: isRtl ? 0 : 12,
+                left: isRtl ? 12 : 0,
+              ),
               decoration: BoxDecoration(
                 color: accentColor.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(6),
@@ -203,20 +236,27 @@ class ThemeAwareSnackbarService {
           // Promotion details
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Text(
-                  data['name'] ?? 'New Promotion',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
+                  data['name'] ?? 'notifications.new_promotion'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    Get.context!,
+                    TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
+                    ),
                   ),
                 ),
                 if (data.containsKey('description'))
                   Text(
                     data['description'],
-                    style: TextStyle(fontSize: 13, color: textColor),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      Get.context!,
+                      TextStyle(fontSize: 13, color: textColor),
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -231,11 +271,15 @@ class ThemeAwareSnackbarService {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    discountDisplay ?? 'Special Offer',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: accentColor,
+                    discountDisplay ??
+                        'notifications.special_offer'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      Get.context!,
+                      TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
                     ),
                   ),
                 ),

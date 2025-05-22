@@ -6,6 +6,8 @@ import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/notifications/controller/notification_controller.dart';
 import 'package:store_go/features/notifications/views/widgets/empty_notification_state.dart';
 import 'package:store_go/features/notifications/views/widgets/notification_item.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
@@ -21,7 +23,10 @@ class NotificationsPage extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: ThemeAwareSvg(
-            assetPath: AssetConfig.backArrow,
+            assetPath:
+                LocalizationService.isRtl(context)
+                    ? AssetConfig.arrowRight
+                    : AssetConfig.arrowLeft,
             height: 24,
             width: 24,
           ),
@@ -29,12 +34,14 @@ class NotificationsPage extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          'Notifications',
-          style: TextStyle(
-            color: AppColors.foreground(context),
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+          'notifications.title'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
         actions: [
@@ -52,15 +59,21 @@ class NotificationsPage extends StatelessWidget {
                   PopupMenuItem(
                     value: 'mark_all_read',
                     child: Text(
-                      'Mark all as read',
-                      style: TextStyle(color: AppColors.foreground(context)),
+                      'notifications.mark_all_read'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(color: AppColors.foreground(context)),
+                      ),
                     ),
                   ),
                   PopupMenuItem(
                     value: 'delete_all',
                     child: Text(
-                      'Delete all',
-                      style: TextStyle(color: AppColors.destructive(context)),
+                      'notifications.delete_all'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(color: AppColors.destructive(context)),
+                      ),
                     ),
                   ),
                 ],
@@ -80,11 +93,14 @@ class NotificationsPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Failed to load notifications',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.foreground(context),
+                  'notifications.load_error'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.foreground(context),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -102,9 +118,10 @@ class NotificationsPage extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Try Again',
-                    style: TextStyle(
-                      color: AppColors.primaryForeground(context),
+                    'common.try_again'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(color: AppColors.primaryForeground(context)),
                     ),
                   ),
                 ),
@@ -149,18 +166,27 @@ class NotificationsPage extends StatelessWidget {
         return AlertDialog(
           backgroundColor: AppColors.card(context),
           title: Text(
-            'Delete All Notifications',
-            style: TextStyle(color: AppColors.cardForeground(context)),
+            'notifications.delete_confirmation_title'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: AppColors.cardForeground(context)),
+            ),
           ),
           content: Text(
-            'Are you sure you want to delete all notifications? This action cannot be undone.',
-            style: TextStyle(color: AppColors.cardForeground(context)),
+            'notifications.delete_confirmation_message'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(color: AppColors.cardForeground(context)),
+            ),
           ),
           actions: <Widget>[
             TextButton(
               child: Text(
-                'Cancel',
-                style: TextStyle(color: AppColors.primary(context)),
+                'common.cancel'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(color: AppColors.primary(context)),
+                ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -168,8 +194,11 @@ class NotificationsPage extends StatelessWidget {
             ),
             TextButton(
               child: Text(
-                'Delete',
-                style: TextStyle(color: AppColors.destructive(context)),
+                'common.delete'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(color: AppColors.destructive(context)),
+                ),
               ),
               onPressed: () {
                 controller.deleteAllNotifications();

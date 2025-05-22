@@ -12,6 +12,7 @@ import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/app/core/services/theme_aware_snackbar_service.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class PusherService {
   // Singleton pattern
@@ -186,13 +187,16 @@ class PusherService {
     try {
       final data = jsonDecode(eventData);
       final String? imageUrl = data['imageUrl'];
-      
+
       // Use the theme-aware service from GetX dependency injection
       final snackbarService = Get.find<ThemeAwareSnackbarService>();
-      
+
       snackbarService.showProductNotification(
-        title: 'New Product Available!',
-        message: '${data['productName']} is now available in the store',
+        title: 'notifications.new_product_title'.translate(),
+        message: 'notifications.new_product_message'.translate().replaceAll(
+          '{productName}',
+          data['productName'] ?? '',
+        ),
         imageUrl: imageUrl,
         data: data,
         onTap: (_) {
@@ -213,13 +217,16 @@ class PusherService {
       final String? imageUrl = data['promotionImage'];
       final String promotionId = data['promotionId'] ?? '';
       final String? discountDisplay = data['discountDisplay'];
-      
+
       // Use the theme-aware service from GetX dependency injection
       final snackbarService = Get.find<ThemeAwareSnackbarService>();
-      
+
       snackbarService.showPromotionNotification(
-        title: 'New Promotion Available!',
-        message: '${data['name']} - Limited time offer',
+        title: 'notifications.new_promotion_title'.translate(),
+        message: 'notifications.new_promotion_message'.translate().replaceAll(
+          '{name}',
+          data['name'] ?? '',
+        ),
         imageUrl: imageUrl,
         discountDisplay: discountDisplay,
         data: data,

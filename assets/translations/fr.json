@@ -10,7 +10,9 @@
         "search": "Rechercher",
         "see_all": "Voir tout",
         "retry": "Réessayer",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "delete": "Supprimer"
     },
     "auth": {
         "login": "Connexion",
@@ -211,5 +213,23 @@
             "title": "À Propos",
             "subtitle": "Version et informations de l'application"
         }
+    },
+    "notifications": {
+        "title": "Notifications",
+        "mark_all_read": "Marquer tout comme lu",
+        "delete_all": "Tout supprimer",
+        "load_error": "Échec du chargement des notifications",
+        "empty_state": "Pas encore de notification",
+        "explore_categories": "Explorer les catégories",
+        "unknown_date": "Date inconnue",
+        "delete_confirmation_title": "Supprimer toutes les notifications",
+        "delete_confirmation_message": "Êtes-vous sûr de vouloir supprimer toutes les notifications? Cette action ne peut pas être annulée.",
+        "new_product_title": "Nouveau Produit Disponible!",
+        "new_product_message": "{productName} est maintenant disponible dans le magasin",
+        "new_promotion_title": "Nouvelle Promotion Disponible!",
+        "new_promotion_message": "{name} - Offre à durée limitée",
+        "price": "Prix: ${price}",
+        "special_offer": "Offre Spéciale",
+        "new_promotion": "Nouvelle Promotion"
     }
 }
