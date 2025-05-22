@@ -5,13 +5,16 @@ import 'package:store_go/features/product/controllers/product_list_controller.da
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
-import 'dart:developer' as developer;
+import 'dart:developer' as developer; 
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class FilterFooter extends StatelessWidget {
   final ProductListController listController;
-  
+
   const FilterFooter({super.key, required this.listController});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -46,7 +49,8 @@ class FilterFooter extends StatelessWidget {
                   // Apply filters to category product controller
                   await categoryProductController.applyFilters(
                     categoryId:
-                        filterController.selectedCategory.value == 'All'
+                        filterController.selectedCategory.value ==
+                                'filter.all'.translate()
                             ? categoryProductController
                                     .currentCategory
                                     .value
@@ -66,7 +70,7 @@ class FilterFooter extends StatelessWidget {
                   categoryProductController.categoryProducts.refresh();
 
                   // Wait for UI to process updates
-                  await Future.delayed(Duration(milliseconds: 50));
+                  await Future.delayed(const Duration(milliseconds: 50));
 
                   // Make sure subcategory controller is updated if needed
                   if (subcategoryController
@@ -101,15 +105,20 @@ class FilterFooter extends StatelessWidget {
               foregroundColor: AppColors.primaryForeground(context),
               minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusXLarge),
+                borderRadius: BorderRadius.circular(
+                  UIConfig.borderRadiusXLarge,
+                ),
               ),
             ),
             child: Text(
-              'Apply Now',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w500,
+              'filter.apply_now'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: UIConfig.fontSizeMedium,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),

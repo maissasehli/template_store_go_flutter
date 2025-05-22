@@ -4,10 +4,11 @@ import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart';
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class HomeController extends GetxController {
   final CategoryController categoryController = Get.find<CategoryController>();
-final ProductController productController = Get.find<ProductController>();
+  final ProductController productController = Get.find<ProductController>();
 
   late WishlistController _wishlistController;
 
@@ -20,19 +21,27 @@ final ProductController productController = Get.find<ProductController>();
   void onCategoriesSeeAllTap() {
     Get.toNamed(AppRoute.categories);
   }
-void onTopSellingSeeAllTap() {
-  Get.toNamed(AppRoute.products, arguments: {
-    'title': 'Top Selling',
-    'listType': 'featured', // Matches the 'featured' case in ProductListController
-  });
-}
 
-void onNewInSeeAllTap() {
-  Get.toNamed(AppRoute.products, arguments: {
-    'title': 'New In',
-    'listType': 'new', // Matches the 'new' case in ProductListController
-  });
-}
+  void onTopSellingSeeAllTap() {
+    Get.toNamed(
+      AppRoute.products,
+      arguments: {
+        'title': 'home.top_selling'.translate(),
+        'listType':
+            'featured', // Matches the 'featured' case in ProductListController
+      },
+    );
+  }
+
+  void onNewInSeeAllTap() {
+    Get.toNamed(
+      AppRoute.products,
+      arguments: {
+        'title': 'home.new_in'.translate(),
+        'listType': 'new', // Matches the 'new' case in ProductListController
+      },
+    );
+  }
 
   void onProductTap(String productId) {
     Get.toNamed(AppRoute.productDetail.replaceAll(':id', productId));

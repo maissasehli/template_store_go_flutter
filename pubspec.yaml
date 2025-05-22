@@ -49,12 +49,12 @@ dependencies:
     git:
       url: https://github.com/AbdoPrDZ/pusher_client_fixed.git
   connectivity_plus: ^5.0.1
-  logger: ^1.1.0
   flutter_stripe: ^11.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  dart_dev: ^4.2.3
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.3
   uuid: ^4.5.1

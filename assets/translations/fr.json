@@ -104,5 +104,28 @@
         "empty": "Pas encore de liste d'envies",
         "explore_categories": "Explorer les catégories",
         "no_description": "Pas de description"
+    },
+    "filter": {
+        "title": "Filtrer par",
+        "clear": "Effacer",
+        "apply_now": "Appliquer",
+        "results_found": "{count} Résultats trouvés",
+        "category": "Catégorie",
+        "subcategory": "Sous-catégorie",
+        "price_range": "Fourchette de prix",
+        "sort_by": "Trier par",
+        "rating": "Évaluation",
+        "currency": "TND",
+        "all": "Tout",
+        "new_today": "Nouveau aujourd'hui",
+        "top_sellers": "Meilleures ventes",
+        "new_collection": "Nouvelle collection",
+        "latest": "Plus récent"
+    },
+    "product": {
+        "no_products_found": "Aucun produit trouvé",
+        "try_adjusting_filters": "Essayez d'ajuster vos filtres",
+        "clear_filters": "Effacer les filtres",
+        "try_again": "Réessayer"
     }
 }

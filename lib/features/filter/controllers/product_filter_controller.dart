@@ -2,16 +2,17 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/category/models/category.model.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
-import 'dart:developer' as developer;
+import 'dart:developer' as developer; // Corrected import
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class ProductFilterController extends GetxController {
   final ProductController productController;
   final Logger _logger = Logger();
 
   // Filter state
-  final RxString selectedCategory = 'All'.obs;
+  final RxString selectedCategory = 'filter.all'.translate().obs;
   final RxString selectedSubcategoryId = ''.obs;
-  final RxString selectedSortOption = 'Latest'.obs;
+  final RxString selectedSortOption = 'filter.latest'.translate().obs;
   final RxDouble minPrice = 0.0.obs;
   final RxDouble maxPrice = 1000.0.obs;
   final RxInt minRating = 0.obs;
@@ -42,14 +43,16 @@ class ProductFilterController extends GetxController {
 
       // Log current filter values before applying
       developer.log(
-        'About to apply filters - Raw price values: min=${finalMinPrice}, max=${finalMaxPrice}',
+        'About to apply filters - Raw price values: min=$finalMinPrice, max=$finalMaxPrice',
         name: 'ProductFilterController.applyFilters',
       );
 
       // Apply filters to the product controller
       await productController.filterProducts(
         category:
-            selectedCategory.value == 'All' ? null : selectedCategory.value,
+            selectedCategory.value == 'filter.all'.translate()
+                ? null
+                : selectedCategory.value,
         subcategory:
             selectedSubcategoryId.value.isEmpty
                 ? null
@@ -81,9 +84,9 @@ class ProductFilterController extends GetxController {
   }
 
   Future<void> clearFilters() async {
-    selectedCategory.value = 'All';
+    selectedCategory.value = 'filter.all'.translate();
     selectedSubcategoryId.value = '';
-    selectedSortOption.value = 'Latest';
+    selectedSortOption.value = 'filter.latest'.translate();
     minPrice.value = 0.0;
     maxPrice.value = 1000.0;
     minRating.value = 0;
@@ -95,9 +98,9 @@ class ProductFilterController extends GetxController {
   }
 
   List<String> get sortOptions => [
-    'Latest',
-    'New Today',
-    'Top Sellers',
-    'New collection',
+    'filter.latest'.translate(),
+    'filter.new_today'.translate(),
+    'filter.top_sellers'.translate(),
+    'filter.new_collection'.translate(),
   ];
 }

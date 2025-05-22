@@ -104,5 +104,28 @@
         "empty": "No wishlist yet",
         "explore_categories": "Explore Categories",
         "no_description": "No description"
+    },
+    "filter": {
+        "title": "Filter by",
+        "clear": "Clear",
+        "apply_now": "Apply Now",
+        "results_found": "{count} Results Found",
+        "category": "Category",
+        "subcategory": "Subcategory",
+        "price_range": "Price range",
+        "sort_by": "Sort by",
+        "rating": "Rating",
+        "currency": "TND",
+        "all": "All",
+        "new_today": "New Today",
+        "top_sellers": "Top Sellers",
+        "new_collection": "New collection",
+        "latest": "Latest"
+    },
+    "product": {
+        "no_products_found": "No products found",
+        "try_adjusting_filters": "Try adjusting your filters",
+        "clear_filters": "Clear Filters",
+        "try_again": "Try Again"
     }
 }

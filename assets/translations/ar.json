@@ -104,5 +104,28 @@
         "empty": "لا توجد قائمة رغبات بعد",
         "explore_categories": "استكشف الفئات",
         "no_description": "لا يوجد وصف"
+    },
+    "filter": {
+        "title": "تصفية حسب",
+        "clear": "مسح",
+        "apply_now": "تطبيق الآن",
+        "results_found": "{count} نتائج وجدت",
+        "category": "الفئة",
+        "subcategory": "الفئة الفرعية",
+        "price_range": "نطاق السعر",
+        "sort_by": "ترتيب حسب",
+        "rating": "التقييم",
+        "currency": "د.ت",
+        "all": "الكل",
+        "new_today": "جديد اليوم",
+        "top_sellers": "الأكثر مبيعًا",
+        "new_collection": "مجموعة جديدة",
+        "latest": "الأحدث"
+    },
+    "product": {
+        "no_products_found": "لم يتم العثور على منتجات",
+        "try_adjusting_filters": "حاول تعديل عوامل التصفية",
+        "clear_filters": "مسح عوامل التصفية",
+        "try_again": "حاول مرة أخرى"
     }
 }

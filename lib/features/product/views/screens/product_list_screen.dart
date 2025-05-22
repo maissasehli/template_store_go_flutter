@@ -14,6 +14,8 @@ import 'package:store_go/features/home/views/widgets/skeleton_loaders.dart';
 import 'package:store_go/features/home/views/widgets/search_bar.dart';
 import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ProductListScreen extends StatelessWidget {
   final ProductController productController = Get.find<ProductController>();
@@ -39,14 +41,16 @@ class ProductListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Scaffold(
       backgroundColor: AppColors.background(context),
-      appBar: _buildAppBar(context),
+      appBar: _buildAppBar(context, isRtl),
       body: _buildBody(context),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, bool isRtl) {
     return AppBar(
       backgroundColor: AppColors.background(context),
       elevation: 0,
@@ -54,16 +58,19 @@ class ProductListScreen extends StatelessWidget {
       title: Obx(
         () => Text(
           listController.title.value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: AppColors.foreground(context),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
       ),
       leading: IconButton(
         icon: ThemeAwareSvg(
-          assetPath: AssetConfig.backArrow,
+          assetPath: isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
           height: 24,
           width: 24,
         ),
@@ -150,6 +157,8 @@ class ProductListScreen extends StatelessWidget {
   }
 
   Widget _buildEmptyView(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -161,19 +170,25 @@ class ProductListScreen extends StatelessWidget {
           ),
           const SizedBox(height: UIConfig.paddingMedium),
           Text(
-            'No products found',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: AppColors.mutedForeground(context),
+            'product.no_products_found'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.mutedForeground(context),
+              ),
             ),
           ),
           const SizedBox(height: UIConfig.paddingSmall),
           Text(
-            'Try adjusting your filters',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.mutedForeground(context),
+            'product.try_adjusting_filters'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 14,
+                color: AppColors.mutedForeground(context),
+              ),
             ),
           ),
           const SizedBox(height: UIConfig.paddingLarge),
@@ -192,7 +207,13 @@ class ProductListScreen extends StatelessWidget {
                 ),
               ),
             ),
-            child: const Text('Clear Filters'),
+            child: Text(
+              'product.clear_filters'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                const TextStyle(),
+              ),
+            ),
           ),
         ],
       ),
@@ -200,6 +221,8 @@ class ProductListScreen extends StatelessWidget {
   }
 
   Widget _buildErrorView(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -213,10 +236,13 @@ class ProductListScreen extends StatelessWidget {
             child: Text(
               listController.errorMessage.value,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.mutedForeground(context),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.mutedForeground(context),
+                ),
               ),
             ),
           ),
@@ -236,7 +262,13 @@ class ProductListScreen extends StatelessWidget {
                 ),
               ),
             ),
-            child: const Text('Try Again'),
+            child: Text(
+              'product.try_again'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                const TextStyle(),
+              ),
+            ),
           ),
         ],
       ),

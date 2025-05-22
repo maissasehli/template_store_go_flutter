@@ -4,22 +4,25 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/filter/view/widgets/thumb_shape.dart';
-import 'dart:developer' as developer;
+import 'dart:developer' as developer; 
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class PriceRangeSlider extends StatelessWidget {
   final ProductFilterController filterController;
-  
-  const PriceRangeSlider({
-    super.key, 
-    required this.filterController
-  });
+
+  const PriceRangeSlider({super.key, required this.filterController});
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UIConfig.paddingMedium,
+          ),
           child: Obx(
             () => SliderTheme(
               data: SliderThemeData(
@@ -27,7 +30,7 @@ class PriceRangeSlider extends StatelessWidget {
                 activeTrackColor: AppColors.primary(context),
                 inactiveTrackColor: AppColors.border(context),
                 thumbColor: AppColors.background(context),
-                thumbShape:  CustomThumbShape(),
+                thumbShape: CustomThumbShape(),
                 overlayColor: AppColors.primary(context).withOpacity(0.1),
                 rangeThumbShape: const RoundRangeSliderThumbShape(
                   enabledThumbRadius: 12,
@@ -43,8 +46,8 @@ class PriceRangeSlider extends StatelessWidget {
                 max: 1000,
                 divisions: 20,
                 labels: RangeLabels(
-                  '${filterController.minPrice.value.toStringAsFixed(0)} TND',
-                  '${filterController.maxPrice.value.toStringAsFixed(0)} TND',
+                  '${filterController.minPrice.value.toStringAsFixed(0)} ${'filter.currency'.translate()}',
+                  '${filterController.maxPrice.value.toStringAsFixed(0)} ${'filter.currency'.translate()}',
                 ),
                 onChanged: (RangeValues values) {
                   // Update the filter controller values with the selected range
@@ -63,35 +66,47 @@ class PriceRangeSlider extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UIConfig.paddingMedium,
+          ),
           child: Row(
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Obx(
                 () => Text(
                   filterController.minPrice.value.toStringAsFixed(0),
-                  style: TextStyle(
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: UIConfig.fontSizeRegular,
+                      color: AppColors.foreground(context),
+                    ),
+                  ),
+                ),
+              ),
+              Text(
+                'filter.currency'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: UIConfig.fontSizeRegular,
                     color: AppColors.foreground(context),
                   ),
                 ),
               ),
-              Text(
-                'Tnd',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: UIConfig.fontSizeRegular,
-                  color: AppColors.foreground(context),
-                ),
-              ),
               Obx(
                 () => Text(
                   filterController.maxPrice.value.toStringAsFixed(0),
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: UIConfig.fontSizeRegular,
-                    color: AppColors.foreground(context),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: UIConfig.fontSizeRegular,
+                      color: AppColors.foreground(context),
+                    ),
                   ),
                 ),
               ),

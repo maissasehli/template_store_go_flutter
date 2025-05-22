@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/filter/view/widgets/filter_chip.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class SubcategoryFilter extends StatelessWidget {
   final ProductFilterController filterController;
@@ -17,18 +18,24 @@ class SubcategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Obx(
         () => Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           children:
               subcategoryController.subcategories.map((subcategory) {
                 final isSelected =
                     filterController.selectedSubcategoryId.value ==
                     subcategory.id;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: EdgeInsets.only(
+                    right: isRtl ? 0 : 8.0,
+                    left: isRtl ? 8.0 : 0,
+                  ),
                   child: CustomFilterChip(
                     label: subcategory.name,
                     isSelected: isSelected,
