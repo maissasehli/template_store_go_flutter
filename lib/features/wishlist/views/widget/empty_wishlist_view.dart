@@ -5,6 +5,8 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/controllers/navigation_controller.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class EmptyWishlistView extends StatelessWidget {
   const EmptyWishlistView({super.key});
@@ -46,11 +48,17 @@ class EmptyWishlistView extends StatelessWidget {
           const SizedBox(height: UIConfig.paddingMedium),
           // No wishlist yet text
           Text(
-            'No wishlist yet',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.foreground(context),
-                  fontWeight: FontWeight.w400,
-                ),
+            'wishlist.empty'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.foreground(context),
+                fontWeight: FontWeight.w400,
+              ) ?? TextStyle(
+                color: AppColors.foreground(context),
+                fontWeight: FontWeight.w400,
+              ),
+            ),
           ),
           const SizedBox(height: UIConfig.paddingLarge),
           // Explore Categories button
@@ -64,19 +72,27 @@ class EmptyWishlistView extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),
               padding: const EdgeInsets.symmetric(
-                horizontal: UIConfig.paddingLarge, 
-                vertical: UIConfig.paddingMedium
+                horizontal: UIConfig.paddingLarge,
+                vertical: UIConfig.paddingMedium,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                borderRadius: BorderRadius.circular(
+                  UIConfig.borderRadiusCircular,
+                ),
               ),
             ),
             child: Text(
-              'Explore Categories',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.primaryForeground(context),
-                    fontWeight: FontWeight.w400,
-                  ),
+              'wishlist.explore_categories'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.primaryForeground(context),
+                  fontWeight: FontWeight.w400,
+                ) ?? TextStyle(
+                  color: AppColors.primaryForeground(context),
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
             ),
           ),
         ],

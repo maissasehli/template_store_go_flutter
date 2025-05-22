@@ -96,5 +96,13 @@
         "clear": "Vider",
         "remove_item": "Supprimer l'article",
         "remove_item_confirmation": "Êtes-vous sûr de vouloir supprimer cet article de votre panier?"
+    },
+    "wishlist": {
+        "title": "Ma liste d'envies",
+        "error_loading": "Erreur: ",
+        "retry": "Réessayer",
+        "empty": "Pas encore de liste d'envies",
+        "explore_categories": "Explorer les catégories",
+        "no_description": "Pas de description"
     }
 }

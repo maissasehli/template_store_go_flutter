@@ -3,6 +3,8 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/universal_cached_image.dart';
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class WishlistItemTile extends StatefulWidget {
   final WishlistItemModel item;
@@ -27,6 +29,8 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -42,29 +46,28 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
           color: AppColors.background(context),
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
           // Shadow appears only when the item is selected
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.foreground(context).withOpacity(0.1),
-                    offset: const Offset(0, 11),
-                    blurRadius: 24,
-                    spreadRadius: 0,
-                  ),
-                ]
-              : [],
-          border: Border.all(
-            color: AppColors.border(context),
-            width: 1,
-          ),
+          boxShadow:
+              isSelected
+                  ? [
+                    BoxShadow(
+                      color: AppColors.foreground(context).withOpacity(0.1),
+                      offset: const Offset(0, 11),
+                      blurRadius: 24,
+                      spreadRadius: 0,
+                    ),
+                  ]
+                  : [],
+          border: Border.all(color: AppColors.border(context), width: 1),
         ),
         child: Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           children: [
             // Product image with UniversalCachedImage
             _buildProductImage(),
             // Product details
-            _buildProductDetails(),
+            _buildProductDetails(isRtl),
             // Right side: Close button and quantity controls
-            _buildActionsColumn(),
+            _buildActionsColumn(isRtl),
           ],
         ),
       ),
@@ -80,17 +83,18 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
       ),
-      child: widget.item.product.imageUrls.isNotEmpty
-          ? UniversalCachedImage(
-              imagePath: widget.item.product.imageUrls[0],
-              source: ImageSource.network,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-              borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
-              errorWidget: _buildFallbackImage(),
-            )
-          : _buildFallbackImage(),
+      child:
+          widget.item.product.imageUrls.isNotEmpty
+              ? UniversalCachedImage(
+                imagePath: widget.item.product.imageUrls[0],
+                source: ImageSource.network,
+                width: 70,
+                height: 70,
+                fit: BoxFit.cover,
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
+                errorWidget: _buildFallbackImage(),
+              )
+              : _buildFallbackImage(),
     );
   }
 
@@ -112,35 +116,46 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
     );
   }
 
-  Widget _buildProductDetails() {
+  Widget _buildProductDetails(bool isRtl) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 // Product name
                 Text(
                   widget.item.product.name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ) ?? const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
                 ),
 
                 // Product description
                 Text(
-                  widget.item.product.description ?? 'No description',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.mutedForeground(context),
-                      ),
+                  widget.item.product.description ??
+                      'wishlist.no_description'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.mutedForeground(context),
+                    ) ?? TextStyle(color: AppColors.mutedForeground(context)),
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
                 ),
               ],
             ),
@@ -148,9 +163,14 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
             // Price
             Text(
               '\$${widget.item.product.price.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600) ?? 
+                const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              textAlign: isRtl ? TextAlign.right : TextAlign.left,
             ),
           ],
         ),
@@ -158,12 +178,16 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
     );
   }
 
-  Widget _buildActionsColumn() {
+  Widget _buildActionsColumn(bool isRtl) {
     return Padding(
-      padding: const EdgeInsets.only(right: UIConfig.paddingMedium),
+      padding: EdgeInsets.only(
+        right: isRtl ? 0 : UIConfig.paddingMedium,
+        left: isRtl ? UIConfig.paddingMedium : 0,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment:
+            isRtl ? CrossAxisAlignment.start : CrossAxisAlignment.end,
         children: [
           // Close button
           Padding(
@@ -196,9 +220,12 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
               height: 30,
               decoration: BoxDecoration(
                 color: AppColors.input(context),
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+                borderRadius: BorderRadius.circular(
+                  UIConfig.borderRadiusCircular,
+                ),
               ),
               child: Row(
+                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   // Minus button
@@ -215,17 +242,19 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: quantity > 1
-                            ? AppColors.secondary(context)
-                            : AppColors.input(context),
+                        color:
+                            quantity > 1
+                                ? AppColors.secondary(context)
+                                : AppColors.input(context),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.remove,
                         size: 16,
-                        color: quantity > 1
-                            ? AppColors.foreground(context)
-                            : AppColors.mutedForeground(context),
+                        color:
+                            quantity > 1
+                                ? AppColors.foreground(context)
+                                : AppColors.mutedForeground(context),
                       ),
                     ),
                   ),
@@ -234,8 +263,8 @@ class _WishlistItemTileState extends State<WishlistItemTile> {
                   Text(
                     quantity.toString(),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
 
                   // Plus button

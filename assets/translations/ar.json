@@ -96,5 +96,13 @@
         "clear": "تفريغ",
         "remove_item": "إزالة العنصر",
         "remove_item_confirmation": "هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق الخاصة بك؟"
+    },
+    "wishlist": {
+        "title": "قائمة الرغبات",
+        "error_loading": "خطأ: ",
+        "retry": "إعادة المحاولة",
+        "empty": "لا توجد قائمة رغبات بعد",
+        "explore_categories": "استكشف الفئات",
+        "no_description": "لا يوجد وصف"
     }
 }

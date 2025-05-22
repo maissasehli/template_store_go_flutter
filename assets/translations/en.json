@@ -96,5 +96,13 @@
         "clear": "Clear",
         "remove_item": "Remove Item",
         "remove_item_confirmation": "Are you sure you want to remove this item from your cart?"
+    },
+    "wishlist": {
+        "title": "My Wishlist",
+        "error_loading": "Error: ",
+        "retry": "Retry",
+        "empty": "No wishlist yet",
+        "explore_categories": "Explore Categories",
+        "no_description": "No description"
     }
 }

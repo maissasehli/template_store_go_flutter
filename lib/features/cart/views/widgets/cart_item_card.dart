@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:get/get.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
-import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItem item;
@@ -45,8 +43,10 @@ class CartItemCard extends StatelessWidget {
                     UIConfig.borderRadiusLarge,
                   ),
                 ),
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: UIConfig.paddingMedium),
+                alignment: Alignment.centerRight, // Changed to right for RTL
+                padding: EdgeInsets.only(
+                  right: UIConfig.paddingMedium,
+                ), // Changed padding to right
                 child: SvgPicture.asset(
                   AssetConfig.delete,
                   width: 24,
