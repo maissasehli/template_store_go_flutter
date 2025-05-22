@@ -179,23 +179,17 @@ class ProductDetailController extends GetxController {
       }
 
       final cartController = Get.find<CartController>();
+
+      // Using optimistic update approach - no snackbars
       await cartController.addToCart(
         product: product,
         quantity: quantity,
-        variantId: '',
+        variantId: state.selectedSize.value,
       );
 
-      Get.snackbar(
-        'Success',
-        'Added to cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      // No snackbar here, the UI will update automatically via Obx
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to add item to cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      // Silent error handling, UI will remain consistent
       _logger.e('Error adding to cart: $e');
     }
   }

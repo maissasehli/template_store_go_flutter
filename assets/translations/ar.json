@@ -154,7 +154,9 @@
         "try_again": "حاول مرة أخرى",
         "back": "رجوع",
         "error_loading": "خطأ: ",
-        "error_service": "خطأ: خدمة التقييمات غير متوفرة"
+        "error_service": "خطأ: خدمة التقييمات غير متوفرة",
+        "remove_from_cart": "إزالة من السلة",
+        "item_removed": "لقد تمت إزالة العنصر من سلة التسوق الخاصة بك"
     },
     "reviews": {
         "customer_reviews": "تقييمات العملاء",

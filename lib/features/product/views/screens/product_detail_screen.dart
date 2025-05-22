@@ -629,8 +629,14 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                       const SizedBox(height: 16),
                       AddToCartButton(
                         price: product.price,
-                        onPressed: () {
+                        product: product,
+                        quantity: detailController.state.quantity.value,
+                        variantId: detailController.state.selectedSize.value,
+                        onAddPressed: () {
                           detailController.addToCart();
+                        },
+                        onRemovePressed: () {
+                          // Just handle the removal without showing a toast
                         },
                       ),
                       const SizedBox(height: 24),

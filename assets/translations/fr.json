@@ -154,7 +154,9 @@
         "try_again": "Réessayer",
         "back": "Retour",
         "error_loading": "Erreur: ",
-        "error_service": "Erreur: Service d'avis non disponible"
+        "error_service": "Erreur: Service d'avis non disponible",
+        "remove_from_cart": "Retirer du panier",
+        "item_removed": "L'article a été supprimé de votre panier"
     },
     "reviews": {
         "customer_reviews": "Avis Clients",

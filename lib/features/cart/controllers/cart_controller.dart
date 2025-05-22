@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
-import 'package:store_go/features/cart/repositories/cart_repository.dart'; 
+import 'package:store_go/features/cart/repositories/cart_repository.dart';
 import 'package:store_go/features/product/models/product_model.dart';
 
 class CartController extends GetxController {
@@ -20,7 +20,8 @@ class CartController extends GetxController {
   final RxDouble discount = 0.0.obs;
   final RxDouble total = 0.0.obs;
 
-  CartController({required CartRepository repository}) : _repository = repository;
+  CartController({required CartRepository repository})
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -41,7 +42,11 @@ class CartController extends GetxController {
       isError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error fetching cart items: $e');
-      Get.snackbar('Error', 'Failed to load cart', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Failed to load cart',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -67,19 +72,22 @@ class CartController extends GetxController {
         image: product.images.isNotEmpty ? product.images.first : '',
       );
 
+      // Optimistic update - add to UI first
       cartItems.add(tempItem);
       _calculateCartTotals();
 
+      // Then sync with backend
       await _repository.addToCart(tempItem);
-      await fetchCartItems();
+      await fetchCartItems(); // Refresh to get actual server state
     } catch (e) {
+      // Rollback the optimistic update on error
       cartItems.removeWhere((item) => item.productId == product.id);
       _calculateCartTotals();
 
       isError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error adding to cart: $e');
-      Get.snackbar('Error', 'Failed to add item to cart', snackPosition: SnackPosition.BOTTOM);
+      // No snackbar notification
     } finally {
       isLoading.value = false;
     }
@@ -114,29 +122,33 @@ class CartController extends GetxController {
       }
 
       _logger.e('Error updating cart item: $e');
-      Get.snackbar('Error', 'Failed to update quantity', snackPosition: SnackPosition.BOTTOM);
+      // No snackbar notification
     }
   }
 
   Future<void> removeFromCart(String productId) async {
-    final itemsToRemove = cartItems.where((item) => item.productId == productId).toList();
+    final itemsToRemove =
+        cartItems.where((item) => item.productId == productId).toList();
     try {
       isLoading.value = true;
       isError.value = false;
       errorMessage.value = '';
 
+      // Optimistic update - remove from UI first
       cartItems.removeWhere((item) => item.productId == productId);
       _calculateCartTotals();
 
+      // Then sync with backend
       await _repository.removeFromCart(productId);
     } catch (e) {
+      // Rollback the optimistic update on error
       cartItems.addAll(itemsToRemove);
       _calculateCartTotals();
 
       isError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error removing from cart: $e');
-      Get.snackbar('Error', 'Failed to remove item from cart', snackPosition: SnackPosition.BOTTOM);
+      // No snackbar notification
 
       await fetchCartItems();
     } finally {
@@ -151,18 +163,21 @@ class CartController extends GetxController {
       isError.value = false;
       errorMessage.value = '';
 
+      // Optimistic update - clear UI first
       cartItems.clear();
       _calculateCartTotals();
 
+      // Then sync with backend
       await _repository.clearCart();
     } catch (e) {
+      // Rollback the optimistic update on error
       cartItems.addAll(itemsToRestore);
       _calculateCartTotals();
 
       isError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error clearing cart: $e');
-      Get.snackbar('Error', 'Failed to clear cart', snackPosition: SnackPosition.BOTTOM);
+      // No snackbar notification
 
       await fetchCartItems();
     } finally {
@@ -183,11 +198,16 @@ class CartController extends GetxController {
       isError.value = false;
       errorMessage.value = '';
 
+      // Optimistic update - set code and calculate with zero discount
       couponCode.value = code;
+      _calculateCartTotals();
+
+      // Then get the actual discount from backend
       final discountAmount = await _repository.applyCoupon(code);
       discount.value = discountAmount;
       _calculateCartTotals();
     } catch (e) {
+      // Rollback the optimistic update on error
       couponCode.value = '';
       discount.value = 0.0;
       _calculateCartTotals();
@@ -195,7 +215,7 @@ class CartController extends GetxController {
       isError.value = true;
       errorMessage.value = e.toString();
       _logger.e('Error applying coupon: $e');
-      Get.snackbar('Error', 'Failed to apply coupon', snackPosition: SnackPosition.BOTTOM);
+      // No snackbar notification
     } finally {
       isLoading.value = false;
     }
@@ -213,5 +233,6 @@ class CartController extends GetxController {
 
   bool isCartEmpty() => cartItems.isEmpty;
 
-  bool isProductInCart(String productId) => cartItems.any((item) => item.productId == productId);
+  bool isProductInCart(String productId) =>
+      cartItems.any((item) => item.productId == productId);
 }
