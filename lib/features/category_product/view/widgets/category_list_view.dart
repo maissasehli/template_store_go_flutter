@@ -12,12 +12,17 @@ import 'package:store_go/features/category_product/view/screen/category_products
 import 'package:store_go/features/filter/controllers/product_filter_controller.dart';
 import 'package:store_go/features/product/controllers/product_list_controller.dart';
 import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CategoryListView extends GetView<CategoryController> {
   final CategoryProductController categoryProductController;
-  final ProductFilterController filterController = Get.find<ProductFilterController>();
-  final ProductListController listController = Get.find<ProductListController>();
-  final SubcategoryController subcategoryController = Get.find<SubcategoryController>();
+  final ProductFilterController filterController =
+      Get.find<ProductFilterController>();
+  final ProductListController listController =
+      Get.find<ProductListController>();
+  final SubcategoryController subcategoryController =
+      Get.find<SubcategoryController>();
   final VoidCallback onApplyFilters;
 
   CategoryListView({
@@ -31,31 +36,39 @@ class CategoryListView extends GetView<CategoryController> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => FilterBottomSheet(
-        listController: listController,
-        filterController: filterController,
-        categoryController: controller,
-        subcategoryController: subcategoryController,
-      ),
+      builder:
+          (context) => FilterBottomSheet(
+            listController: listController,
+            filterController: filterController,
+            categoryController: controller,
+            subcategoryController: subcategoryController,
+          ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       children: [
         GestureDetector(
           onTap: () => _showFilterBottomSheet(context),
           child: Container(
-            margin: EdgeInsets.only(
-              left: UIConfig.paddingMedium, 
-              top: UIConfig.paddingSmall
+            margin: EdgeInsetsDirectional.only(
+              start: UIConfig.paddingMedium,
+              top: UIConfig.paddingSmall,
             ),
             height: 36,
-            padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall + 4),
+            padding: EdgeInsets.symmetric(
+              horizontal: UIConfig.paddingSmall + 4,
+            ),
             decoration: BoxDecoration(
               color: AppColors.primary(context),
-              borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+              borderRadius: BorderRadius.circular(
+                UIConfig.borderRadiusCircular,
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -64,17 +77,25 @@ class CategoryListView extends GetView<CategoryController> {
                   AssetConfig.filter,
                   width: 20,
                   height: 20,
-                  color: AppColors.primaryForeground(context),
+                  colorFilter: ColorFilter.mode(
+                    AppColors.primaryForeground(context),
+                    BlendMode.srcIn,
+                  ),
                 ),
                 SizedBox(width: UIConfig.paddingSmall),
-                Obx(() => Text(
-                      '${categoryProductController.categoryProducts.length}',
-                      style: TextStyle(
+                Obx(
+                  () => Text(
+                    '${categoryProductController.categoryProducts.length}',
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
                         color: AppColors.primaryForeground(context),
                         fontSize: UIConfig.fontSizeRegular,
                         fontWeight: FontWeight.bold,
                       ),
-                    )),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -100,9 +121,10 @@ class CategoryListView extends GetView<CategoryController> {
                 controller.fetchCategories();
                 return Center(
                   child: Text(
-                    'No categories available',
-                    style: TextStyle(
-                      color: AppColors.mutedForeground(context),
+                    'category.no_categories'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(color: AppColors.mutedForeground(context)),
                     ),
                   ),
                 );
@@ -110,32 +132,40 @@ class CategoryListView extends GetView<CategoryController> {
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.categories.length,
-                padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+                padding: EdgeInsetsDirectional.symmetric(
+                  horizontal: UIConfig.paddingMedium,
+                ),
                 itemBuilder: (context, index) {
                   final category = controller.categories[index];
                   return Obx(() {
-                    final isSelected = category.id == controller.selectedCategoryId.value;
+                    final isSelected =
+                        category.id == controller.selectedCategoryId.value;
                     return CategoryPill(
                       category: category,
                       isSelected: isSelected,
                       onTap: () {
                         // First select the category in the controller
                         controller.selectCategory(category);
-                        
+
                         // Reset any active subcategory
                         subcategoryController.currentSubcategoryId.value = '';
                         subcategoryController.setCategory(category.id);
-                        
+
                         // Set the category in product controller and fetch products
                         categoryProductController.setCategory(category);
-                        categoryProductController.fetchCategoryProducts(category.id);
-                        
+                        categoryProductController.fetchCategoryProducts(
+                          category.id,
+                        );
+
                         // Apply filters after changing category
                         onApplyFilters();
-                        
+
                         // If we're on a different screen, navigate to CategoryProductsScreen with the new category
                         if (Get.currentRoute != '/category_products') {
-                          Get.to(() => CategoryProductsScreen(), arguments: category);
+                          Get.to(
+                            () => CategoryProductsScreen(),
+                            arguments: category,
+                          );
                         }
                       },
                     );
@@ -164,28 +194,34 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(right: UIConfig.paddingSmall),
+        margin: EdgeInsetsDirectional.only(end: UIConfig.paddingSmall),
         padding: EdgeInsets.symmetric(
-          horizontal: UIConfig.paddingMedium, 
-          vertical: UIConfig.paddingSmall
+          horizontal: UIConfig.paddingMedium,
+          vertical: UIConfig.paddingSmall,
         ),
         decoration: BoxDecoration(
-          color: isSelected 
-            ? AppColors.primary(context) 
-            : AppColors.input(context),
+          color:
+              isSelected
+                  ? AppColors.primary(context)
+                  : AppColors.input(context),
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
         ),
         child: Text(
           category.name,
-          style: TextStyle(
-            color: isSelected 
-              ? AppColors.primaryForeground(context) 
-              : AppColors.foreground(context),
-            fontWeight: FontWeight.w500,
-            fontSize: UIConfig.fontSizeRegular,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color:
+                  isSelected
+                      ? AppColors.primaryForeground(context)
+                      : AppColors.foreground(context),
+              fontWeight: FontWeight.w500,
+              fontSize: UIConfig.fontSizeRegular,
+            ),
           ),
         ),
       ),

@@ -15,6 +15,8 @@ import 'package:store_go/features/product/models/product_model.dart';
 import 'package:store_go/features/search/no_search_result.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
 import 'package:store_go/features/subcategory/repositories/subcategory_repository.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class CategoryProductsScreen extends StatefulWidget {
   final Category category;
@@ -87,7 +89,6 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   }
 
   Future<void> applyFilters() async {
-
     final filterController = Get.find<ProductFilterController>();
     print(
       '[CategoryProductsScreen] Before filtering: ${categoryProductController.filteredProducts.length} products',
@@ -138,6 +139,8 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColorExtension>()!;
     final textTheme = Theme.of(context).textTheme;
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Scaffold(
       backgroundColor: colors.background,
       body: GestureDetector(
@@ -145,11 +148,13 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.all(UIConfig.paddingMedium),
                 child: Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
                   children: [
                     Container(
                       width: 40,
@@ -160,7 +165,10 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                       ),
                       child: IconButton(
                         icon: ThemeAwareSvg(
-                          assetPath: AssetConfig.backArrow,
+                          assetPath:
+                              isRtl
+                                  ? AssetConfig.arrowRight
+                                  : AssetConfig.arrowLeft,
                           height: 24,
                           width: 24,
                         ),
@@ -207,9 +215,11 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
               ),
               // Always render the SubcategoryListView
               SubcategoryListView(onApplyFilters: applyFilters),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: UIConfig.paddingMedium,
+              Container(
+                width: double.infinity,
+                alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+                padding: EdgeInsetsDirectional.only(
+                  start: UIConfig.paddingMedium,
                   top: UIConfig.paddingMedium,
                   bottom: UIConfig.paddingMedium,
                 ),
@@ -239,11 +249,21 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                               widget.category.name
                           : widget.category.name;
                   return Text(
-                    '$productCount Results Found in $displayName',
-                    style: textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: colors.foreground.withOpacity(0.87),
+                    'category.results_found_in'
+                        .translate()
+                        .replaceAll('{count}', '$productCount')
+                        .replaceAll('{category}', displayName),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: colors.foreground.withOpacity(0.87),
+                          ) ??
+                          TextStyle(),
                     ),
+                    textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                    textDirection:
+                        isRtl ? TextDirection.rtl : TextDirection.ltr,
                   );
                 }),
               ),
@@ -297,16 +317,24 @@ class _CategoryProductsScreenState extends State<CategoryProductsScreen> {
                               ? subcategoryController.isSearchActive.value
                               : categoryProductController.isSearchActive.value;
 
-                      print(
-                        '[CategoryProductsScreen] Rendering ${products.length} products',
-                      );
-
                       if (isLoading) {
-                        return Center(child: CircularProgressIndicator());
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: colors.primary,
+                          ),
+                        );
                       }
 
                       if (hasError) {
-                        return Center(child: Text('Error: $errorMessage'));
+                        return Center(
+                          child: Text(
+                            'error: $errorMessage',
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              TextStyle(color: colors.foreground),
+                            ),
+                          ),
+                        );
                       }
 
                       if (products.isEmpty) {

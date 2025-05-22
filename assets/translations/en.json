@@ -67,7 +67,10 @@
         "phone_length": "Phone number must be 8 digits"
     },
     "category": {
-        "shop_by_categories": "Shop by Categories"
+        "all": "All",
+        "shop_by_categories": "Shop by categories",
+        "no_categories": "No categories available",
+        "results_found_in": "{count} Results Found in {category}"
     },
     "profile": {
         "address": "Address",

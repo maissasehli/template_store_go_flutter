@@ -67,7 +67,10 @@
         "phone_length": "Le numéro de téléphone doit contenir 8 chiffres"
     },
     "category": {
-        "shop_by_categories": "Acheter par catégories"
+        "all": "Tout",
+        "shop_by_categories": "Acheter par catégories",
+        "no_categories": "Aucune catégorie disponible",
+        "results_found_in": "{count} Résultats trouvés dans {category}"
     },
     "profile": {
         "address": "Adresse",

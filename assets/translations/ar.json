@@ -67,7 +67,10 @@
         "phone_length": "يجب أن يتكون رقم الهاتف من 8 أرقام"
     },
     "category": {
-        "shop_by_categories": "تسوق حسب الفئات"
+        "all": "الكل",
+        "shop_by_categories": "تسوق حسب الفئات",
+        "no_categories": "لا توجد فئات متاحة",
+        "results_found_in": "{count} نتائج في {category}"
     },
     "profile": {
         "address": "العنوان",

@@ -10,6 +10,8 @@ import 'package:store_go/features/filter/controllers/product_filter_controller.d
 import 'package:store_go/features/product/controllers/product_list_controller.dart';
 import 'package:store_go/features/filter/view/screen/filter_product_sheet.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class SubcategoryListView extends GetView<SubcategoryController> {
   final VoidCallback onApplyFilters;
@@ -45,14 +47,17 @@ class SubcategoryListView extends GetView<SubcategoryController> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       children: [
         // Filter button - always shown immediately
         GestureDetector(
           onTap: () => _showFilterBottomSheet(context),
           child: Container(
-            margin: const EdgeInsets.only(
-              left: UIConfig.paddingMedium,
+            margin: EdgeInsetsDirectional.only(
+              start: UIConfig.paddingMedium,
               top: UIConfig.paddingSmall,
             ),
             height: 36,
@@ -72,7 +77,10 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                   AssetConfig.filter,
                   width: 20,
                   height: 20,
-                  color: AppColors.primaryForeground(context),
+                  colorFilter: ColorFilter.mode(
+                    AppColors.primaryForeground(context),
+                    BlendMode.srcIn,
+                  ),
                 ),
                 const SizedBox(width: UIConfig.paddingSmall),
                 GetBuilder<CategoryProductController>(
@@ -97,9 +105,13 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                         key: ValueKey(
                           'filter_count_$count',
                         ), // Key helps force rebuild
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.primaryForeground(context),
-                          fontWeight: FontWeight.bold,
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.primaryForeground(context),
+                                fontWeight: FontWeight.bold,
+                              ) ??
+                              TextStyle(),
                         ),
                       );
                     });
@@ -125,8 +137,9 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                 scrollDirection: Axis.horizontal,
                 // Always show "All" plus however many subcategories we have
                 itemCount: displayedSubcategories.length + 1,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: UIConfig.paddingMedium,
+                padding: EdgeInsetsDirectional.only(
+                  start: UIConfig.paddingMedium,
+                  end: UIConfig.paddingMedium,
                 ),
                 itemBuilder: (context, index) {
                   if (index == 0) {
@@ -134,7 +147,7 @@ class SubcategoryListView extends GetView<SubcategoryController> {
                     // Use the reactive selectedSubcategoryId to determine if "All" is selected
                     return _buildSubcategoryPill(
                       context: context,
-                      name: "All",
+                      name: 'category.all'.translate(),
                       isSelected: selectedSubcategoryId.isEmpty,
                       onTap: () {
                         // Reset subcategory selection without clearing subcategories list
@@ -178,10 +191,12 @@ class SubcategoryListView extends GetView<SubcategoryController> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(right: UIConfig.paddingSmall),
+        margin: EdgeInsetsDirectional.only(end: UIConfig.paddingSmall),
         padding: const EdgeInsets.symmetric(
           horizontal: UIConfig.paddingMedium,
           vertical: UIConfig.paddingSmall,
@@ -195,12 +210,16 @@ class SubcategoryListView extends GetView<SubcategoryController> {
         ),
         child: Text(
           name,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color:
-                isSelected
-                    ? AppColors.primaryForeground(context)
-                    : AppColors.foreground(context),
-            fontWeight: FontWeight.w500,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color:
+                      isSelected
+                          ? AppColors.primaryForeground(context)
+                          : AppColors.foreground(context),
+                  fontWeight: FontWeight.w500,
+                ) ??
+                TextStyle(),
           ),
         ),
       ),
