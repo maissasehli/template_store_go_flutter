@@ -66,9 +66,9 @@ class _NotificationItemState extends State<NotificationItem>
     final notificationType = widget.notification.type.toLowerCase();
 
     switch (notificationType) {
-      case 'product':
+      case 'new_product':
         return 'notifications.product_notification_title'.translate();
-      case 'promo':
+      case 'new_promotion':
         return 'notifications.promo_notification_title'.translate();
       case 'order':
         return 'notifications.order_notification_title'.translate();
@@ -89,7 +89,7 @@ class _NotificationItemState extends State<NotificationItem>
     }
 
     switch (notificationType) {
-      case 'product':
+      case 'new_product':
         final productName = data['productName'] ?? '';
         final price = data['price'] ?? '';
         return 'notifications.product_notification_content'
@@ -97,7 +97,7 @@ class _NotificationItemState extends State<NotificationItem>
             .replaceAll('{productName}', productName)
             .replaceAll('{price}', price);
 
-      case 'promo':
+      case 'new_promotion':
         final promotionName = data['promotionName'] ?? '';
         final discountValue = data['discountValue'] ?? '';
         final discountType = data['discountType'] ?? 'percentage';
@@ -157,15 +157,19 @@ class _NotificationItemState extends State<NotificationItem>
       child: Dismissible(
         key: Key(widget.notification.id),
         background: Container(
-          alignment: isRtl ? Alignment.centerLeft : Alignment.centerRight,
-          padding: EdgeInsets.only(right: isRtl ? 0 : 20, left: isRtl ? 20 : 0),
-          decoration: BoxDecoration(
-            color: AppColors.destructive(context).withOpacity(0.5),
+          alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+          padding: EdgeInsets.only(left: isRtl ? 0 : 20, right: isRtl ? 20 : 0),
+            decoration: BoxDecoration(
+            color: AppColors.destructive(context).withOpacity(0.05),
             borderRadius: BorderRadius.circular(8),
-          ),
+            border: Border.all(
+              color: AppColors.destructive(context),
+              width: 1,
+            ),
+            ),
           child: Icon(
             Icons.delete,
-            color: AppColors.destructiveForeground(context),
+            color: AppColors.destructive(context),
           ),
         ),
         direction:
@@ -208,23 +212,24 @@ class _NotificationItemState extends State<NotificationItem>
                   width: 1,
                 ),
               ),
-              child: Row(
-                crossAxisAlignment: isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              child: Column(
+                crossAxisAlignment:
+                    isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  _getNotificationIcon(widget.notification.type, context),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment:
-                          isRtl
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                      children: [
-                        // Title row with unread indicator
-                        Row(
-                
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Title row with icon and unread indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            _getNotificationIcon(
+                              widget.notification.type,
+                              context,
+                            ),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 notificationTitle,
@@ -232,7 +237,9 @@ class _NotificationItemState extends State<NotificationItem>
                                     LocalizationService.getLocalizedTextStyle(
                                       context,
                                       TextStyle(
-                                        fontSize: 15,
+                                        fontSize: 16,
+                                        height: 1.3,
+                                        letterSpacing: -0.2,
                                         fontWeight:
                                             _isRead
                                                 ? FontWeight.w500
@@ -240,82 +247,140 @@ class _NotificationItemState extends State<NotificationItem>
                                         color: AppColors.foreground(context),
                                       ),
                                     ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             ),
-                            if (!_isRead)
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary(context),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
                           ],
                         ),
-                        const SizedBox(height: 4),
-
-                        // Notification content
-                        Text(
-                          notificationContent,
-                          style: LocalizationService.getLocalizedTextStyle(
-                            context,
-                            TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.mutedForeground(context),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        // Optional image
-                        if (imageUrl != null)
-                          Container(
-                            alignment:
-                                isRtl
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                            padding: const EdgeInsets.only(
-                              top: 4.0,
-                              bottom: 8.0,
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                imageUrl,
-                                height: 80,
-                                width: 80,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 80,
-                                    width: 80,
-                                    color: AppColors.muted(context),
-                                    child: Icon(
-                                      Icons.image_not_supported,
-                                      color: AppColors.mutedForeground(context),
-                                    ),
-                                  );
-                                },
+                      ),
+                      if (!_isRead)
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: 10,
+                          height: 10,
+                          margin: const EdgeInsets.only(left: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary(context),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary(
+                                  context,
+                                ).withOpacity(0.3),
+                                blurRadius: 4,
+                                spreadRadius: 1,
                               ),
-                            ),
+                            ],
                           ),
+                        ),
+                    ],
+                  ),
 
-                        // Date
-                        Text(
-                          formattedDate,
-                          style: LocalizationService.getLocalizedTextStyle(
-                            context,
-                            TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.mutedForeground(context),
+                  const SizedBox(height: 10),
+
+                  // Content row with image and text
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Add padding on left to align with title (after icon)
+                      SizedBox(width: imageUrl != null ? 32 : 0),
+
+                      // Optional image aligned with content
+                      if (imageUrl != null)
+                        Container(
+                          margin: EdgeInsetsDirectional.only(
+                            end: 16, // This respects RTL automatically
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              imageUrl,
+                              height: 60,
+                              width: 60,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 60,
+                                  width: 60,
+                                  color: AppColors.muted(context),
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    color: AppColors.mutedForeground(context),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ),
-                      ],
+
+                      // Add spacing between image and content for better readability - using directional spacing
+                      SizedBox(width: imageUrl != null ? (isRtl ? 0 : 4) : 0),
+
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(start: 4, end: 4),
+                          child: Column(
+                            crossAxisAlignment:
+                                isRtl
+                                    ? CrossAxisAlignment.start
+                                    : CrossAxisAlignment.end,
+                            children: [
+                              // Notification content
+                              Text(
+                                notificationContent,
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color: AppColors.mutedForeground(
+                                          context,
+                                        ),
+                                      ),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Add space before date
+                  const SizedBox(height: 10),
+
+                  // Date at the bottom corner
+                  Align(
+                    alignment:
+                        isRtl ? Alignment.bottomLeft : Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        formattedDate,
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                            fontStyle: FontStyle.italic,
+                            color: AppColors.mutedForeground(
+                              context,
+                            ).withOpacity(0.8),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -336,7 +401,7 @@ class _NotificationItemState extends State<NotificationItem>
         iconData = Icons.shopping_bag_outlined;
         iconColor = Colors.green; // Keep color for visual distinction
         break;
-      case 'promo':
+      case 'new_promotion':
         iconData = Icons.local_offer_outlined;
         iconColor = Colors.orange; // Keep color for visual distinction
         break;
@@ -344,7 +409,7 @@ class _NotificationItemState extends State<NotificationItem>
         iconData = Icons.info_outline;
         iconColor = AppColors.primary(context);
         break;
-      case 'product':
+      case 'new_product':
         iconData = Icons.shopping_cart_outlined;
         iconColor = AppColors.accent(context);
         break;
