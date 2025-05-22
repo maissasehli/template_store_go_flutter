@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class TopNavigationBar extends StatelessWidget {
   final VoidCallback onBackPressed;
@@ -16,9 +17,12 @@ class TopNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Back button
@@ -31,7 +35,8 @@ class TopNavigationBar extends StatelessWidget {
             ),
             child: IconButton(
               icon: ThemeAwareSvg(
-                assetPath: AssetConfig.backArrow,
+                assetPath:
+                    isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
                 height: 24,
                 width: 24,
               ),

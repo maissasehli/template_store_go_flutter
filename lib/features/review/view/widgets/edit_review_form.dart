@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/review/model/review_model.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class EditReviewForm extends StatelessWidget {
   final Review review;
@@ -45,6 +47,7 @@ class EditReviewForm extends StatelessWidget {
       });
     });
 
+    final bool isRtl = LocalizationService.isRtl(context);
 
     return Container(
       padding: EdgeInsets.all(UIConfig.paddingMedium),
@@ -61,7 +64,8 @@ class EditReviewForm extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           _buildHeader(context),
           SizedBox(height: UIConfig.paddingSmall),
@@ -78,16 +82,22 @@ class EditReviewForm extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Edit Your Review',
-          style: TextStyle(
-            fontSize: UIConfig.fontSizeMedium,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
-            color: AppColors.foreground(context),
+          'reviews.edit_review'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeMedium,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
         GestureDetector(
@@ -103,29 +113,36 @@ class EditReviewForm extends StatelessWidget {
   }
 
   Widget _buildRatingSelector(BuildContext context) {
-    return Obx(() => Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
-        return GestureDetector(
-          onTap: () => editRating.value = index + 1,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall/2),
-            child: Icon(
-              index < editRating.value
-                  ? Icons.star_rounded
-                  : Icons.star_outline_rounded,
-              size: UIConfig.fontSize2XLarge,
-              color: index < editRating.value
-                  ? AppColors.accent(context)
-                  : AppColors.muted(context),
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(5, (index) {
+          return GestureDetector(
+            onTap: () => editRating.value = index + 1,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingSmall / 2,
+              ),
+              child: Icon(
+                index < editRating.value
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                size: UIConfig.fontSize2XLarge,
+                color:
+                    index < editRating.value
+                        ? AppColors.accent(context)
+                        : AppColors.muted(context),
+              ),
             ),
-          ),
-        );
-      }),
-    ));
+          );
+        }),
+      ),
+    );
   }
 
   Widget _buildReviewInput(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return GestureDetector(
       onTap: () {
         if (editCommentFocusNode.canRequestFocus) {
@@ -142,18 +159,26 @@ class EditReviewForm extends StatelessWidget {
           controller: editCommentController,
           focusNode: editCommentFocusNode,
           maxLines: 1,
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+          textAlign: isRtl ? TextAlign.right : TextAlign.left,
           textInputAction: TextInputAction.newline,
-          style: TextStyle(
-            color: AppColors.inputForeground(context),
-            fontSize: UIConfig.fontSizeRegular,
-            fontFamily: 'Poppins',
-          ),
-          decoration: InputDecoration(
-            hintText: 'Share your experience with this product...',
-            hintStyle: TextStyle(
-              color: AppColors.mutedForeground(context),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.inputForeground(context),
               fontSize: UIConfig.fontSizeRegular,
               fontFamily: 'Poppins',
+            ),
+          ),
+          decoration: InputDecoration(
+            hintText: 'reviews.share_experience'.translate(),
+            hintStyle: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                color: AppColors.mutedForeground(context),
+                fontSize: UIConfig.fontSizeRegular,
+                fontFamily: 'Poppins',
+              ),
             ),
             border: InputBorder.none,
             contentPadding: EdgeInsets.all(UIConfig.paddingSmall),
@@ -166,23 +191,33 @@ class EditReviewForm extends StatelessWidget {
   }
 
   Widget _buildQuickTagsSection(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment:
+          isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Tags',
-          style: TextStyle(
-            fontSize: UIConfig.fontSizeRegular,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
-            color: AppColors.foreground(context),
+          'reviews.quick_tags'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeRegular,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
         SizedBox(height: UIConfig.paddingSmall),
-        Wrap(
-          spacing: UIConfig.paddingSmall,
-          runSpacing: UIConfig.paddingSmall,
-          children: _quickTags.map((tag) => _buildQuickTag(tag, context)).toList(),
+        Directionality(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+          child: Wrap(
+            spacing: UIConfig.paddingSmall,
+            runSpacing: UIConfig.paddingSmall,
+            children:
+                _quickTags.map((tag) => _buildQuickTag(tag, context)).toList(),
+          ),
         ),
       ],
     );
@@ -203,10 +238,13 @@ class EditReviewForm extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: TextStyle(
-            fontSize: UIConfig.fontSizeSmall,
-            fontFamily: 'Poppins',
-            color: AppColors.foreground(context),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeSmall,
+              fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
       ),
@@ -216,38 +254,43 @@ class EditReviewForm extends StatelessWidget {
   Widget _buildSubmitButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: Obx(() => ElevatedButton(
-        onPressed: isSubmitting.value ? null : () => _handleSubmit(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary(context),
-          foregroundColor: AppColors.primaryForeground(context),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+      child: Obx(
+        () => ElevatedButton(
+          onPressed: isSubmitting.value ? null : () => _handleSubmit(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary(context),
+            foregroundColor: AppColors.primaryForeground(context),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+            ),
+            padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
           ),
-          padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
+          child: _buildButtonContent(context),
         ),
-        child: _buildButtonContent(context),
-      )),
+      ),
     );
   }
 
   Widget _buildButtonContent(BuildContext context) {
     return isSubmitting.value
         ? SizedBox(
-            width: UIConfig.fontSizeLarge,
-            height: UIConfig.fontSizeLarge,
-            child: CircularProgressIndicator(
-              color: AppColors.primaryForeground(context),
-            ),
-          )
+          width: UIConfig.fontSizeLarge,
+          height: UIConfig.fontSizeLarge,
+          child: CircularProgressIndicator(
+            color: AppColors.primaryForeground(context),
+          ),
+        )
         : Text(
-            'Update Review',
-            style: TextStyle(
+          'reviews.update_review'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
               fontSize: UIConfig.fontSizeMedium,
               fontWeight: FontWeight.w600,
               fontFamily: 'Poppins',
             ),
-          );
+          ),
+        );
   }
 
   void _handleQuickTagTap(String text) {
@@ -270,12 +313,12 @@ class EditReviewForm extends StatelessWidget {
 
   void _handleSubmit(BuildContext context) {
     if (editRating.value == 0) {
-      _showError(context, 'Please select a rating');
+      _showError(context, 'reviews.error_rating'.translate());
       return;
     }
 
     if (editCommentController.text.trim().isEmpty) {
-      _showError(context, 'Please write a review comment');
+      _showError(context, 'reviews.error_comment'.translate());
       return;
     }
 

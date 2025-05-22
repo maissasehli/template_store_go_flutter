@@ -10,6 +10,8 @@ import 'package:store_go/features/review/repositories/review_repository.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/review/view/screen/review_screen.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ReviewSection extends StatefulWidget {
   final Product product;
@@ -146,6 +148,8 @@ class ReviewSectionState extends State<ReviewSection> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Container(
       margin: const EdgeInsets.only(top: 8),
       child: Obx(() {
@@ -153,7 +157,8 @@ class ReviewSectionState extends State<ReviewSection> {
           return _buildSkeletonLoading();
         }
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             _buildReviewHeader(),
             const SizedBox(height: 16),
@@ -170,13 +175,17 @@ class ReviewSectionState extends State<ReviewSection> {
   }
 
   Widget _buildSkeletonLoading() {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Shimmer.fromColors(
       baseColor: AppColors.muted(context).withOpacity(0.3),
       highlightColor: AppColors.muted(context).withOpacity(0.1),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Row(
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
@@ -200,8 +209,11 @@ class ReviewSectionState extends State<ReviewSection> {
               border: Border.all(color: AppColors.border(context)),
             ),
             child: Row(
+              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
               children: [
                 Column(
+                  crossAxisAlignment:
+                      isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     Container(
                       width: 40,
@@ -210,6 +222,8 @@ class ReviewSectionState extends State<ReviewSection> {
                     ),
                     const SizedBox(height: 4),
                     Row(
+                      textDirection:
+                          isRtl ? TextDirection.rtl : TextDirection.ltr,
                       children: List.generate(5, (index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -232,10 +246,16 @@ class ReviewSectionState extends State<ReviewSection> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
+                    crossAxisAlignment:
+                        isRtl
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
                     children: List.generate(5, (index) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 2.0),
                         child: Row(
+                          textDirection:
+                              isRtl ? TextDirection.rtl : TextDirection.ltr,
                           children: [
                             Container(
                               width: 12,
@@ -273,6 +293,7 @@ class ReviewSectionState extends State<ReviewSection> {
               border: Border.all(color: AppColors.border(context)),
             ),
             child: Row(
+              textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
@@ -295,16 +316,22 @@ class ReviewSectionState extends State<ReviewSection> {
   }
 
   Widget _buildReviewHeader() {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Customer Reviews',
-          style: TextStyle(
-            fontSize: 18,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w600,
-            color: AppColors.foreground(context),
+          'reviews.customer_reviews'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: 18,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w600,
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
         if (controller.reviews.isNotEmpty)
@@ -317,12 +344,15 @@ class ReviewSectionState extends State<ReviewSection> {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             child: Text(
-              'See All (${controller.reviews.length})',
-              style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w500,
-                color: AppColors.primary(context),
+              '${'reviews.see_all'.translate()} (${controller.reviews.length})',
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.primary(context),
+                ),
               ),
             ),
           ),
@@ -334,6 +364,9 @@ class ReviewSectionState extends State<ReviewSection> {
     if (controller.reviews.isEmpty) {
       return const SizedBox.shrink();
     }
+
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return InkWell(
       onTap: _showAllReviewsPage,
       borderRadius: BorderRadius.circular(8),
@@ -345,20 +378,27 @@ class ReviewSectionState extends State<ReviewSection> {
           border: Border.all(color: AppColors.border(context)),
         ),
         child: Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           children: [
             Column(
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Text(
                   averageRating.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
-                    color: AppColors.foreground(context),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      color: AppColors.foreground(context),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
                   children: List.generate(5, (index) {
                     return Icon(
                       index < averageRating.round()
@@ -371,11 +411,14 @@ class ReviewSectionState extends State<ReviewSection> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${controller.reviews.length} ${controller.reviews.length == 1 ? 'review' : 'reviews'}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.mutedForeground(context),
-                    fontFamily: 'Poppins',
+                  '${controller.reviews.length} ${controller.reviews.length == 1 ? 'reviews.review_singular'.translate() : 'reviews.review_plural'.translate()}',
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 12,
+                      color: AppColors.mutedForeground(context),
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
               ],
@@ -383,6 +426,8 @@ class ReviewSectionState extends State<ReviewSection> {
             const SizedBox(width: 16),
             Expanded(
               child: Column(
+                crossAxisAlignment:
+                    isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: List.generate(5, (index) {
                   final ratingCount = 5 - index;
                   final reviewsWithThisRating =
@@ -397,16 +442,22 @@ class ReviewSectionState extends State<ReviewSection> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2.0),
                     child: Row(
+                      textDirection:
+                          isRtl ? TextDirection.rtl : TextDirection.ltr,
                       children: [
                         SizedBox(
                           width: 12,
                           child: Text(
                             '$ratingCount',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.mutedForeground(context),
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.mutedForeground(context),
+                              ),
                             ),
+                            textAlign: isRtl ? TextAlign.left : TextAlign.right,
                           ),
                         ),
                         const SizedBox(width: 4),
@@ -428,10 +479,14 @@ class ReviewSectionState extends State<ReviewSection> {
                           width: 20,
                           child: Text(
                             '$reviewsWithThisRating',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.mutedForeground(context),
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              TextStyle(
+                                fontSize: 12,
+                                color: AppColors.mutedForeground(context),
+                              ),
                             ),
+                            textAlign: isRtl ? TextAlign.right : TextAlign.left,
                           ),
                         ),
                       ],
@@ -447,6 +502,7 @@ class ReviewSectionState extends State<ReviewSection> {
   }
 
   Widget _buildWriteReviewButton() {
+    final bool isRtl = LocalizationService.isRtl(context);
     final hasReviewed =
         _currentUserId != null &&
         controller.reviews.any((r) => r.appUserId == _currentUserId);
@@ -475,6 +531,7 @@ class ReviewSectionState extends State<ReviewSection> {
           border: Border.all(color: AppColors.border(context)),
         ),
         child: Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
@@ -487,15 +544,20 @@ class ReviewSectionState extends State<ReviewSection> {
             ),
             const SizedBox(width: 8),
             Text(
-              hasReviewed ? 'You Already Reviewed' : 'Write a Review',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Poppins',
-                color:
-                    hasReviewed
-                        ? AppColors.muted(context)
-                        : AppColors.primary(context),
+              hasReviewed
+                  ? 'reviews.already_reviewed'.translate()
+                  : 'reviews.write_review'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                  color:
+                      hasReviewed
+                          ? AppColors.muted(context)
+                          : AppColors.primary(context),
+                ),
               ),
             ),
           ],
@@ -504,267 +566,303 @@ class ReviewSectionState extends State<ReviewSection> {
     );
   }
 
- Widget _buildReviewForm(BuildContext context) {
-  return Material(
-    color: Colors.transparent,
-    child: Container(
-      margin: EdgeInsets.only(top: UIConfig.marginMedium),
-      padding: EdgeInsets.all(UIConfig.paddingMedium),
-      decoration: BoxDecoration(
-        color: AppColors.card(context),
-        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-        border: Border.all(color: AppColors.border(context)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.foreground(context).withOpacity(0.05),
-            blurRadius: UIConfig.elevationLarge,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildFormHeader(),
-          SizedBox(height: UIConfig.paddingSmall),
-          _buildRatingSelector(),
-          SizedBox(height: UIConfig.paddingLarge),
-          _buildReviewInput(),
-          SizedBox(height: UIConfig.paddingMedium),
-          _buildQuickTagsSection(),
-          SizedBox(height: UIConfig.paddingLarge),
-          _buildSubmitButton(),
-        ],
-      ),
-    ),
-  );
-}
+  Widget _buildReviewForm(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
 
-Widget _buildFormHeader() {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    children: [
-      Text(
-        'Your Rating',
-        style: TextStyle(
-          fontSize: UIConfig.fontSizeMedium,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Poppins',
-          color: AppColors.foreground(context),
-        ),
-      ),
-      GestureDetector(
-        onTap: () {
-          _isWritingReview.value = false;
-          _rating.value = 0;
-          _commentController.clear();
-        },
-        child: Icon(
-          Icons.close,
-          color: AppColors.mutedForeground(context),
-          size: UIConfig.fontSizeLarge,
-        ),
-      ),
-    ],
-  );
-}
-// Add these methods to the ReviewSectionState class:
-
-Widget _buildQuickTagsSection() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'Quick Tags',
-        style: TextStyle(
-          fontSize: UIConfig.fontSizeRegular,
-          fontWeight: FontWeight.w500,
-          fontFamily: 'Poppins',
-          color: AppColors.foreground(context),
-        ),
-      ),
-      SizedBox(height: UIConfig.paddingSmall),
-      Wrap(
-        spacing: UIConfig.paddingSmall,
-        runSpacing: UIConfig.paddingSmall,
-        children: _quickTags.map((tag) => _buildQuickTag(tag)).toList(),
-      ),
-    ],
-  );
-}
-
-void _showError(String message) {
-  Get.snackbar(
-    'Error',
-    message,
-    backgroundColor: AppColors.destructive(context),
-    colorText: AppColors.destructiveForeground(context),
-    snackPosition: SnackPosition.BOTTOM,
-    margin: EdgeInsets.all(UIConfig.paddingMedium),
-  );
-}
-
-Future<void> _submitReview() async {
-  final review = Review(
-    id: DateTime.now().millisecondsSinceEpoch.toString(),
-    userName: 'You',
-    rating: _rating.value,
-    content: _commentController.text,
-    createdAt: DateTime.now(),
-    appUserId: _currentUserId ?? 'anonymous',
-  );
-  
-  await controller.addReview(widget.product.id, review);
-  await controller.fetchReviews(widget.product.id);
-}
-
-void _resetForm() {
-  _commentController.clear();
-  _rating.value = 0;
-  _isWritingReview.value = false;
-}
-
-
-
-Widget _buildRatingSelector() {
-  return Obx(() => Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: List.generate(5, (index) {
-      return GestureDetector(
-        onTap: () => _rating.value = index + 1,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingSmall/2),
-          child: Icon(
-            index < _rating.value 
-                ? Icons.star_rounded 
-                : Icons.star_outline_rounded,
-            size: UIConfig.fontSize2XLarge,
-            color: index < _rating.value 
-                ? AppColors.accent(context) 
-                : AppColors.muted(context),
-          ),
-        ),
-      );
-    }),
-  ));
-}
-
-Widget _buildReviewInput() {
-  return Container(
-    decoration: BoxDecoration(
-      color: AppColors.input(context),
-      borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-      border: Border.all(color: AppColors.border(context)),
-    ),
-    child: TextField(
-      controller: _commentController,
-      focusNode: _commentFocusNode,
-      maxLines: 1,
-      textAlignVertical: TextAlignVertical.center,
-      style: TextStyle(
-        color: AppColors.inputForeground(context),
-        fontSize: UIConfig.fontSizeRegular,
-        fontFamily: 'Poppins',
-      ),
-      decoration: InputDecoration(
-        hintText: 'Share your experience with this product...',
-        hintStyle: TextStyle(
-          color: AppColors.mutedForeground(context),
-          fontSize: UIConfig.fontSizeRegular,
-          fontFamily: 'Poppins',
-        ),
-        border: InputBorder.none,
-        contentPadding: EdgeInsets.all(UIConfig.paddingSmall),
-        isDense: true,
-        filled: true,
-        fillColor: AppColors.input(context),
-      ),
-      textInputAction: TextInputAction.done,
-      onTap: _handleInputTap,
-    ),
-  );
-}
-
-Widget _buildSubmitButton() {
-  return SizedBox(
-    width: double.infinity,
-    child: Obx(() => ElevatedButton(
-      onPressed: _isSubmitting.value ? null : _handleSubmit,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary(context),
-        foregroundColor: AppColors.primaryForeground(context),
-        shape: RoundedRectangleBorder(
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: EdgeInsets.only(top: UIConfig.marginMedium),
+        padding: EdgeInsets.all(UIConfig.paddingMedium),
+        decoration: BoxDecoration(
+          color: AppColors.card(context),
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+          border: Border.all(color: AppColors.border(context)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.foreground(context).withOpacity(0.05),
+              blurRadius: UIConfig.elevationLarge,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
+        child: Column(
+          crossAxisAlignment:
+              isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            _buildFormHeader(),
+            SizedBox(height: UIConfig.paddingSmall),
+            _buildRatingSelector(),
+            SizedBox(height: UIConfig.paddingLarge),
+            _buildReviewInput(),
+            SizedBox(height: UIConfig.paddingMedium),
+            _buildQuickTagsSection(),
+            SizedBox(height: UIConfig.paddingLarge),
+            _buildSubmitButton(),
+          ],
+        ),
       ),
-      child: _isSubmitting.value 
-          ? _buildLoadingIndicator()
-          : _buildSubmitButtonText(),
-    )),
-  );
-}
-
-Widget _buildLoadingIndicator() {
-  return SizedBox(
-    width: UIConfig.fontSizeLarge,
-    height: UIConfig.fontSizeLarge,
-    child: CircularProgressIndicator(
-      color: AppColors.primaryForeground(context),
-    ),
-  );
-}
-
-Widget _buildSubmitButtonText() {
-  return Text(
-    'Submit Review',
-    style: TextStyle(
-      fontSize: UIConfig.fontSizeMedium,
-      fontWeight: FontWeight.w600,
-      fontFamily: 'Poppins',
-      color: AppColors.primaryForeground(context),
-    ),
-  );
-}
-
-void _handleInputTap() {
-  setState(() => _isShimmerVisible = false);
-  if (!_commentFocusNode.hasFocus && mounted) {
-    _commentFocusNode.requestFocus();
+    );
   }
-}
 
-Future<void> _handleSubmit() async {
-  if (_rating.value == 0) {
-    _showError('Please select a rating.');
-    return;
+  Widget _buildFormHeader() {
+    final bool isRtl = LocalizationService.isRtl(context);
+
+    return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'reviews.your_rating'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeMedium,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            _isWritingReview.value = false;
+            _rating.value = 0;
+            _commentController.clear();
+          },
+          child: Icon(
+            Icons.close,
+            color: AppColors.mutedForeground(context),
+            size: UIConfig.fontSizeLarge,
+          ),
+        ),
+      ],
+    );
   }
-  if (_commentController.text.trim().isEmpty) {
-    _showError('Please enter your review.');
-    return;
+
+  Widget _buildQuickTagsSection() {
+    final bool isRtl = LocalizationService.isRtl(context);
+
+    return Column(
+      crossAxisAlignment:
+          isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        Text(
+          'reviews.quick_tags'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeRegular,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
+            ),
+          ),
+        ),
+        SizedBox(height: UIConfig.paddingSmall),
+        Directionality(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+          child: Wrap(
+            spacing: UIConfig.paddingSmall,
+            runSpacing: UIConfig.paddingSmall,
+            children: _quickTags.map((tag) => _buildQuickTag(tag)).toList(),
+          ),
+        ),
+      ],
+    );
   }
-  _isSubmitting.value = true;
-  try {
-    await _submitReview();
-    _resetForm();
+
+  void _showError(String message) {
     Get.snackbar(
-      'Success',
-      'Your review has been submitted!',
-      backgroundColor: AppColors.success(context),
-      colorText: AppColors.successForeground(context),
+      'Error',
+      message,
+      backgroundColor: AppColors.destructive(context),
+      colorText: AppColors.destructiveForeground(context),
       snackPosition: SnackPosition.BOTTOM,
       margin: EdgeInsets.all(UIConfig.paddingMedium),
     );
-  } catch (e) {
-    _showError('Failed to submit review. Please try again.');
-  } finally {
-    _isSubmitting.value = false;
   }
-}
 
+  Future<void> _submitReview() async {
+    final review = Review(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      userName: 'You',
+      rating: _rating.value,
+      content: _commentController.text,
+      createdAt: DateTime.now(),
+      appUserId: _currentUserId ?? 'anonymous',
+    );
 
+    await controller.addReview(widget.product.id, review);
+    await controller.fetchReviews(widget.product.id);
+  }
+
+  void _resetForm() {
+    _commentController.clear();
+    _rating.value = 0;
+    _isWritingReview.value = false;
+  }
+
+  Widget _buildRatingSelector() {
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(5, (index) {
+          return GestureDetector(
+            onTap: () => _rating.value = index + 1,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingSmall / 2,
+              ),
+              child: Icon(
+                index < _rating.value
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                size: UIConfig.fontSize2XLarge,
+                color:
+                    index < _rating.value
+                        ? AppColors.accent(context)
+                        : AppColors.muted(context),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildReviewInput() {
+    final bool isRtl = LocalizationService.isRtl(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.input(context),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+        border: Border.all(color: AppColors.border(context)),
+      ),
+      child: TextField(
+        controller: _commentController,
+        focusNode: _commentFocusNode,
+        maxLines: 1,
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+        textAlign: isRtl ? TextAlign.right : TextAlign.left,
+        textAlignVertical: TextAlignVertical.center,
+        style: LocalizationService.getLocalizedTextStyle(
+          context,
+          TextStyle(
+            color: AppColors.inputForeground(context),
+            fontSize: UIConfig.fontSizeRegular,
+            fontFamily: 'Poppins',
+          ),
+        ),
+        decoration: InputDecoration(
+          hintText: 'reviews.share_experience'.translate(),
+          hintStyle: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.mutedForeground(context),
+              fontSize: UIConfig.fontSizeRegular,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.all(UIConfig.paddingSmall),
+          isDense: true,
+          filled: true,
+          fillColor: AppColors.input(context),
+        ),
+        textInputAction: TextInputAction.done,
+        onTap: _handleInputTap,
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: Obx(
+        () => ElevatedButton(
+          onPressed: _isSubmitting.value ? null : _handleSubmit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary(context),
+            foregroundColor: AppColors.primaryForeground(context),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+            ),
+            padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
+          ),
+          child:
+              _isSubmitting.value
+                  ? _buildLoadingIndicator()
+                  : _buildSubmitButtonText(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return SizedBox(
+      width: UIConfig.fontSizeLarge,
+      height: UIConfig.fontSizeLarge,
+      child: CircularProgressIndicator(
+        color: AppColors.primaryForeground(context),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButtonText() {
+    return Text(
+      'reviews.submit_review'.translate(),
+      style: LocalizationService.getLocalizedTextStyle(
+        context,
+        TextStyle(
+          fontSize: UIConfig.fontSizeMedium,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Poppins',
+          color: AppColors.primaryForeground(context),
+        ),
+      ),
+    );
+  }
+
+  void _handleInputTap() {
+    setState(() => _isShimmerVisible = false);
+    if (!_commentFocusNode.hasFocus && mounted) {
+      _commentFocusNode.requestFocus();
+    }
+  }
+
+  Future<void> _handleSubmit() async {
+    if (_rating.value == 0) {
+      _showError('reviews.error_rating'.translate());
+      return;
+    }
+    if (_commentController.text.trim().isEmpty) {
+      _showError('reviews.error_comment'.translate());
+      return;
+    }
+    _isSubmitting.value = true;
+    try {
+      await _submitReview();
+      _resetForm();
+      Get.snackbar(
+        'Success',
+        'reviews.success_message'.translate(),
+        backgroundColor: AppColors.success(context),
+        colorText: AppColors.successForeground(context),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: EdgeInsets.all(UIConfig.paddingMedium),
+      );
+    } catch (e) {
+      _showError('reviews.error_submit'.translate());
+    } finally {
+      _isSubmitting.value = false;
+    }
+  }
 
   Widget _buildQuickTag(String text) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return GestureDetector(
       onTap: () {
         if (_commentController.text.isEmpty) {
@@ -781,18 +879,24 @@ Future<void> _handleSubmit() async {
         }
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: EdgeInsets.symmetric(
+          horizontal: UIConfig.paddingSmall * 1.5,
+          vertical: UIConfig.paddingSmall,
+        ),
         decoration: BoxDecoration(
-          color: AppColors.muted(context).withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.card(context),
+          borderRadius: BorderRadius.circular(UIConfig.borderRadiusXLarge),
           border: Border.all(color: AppColors.border(context)),
         ),
         child: Text(
           text,
-          style: TextStyle(
-            fontSize: 12,
-            fontFamily: 'Poppins',
-            color: AppColors.foreground(context),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeSmall,
+              fontFamily: 'Poppins',
+              color: AppColors.foreground(context),
+            ),
           ),
         ),
       ),

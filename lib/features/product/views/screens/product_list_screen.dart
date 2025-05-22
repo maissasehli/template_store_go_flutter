@@ -157,8 +157,6 @@ class ProductListScreen extends StatelessWidget {
   }
 
   Widget _buildEmptyView(BuildContext context) {
-    final bool isRtl = LocalizationService.isRtl(context);
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +219,7 @@ class ProductListScreen extends StatelessWidget {
   }
 
   Widget _buildErrorView(BuildContext context) {
-    final bool isRtl = LocalizationService.isRtl(context);
+
 
     return Center(
       child: Column(

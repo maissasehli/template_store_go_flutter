@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/review/model/review_model.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ReviewHeader extends StatelessWidget {
   final double averageRating;
@@ -14,6 +16,8 @@ class ReviewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -21,6 +25,7 @@ class ReviewHeader extends StatelessWidget {
         border: Border(bottom: BorderSide(color: AppColors.border(context))),
       ),
       child: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
@@ -31,18 +36,24 @@ class ReviewHeader extends StatelessWidget {
               border: Border.all(color: AppColors.border(context)),
             ),
             child: Column(
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Text(
                   averageRating.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
-                    color: AppColors.foreground(context),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                      color: AppColors.foreground(context),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
                   children: List.generate(5, (index) {
                     return Icon(
                       index < averageRating.round()
@@ -55,11 +66,14 @@ class ReviewHeader extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${reviews.length} ${reviews.length == 1 ? 'review' : 'reviews'}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    fontFamily: 'Poppins',
+                  '${reviews.length} ${reviews.length == 1 ? 'reviews.review_singular'.translate() : 'reviews.review_plural'.translate()}',
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 12,
+                      color: AppColors.mutedForeground(context),
+                      fontFamily: 'Poppins',
+                    ),
                   ),
                 ),
               ],
@@ -68,6 +82,8 @@ class ReviewHeader extends StatelessWidget {
           const SizedBox(width: 20),
           Expanded(
             child: Column(
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: List.generate(5, (index) {
                 final ratingCount = 5 - index;
                 final reviewsWithThisRating =
@@ -80,15 +96,20 @@ class ReviewHeader extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3.0),
                   child: Row(
+                    textDirection:
+                        isRtl ? TextDirection.rtl : TextDirection.ltr,
                     children: [
                       SizedBox(
                         width: 12,
                         child: Text(
                           '$ratingCount',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[600],
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.mutedForeground(context),
+                            ),
                           ),
                         ),
                       ),
@@ -98,9 +119,9 @@ class ReviewHeader extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
                             value: percentage,
-                            backgroundColor: Colors.grey[200],
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Color(0xFFFFCC00),
+                            backgroundColor: AppColors.muted(context),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.accent(context),
                             ),
                             minHeight: 8,
                           ),
@@ -111,9 +132,12 @@ class ReviewHeader extends StatelessWidget {
                         width: 20,
                         child: Text(
                           '$reviewsWithThisRating',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              fontSize: 12,
+                              color: AppColors.mutedForeground(context),
+                            ),
                           ),
                         ),
                       ),

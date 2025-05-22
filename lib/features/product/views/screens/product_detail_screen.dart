@@ -16,6 +16,8 @@ import 'package:store_go/features/product/views/widgets/product_detail/draggable
 import 'package:store_go/features/promotion/controller/promotion_controller.dart';
 import 'package:store_go/features/promotion/views/product_promotion.dart';
 import 'package:store_go/features/review/view/widgets/review_section/review_section.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String productId;
@@ -26,9 +28,9 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class ProductDetailScreenState extends State<ProductDetailScreen>
-    
     with SingleTickerProviderStateMixin {
-  final ProductDetailController detailController = Get.find<ProductDetailController>();
+  final ProductDetailController detailController =
+      Get.find<ProductDetailController>();
   final promotionController = Get.put(
     PromotionController(promotionRepository: Get.find()),
   );
@@ -73,7 +75,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
     super.dispose();
   }
 
-   Widget _buildSkeletonLoading(BuildContext context) {
+  Widget _buildSkeletonLoading(BuildContext context) {
     final theme = Theme.of(context);
     final surfaceColor = theme.cardColor;
     final hintColor = theme.colorScheme.onSurface.withOpacity(0.08);
@@ -301,8 +303,11 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-
-  Widget _buildSkeletonBox(double width, double height, {double borderRadius = 10}) {
+  Widget _buildSkeletonBox(
+    double width,
+    double height, {
+    double borderRadius = 10,
+  }) {
     return AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
@@ -357,15 +362,13 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
           ),
         ],
       ),
-      child: Icon(
-        icon,
-        color: AppColors.mutedForeground(context),
-        size: 20,
-      ),
+      child: Icon(icon, color: AppColors.mutedForeground(context), size: 20),
     );
   }
 
   Widget _buildErrorState(String errorMessage) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -377,19 +380,29 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'Error: $errorMessage',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: AppColors.destructive(context),
+            'product_detail.error_loading'.translate() + errorMessage,
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.destructive(context),
+              ),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => detailController.fetchProductDetails(widget.productId),
+            onPressed:
+                () => detailController.fetchProductDetails(widget.productId),
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Try Again'),
+            label: Text(
+              'product_detail.try_again'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                const TextStyle(),
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),
               foregroundColor: AppColors.primaryForeground(context),
@@ -405,6 +418,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
   }
 
   Widget _buildProductNotFound() {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -416,27 +431,41 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
           ),
           const SizedBox(height: 16),
           Text(
-            'Product Not Found',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.foreground(context),
+            'product_detail.product_not_found'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.foreground(context),
+              ),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'The requested product does not exist or has been removed',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.mutedForeground(context),
+            'product_detail.product_not_exist'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 14,
+                color: AppColors.mutedForeground(context),
+              ),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_rounded),
-            label: const Text('Back'),
+            icon: Icon(
+              isRtl ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
+            ),
+            label: Text(
+              'product_detail.back'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                const TextStyle(),
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary(context),
               foregroundColor: AppColors.primaryForeground(context),
@@ -451,9 +480,10 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Scaffold(
       backgroundColor: AppColors.background(context),
       body: Obx(() {
@@ -501,31 +531,43 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
               ),
               SafeArea(
                 child: Align(
-                  alignment: Alignment.bottomRight,
+                  alignment:
+                      isRtl ? Alignment.bottomLeft : Alignment.bottomRight,
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, bottom: 420.0),
+                    padding: EdgeInsets.only(
+                      right: isRtl ? 0 : 16.0,
+                      left: isRtl ? 16.0 : 0,
+                      bottom: 420.0,
+                    ),
                     child: FavoriteButton(productId: product.id),
                   ),
                 ),
               ),
-              
 
               DraggableInfoSheet(
                 child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        isRtl
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
                     children: [
                       Row(
+                        textDirection:
+                            isRtl ? TextDirection.rtl : TextDirection.ltr,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: Text(
                               product.name,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins',
-                                color: AppColors.foreground(context),
+                              style: LocalizationService.getLocalizedTextStyle(
+                                context,
+                                TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Poppins',
+                                  color: AppColors.foreground(context),
+                                ),
                               ),
                             ),
                           ),
@@ -537,11 +579,9 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                           ),
                         ],
                       ),
-                       
-                      
+
                       ProductInfo(product: product),
                       const SizedBox(height: 8),
-
 
                       ProductPromotionView(
                         productId: product.id,
@@ -549,6 +589,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                       ),
                       const SizedBox(height: 16),
                       Row(
+                        textDirection:
+                            isRtl ? TextDirection.rtl : TextDirection.ltr,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
