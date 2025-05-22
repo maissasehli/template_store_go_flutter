@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/promotion/controller/promotion_controller.dart';
-import 'package:store_go/features/promotion/models/promotion_model.dart';
 import 'package:store_go/features/promotion/repositories/promotion_repository.dart' show PromotionRepository;
 import 'package:store_go/features/promotion/views/widgets/enhanced_promotion_card.dart';
 import 'package:store_go/features/promotion/views/widgets/loading_indicator.dart';

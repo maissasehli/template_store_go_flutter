@@ -28,7 +28,7 @@ class ProductFilterController extends GetxController {
         selectedSubcategoryId.value = args['subcategoryId'];
       }
       // Check if args is a Category object
-      else if (args is Category && args.id != null) {
+      else if (args is Category) {
         selectedCategory.value = args.id;
       }
     }

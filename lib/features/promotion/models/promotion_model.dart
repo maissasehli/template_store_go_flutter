@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+
 
 enum DiscountType {
   percentage,
@@ -154,8 +154,6 @@ class Promotion {
         return 'FREE SHIPPING';
       case DiscountType.buyXGetY:
         return 'BUY $buyQuantity GET $getQuantity';
-      default:
-        return 'SPECIAL OFFER';
     }
   }
 

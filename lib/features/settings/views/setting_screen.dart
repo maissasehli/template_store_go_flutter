@@ -7,7 +7,6 @@ import 'package:store_go/app/shared/controllers/theme_controller.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
-import 'package:store_go/app/shared/widgets/rtl_aware_app_bar.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

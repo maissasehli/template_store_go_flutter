@@ -287,9 +287,7 @@ class _ReviewsPageState extends State<ReviewsPage> {
     if (confirm == true) {
       _isSubmitting.value = true;
       try {
-        final deletedReview = _reviewController!.reviews.firstWhere(
-          (r) => r.id == reviewId,
-        );
+     
         bool success = await _reviewController!.deleteReview(reviewId);
         if (success) {
           setState(() {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/product/controllers/product_detail_controller.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/favorite_button.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/product_description.dart';
