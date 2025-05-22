@@ -61,6 +61,78 @@ class _NotificationItemState extends State<NotificationItem>
     }
   }
 
+  // Get notification title based on type and data
+  String _getNotificationTitle() {
+    final notificationType = widget.notification.type.toLowerCase();
+
+    switch (notificationType) {
+      case 'product':
+        return 'notifications.product_notification_title'.translate();
+      case 'promo':
+        return 'notifications.promo_notification_title'.translate();
+      case 'order':
+        return 'notifications.order_notification_title'.translate();
+      case 'system':
+        return 'notifications.system_notification_title'.translate();
+      default:
+        return widget.notification.title;
+    }
+  }
+
+  // Get notification content based on type and data
+  String _getNotificationContent() {
+    final data = widget.notification.data;
+    final notificationType = widget.notification.type.toLowerCase();
+
+    if (data == null) {
+      return widget.notification.content;
+    }
+
+    switch (notificationType) {
+      case 'product':
+        final productName = data['productName'] ?? '';
+        final price = data['price'] ?? '';
+        return 'notifications.product_notification_content'
+            .translate()
+            .replaceAll('{productName}', productName)
+            .replaceAll('{price}', price);
+
+      case 'promo':
+        final promotionName = data['promotionName'] ?? '';
+        final discountValue = data['discountValue'] ?? '';
+        final discountType = data['discountType'] ?? 'percentage';
+
+        String discountText = discountValue;
+        if (discountType.toLowerCase() == 'percentage') {
+          discountText = '$discountValue%';
+        }
+
+        return 'notifications.promo_notification_content'
+            .translate()
+            .replaceAll('{promotionName}', promotionName)
+            .replaceAll('{discount}', discountText);
+
+      case 'order':
+        final orderId = data['orderId'] ?? '';
+        final status = data['status'] ?? '';
+        return 'notifications.order_notification_content'
+            .translate()
+            .replaceAll('{orderId}', orderId)
+            .replaceAll('{status}', status);
+
+      default:
+        return widget.notification.content;
+    }
+  }
+
+  // Get image URL from data if available
+  String? _getImageUrl() {
+    final data = widget.notification.data;
+    if (data == null) return null;
+
+    return data['imageUrl'] as String?;
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<NotificationsController>();
@@ -74,6 +146,11 @@ class _NotificationItemState extends State<NotificationItem>
     } catch (e) {
       formattedDate = 'notifications.unknown_date'.translate();
     }
+
+    // Get notification content
+    final notificationTitle = _getNotificationTitle();
+    final notificationContent = _getNotificationContent();
+    final imageUrl = _getImageUrl();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -131,76 +208,115 @@ class _NotificationItemState extends State<NotificationItem>
                   width: 1,
                 ),
               ),
-              child: Column(
-                crossAxisAlignment:
-                    isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    crossAxisAlignment:
-                        isRtl
-                            ? CrossAxisAlignment.start
-                            : CrossAxisAlignment.end,
-                    children: [
-                      _getNotificationIcon(widget.notification.type, context),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment:
-                              isRtl
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
+                  _getNotificationIcon(widget.notification.type, context),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment:
+                          isRtl
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                      children: [
+                        // Title row with unread indicator
+                        Row(
+                
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              widget.notification.title,
-                              style: LocalizationService.getLocalizedTextStyle(
-                                context,
-                                TextStyle(
-                                  fontSize: 15,
-                                  fontWeight:
-                                      _isRead
-                                          ? FontWeight.w500
-                                          : FontWeight.w600,
-                                  color: AppColors.foreground(context),
-                                ),
+                            Expanded(
+                              child: Text(
+                                notificationTitle,
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      TextStyle(
+                                        fontSize: 15,
+                                        fontWeight:
+                                            _isRead
+                                                ? FontWeight.w500
+                                                : FontWeight.w600,
+                                        color: AppColors.foreground(context),
+                                      ),
+                                    ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.notification.content,
-                              style: LocalizationService.getLocalizedTextStyle(
-                                context,
-                                TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.mutedForeground(context),
+                            if (!_isRead)
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary(context),
+                                  shape: BoxShape.circle,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              formattedDate,
-                              style: LocalizationService.getLocalizedTextStyle(
-                                context,
-                                TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors.mutedForeground(context),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
-                      ),
-                      if (!_isRead)
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary(context),
-                            shape: BoxShape.circle,
+                        const SizedBox(height: 4),
+
+                        // Notification content
+                        Text(
+                          notificationContent,
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.mutedForeground(context),
+                            ),
                           ),
                         ),
-                    ],
+
+                        const SizedBox(height: 8),
+
+                        // Optional image
+                        if (imageUrl != null)
+                          Container(
+                            alignment:
+                                isRtl
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                            padding: const EdgeInsets.only(
+                              top: 4.0,
+                              bottom: 8.0,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                imageUrl,
+                                height: 80,
+                                width: 80,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 80,
+                                    width: 80,
+                                    color: AppColors.muted(context),
+                                    child: Icon(
+                                      Icons.image_not_supported,
+                                      color: AppColors.mutedForeground(context),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+
+                        // Date
+                        Text(
+                          formattedDate,
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.mutedForeground(context),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -227,6 +343,10 @@ class _NotificationItemState extends State<NotificationItem>
       case 'system':
         iconData = Icons.info_outline;
         iconColor = AppColors.primary(context);
+        break;
+      case 'product':
+        iconData = Icons.shopping_cart_outlined;
+        iconColor = AppColors.accent(context);
         break;
       default:
         iconData = Icons.notifications_outlined;
@@ -264,7 +384,13 @@ class _NotificationItemState extends State<NotificationItem>
         }
         break;
       case 'promo':
-        Get.toNamed('/promotions');
+        if (notification.data!.containsKey('promotionId')) {
+          Get.toNamed(
+            '/promotions/details/${notification.data!['promotionId']}',
+          );
+        } else {
+          Get.toNamed('/promotions');
+        }
         break;
       default:
         // Default action or no action

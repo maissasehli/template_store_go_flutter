@@ -230,6 +230,13 @@
         "new_promotion_message": "{name} - Offre à durée limitée",
         "price": "Prix: ${price}",
         "special_offer": "Offre Spéciale",
-        "new_promotion": "Nouvelle Promotion"
+        "new_promotion": "Nouvelle Promotion",
+        "product_notification_title": "Nouveau Produit Disponible",
+        "product_notification_content": "{productName} est maintenant disponible pour ${price}",
+        "promo_notification_title": "Promotion Spéciale",
+        "promo_notification_content": "{promotionName} - Obtenez {discount} de réduction",
+        "order_notification_title": "Mise à jour de la commande",
+        "order_notification_content": "Votre commande #{orderId} a été {status}",
+        "system_notification_title": "Notification Système"
     }
 }

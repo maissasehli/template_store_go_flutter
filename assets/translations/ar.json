@@ -230,6 +230,13 @@
         "new_promotion_message": "{name} - عرض محدود الوقت",
         "price": "السعر: ${price}",
         "special_offer": "عرض خاص",
-        "new_promotion": "عرض ترويجي جديد"
+        "new_promotion": "عرض ترويجي جديد",
+        "product_notification_title": "منتج جديد متاح",
+        "product_notification_content": "{productName} متاح الآن بسعر ${price}",
+        "promo_notification_title": "عرض خاص",
+        "promo_notification_content": "{promotionName} - احصل على خصم {discount}",
+        "order_notification_title": "تحديث الطلب",
+        "order_notification_content": "طلبك رقم #{orderId} تم {status}",
+        "system_notification_title": "إشعار من النظام"
     }
 }

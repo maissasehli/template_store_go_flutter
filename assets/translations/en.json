@@ -230,6 +230,13 @@
         "new_promotion_message": "{name} - Limited time offer",
         "price": "Price: ${price}",
         "special_offer": "Special Offer",
-        "new_promotion": "New Promotion"
+        "new_promotion": "New Promotion",
+        "product_notification_title": "New Product Available",
+        "product_notification_content": "{productName} is now available for ${price}",
+        "promo_notification_title": "Special Promotion",
+        "promo_notification_content": "{promotionName} - Get {discount} off",
+        "order_notification_title": "Order Update",
+        "order_notification_content": "Your order #{orderId} has been {status}",
+        "system_notification_title": "System Notification"
     }
 }
