@@ -10,68 +10,66 @@ import 'package:store_go/features/profile/controllers/profile_controller.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Function(String)? onSearch;
   final ProfileController profileController;
-  
+
   const CustomAppBar({
-    super.key, 
-    this.onSearch, 
-    required this.profileController
+    super.key,
+    this.onSearch,
+    required this.profileController,
   });
 
   @override
   Widget build(BuildContext context) {
     // Get theme extensions for colors
     final colors = Theme.of(context).extension<AppColorExtension>()!;
-    
+
     return AppBar(
       elevation: 0,
       automaticallyImplyLeading: false,
       backgroundColor: colors.background,
       title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
             height: 40,
             width: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: colors.border, 
-                width: 1
-              ),
+              border: Border.all(color: colors.border, width: 1),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular / 2),
+              borderRadius: BorderRadius.circular(
+                UIConfig.borderRadiusCircular / 2,
+              ),
               child: Obx(
                 () => UniversalCachedImage(
                   imagePath: profileController.user.value?.avatar ?? "",
                   source: ImageSource.network,
                 ),
-              )
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: UIConfig.paddingMedium),
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: colors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: SvgPicture.asset(
+                AssetConfig.bag,
+                colorFilter: ColorFilter.mode(
+                  colors.primaryForeground,
+                  BlendMode.srcIn,
+                ),
+                width: 16,
+                height: 16,
+              ),
             ),
           ),
         ],
       ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: UIConfig.paddingMedium),
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: colors.primary,
-            shape: BoxShape.circle,
-          ),
-          child: Center(
-            child: SvgPicture.asset(
-              AssetConfig.bag,
-              colorFilter: ColorFilter.mode(
-                colors.primaryForeground,
-                BlendMode.srcIn,
-              ),
-              width: 16,
-              height: 16,
-            ),
-          ),
-        ),
-      ],
     );
   }
 

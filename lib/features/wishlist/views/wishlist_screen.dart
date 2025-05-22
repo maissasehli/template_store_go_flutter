@@ -7,7 +7,7 @@ import 'package:store_go/features/wishlist/controllers/wishlist_controller.dart'
 import 'package:store_go/features/wishlist/models/wishlist_item_model.dart';
 import 'package:store_go/features/wishlist/views/widget/empty_wishlist_view.dart';
 import 'package:store_go/features/wishlist/views/widget/wishlist_header.dart';
-import 'package:store_go/features/wishlist/views/widget/wishlist_item_tile.dart';
+import 'package:store_go/features/wishlist/views/widget/wishlist_item_card.dart'; // Updated import
 import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 
@@ -39,16 +39,14 @@ class _WishlistScreenState extends State<WishlistPage> {
     _wishlistController.filterWishlistItems(searchText);
   }
 
-  // Method to update item quantity (kept for UI functionality)
-  void _updateQuantity(WishlistItemModel item, int delta) {
-    // In this implementation, quantity is just a UI state
-    // It's not sent to the server, as the API doesn't support quantity for wishlist
-    // This functionality could be moved to a shopping cart feature in the future
-  }
-
   // Method to remove item from wishlist
   void _removeItem(WishlistItemModel item) {
     _wishlistController.removeFromWishlist(item.productId);
+  }
+
+  // Navigate to product details
+  void _onItemTap(WishlistItemModel item) {
+    Get.toNamed('/products/${item.productId}');
   }
 
   @override
@@ -63,12 +61,13 @@ class _WishlistScreenState extends State<WishlistPage> {
           style: LocalizationService.getLocalizedTextStyle(
             context,
             Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppColors.foreground(context),
-              fontWeight: FontWeight.w500,
-            ) ?? TextStyle(
-              color: AppColors.foreground(context),
-              fontWeight: FontWeight.w500,
-            ),
+                  color: AppColors.foreground(context),
+                  fontWeight: FontWeight.w500,
+                ) ??
+                TextStyle(
+                  color: AppColors.foreground(context),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ),
         centerTitle: true,
@@ -113,10 +112,9 @@ class _WishlistScreenState extends State<WishlistPage> {
             style: LocalizationService.getLocalizedTextStyle(
               context,
               Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.destructive(context),
-              ) ?? TextStyle(
-                color: AppColors.destructive(context),
-              ),
+                    color: AppColors.destructive(context),
+                  ) ??
+                  TextStyle(color: AppColors.destructive(context)),
             ),
           ),
           const SizedBox(height: UIConfig.paddingMedium),
@@ -136,10 +134,9 @@ class _WishlistScreenState extends State<WishlistPage> {
               style: LocalizationService.getLocalizedTextStyle(
                 context,
                 Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.primaryForeground(context),
-                ) ?? TextStyle(
-                  color: AppColors.primaryForeground(context),
-                ),
+                      color: AppColors.primaryForeground(context),
+                    ) ??
+                    TextStyle(color: AppColors.primaryForeground(context)),
               ),
             ),
           ),
@@ -181,11 +178,11 @@ class _WishlistScreenState extends State<WishlistPage> {
                 itemCount: _wishlistController.filteredWishlistItems.length,
                 itemBuilder: (context, index) {
                   final item = _wishlistController.filteredWishlistItems[index];
-                  return WishlistItemTile(
+                  return WishlistItemCard(
                     key: ValueKey(item.id),
                     item: item,
                     onRemove: _removeItem,
-                    onUpdateQuantity: _updateQuantity,
+                    onTap: _onItemTap,
                   );
                 },
               );
