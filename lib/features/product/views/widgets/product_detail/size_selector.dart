@@ -27,7 +27,7 @@ class SizeSelector extends StatelessWidget {
 
     return Column(
       crossAxisAlignment:
-          isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          isRtl ? CrossAxisAlignment.start : CrossAxisAlignment.end,
       children: [
         Text(
           'product_detail.size'.translate(),

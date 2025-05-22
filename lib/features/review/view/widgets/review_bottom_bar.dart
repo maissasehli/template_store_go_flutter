@@ -66,6 +66,7 @@ class ReviewBottomBar extends StatelessWidget {
                 fontSize: UIConfig.fontSizeMedium,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'Poppins',
+                color: AppColors.background(context)
               ),
             ),
           ),
