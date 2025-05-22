@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
@@ -162,7 +164,6 @@ class ProductDetailController extends GetxController {
       Get.snackbar('Error', 'Failed to submit review');
     }
   }
-
   Future<void> addToCart() async {
     if (state.product.value == null) return;
 
@@ -170,27 +171,41 @@ class ProductDetailController extends GetxController {
       final product = state.product.value!;
       final quantity = state.quantity.value;
 
-      Map<String, String> variants = {};
-      if (state.selectedSize.value.isNotEmpty) {
-        variants['size'] = state.selectedSize.value;
-      }
-      if (state.selectedColor.value.isNotEmpty) {
-        variants['color'] = state.selectedColor.value;
+      // Make sure we're passing the correct variant ID
+      // If no size is selected but there are sizes available, don't add to cart
+      if (product.variants.containsKey('size') && 
+          product.variants['size']!.isNotEmpty && 
+          state.selectedSize.value.isEmpty) {
+        Get.snackbar(
+          'Warning',
+          'Please select a size before adding to cart',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
       }
 
       final cartController = Get.find<CartController>();
 
-      // Using optimistic update approach - no snackbars
+      // Using optimistic update approach
       await cartController.addToCart(
         product: product,
         quantity: quantity,
         variantId: state.selectedSize.value,
       );
 
-      // No snackbar here, the UI will update automatically via Obx
+      // Show a minimal snackbar to confirm the action
+      Get.snackbar(
+        'Success',
+        'Item added to cart',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 1),
+      );
     } catch (e) {
       // Silent error handling, UI will remain consistent
       _logger.e('Error adding to cart: $e');
     }
+      // Silent error handling, UI will remain consistent
+      _logger.e('Error adding to cart: $e');
+    }
   }
-}
+

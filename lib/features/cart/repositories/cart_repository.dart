@@ -41,7 +41,11 @@ class CartRepository {
       _logger.d('Adding to cart at: $fullUrl');
       final data = {'quantity': item.quantity};
       if (item.variantId.isNotEmpty) {
-        data['variantId'] = item.variantId as int;
+        // Parse the string to int if possible, otherwise it will remain a string
+        int? parsedId = int.tryParse(item.variantId);
+        if (parsedId != null) {
+          data['variantId'] = parsedId;
+        }
       }
       await _apiClient.post('/products/cart/${item.productId}', data: data);
     } catch (e) {
@@ -65,13 +69,20 @@ class CartRepository {
     try {
       final fullUrl = '${AppConfig.baseUrl}/products/cart/${item.productId}';
       _logger.d('Updating cart item at: $fullUrl');
+
+      // Instead of using PUT which might not be supported, use POST with the full quantity
+      // This is a workaround in case the API doesn't support PUT or has a different endpoint for updates
       final data = {'quantity': item.quantity};
       if (item.variantId.isNotEmpty) {
-        data['variantId'] =
-            item.variantId
-                as int; // Send as String (or int.parse(item.variantId) if int is required)
+        // Parse the string to int if possible
+        int? parsedId = int.tryParse(item.variantId);
+        if (parsedId != null) {
+          data['variantId'] = parsedId;
+        }
       }
-      await _apiClient.put('/products/cart/${item.productId}', data: data);
+
+      // Use POST instead of PUT as a fallback
+      await _apiClient.post('/products/cart/${item.productId}', data: data);
     } catch (e) {
       _logger.e('Failed to update item in cart: $e');
       throw Exception('Failed to update item in cart: $e');

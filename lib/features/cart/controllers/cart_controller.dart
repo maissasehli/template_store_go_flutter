@@ -62,26 +62,54 @@ class CartController extends GetxController {
       isError.value = false;
       errorMessage.value = '';
 
-      final tempItem = CartItem(
-        id: DateTime.now().toString(),
-        productId: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        variantId: variantId,
-        image: product.images.isNotEmpty ? product.images.first : '',
+      // Check if the product is already in the cart
+      final existingItemIndex = cartItems.indexWhere(
+        (item) => item.productId == product.id && item.variantId == variantId,
       );
 
-      // Optimistic update - add to UI first
-      cartItems.add(tempItem);
-      _calculateCartTotals();
+      if (existingItemIndex >= 0) {
+        // If the product is already in the cart, update its quantity instead of adding a new item
+        final existingItem = cartItems[existingItemIndex];
+        final updatedItem = existingItem.copyWith(
+          quantity: existingItem.quantity + quantity,
+        );
 
-      // Then sync with backend
-      await _repository.addToCart(tempItem);
-      await fetchCartItems(); // Refresh to get actual server state
+        // Update the local cart first
+        cartItems[existingItemIndex] = updatedItem;
+        _calculateCartTotals();
+
+        // Then sync with backend
+        try {
+          await _repository.updateCartItem(updatedItem);
+        } catch (e) {
+          _logger.e('Error updating cart item, falling back to add: $e');
+          // If update fails (404), try adding the item with the new total quantity
+          await _repository.addToCart(updatedItem);
+        }
+      } else {
+        // If the product is not in the cart, add it as a new item
+        final tempItem = CartItem(
+          id: DateTime.now().toString(),
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: quantity,
+          variantId: variantId,
+          image: product.images.isNotEmpty ? product.images.first : '',
+        );
+
+        // Update the local cart first
+        cartItems.add(tempItem);
+        _calculateCartTotals();
+
+        // Then sync with backend
+        await _repository.addToCart(tempItem);
+      }
     } catch (e) {
       // Rollback the optimistic update on error
-      cartItems.removeWhere((item) => item.productId == product.id);
+      cartItems.removeWhere(
+        (item) => item.productId == product.id && item.variantId == variantId,
+      );
       _calculateCartTotals();
 
       isError.value = true;
