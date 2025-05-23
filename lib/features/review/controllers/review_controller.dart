@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -13,8 +12,10 @@ class ReviewController extends GetxController {
   final RxList<Review> reviews = <Review>[].obs;
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
+  String? _lastFetchedProductId;
 
-  ReviewController({required ReviewRepository repository}) : _repository = repository;
+  ReviewController({required ReviewRepository repository})
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -53,10 +54,20 @@ class ReviewController extends GetxController {
   }
 
   Future<void> fetchReviews(String productId) async {
+    // Prevent unnecessary refetching if we already have reviews for this product
+    if (_lastFetchedProductId == productId && reviews.isNotEmpty) {
+      _logger.d('Reviews already cached for product: $productId');
+      return;
+    }
+
     try {
       isLoading.value = true;
       final fetchedReviews = await _repository.getReviewsByProductId(productId);
       reviews.assignAll(fetchedReviews);
+      _lastFetchedProductId = productId;
+      _logger.d(
+        'Fetched ${fetchedReviews.length} reviews for product: $productId',
+      );
     } catch (e) {
       debugPrint('Error fetching reviews: $e');
       rethrow;
@@ -78,16 +89,21 @@ class ReviewController extends GetxController {
     }
   }
 
-  Future<bool> updateReview(String reviewId, Map<String, dynamic> updates) async {
+  Future<bool> updateReview(
+    String reviewId,
+    Map<String, dynamic> updates,
+  ) async {
     try {
       setLoading(true);
       clearError();
 
       // Log the update process
-      _logger.i('Starting review update for ID: $reviewId with updates: $updates');
-      
+      _logger.i(
+        'Starting review update for ID: $reviewId with updates: $updates',
+      );
+
       await _repository.updateReview(reviewId, updates);
-      
+
       // Find and update the review in the local list
       final index = reviews.indexWhere((r) => r.id == reviewId);
       if (index != -1) {
@@ -100,30 +116,38 @@ class ReviewController extends GetxController {
           content: updates['content'] ?? currentReview.content,
           createdAt: currentReview.createdAt,
         );
-        
+
         // Replace the review in the list
         reviews[index] = updatedReview;
         reviews.refresh(); // Important: Trigger UI update
       } else {
         _logger.w('Review with ID $reviewId not found in local list');
       }
-      
+
       _logger.i('Review updated successfully: $reviewId');
-      
-    
-      
+
       return true;
     } catch (e) {
       String errorMsg = 'Failed to update review';
       if (e.toString().contains('Saved offline')) {
         errorMsg = 'Review update saved offline, will sync when online';
-        Get.snackbar('Info', errorMsg, backgroundColor: Colors.orange, colorText: Colors.white);
+        Get.snackbar(
+          'Info',
+          errorMsg,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+        );
         return true; // Return success for offline saves
       }
 
       setError('Error updating review: $e');
       _logger.e('Error updating review: $e');
-      Get.snackbar('Error', errorMsg, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        errorMsg,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return false;
     } finally {
       setLoading(false);
@@ -169,7 +193,9 @@ class ReviewController extends GetxController {
       errorMessage.value = '';
 
       final fetchedReviews = await _repository.getReviewsByProductId(productId);
-      _logger.d('Fetched ${fetchedReviews.length} reviews for product $productId');
+      _logger.d(
+        'Fetched ${fetchedReviews.length} reviews for product $productId',
+      );
 
       reviews.assignAll(fetchedReviews);
       return fetchedReviews;

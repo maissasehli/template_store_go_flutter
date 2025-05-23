@@ -164,6 +164,7 @@ class ProductDetailController extends GetxController {
       Get.snackbar('Error', 'Failed to submit review');
     }
   }
+
   Future<void> addToCart() async {
     if (state.product.value == null) return;
 
@@ -173,8 +174,8 @@ class ProductDetailController extends GetxController {
 
       // Make sure we're passing the correct variant ID
       // If no size is selected but there are sizes available, don't add to cart
-      if (product.variants.containsKey('size') && 
-          product.variants['size']!.isNotEmpty && 
+      if (product.variants.containsKey('size') &&
+          product.variants['size']!.isNotEmpty &&
           state.selectedSize.value.isEmpty) {
         Get.snackbar(
           'Warning',
@@ -186,11 +187,17 @@ class ProductDetailController extends GetxController {
 
       final cartController = Get.find<CartController>();
 
-      // Using optimistic update approach
+      // Create variants map for the selected options
+      Map<String, dynamic>? variants;
+      if (state.selectedSize.value.isNotEmpty) {
+        variants = {'variantId': state.selectedSize.value};
+      }
+
+      // Using the correct method signature - Product as positional parameter
       await cartController.addToCart(
-        product: product,
+        product,
         quantity: quantity,
-        variantId: state.selectedSize.value,
+        variants: variants,
       );
 
       // Show a minimal snackbar to confirm the action
@@ -204,8 +211,5 @@ class ProductDetailController extends GetxController {
       // Silent error handling, UI will remain consistent
       _logger.e('Error adding to cart: $e');
     }
-      // Silent error handling, UI will remain consistent
-      _logger.e('Error adding to cart: $e');
-    }
   }
-
+}

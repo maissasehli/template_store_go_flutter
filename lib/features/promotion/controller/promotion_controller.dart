@@ -8,11 +8,22 @@ import 'package:store_go/features/promotion/views/promotion_state.dart';
 class PromotionController extends GetxController {
   final PromotionRepository _promotionRepository;
   final PromotionState state = PromotionState();
+  String? _lastFetchedProductId;
 
   PromotionController({required PromotionRepository promotionRepository})
-      : _promotionRepository = promotionRepository;
+    : _promotionRepository = promotionRepository;
 
   Future<void> fetchPromotionsByProductId(String productId) async {
+    // Prevent unnecessary refetching if we already have promotions for this product
+    if (_lastFetchedProductId == productId &&
+        state.productPromotions.isNotEmpty) {
+      developer.log(
+        'Promotions already cached for product: $productId',
+        name: 'PromotionController.fetchPromotionsByProductId',
+      );
+      return;
+    }
+
     state.setLoading(true);
     state.clearError();
 
@@ -22,8 +33,11 @@ class PromotionController extends GetxController {
         name: 'PromotionController.fetchPromotionsByProductId',
       );
 
-      final promotions = await _promotionRepository.getPromotionsByProductId(productId);
-      
+      final promotions = await _promotionRepository.getPromotionsByProductId(
+        productId,
+      );
+      _lastFetchedProductId = productId;
+
       if (promotions.isNotEmpty) {
         developer.log(
           'Found ${promotions.length} promotions for product $productId',
@@ -55,7 +69,9 @@ class PromotionController extends GetxController {
     state.clearError();
 
     try {
-      final promotion = await _promotionRepository.getPromotionById(promotionId);
+      final promotion = await _promotionRepository.getPromotionById(
+        promotionId,
+      );
       state.setLoading(false);
       return promotion;
     } catch (e) {

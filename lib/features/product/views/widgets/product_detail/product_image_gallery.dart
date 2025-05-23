@@ -40,31 +40,72 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
   Widget _buildProductImageGallery(BuildContext context) {
     if (widget.product.images.isEmpty) {
       return Center(
-        child: Icon(
-          Icons.image_not_supported, 
-          size: 50,
-          color: AppColors.mutedForeground(context),
+        child: Container(
+          width: 200,
+          height: 200,
+          decoration: BoxDecoration(
+            color: AppColors.muted(context),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.image_outlined,
+            size: 64,
+            color: AppColors.mutedForeground(context),
+          ),
         ),
       );
     }
 
     return PageView.builder(
       controller: _pageController,
-      itemCount: widget.product.images.length,
       onPageChanged: widget.onPageChanged,
+      itemCount: widget.product.images.length,
       itemBuilder: (context, index) {
-        return Image.network(
-          widget.product.images[index],
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Center(
-              child: Icon(
-                Icons.broken_image, 
-                size: 40,
-                color: AppColors.mutedForeground(context),
+        return Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
               ),
-            );
-          },
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.network(
+              widget.product.images[index],
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: AppColors.muted(context),
+                  child: Icon(
+                    Icons.broken_image_outlined,
+                    size: 64,
+                    color: AppColors.mutedForeground(context),
+                  ),
+                );
+              },
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  color: AppColors.muted(context),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      value:
+                          loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                      color: AppColors.primary(context),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         );
       },
     );

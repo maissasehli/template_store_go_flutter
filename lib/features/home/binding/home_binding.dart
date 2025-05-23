@@ -38,7 +38,7 @@ class HomeBinding implements Bindings {
         ));
         
     Get.put<CartRepository>(
-      CartRepository(apiClient: apiClient),
+      CartRepository(),
       permanent: true,
     );
     

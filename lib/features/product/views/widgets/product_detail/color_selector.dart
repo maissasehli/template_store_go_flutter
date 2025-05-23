@@ -30,15 +30,15 @@ class ColorSelector extends StatelessWidget {
       return Colors.grey;
     }
 
-    // Handle theme color references
+    final parts = colorClass.split('-');
+
     if (colorClass.startsWith('theme-')) {
-      final parts = colorClass.split('-');
       if (parts.length < 2) {
         return Colors.grey;
       }
 
       String colorName = parts[1].toLowerCase();
-      
+
       // Map theme color names to app color methods
       switch (colorName) {
         case 'primary':
@@ -64,7 +64,6 @@ class ColorSelector extends StatelessWidget {
 
     // Handle tailwind-style color classes
     if (colorClass.startsWith('bg-')) {
-      final parts = colorClass.split('-');
       if (parts.length < 2) {
         return Colors.grey;
       }
@@ -77,7 +76,6 @@ class ColorSelector extends StatelessWidget {
       } else if (colorName == 'bluegray') {
         colorName = 'blueGrey';
       }
-
       final colorMap = <String, Map<String, dynamic>>{
         'red': {'color': Colors.red, 'supportsShades': true},
         'pink': {'color': Colors.pink, 'supportsShades': true},
@@ -102,31 +100,71 @@ class ColorSelector extends StatelessWidget {
         'white': {'color': Colors.white, 'supportsShades': false},
       };
 
-      final colorEntry = colorMap[colorName];
-      if (colorEntry == null) {
-        return Colors.grey;
+      final colorInfo = colorMap[colorName];
+      if (colorInfo != null) {
+        final Color baseColor = colorInfo['color'] as Color;
+        final bool supportsShades = colorInfo['supportsShades'] as bool;
+
+        if (supportsShades && shade != null && baseColor is MaterialColor) {
+          // Use the shade if specified and supported
+          switch (shade) {
+            case 50:
+              return baseColor.shade50;
+            case 100:
+              return baseColor.shade100;
+            case 200:
+              return baseColor.shade200;
+            case 300:
+              return baseColor.shade300;
+            case 400:
+              return baseColor.shade400;
+            case 500:
+              return baseColor.shade500;
+            case 600:
+              return baseColor.shade600;
+            case 700:
+              return baseColor.shade700;
+            case 800:
+              return baseColor.shade800;
+            case 900:
+              return baseColor.shade900;
+            default:
+              return baseColor;
+          }
+        } else {
+          return baseColor;
+        }
       }
-
-      final baseColor = colorEntry['color'] as Color;
-      final supportsShades = colorEntry['supportsShades'] as bool;
-
-      if (shade == null || !supportsShades) {
-        return baseColor;
-      }
-
-      const validShades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
-      if (!validShades.contains(shade)) {
-        return baseColor;
-      }
-
-      if (baseColor is MaterialColor || baseColor is MaterialAccentColor) {
-        return (baseColor as dynamic)[shade] ?? baseColor;
-      }
-
-      return baseColor;
     }
 
-    return Colors.grey;
+    // Handle direct color names
+    switch (colorClass.toLowerCase()) {
+      case 'red':
+        return Colors.red;
+      case 'blue':
+        return Colors.blue;
+      case 'green':
+        return Colors.green;
+      case 'yellow':
+        return Colors.yellow;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+      case 'pink':
+        return Colors.pink;
+      case 'brown':
+        return Colors.brown;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      case 'grey':
+      case 'gray':
+        return Colors.grey;
+      default:
+        return Colors.grey;
+    }
   }
 
   Color _getColor(Map<String, String> colorMap, BuildContext context) {
@@ -140,7 +178,8 @@ class ColorSelector extends StatelessWidget {
   }
 
   bool _isLightColor(Color color) {
-    final luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
+    final luminance =
+        (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
     return luminance > 0.5;
   }
 
@@ -159,47 +198,49 @@ class ColorSelector extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.background(context),
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
-        border: Border.all(
-          color: AppColors.border(context),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.border(context), width: 1),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: colors.map((colorMap) {
-          final colorValue = colorMap['value'] ?? '';
-          final isSelected = selectedColor == colorValue;
-          final color = _getColor(colorMap, context);
-          final isLight = _isLightColor(color);
+        children:
+            colors.map((colorMap) {
+              final colorValue = colorMap['value'] ?? '';
+              final isSelected = selectedColor == colorValue;
+              final color = _getColor(colorMap, context);
+              final isLight = _isLightColor(color);
 
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: UIConfig.paddingSmall),
-            child: GestureDetector(
-              onTap: () => onColorSelected(colorValue),
-              child: Container(
-                width: 25,
-                height: 25,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color,
-                  border: Border.all(
-                    color: isSelected
-                        ? (isLight ? Colors.black : Colors.white)
-                        : Colors.transparent,
-                    width: 2,
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: UIConfig.paddingSmall,
+                ),
+                child: GestureDetector(
+                  onTap: () => onColorSelected(colorValue),
+                  child: Container(
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: color,
+                      border: Border.all(
+                        color:
+                            isSelected
+                                ? (isLight ? Colors.black : Colors.white)
+                                : Colors.transparent,
+                        width: 2,
+                      ),
+                    ),
+                    child:
+                        isSelected
+                            ? Icon(
+                              Icons.check,
+                              size: 16,
+                              color: isLight ? Colors.black : Colors.white,
+                            )
+                            : null,
                   ),
                 ),
-                child: isSelected
-                    ? Icon(
-                        Icons.check,
-                        size: 16,
-                        color: isLight ? Colors.black : Colors.white,
-                      )
-                    : null,
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }

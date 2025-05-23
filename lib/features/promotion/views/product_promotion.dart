@@ -4,8 +4,7 @@ import 'package:store_go/features/promotion/controller/promotion_controller.dart
 import 'package:store_go/features/promotion/views/widgets/loading_indicator.dart';
 import 'package:store_go/features/promotion/views/widgets/promotion_section.dart';
 
-
-class ProductPromotionView extends StatelessWidget {
+class ProductPromotionView extends StatefulWidget {
   final String productId;
   final PromotionController controller;
 
@@ -16,25 +15,39 @@ class ProductPromotionView extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    _initializePromotions();
+  State<ProductPromotionView> createState() => _ProductPromotionViewState();
+}
 
+class _ProductPromotionViewState extends State<ProductPromotionView> {
+  bool _hasInitializedPromotions = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePromotions();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.state.isLoading.value) {
+      if (widget.controller.state.isLoading.value) {
         return const LoadingIndicator();
-      } else if (controller.state.hasError.value ||
-          controller.state.productPromotions.isEmpty) {
+      } else if (widget.controller.state.hasError.value ||
+          widget.controller.state.productPromotions.isEmpty) {
         return const SizedBox.shrink();
       } else {
         return PromotionSection(
-          controller: controller,
-          productId: productId,
+          controller: widget.controller,
+          productId: widget.productId,
         );
       }
     });
   }
 
   void _initializePromotions() {
-    controller.fetchPromotionsByProductId(productId);
+    if (!_hasInitializedPromotions) {
+      _hasInitializedPromotions = true;
+      widget.controller.fetchPromotionsByProductId(widget.productId);
+    }
   }
 }

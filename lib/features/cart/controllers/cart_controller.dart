@@ -8,17 +8,26 @@ class CartController extends GetxController {
   final CartRepository _repository;
   final Logger _logger = Logger();
 
+  // Observable variables
   final RxList<CartItem> cartItems = <CartItem>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool isUpdating = false.obs;
   final RxBool isError = false.obs;
   final RxString errorMessage = ''.obs;
   final RxString couponCode = ''.obs;
+  final RxString cartId = ''.obs;
 
+  // Cart totals (matching UI expectations)
   final RxDouble subtotal = 0.0.obs;
-  final RxDouble shipping = 0.0.obs;
+  final RxDouble shipping = 10.0.obs; // Default shipping cost
   final RxDouble tax = 0.0.obs;
   final RxDouble discount = 0.0.obs;
   final RxDouble total = 0.0.obs;
+  final RxInt totalItems = 0.obs;
+
+  // Alternative naming for backward compatibility
+  double get shippingCost => shipping.value;
+  double get totalAmount => total.value;
 
   CartController({required CartRepository repository})
     : _repository = repository;
@@ -29,190 +38,242 @@ class CartController extends GetxController {
     fetchCartItems();
   }
 
+  // Unified fetch method (matches Bruno: GET /cart)
   Future<void> fetchCartItems() async {
+    await fetchCart();
+  }
+
+  Future<void> fetchCart() async {
     try {
       isLoading.value = true;
       isError.value = false;
       errorMessage.value = '';
 
-      final items = await _repository.getCartItems();
-      cartItems.value = items;
-      _calculateCartTotals();
+      final cartData = await _repository.getCart();
+
+      if (cartData != null) {
+        cartId.value = cartData['cartId'] ?? '';
+
+        // Parse cart items
+        final items = cartData['items'] as List? ?? [];
+        cartItems.value = items.map((item) => CartItem.fromJson(item)).toList();
+
+        // Parse summary or calculate locally
+        final summary = cartData['summary'] as Map<String, dynamic>?;
+        if (summary != null) {
+          totalItems.value = summary['totalItems'] ?? cartItems.length;
+          subtotal.value = (summary['subtotal'] ?? 0.0).toDouble();
+          tax.value = (summary['tax'] ?? 0.0).toDouble();
+          shipping.value = (summary['shippingCost'] ?? 10.0).toDouble();
+          discount.value = (summary['discount'] ?? 0.0).toDouble();
+          total.value = (summary['totalAmount'] ?? 0.0).toDouble();
+        } else {
+          // Calculate totals locally if not provided by API
+          _calculateCartTotals();
+        }
+      } else {
+        // Empty cart
+        _clearCartState();
+      }
     } catch (e) {
       isError.value = true;
       errorMessage.value = e.toString();
-      _logger.e('Error fetching cart items: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to load cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      _logger.e('Error fetching cart: $e');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> addToCart({
+  // Add to cart with Product model (backward compatibility)
+  Future<void> addToCart(
+    Product product, {
+    int quantity = 1,
+    Map<String, dynamic>? variants,
+  }) async {
+    try {
+      isUpdating.value = true;
+
+      await _repository.addToCart(
+        productId: product.id,
+        quantity: quantity,
+        variants: variants,
+      );
+
+      // Refresh cart to get updated data
+      await fetchCart();
+
+      Get.snackbar(
+        'Success',
+        '${product.name} added to cart',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to add item to cart: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isUpdating.value = false;
+    }
+  }
+
+  // Add to cart with Product model (alternative naming)
+  Future<void> addProductToCart({
     required Product product,
     required int quantity,
     required String variantId,
   }) async {
     try {
-      isLoading.value = true;
-      isError.value = false;
-      errorMessage.value = '';
+      isUpdating.value = true;
 
-      // Check if the product is already in the cart
-      final existingItemIndex = cartItems.indexWhere(
-        (item) => item.productId == product.id && item.variantId == variantId,
+      final variants = variantId.isNotEmpty ? {'variantId': variantId} : null;
+
+      await _repository.addToCart(
+        productId: product.id,
+        quantity: quantity,
+        variants: variants,
       );
 
-      if (existingItemIndex >= 0) {
-        // If the product is already in the cart, update its quantity instead of adding a new item
-        final existingItem = cartItems[existingItemIndex];
-        final updatedItem = existingItem.copyWith(
-          quantity: existingItem.quantity + quantity,
-        );
+      // Refresh cart to get updated data
+      await fetchCart();
 
-        // Update the local cart first
-        cartItems[existingItemIndex] = updatedItem;
-        _calculateCartTotals();
-
-        // Then sync with backend
-        try {
-          await _repository.updateCartItem(updatedItem);
-        } catch (e) {
-          _logger.e('Error updating cart item, falling back to add: $e');
-          // If update fails (404), try adding the item with the new total quantity
-          await _repository.addToCart(updatedItem);
-        }
-      } else {
-        // If the product is not in the cart, add it as a new item
-        final tempItem = CartItem(
-          id: DateTime.now().toString(),
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          quantity: quantity,
-          variantId: variantId,
-          image: product.images.isNotEmpty ? product.images.first : '',
-        );
-
-        // Update the local cart first
-        cartItems.add(tempItem);
-        _calculateCartTotals();
-
-        // Then sync with backend
-        await _repository.addToCart(tempItem);
-      }
+      Get.snackbar(
+        'Success',
+        '${product.name} added to cart',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      // Rollback the optimistic update on error
-      cartItems.removeWhere(
-        (item) => item.productId == product.id && item.variantId == variantId,
+      _logger.e('Error adding product to cart: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to add item to cart',
+        snackPosition: SnackPosition.BOTTOM,
       );
-      _calculateCartTotals();
-
-      isError.value = true;
-      errorMessage.value = e.toString();
-      _logger.e('Error adding to cart: $e');
-      // No snackbar notification
     } finally {
-      isLoading.value = false;
+      isUpdating.value = false;
     }
   }
 
-  Future<void> updateQuantity(String productId, int quantity) async {
-    // Declare item and index outside the try block so they are accessible in the catch block
-    CartItem? item;
-    int? index;
-
+  // Update cart item quantity (matches Bruno: PUT /cart/items/:cartItemId)
+  Future<void> updateCartItem(
+    String cartItemId, {
+    int? quantity,
+    Map<String, dynamic>? variants,
+  }) async {
     try {
-      // Prevent negative or zero quantities
+      isUpdating.value = true;
+
+      await _repository.updateCartItem(
+        cartItemId: cartItemId,
+        quantity: quantity,
+        variants: variants,
+      );
+
+      // Refresh cart to get updated data
+      await fetchCart();
+    } catch (e) {
+      _logger.e('Error updating cart item: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to update cart item',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isUpdating.value = false;
+    }
+  }
+
+  // Update quantity by product ID (for UI compatibility)
+  Future<void> updateQuantity(String productId, int quantity) async {
+    try {
       if (quantity <= 0) {
         await removeFromCart(productId);
         return;
       }
 
-      // Update locally first (this updates the UI immediately)
-      item = cartItems.firstWhere((item) => item.productId == productId);
-      final updatedItem = item.copyWith(quantity: quantity);
-      index = cartItems.indexWhere((item) => item.productId == productId);
-      cartItems[index] = updatedItem;
-      _calculateCartTotals();
-
-      // Sync with backend without refreshing the entire cart
-      await _repository.updateCartItem(updatedItem);
-    } catch (e) {
-      // Revert the local change if the backend update fails
-      if (item != null && index != null) {
-        cartItems[index] = item; // Revert to the original item
-        _calculateCartTotals();
+      // Find cart item by product ID
+      final cartItem = cartItems.firstWhereOrNull(
+        (item) => item.productId == productId,
+      );
+      if (cartItem != null) {
+        await updateCartItem(cartItem.id, quantity: quantity);
       }
-
-      _logger.e('Error updating cart item: $e');
-      // No snackbar notification
+    } catch (e) {
+      _logger.e('Error updating quantity: $e');
     }
   }
 
+  // Remove from cart by cart item ID (matches Bruno: DELETE /cart/items/:cartItemId)
+  Future<void> removeCartItem(String cartItemId) async {
+    try {
+      isUpdating.value = true;
+
+      await _repository.removeFromCart(cartItemId);
+
+      // Refresh cart to get updated data
+      await fetchCart();
+
+      Get.snackbar(
+        'Success',
+        'Item removed from cart',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      _logger.e('Error removing cart item: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to remove item',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isUpdating.value = false;
+    }
+  }
+
+  // Remove from cart by product ID (for UI compatibility)
   Future<void> removeFromCart(String productId) async {
-    final itemsToRemove =
-        cartItems.where((item) => item.productId == productId).toList();
     try {
-      isLoading.value = true;
-      isError.value = false;
-      errorMessage.value = '';
-
-      // Optimistic update - remove from UI first
-      cartItems.removeWhere((item) => item.productId == productId);
-      _calculateCartTotals();
-
-      // Then sync with backend
-      await _repository.removeFromCart(productId);
+      // Find cart item by product ID
+      final cartItem = cartItems.firstWhereOrNull(
+        (item) => item.productId == productId,
+      );
+      if (cartItem != null) {
+        await removeCartItem(cartItem.id);
+      }
     } catch (e) {
-      // Rollback the optimistic update on error
-      cartItems.addAll(itemsToRemove);
-      _calculateCartTotals();
-
-      isError.value = true;
-      errorMessage.value = e.toString();
       _logger.e('Error removing from cart: $e');
-      // No snackbar notification
-
-      await fetchCartItems();
-    } finally {
-      isLoading.value = false;
     }
   }
 
+  // Clear entire cart (matches Bruno: DELETE /cart)
   Future<void> clearCart() async {
-    final itemsToRestore = cartItems.toList();
     try {
-      isLoading.value = true;
-      isError.value = false;
-      errorMessage.value = '';
+      isUpdating.value = true;
 
-      // Optimistic update - clear UI first
-      cartItems.clear();
-      _calculateCartTotals();
-
-      // Then sync with backend
       await _repository.clearCart();
+
+      // Clear local state
+      _clearCartState();
+
+      Get.snackbar(
+        'Success',
+        'Cart cleared successfully',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      // Rollback the optimistic update on error
-      cartItems.addAll(itemsToRestore);
-      _calculateCartTotals();
-
-      isError.value = true;
-      errorMessage.value = e.toString();
       _logger.e('Error clearing cart: $e');
-      // No snackbar notification
-
-      await fetchCartItems();
+      Get.snackbar(
+        'Error',
+        'Failed to clear cart',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
-      isLoading.value = false;
+      isUpdating.value = false;
     }
   }
 
+  // Apply coupon
   Future<void> applyCoupon(String code) async {
     if (code.isEmpty) {
       couponCode.value = '';
@@ -222,45 +283,140 @@ class CartController extends GetxController {
     }
 
     try {
-      isLoading.value = true;
-      isError.value = false;
-      errorMessage.value = '';
+      isUpdating.value = true;
 
-      // Optimistic update - set code and calculate with zero discount
+      // For now, just set the coupon code
+      // You can implement actual coupon validation via API later
       couponCode.value = code;
+
+      // Mock discount calculation (replace with actual API call)
+      if (code.toLowerCase() == 'save10') {
+        discount.value = subtotal.value * 0.1;
+      } else {
+        discount.value = 0.0;
+      }
+
       _calculateCartTotals();
 
-      // Then get the actual discount from backend
-      final discountAmount = await _repository.applyCoupon(code);
-      discount.value = discountAmount;
-      _calculateCartTotals();
+      Get.snackbar(
+        'Success',
+        discount.value > 0
+            ? 'Coupon applied successfully!'
+            : 'Invalid coupon code',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      // Rollback the optimistic update on error
+      _logger.e('Error applying coupon: $e');
       couponCode.value = '';
       discount.value = 0.0;
       _calculateCartTotals();
-
-      isError.value = true;
-      errorMessage.value = e.toString();
-      _logger.e('Error applying coupon: $e');
-      // No snackbar notification
     } finally {
-      isLoading.value = false;
+      isUpdating.value = false;
     }
   }
 
+  // Get cart summary (matches Bruno: GET /cart/summary)
+  Future<void> getCartSummary() async {
+    try {
+      final summary = await _repository.getCartSummary();
+
+      if (summary != null) {
+        final summaryData =
+            summary['summary'] as Map<String, dynamic>? ?? summary;
+        totalItems.value = summaryData['totalItems'] ?? cartItems.length;
+        subtotal.value = (summaryData['subtotal'] ?? 0.0).toDouble();
+        tax.value = (summaryData['tax'] ?? 0.0).toDouble();
+        shipping.value = (summaryData['shippingCost'] ?? 10.0).toDouble();
+        discount.value = (summaryData['discount'] ?? 0.0).toDouble();
+        total.value = (summaryData['totalAmount'] ?? 0.0).toDouble();
+      }
+    } catch (e) {
+      _logger.e('Failed to get cart summary: $e');
+    }
+  }
+
+  // Validate cart (matches Bruno: POST /cart/validate)
+  Future<Map<String, dynamic>?> validateCart() async {
+    try {
+      return await _repository.validateCart();
+    } catch (e) {
+      _logger.e('Failed to validate cart: $e');
+      return null;
+    }
+  }
+
+  // Check cart promotions (matches Bruno: POST /cart/check-promotions)
+  Future<Map<String, dynamic>?> checkCartPromotions() async {
+    try {
+      final cartItemsData =
+          cartItems
+              .map(
+                (item) => {
+                  'productId': item.productId,
+                  'quantity': item.quantity,
+                  if (item.variantId.isNotEmpty) 'variantId': item.variantId,
+                },
+              )
+              .toList();
+
+      return await _repository.checkCartPromotions(cartItemsData);
+    } catch (e) {
+      _logger.e('Failed to check promotions: $e');
+      return null;
+    }
+  }
+
+  // Helper methods
   void _calculateCartTotals() {
     subtotal.value = cartItems.fold(
       0.0,
       (sum, item) => sum + (item.price * item.quantity),
     );
-    shipping.value = 10.0;
+
+    totalItems.value = cartItems.fold(0, (sum, item) => sum + item.quantity);
+
+    // Calculate tax (10% of subtotal)
     tax.value = subtotal.value * 0.1;
+
+    // Calculate total
     total.value = subtotal.value + shipping.value + tax.value - discount.value;
   }
 
+  void _clearCartState() {
+    cartItems.clear();
+    totalItems.value = 0;
+    subtotal.value = 0.0;
+    tax.value = 0.0;
+    shipping.value = 10.0;
+    discount.value = 0.0;
+    total.value = 0.0;
+    couponCode.value = '';
+    cartId.value = '';
+  }
+
+  // Convenience methods for UI
+  bool get isEmpty => cartItems.isEmpty;
+  bool get isNotEmpty => cartItems.isNotEmpty;
   bool isCartEmpty() => cartItems.isEmpty;
 
-  bool isProductInCart(String productId) =>
-      cartItems.any((item) => item.productId == productId);
+  CartItem? getCartItemById(String cartItemId) {
+    try {
+      return cartItems.firstWhere((item) => item.id == cartItemId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  int getItemQuantityByProductId(String productId) {
+    try {
+      final item = cartItems.firstWhere((item) => item.productId == productId);
+      return item.quantity;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  bool isProductInCart(String productId) {
+    return cartItems.any((item) => item.productId == productId);
+  }
 }

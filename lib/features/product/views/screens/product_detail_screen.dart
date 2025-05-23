@@ -34,7 +34,6 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
   final promotionController = Get.put(
     PromotionController(promotionRepository: Get.find()),
   );
-  String? selectedColor;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
@@ -58,15 +57,8 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
 
   void _initializeProduct() {
     detailController.fetchProductDetails(widget.productId);
-    detailController.state.product.listen((product) {
-      if (product != null &&
-          product.variants['color'] != null &&
-          product.variants['color']!.isNotEmpty) {
-        setState(() {
-          selectedColor = product.variants['color']![0];
-        });
-      }
-    });
+    // The controller will automatically initialize the default color and size
+    // No need for manual setState calls here
   }
 
   @override
@@ -367,8 +359,6 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
   }
 
   Widget _buildErrorState(String errorMessage) {
-    final bool isRtl = LocalizationService.isRtl(context);
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -487,6 +477,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
     return Scaffold(
       backgroundColor: AppColors.background(context),
       body: Obx(() {
+        // Only react to loading, error, and product changes - not selection changes
         if (detailController.state.isLoading.value) {
           return _buildSkeletonLoading(context);
         } else if (detailController.state.hasError.value) {
@@ -494,160 +485,169 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
         } else if (detailController.state.product.value == null) {
           return _buildProductNotFound();
         } else {
-          final product = detailController.state.product.value!;
-          return Stack(
-            children: [
-              ProductImageGallery(
-                product: product,
-                onPageChanged: (index) {
-                  detailController.updateImageIndex(index);
-                },
-              ),
-              if (product.images.length > 1)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, bottom: 420.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 16.0,
-                      ),
-                      child: ImagePageIndicator(
-                        currentIndex:
-                            detailController.state.currentImageIndex.value,
-                        totalImages: product.images.length,
-                      ),
-                    ),
-                  ),
-                ),
-              SafeArea(
-                child: TopNavigationBar(
-                  onBackPressed: () => Navigator.pop(context),
-                  onCartPressed: () {
-                    Get.toNamed('/cart');
-                  },
-                ),
-              ),
-              SafeArea(
-                child: Align(
-                  alignment:
-                      isRtl ? Alignment.bottomLeft : Alignment.bottomRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: isRtl ? 0 : 16.0,
-                      left: isRtl ? 16.0 : 0,
-                      bottom: 420.0,
-                    ),
-                    child: FavoriteButton(productId: product.id),
-                  ),
-                ),
-              ),
-
-              DraggableInfoSheet(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment:
-                        isRtl
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        textDirection:
-                            isRtl ? TextDirection.rtl : TextDirection.ltr,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              product.name,
-                              style: LocalizationService.getLocalizedTextStyle(
-                                context,
-                                TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Poppins',
-                                  color: AppColors.foreground(context),
-                                ),
-                              ),
-                            ),
-                          ),
-                          QuantitySelector(
-                            quantity: detailController.state.quantity.value,
-                            onQuantityChanged: (value) {
-                              detailController.updateQuantity(value);
-                            },
-                          ),
-                        ],
-                      ),
-
-                      ProductInfo(product: product),
-                      const SizedBox(height: 8),
-
-                      ProductPromotionView(
-                        productId: product.id,
-                        controller: promotionController,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        textDirection:
-                            isRtl ? TextDirection.rtl : TextDirection.ltr,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: SizeSelector(
-                              selectedSize:
-                                  detailController.state.selectedSize.value,
-                              sizes: product.variants['size'] ?? [],
-                              onSizeSelected: (size) {
-                                detailController.updateSize(size);
-                              },
-                            ),
-                          ),
-                          ColorSelector(
-                            selectedColor:
-                                selectedColor ??
-                                (product.variants['color']?.isNotEmpty ?? false
-                                    ? product.variants['color']![0]
-                                    : ''),
-                            colors: product.colors,
-                            onColorSelected: (color) {
-                              setState(() {
-                                selectedColor = color;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      ProductDescription(description: product.description),
-                      const SizedBox(height: 8),
-
-                      ReviewSection(
-                        initialReviews: product.reviews,
-                        product: product,
-                      ),
-                      const SizedBox(height: 16),
-                      AddToCartButton(
-                        price: product.price,
-                        product: product,
-                        quantity: detailController.state.quantity.value,
-                        variantId: detailController.state.selectedSize.value,
-                        onAddPressed: () {
-                          detailController.addToCart();
-                        },
-                        onRemovePressed: () {
-                          // Just handle the removal without showing a toast
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
+          return _buildProductContent(context, isRtl);
         }
       }),
+    );
+  }
+
+  Widget _buildProductContent(BuildContext context, bool isRtl) {
+    final product = detailController.state.product.value!;
+    return Stack(
+      children: [
+        ProductImageGallery(
+          product: product,
+          onPageChanged: (index) {
+            detailController.updateImageIndex(index);
+          },
+        ),
+        if (product.images.length > 1)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 16.0, bottom: 420.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 16.0,
+                ),
+                child: Obx(
+                  () => ImagePageIndicator(
+                    currentIndex:
+                        detailController.state.currentImageIndex.value,
+                    totalImages: product.images.length,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        SafeArea(
+          child: TopNavigationBar(
+            onBackPressed: () => Navigator.pop(context),
+            onCartPressed: () {
+              Get.toNamed('/cart');
+            },
+          ),
+        ),
+        SafeArea(
+          child: Align(
+            alignment: isRtl ? Alignment.bottomLeft : Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.only(
+                right: isRtl ? 0 : 16.0,
+                left: isRtl ? 16.0 : 0,
+                bottom: 420.0,
+              ),
+              child: FavoriteButton(productId: product.id),
+            ),
+          ),
+        ),
+        DraggableInfoSheet(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment:
+                  isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        product.name,
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                            color: AppColors.foreground(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Obx(
+                      () => QuantitySelector(
+                        quantity: detailController.state.quantity.value,
+                        onQuantityChanged: (value) {
+                          detailController.updateQuantity(value);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                ProductInfo(product: product),
+                const SizedBox(height: 8),
+                ProductPromotionView(
+                  productId: product.id,
+                  controller: promotionController,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => SizeSelector(
+                          selectedSize:
+                              detailController.state.selectedSize.value,
+                          sizes: product.variants['size'] ?? [],
+                          onSizeSelected: (size) {
+                            detailController.updateSize(size);
+                          },
+                        ),
+                      ),
+                    ),
+                    Obx(
+                      () => ColorSelector(
+                        selectedColor:
+                            detailController
+                                    .state
+                                    .selectedColor
+                                    .value
+                                    .isNotEmpty
+                                ? detailController.state.selectedColor.value
+                                : (product.variants['color']?.isNotEmpty ??
+                                        false
+                                    ? product.variants['color']![0]
+                                    : ''),
+                        colors: product.colors,
+                        onColorSelected: (color) {
+                          detailController.updateColor(color);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ProductDescription(description: product.description),
+                const SizedBox(height: 8),
+                ReviewSection(
+                  initialReviews: product.reviews,
+                  product: product,
+                ),
+                const SizedBox(height: 16),
+                Obx(
+                  () => AddToCartButton(
+                    price: product.price,
+                    product: product,
+                    quantity: detailController.state.quantity.value,
+                    variantId: detailController.state.selectedSize.value,
+                    onAddPressed: () {
+                      detailController.addToCart();
+                    },
+                    onRemovePressed: () {
+                      // Just handle the removal without showing a toast
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

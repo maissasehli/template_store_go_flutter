@@ -6,8 +6,18 @@ import 'package:store_go/features/cart/repositories/cart_repository.dart';
 class CartBinding extends Bindings {
   @override
   void dependencies() {
-    final apiClient = Get.find<ApiClient>();
-    Get.lazyPut<CartRepository>(() => CartRepository(apiClient: apiClient), fenix: true);
-    Get.lazyPut<CartController>(() => CartController(repository: Get.find<CartRepository>()), fenix: true);
+    // Ensure ApiClient is available
+    if (!Get.isRegistered<ApiClient>()) {
+      Get.put<ApiClient>(ApiClient(), permanent: true);
+    }
+
+    // Register CartRepository
+    Get.lazyPut<CartRepository>(() => CartRepository(), fenix: true);
+
+    // Register CartController with repository dependency
+    Get.lazyPut<CartController>(
+      () => CartController(repository: Get.find<CartRepository>()),
+      fenix: true,
+    );
   }
 }

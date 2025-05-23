@@ -72,9 +72,12 @@ class AddToCartButton extends StatelessWidget {
                               : () {
                                 // If product is not in cart, add it
                                 cartController.addToCart(
-                                  product: product!,
+                                  product!,
                                   quantity: quantity ?? 1,
-                                  variantId: variantId ?? '',
+                                  variants:
+                                      variantId != null && variantId!.isNotEmpty
+                                          ? {'variantId': variantId}
+                                          : null,
                                 );
                                 if (onAddPressed != null) onAddPressed!();
                               },
