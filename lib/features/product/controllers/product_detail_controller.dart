@@ -177,11 +177,6 @@ class ProductDetailController extends GetxController {
       if (product.variants.containsKey('size') &&
           product.variants['size']!.isNotEmpty &&
           state.selectedSize.value.isEmpty) {
-        Get.snackbar(
-          'Warning',
-          'Please select a size before adding to cart',
-          snackPosition: SnackPosition.BOTTOM,
-        );
         return;
       }
 
@@ -199,16 +194,7 @@ class ProductDetailController extends GetxController {
         quantity: quantity,
         variants: variants,
       );
-
-      // Show a minimal snackbar to confirm the action
-      Get.snackbar(
-        'Success',
-        'Item added to cart',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 1),
-      );
     } catch (e) {
-      // Silent error handling, UI will remain consistent
       _logger.e('Error adding to cart: $e');
     }
   }

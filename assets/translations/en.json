@@ -156,7 +156,9 @@
         "error_loading": "Error: ",
         "error_service": "Error: Review service not available",
         "remove_from_cart": "Remove from Cart",
-        "item_removed": "Item has been removed from your cart"
+        "item_removed": "Item has been removed from your cart",
+        "adding": "Adding...",
+        "removing": "Removing..."
     },
     "reviews": {
         "customer_reviews": "Customer Reviews",

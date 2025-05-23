@@ -55,23 +55,26 @@ class AddToCartButton extends StatelessWidget {
         Expanded(
           child:
               product != null
-                  ? // If we have product details, show toggle button with cart status
-                  Obx(() {
+                  ? Obx(() {
                     final isInCart = cartController.isProductInCart(
                       product!.id,
                     );
+                    final isLoading = cartController.isUpdating.value;
 
                     return ElevatedButton(
                       onPressed:
-                          isInCart
-                              ? () {
-                                // If product is in cart, remove it
-                                cartController.removeFromCart(product!.id);
+                          isLoading
+                              ? null
+                              : isInCart
+                              ? () async {
                                 if (onRemovePressed != null) onRemovePressed!();
+                                await cartController.removeFromCart(
+                                  product!.id,
+                                );
                               }
-                              : () {
-                                // If product is not in cart, add it
-                                cartController.addToCart(
+                              : () async {
+                                if (onAddPressed != null) onAddPressed!();
+                                await cartController.addToCart(
                                   product!,
                                   quantity: quantity ?? 1,
                                   variants:
@@ -79,7 +82,6 @@ class AddToCartButton extends StatelessWidget {
                                           ? {'variantId': variantId}
                                           : null,
                                 );
-                                if (onAddPressed != null) onAddPressed!();
                               },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
@@ -104,19 +106,37 @@ class AddToCartButton extends StatelessWidget {
                             isRtl ? TextDirection.rtl : TextDirection.ltr,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            isInCart
-                                ? Icons.remove_shopping_cart
-                                : Icons.shopping_bag_outlined,
-                            size: 16,
-                            color:
-                                isInCart
-                                    ? AppColors.destructiveForeground(context)
-                                    : AppColors.primaryForeground(context),
-                          ),
+                          if (isLoading)
+                            SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  isInCart
+                                      ? AppColors.destructiveForeground(context)
+                                      : AppColors.primaryForeground(context),
+                                ),
+                              ),
+                            )
+                          else
+                            Icon(
+                              isInCart
+                                  ? Icons.remove_shopping_cart
+                                  : Icons.shopping_bag_outlined,
+                              size: 16,
+                              color:
+                                  isInCart
+                                      ? AppColors.destructiveForeground(context)
+                                      : AppColors.primaryForeground(context),
+                            ),
                           const SizedBox(width: UIConfig.paddingSmall),
                           Text(
-                            isInCart
+                            isLoading
+                                ? (isInCart
+                                    ? 'product_detail.removing'.translate()
+                                    : 'product_detail.adding'.translate())
+                                : isInCart
                                 ? 'product_detail.remove_from_cart'.translate()
                                 : (buttonText ??
                                     'product_detail.add_to_cart'.translate()),
@@ -150,8 +170,7 @@ class AddToCartButton extends StatelessWidget {
                       ),
                     );
                   })
-                  : // Simple button without cart status checking if no product provided
-                  ElevatedButton(
+                  : ElevatedButton(
                     onPressed: onAddPressed,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary(context),

@@ -101,18 +101,10 @@ class CartController extends GetxController {
 
       // Refresh cart to get updated data
       await fetchCart();
-
-      Get.snackbar(
-        'Success',
-        '${product.name} added to cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to add item to cart: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      _logger.e('Error adding product to cart: $e');
+      // Re-throw to let the calling widget handle it
+      rethrow;
     } finally {
       isUpdating.value = false;
     }
@@ -137,19 +129,8 @@ class CartController extends GetxController {
 
       // Refresh cart to get updated data
       await fetchCart();
-
-      Get.snackbar(
-        'Success',
-        '${product.name} added to cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
       _logger.e('Error adding product to cart: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to add item to cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } finally {
       isUpdating.value = false;
     }
@@ -174,11 +155,6 @@ class CartController extends GetxController {
       await fetchCart();
     } catch (e) {
       _logger.e('Error updating cart item: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to update cart item',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } finally {
       isUpdating.value = false;
     }
@@ -213,19 +189,8 @@ class CartController extends GetxController {
 
       // Refresh cart to get updated data
       await fetchCart();
-
-      Get.snackbar(
-        'Success',
-        'Item removed from cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
       _logger.e('Error removing cart item: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to remove item',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } finally {
       isUpdating.value = false;
     }
@@ -234,15 +199,24 @@ class CartController extends GetxController {
   // Remove from cart by product ID (for UI compatibility)
   Future<void> removeFromCart(String productId) async {
     try {
+      isUpdating.value = true;
+
       // Find cart item by product ID
       final cartItem = cartItems.firstWhereOrNull(
         (item) => item.productId == productId,
       );
       if (cartItem != null) {
-        await removeCartItem(cartItem.id);
+        await _repository.removeFromCart(cartItem.id);
+
+        // Refresh cart to get updated data
+        await fetchCart();
       }
     } catch (e) {
       _logger.e('Error removing from cart: $e');
+      // Re-throw to let the calling widget handle it
+      rethrow;
+    } finally {
+      isUpdating.value = false;
     }
   }
 
@@ -255,19 +229,8 @@ class CartController extends GetxController {
 
       // Clear local state
       _clearCartState();
-
-      Get.snackbar(
-        'Success',
-        'Cart cleared successfully',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
       _logger.e('Error clearing cart: $e');
-      Get.snackbar(
-        'Error',
-        'Failed to clear cart',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } finally {
       isUpdating.value = false;
     }
@@ -297,14 +260,6 @@ class CartController extends GetxController {
       }
 
       _calculateCartTotals();
-
-      Get.snackbar(
-        'Success',
-        discount.value > 0
-            ? 'Coupon applied successfully!'
-            : 'Invalid coupon code',
-        snackPosition: SnackPosition.BOTTOM,
-      );
     } catch (e) {
       _logger.e('Error applying coupon: $e');
       couponCode.value = '';

@@ -142,21 +142,23 @@
         "try_again": "حاول مرة أخرى"
     },
     "product_detail": {
-        "size": "المقاس",
+        "size": "الحجم",
         "description": "الوصف",
         "add_to_cart": "أضف إلى السلة",
         "available_in_stock": "متوفر في المخزون",
-        "out_of_stock": "نفذ من المخزون",
-        "reviews": "تقييم",
-        "reviews_plural": "تقييمات",
+        "out_of_stock": "غير متوفر",
+        "reviews": "مراجعة",
+        "reviews_plural": "مراجعات",
         "product_not_found": "المنتج غير موجود",
-        "product_not_exist": "المنتج المطلوب غير موجود أو تمت إزالته",
+        "product_not_exist": "المنتج المطلوب غير موجود أو تم حذفه",
         "try_again": "حاول مرة أخرى",
         "back": "رجوع",
         "error_loading": "خطأ: ",
-        "error_service": "خطأ: خدمة التقييمات غير متوفرة",
+        "error_service": "خطأ: خدمة المراجعات غير متاحة",
         "remove_from_cart": "إزالة من السلة",
-        "item_removed": "لقد تمت إزالة العنصر من سلة التسوق الخاصة بك"
+        "item_removed": "تم إزالة العنصر من سلتك",
+        "adding": "جاري الإضافة...",
+        "removing": "جاري الإزالة..."
     },
     "reviews": {
         "customer_reviews": "تقييمات العملاء",
