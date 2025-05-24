@@ -25,6 +25,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final OrderController orderController = Get.find<OrderController>();
 
   bool isOrderPlaced = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -44,32 +45,43 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       return;
     }
 
+    // Prepare order data
+    final orderData = {
+      'cartItems':
+          cartController.cartItems.map((item) => item.toJson()).toList(),
+      'shippingAddressId': addressController.selectedAddress.value!.id,
+      'paymentMethodId': paymentController.selectedPaymentMethod.value!.id,
+      'subtotal': cartController.subtotal.value,
+      'shippingCost': cartController.shipping.value,
+      'tax': cartController.tax.value,
+      'discount': cartController.discount.value,
+      'total': cartController.total.value,
+    };
+
     try {
-      // Prepare order data
-      final orderData = {
-        'cartItems':
-            cartController.cartItems.map((item) => item.toJson()).toList(),
-        'shippingAddressId': addressController.selectedAddress.value!.id,
-        'paymentMethodId': paymentController.selectedPaymentMethod.value!.id,
-        'subtotal': cartController.subtotal.value,
-        'shippingCost': cartController.shipping.value,
-        'tax': cartController.tax.value,
-        'discount': cartController.discount.value,
-        'total': cartController.total.value,
-      };
+      setState(() {
+        isLoading = true;
+      });
 
       // Send order to backend
       final response = await Get.find<ApiClient>().post(
         '/orders',
         data: orderData,
       );
+
       if (response.statusCode == 201) {
         setState(() {
           isOrderPlaced = true;
+          isLoading = false;
         });
+
+        // Clear cart after successful order
         await cartController.clearCart();
         orderController.fetchOrders(); // Refresh orders
       } else {
+        setState(() {
+          isLoading = false;
+        });
         Get.snackbar(
           'Error',
           'Failed to place order',
@@ -77,6 +89,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         );
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       Get.snackbar(
         'Error',
         'Failed to place order: $e',

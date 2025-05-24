@@ -52,7 +52,58 @@ class CartScreen extends StatelessWidget {
             icon: Icon(Icons.more_vert, color: AppColors.foreground(context)),
             onSelected: (value) {
               if (value == 'clear_cart') {
-                _showClearCartConfirmationDialog(context, cartController);
+                // Show confirmation dialog before clearing cart
+                Get.dialog(
+                  AlertDialog(
+                    title: Text(
+                      'cart.clear_cart'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          color: AppColors.foreground(context),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    content: Text(
+                      'cart.clear_cart_confirmation'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(color: AppColors.mutedForeground(context)),
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Get.back(),
+                        child: Text(
+                          'cart.cancel'.translate(),
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              color: AppColors.mutedForeground(context),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                          cartController.clearCart();
+                        },
+                        child: Text(
+                          'cart.clear'.translate(),
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              color: AppColors.destructive(context),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               }
             },
             itemBuilder:
@@ -223,24 +274,27 @@ class CartScreen extends StatelessWidget {
                   await controller.fetchCartItems();
                 },
                 color: AppColors.primary(context),
-                child: ListView.builder(
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  itemCount: controller.cartItems.length,
-                  itemBuilder: (context, index) {
-                    final item = controller.cartItems[index];
-                    return CartItemCard(
-                      item: item,
-                      onQuantityChanged:
-                          (quantity) => controller.updateCartItem(
-                            item.id, // Use cart item ID instead of product ID
-                            quantity: quantity,
-                          ),
-                      onRemove:
-                          () => controller.removeCartItem(
-                            item.id,
-                          ), // Use cart item ID
-                    );
-                  },
+                  child: Column(
+                    children:
+                        controller.cartItems.map((item) {
+                          return CartItemCard(
+                            item: item,
+                            onQuantityChanged:
+                                (quantity) =>
+                                    controller.updateCartItemQuantityOptimistic(
+                                      item.id,
+                                      quantity,
+                                    ),
+                            onRemove:
+                                () => controller.removeCartItemOptimistic(
+                                  item.id,
+                                ),
+                          );
+                        }).toList(),
+                  ),
                 ),
               );
             }),
@@ -308,61 +362,6 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _showClearCartConfirmationDialog(
-    BuildContext context,
-    CartController controller,
-  ) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: AppColors.card(context),
-          title: Text(
-            'cart.clear_cart'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(color: AppColors.cardForeground(context)),
-            ),
-          ),
-          content: Text(
-            'cart.clear_cart_confirmation'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(color: AppColors.cardForeground(context)),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'cart.cancel'.translate(),
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(color: AppColors.primary(context)),
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(
-                'cart.clear'.translate(),
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(color: AppColors.destructive(context)),
-                ),
-              ),
-              onPressed: () {
-                controller.clearCart();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

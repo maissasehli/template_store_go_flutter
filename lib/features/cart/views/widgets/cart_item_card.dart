@@ -37,25 +37,33 @@ class CartItemCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
           boxShadow: [
             BoxShadow(
-              color: AppColors.foreground(context).withOpacity(0.05),
-              blurRadius: 25.41,
+              color: AppColors.foreground(context).withOpacity(0.03),
+              blurRadius: 8,
               spreadRadius: 0,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        child: IntrinsicHeight(
-          child: Row(
-            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildProductImage(context, isRtl),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(UIConfig.paddingSmall),
-                  child: _buildProductDetails(context, isRtl),
-                ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
+            child: IntrinsicHeight(
+              child: Row(
+                textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildProductImage(context, isRtl),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(UIConfig.paddingSmall),
+                      color: Colors.transparent,
+                      child: _buildProductDetails(context, isRtl),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

@@ -143,6 +143,42 @@ class CartController extends GetxController {
     Map<String, dynamic>? variants,
   }) async {
     try {
+      await _repository.updateCartItem(
+        cartItemId: cartItemId,
+        quantity: quantity,
+        variants: variants,
+      );
+
+      // Refresh cart to get updated data
+      await fetchCart();
+    } catch (e) {
+      _logger.e('Error updating cart item: $e');
+      rethrow;
+    }
+  }
+
+  // Update quantity by cart item ID (now uses optimistic updates by default)
+  Future<void> updateCartItemQuantity(String cartItemId, int quantity) async {
+    if (quantity <= 0) {
+      await removeCartItemOptimistic(cartItemId);
+      return;
+    }
+
+    await updateCartItemQuantityOptimistic(cartItemId, quantity);
+  }
+
+  // Update the existing removeCartItem method to be optimistic by default
+  Future<void> removeCartItem(String cartItemId) async {
+    await removeCartItemOptimistic(cartItemId);
+  }
+
+  // Keep the original methods with different names for when you need the old behavior
+  Future<void> updateCartItemWithRefresh(
+    String cartItemId, {
+    int? quantity,
+    Map<String, dynamic>? variants,
+  }) async {
+    try {
       isUpdating.value = true;
 
       await _repository.updateCartItem(
@@ -155,49 +191,13 @@ class CartController extends GetxController {
       await fetchCart();
     } catch (e) {
       _logger.e('Error updating cart item: $e');
+      rethrow;
     } finally {
       isUpdating.value = false;
     }
   }
 
-  // Update quantity by cart item ID (recommended method)
-  Future<void> updateCartItemQuantity(String cartItemId, int quantity) async {
-    try {
-      if (quantity <= 0) {
-        await removeCartItem(cartItemId);
-        return;
-      }
-
-      await updateCartItem(cartItemId, quantity: quantity);
-    } catch (e) {
-      _logger.e('Error updating cart item quantity: $e');
-    }
-  }
-
-  // Update quantity by product ID (for UI compatibility) - DEPRECATED
-  // This method is problematic when the same product has different variants
-  Future<void> updateQuantity(String productId, int quantity) async {
-    try {
-      if (quantity <= 0) {
-        await removeFromCart(productId);
-        return;
-      }
-
-      // Find the FIRST cart item by product ID (this is the problem!)
-      // This will always find the first occurrence, not necessarily the one you want
-      final cartItem = cartItems.firstWhereOrNull(
-        (item) => item.productId == productId,
-      );
-      if (cartItem != null) {
-        await updateCartItem(cartItem.id, quantity: quantity);
-      }
-    } catch (e) {
-      _logger.e('Error updating quantity: $e');
-    }
-  }
-
-  // Remove from cart by cart item ID (matches Bruno: DELETE /cart/items/:cartItemId)
-  Future<void> removeCartItem(String cartItemId) async {
+  Future<void> removeCartItemWithRefresh(String cartItemId) async {
     try {
       isUpdating.value = true;
 
@@ -212,43 +212,122 @@ class CartController extends GetxController {
     }
   }
 
-  // Remove from cart by product ID (for UI compatibility)
-  Future<void> removeFromCart(String productId) async {
+  // Update cart item quantity optimistically
+  Future<void> updateCartItemQuantityOptimistic(
+    String cartItemId,
+    int newQuantity,
+  ) async {
+    // Find the cart item
+    final itemIndex = cartItems.indexWhere((item) => item.id == cartItemId);
+    if (itemIndex == -1) return;
+
+    final originalItem = cartItems[itemIndex];
+
+    // Optimistically update the UI immediately using copyWith
+    cartItems[itemIndex] = originalItem.copyWith(quantity: newQuantity);
+    _calculateCartTotals();
+
     try {
-      isUpdating.value = true;
-
-      // Find cart item by product ID
-      final cartItem = cartItems.firstWhereOrNull(
-        (item) => item.productId == productId,
+      // Make the API call in the background without showing loading
+      await _repository.updateCartItem(
+        cartItemId: cartItemId,
+        quantity: newQuantity,
       );
-      if (cartItem != null) {
-        await _repository.removeFromCart(cartItem.id);
-
-        // Refresh cart to get updated data
-        await fetchCart();
-      }
     } catch (e) {
-      _logger.e('Error removing from cart: $e');
-      // Re-throw to let the calling widget handle it
-      rethrow;
-    } finally {
-      isUpdating.value = false;
+      // Revert on error
+      cartItems[itemIndex] = originalItem;
+      _calculateCartTotals();
+
+      _logger.e('Error updating cart item quantity: $e');
+
+      // Show error to user
+      Get.snackbar(
+        'Error',
+        'Failed to update quantity',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 2),
+      );
     }
   }
 
-  // Clear entire cart (matches Bruno: DELETE /cart)
-  Future<void> clearCart() async {
-    try {
-      isUpdating.value = true;
+  // Optimistic remove item - no loading states
+  Future<void> removeCartItemOptimistic(String cartItemId) async {
+    // Find the cart item
+    final itemIndex = cartItems.indexWhere((item) => item.id == cartItemId);
+    if (itemIndex == -1) return;
 
+    final removedItem = cartItems[itemIndex];
+
+    // Optimistically remove from UI immediately
+    cartItems.removeAt(itemIndex);
+    _calculateCartTotals();
+
+    try {
+      // Make the API call in the background without showing loading
+      await _repository.removeFromCart(cartItemId);
+    } catch (e) {
+      // Revert on error
+      cartItems.insert(itemIndex, removedItem);
+      _calculateCartTotals();
+
+      _logger.e('Error removing cart item: $e');
+
+      // Show error to user
+      Get.snackbar(
+        'Error',
+        'Failed to remove item',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 2),
+      );
+    }
+  }
+
+  // Clear entire cart with optimistic update
+  Future<void> clearCart() async {
+    // Store original state for potential revert
+    final originalItems = List<CartItem>.from(cartItems);
+    final originalTotals = {
+      'subtotal': subtotal.value,
+      'total': total.value,
+      'totalItems': totalItems.value,
+      'tax': tax.value,
+      'shipping': shipping.value,
+      'discount': discount.value,
+    };
+
+    try {
+      // Optimistically clear the UI immediately
+      _clearCartState();
+
+      // Make the API call in the background
       await _repository.clearCart();
 
-      // Clear local state
-      _clearCartState();
+      // Success - show confirmation
+      Get.snackbar(
+        'Success',
+        'Cart cleared successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 2),
+      );
     } catch (e) {
+      // Revert on error
+      cartItems.value = originalItems;
+      subtotal.value = originalTotals['subtotal'] as double;
+      total.value = originalTotals['total'] as double;
+      totalItems.value = originalTotals['totalItems'] as int;
+      tax.value = originalTotals['tax'] as double;
+      shipping.value = originalTotals['shipping'] as double;
+      discount.value = originalTotals['discount'] as double;
+
       _logger.e('Error clearing cart: $e');
-    } finally {
-      isUpdating.value = false;
+
+      // Show error to user
+      Get.snackbar(
+        'Error',
+        'Failed to clear cart',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 2),
+      );
     }
   }
 
