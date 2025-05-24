@@ -13,7 +13,7 @@ class AddToCartButton extends StatelessWidget {
   final double price;
   final String? buttonText;
   final Product? product;
-  final String? variantId;
+  final Map<String, String>? variants;
   final int? quantity;
 
   const AddToCartButton({
@@ -23,7 +23,7 @@ class AddToCartButton extends StatelessWidget {
     required this.price,
     this.buttonText,
     this.product,
-    this.variantId,
+    this.variants,
     this.quantity,
   });
 
@@ -56,8 +56,9 @@ class AddToCartButton extends StatelessWidget {
           child:
               product != null
                   ? Obx(() {
-                    final isInCart = cartController.isProductInCart(
+                    final isInCart = cartController.isProductInCartWithVariants(
                       product!.id,
+                      variants,
                     );
                     final isLoading = cartController.isUpdating.value;
 
@@ -68,20 +69,22 @@ class AddToCartButton extends StatelessWidget {
                               : isInCart
                               ? () async {
                                 if (onRemovePressed != null) onRemovePressed!();
-                                await cartController.removeFromCart(
+                                await cartController.removeFromCartWithVariants(
                                   product!.id,
+                                  variants,
                                 );
                               }
                               : () async {
-                                if (onAddPressed != null) onAddPressed!();
-                                await cartController.addToCart(
-                                  product!,
-                                  quantity: quantity ?? 1,
-                                  variants:
-                                      variantId != null && variantId!.isNotEmpty
-                                          ? {'variantId': variantId}
-                                          : null,
-                                );
+                                // Only call onAddPressed OR internal cart logic, not both
+                                if (onAddPressed != null) {
+                                  onAddPressed!();
+                                } else {
+                                  await cartController.addToCart(
+                                    product!,
+                                    quantity: quantity ?? 1,
+                                    variants: variants,
+                                  );
+                                }
                               },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:

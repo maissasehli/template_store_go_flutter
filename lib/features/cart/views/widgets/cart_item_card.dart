@@ -24,83 +24,14 @@ class CartItemCard extends StatelessWidget {
 
     return Dismissible(
       key: Key(item.id),
-      // Use directional dismissal based on RTL
       direction:
           isRtl ? DismissDirection.startToEnd : DismissDirection.endToStart,
-      // Handle removal when dismissed
-      onDismissed: (direction) {
-        onRemove();
-      },
-      // In RTL mode, we swap the backgrounds
-      background:
-          isRtl
-              ? Container(
-                margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
-                height: 105.87,
-                decoration: BoxDecoration(
-                  color: AppColors.destructive(context),
-                  borderRadius: BorderRadius.circular(
-                    UIConfig.borderRadiusLarge,
-                  ),
-                ),
-                alignment: Alignment.centerRight, // Changed to right for RTL
-                padding: EdgeInsets.only(
-                  right: UIConfig.paddingMedium,
-                ), // Changed padding to right
-                child: SvgPicture.asset(
-                  AssetConfig.delete,
-                  width: 24,
-                  height: 24,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.destructiveForeground(context),
-                    BlendMode.srcIn,
-                  ),
-                ),
-              )
-              : Container(
-                margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(
-                    UIConfig.borderRadiusLarge,
-                  ),
-                ),
-              ),
-      secondaryBackground:
-          isRtl
-              ? Container(
-                margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(
-                    UIConfig.borderRadiusLarge,
-                  ),
-                ),
-              )
-              : Container(
-                margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
-                height: 105.87,
-                decoration: BoxDecoration(
-                  color: AppColors.destructive(context),
-                  borderRadius: BorderRadius.circular(
-                    UIConfig.borderRadiusLarge,
-                  ),
-                ),
-                alignment: Alignment.centerRight,
-                padding: EdgeInsets.only(right: UIConfig.paddingMedium),
-                child: SvgPicture.asset(
-                  AssetConfig.delete,
-                  width: 24,
-                  height: 24,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.destructiveForeground(context),
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
+      onDismissed: (direction) => onRemove(),
+      background: _buildDismissBackground(context, isRtl, true),
+      secondaryBackground: _buildDismissBackground(context, isRtl, false),
       child: Container(
         margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
-        height: 105.87,
+        constraints: const BoxConstraints(minHeight: 120),
         decoration: BoxDecoration(
           color: AppColors.card(context),
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
@@ -112,21 +43,59 @@ class CartItemCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-          children: [
-            _buildProductImage(context, isRtl),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(UIConfig.paddingSmall),
-                child: _buildProductDetails(context, isRtl),
+        child: IntrinsicHeight(
+          child: Row(
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildProductImage(context, isRtl),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.all(UIConfig.paddingSmall),
+                  child: _buildProductDetails(context, isRtl),
+                ),
               ),
-            ),
-            _buildQuantityControls(context),
-            SizedBox(width: UIConfig.marginSmall),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDismissBackground(
+    BuildContext context,
+    bool isRtl,
+    bool isPrimary,
+  ) {
+    final bool shouldShowDelete =
+        (isRtl && isPrimary) || (!isRtl && !isPrimary);
+
+    return Container(
+      margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
+      decoration: BoxDecoration(
+        color:
+            shouldShowDelete
+                ? AppColors.destructive(context)
+                : Colors.transparent,
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
+      ),
+      alignment:
+          shouldShowDelete
+              ? (isRtl ? Alignment.centerLeft : Alignment.centerRight)
+              : Alignment.center,
+      padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingMedium),
+      child:
+          shouldShowDelete
+              ? SvgPicture.asset(
+                AssetConfig.delete,
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                  AppColors.destructiveForeground(context),
+                  BlendMode.srcIn,
+                ),
+              )
+              : null,
     );
   }
 
@@ -134,118 +103,256 @@ class CartItemCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.only(
         topLeft:
-            isRtl
-                ? Radius.circular(0)
-                : Radius.circular(UIConfig.borderRadiusLarge),
+            isRtl ? Radius.zero : Radius.circular(UIConfig.borderRadiusLarge),
         bottomLeft:
-            isRtl
-                ? Radius.circular(0)
-                : Radius.circular(UIConfig.borderRadiusLarge),
+            isRtl ? Radius.zero : Radius.circular(UIConfig.borderRadiusLarge),
         topRight:
-            isRtl
-                ? Radius.circular(UIConfig.borderRadiusLarge)
-                : Radius.circular(0),
+            isRtl ? Radius.circular(UIConfig.borderRadiusLarge) : Radius.zero,
         bottomRight:
-            isRtl
-                ? Radius.circular(UIConfig.borderRadiusLarge)
-                : Radius.circular(0),
+            isRtl ? Radius.circular(UIConfig.borderRadiusLarge) : Radius.zero,
       ),
-      child:
-          item.image.isNotEmpty
-              ? Image.network(
-                item.image,
-                width: 80,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 80,
-                    height: double.infinity,
-                    color: AppColors.secondary(context),
-                    child: Icon(
-                      Icons.image_not_supported,
-                      color: AppColors.muted(context),
-                    ),
-                  );
-                },
-              )
-              : Container(
-                width: 80,
-                height: double.infinity,
-                color: AppColors.secondary(context),
-                child: Icon(Icons.image, color: AppColors.muted(context)),
-              ),
+      child: SizedBox(
+        width: 100,
+        child:
+            item.image.isNotEmpty
+                ? Image.network(
+                  item.image,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      color: AppColors.secondary(context),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value:
+                              loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                          strokeWidth: 2,
+                          color: AppColors.primary(context),
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AppColors.secondary(context),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        color: AppColors.muted(context),
+                        size: 32,
+                      ),
+                    );
+                  },
+                )
+                : Container(
+                  color: AppColors.secondary(context),
+                  child: Icon(
+                    Icons.image,
+                    color: AppColors.muted(context),
+                    size: 32,
+                  ),
+                ),
+      ),
     );
   }
 
   Widget _buildProductDetails(BuildContext context, bool isRtl) {
-    return Column(
-      crossAxisAlignment:
-          isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
       children: [
-        Text(
-          item.name,
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeMedium,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-              color: AppColors.foreground(context),
-            ),
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          textAlign: isRtl ? TextAlign.right : TextAlign.left,
+        // Quantity controls positioned absolutely at bottom left, same level as price
+        Positioned(
+          left: UIConfig.paddingSmall, // Always on the left regardless of RTL
+          bottom: UIConfig.paddingSmall, // Position at bottom same as price
+          child: _buildQuantityControls(context, isRtl),
         ),
-        if (item.variantId.isNotEmpty)
-          Text(
-            item.variantId,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeSmall,
-                color: AppColors.mutedForeground(context),
-                fontFamily: 'Poppins',
+
+        // Product info with left margin to avoid overlap
+        Padding(
+          padding: EdgeInsets.only(
+            left: 100, // More space for horizontal quantity controls
+            right: UIConfig.paddingSmall,
+          ),
+          child: Column(
+            crossAxisAlignment:
+                isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              // Product name
+              Text(
+                item.name,
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: UIConfig.fontSizeMedium,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                    color: AppColors.foreground(context),
+                  ),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: isRtl ? TextAlign.right : TextAlign.left,
               ),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: isRtl ? TextAlign.right : TextAlign.left,
+
+              // Category (if available)
+              if (item.category != null && item.category!.isNotEmpty) ...[
+                SizedBox(height: 2),
+                Text(
+                  item.category!,
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: UIConfig.fontSizeSmall,
+                      color: AppColors.mutedForeground(context),
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                ),
+              ],
+
+              SizedBox(height: UIConfig.paddingSmall),
+
+              // Variants row (color and size indicators)
+              if (_hasVariants())
+                Row(
+                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+                  children: [
+                    if (item.selectedColor != null &&
+                        item.selectedColor!.isNotEmpty) ...[
+                      _buildColorIndicator(context),
+                      SizedBox(width: UIConfig.paddingSmall),
+                    ],
+                    if (item.selectedSize != null &&
+                        item.selectedSize!.isNotEmpty) ...[
+                      _buildSizeIndicator(context),
+                    ],
+                  ],
+                ),
+
+              const Spacer(),
+
+              // Price at bottom - now has space for quantity controls on the left
+              Align(
+                alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: UIConfig.paddingSmall,
+                  ), // Match quantity controls position
+                  child: Text(
+                    '\$${item.price.toStringAsFixed(2)}',
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: UIConfig.fontSizeMedium,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: AppColors.foreground(context),
+                      ),
+                    ),
+                    textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                  ),
+                ),
+              ),
+            ],
           ),
-        SizedBox(height: UIConfig.marginSmall),
-        Text(
-          '\$${item.price.toStringAsFixed(2)}',
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeMedium,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-              color: AppColors.foreground(context),
-            ),
-          ),
-          textAlign: isRtl ? TextAlign.right : TextAlign.left,
         ),
       ],
     );
   }
 
-  Widget _buildQuantityControls(BuildContext context) {
-    final bool isRtl = LocalizationService.isRtl(context);
-
+  Widget _buildColorIndicator(BuildContext context) {
     return Container(
-      width: 74.11,
-      height: 31.76,
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        color: _getColorFromString(item.selectedColor!),
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.border(context), width: 1),
+      ),
+    );
+  }
+
+  Widget _buildSizeIndicator(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.border(context), width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        item.selectedSize!,
+        style: LocalizationService.getLocalizedTextStyle(
+          context,
+          TextStyle(
+            fontSize: UIConfig.fontSizeSmall,
+            fontWeight: FontWeight.w500,
+            color: AppColors.foreground(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getColorFromString(String colorName) {
+    // Handle hex colors
+    if (colorName.startsWith('#')) {
+      try {
+        return Color(int.parse(colorName.replaceFirst('#', '0xFF')));
+      } catch (e) {
+        return Colors.grey;
+      }
+    }
+
+    // Handle color names
+    switch (colorName.toLowerCase()) {
+      case 'red':
+        return Colors.red;
+      case 'blue':
+        return Colors.blue;
+      case 'green':
+        return Colors.green;
+      case 'yellow':
+        return Colors.yellow;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+      case 'pink':
+        return Colors.pink;
+      case 'brown':
+        return Colors.brown;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      case 'grey':
+      case 'gray':
+        return Colors.grey;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  bool _hasVariants() {
+    return (item.selectedColor != null && item.selectedColor!.isNotEmpty) ||
+        (item.selectedSize != null && item.selectedSize!.isNotEmpty);
+  }
+
+  Widget _buildQuantityControls(BuildContext context, bool isRtl) {
+    return Container(
       decoration: BoxDecoration(
         color: AppColors.secondary(context),
         borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+        border: Border.all(color: AppColors.border(context), width: 1),
       ),
       child: Row(
-        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
         children: [
+          // Minus button
           _buildQuantityButton(
             context,
             icon: Icons.remove,
@@ -257,19 +364,23 @@ class CartItemCard extends StatelessWidget {
               }
             },
           ),
-          SizedBox(
-            width: 24,
-            child: Center(
-              child: Text(
-                '${item.quantity}',
-                style: TextStyle(
-                  fontSize: UIConfig.fontSizeRegular,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.foreground(context),
-                ),
+
+          // Quantity display
+          Container(
+            constraints: const BoxConstraints(minWidth: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Text(
+              '${item.quantity}',
+              style: TextStyle(
+                fontSize: UIConfig.fontSizeRegular,
+                fontWeight: FontWeight.w500,
+                color: AppColors.foreground(context),
               ),
+              textAlign: TextAlign.center,
             ),
           ),
+
+          // Plus button
           _buildQuantityButton(
             context,
             icon: Icons.add,
@@ -287,12 +398,11 @@ class CartItemCard extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: SizedBox(
-        width: 24,
-        height: 24,
-        child: Center(
-          child: Icon(icon, size: 16, color: AppColors.foreground(context)),
-        ),
+      child: Container(
+        width: 28,
+        height: 28,
+        decoration: const BoxDecoration(), // Removed background decoration
+        child: Icon(icon, size: 16, color: AppColors.foreground(context)),
       ),
     );
   }

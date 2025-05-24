@@ -231,11 +231,14 @@ class CartScreen extends StatelessWidget {
                     return CartItemCard(
                       item: item,
                       onQuantityChanged:
-                          (quantity) => controller.updateQuantity(
-                            item.productId,
-                            quantity,
+                          (quantity) => controller.updateCartItem(
+                            item.id, // Use cart item ID instead of product ID
+                            quantity: quantity,
                           ),
-                      onRemove: () => controller.removeFromCart(item.productId),
+                      onRemove:
+                          () => controller.removeCartItem(
+                            item.id,
+                          ), // Use cart item ID
                     );
                   },
                 ),

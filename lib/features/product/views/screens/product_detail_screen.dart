@@ -633,12 +633,15 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                     price: product.price,
                     product: product,
                     quantity: detailController.state.quantity.value,
-                    variantId: detailController.state.selectedSize.value,
-                    onAddPressed: () {
-                      detailController.addToCart();
+                    variants: {
+                      if (detailController.state.selectedColor.value.isNotEmpty)
+                        'color': detailController.state.selectedColor.value,
+                      if (detailController.state.selectedSize.value.isNotEmpty)
+                        'size': detailController.state.selectedSize.value,
                     },
+                    // Remove onAddPressed to let AddToCartButton handle everything
                     onRemovePressed: () {
-                      // Just handle the removal without showing a toast
+                      // Optional: Show success message or handle UI updates
                     },
                   ),
                 ),

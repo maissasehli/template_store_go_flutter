@@ -160,7 +160,22 @@ class CartController extends GetxController {
     }
   }
 
-  // Update quantity by product ID (for UI compatibility)
+  // Update quantity by cart item ID (recommended method)
+  Future<void> updateCartItemQuantity(String cartItemId, int quantity) async {
+    try {
+      if (quantity <= 0) {
+        await removeCartItem(cartItemId);
+        return;
+      }
+
+      await updateCartItem(cartItemId, quantity: quantity);
+    } catch (e) {
+      _logger.e('Error updating cart item quantity: $e');
+    }
+  }
+
+  // Update quantity by product ID (for UI compatibility) - DEPRECATED
+  // This method is problematic when the same product has different variants
   Future<void> updateQuantity(String productId, int quantity) async {
     try {
       if (quantity <= 0) {
@@ -168,7 +183,8 @@ class CartController extends GetxController {
         return;
       }
 
-      // Find cart item by product ID
+      // Find the FIRST cart item by product ID (this is the problem!)
+      // This will always find the first occurrence, not necessarily the one you want
       final cartItem = cartItems.firstWhereOrNull(
         (item) => item.productId == productId,
       );
@@ -309,7 +325,8 @@ class CartController extends GetxController {
                 (item) => {
                   'productId': item.productId,
                   'quantity': item.quantity,
-                  if (item.variantId.isNotEmpty) 'variantId': item.variantId,
+                  if (item.variants != null && item.variants!.isNotEmpty)
+                    'variantId': item.variantId,
                 },
               )
               .toList();
@@ -373,5 +390,74 @@ class CartController extends GetxController {
 
   bool isProductInCart(String productId) {
     return cartItems.any((item) => item.productId == productId);
+  }
+
+  /// Check if a product with specific variants is in cart
+  bool isProductInCartWithVariants(
+    String productId,
+    Map<String, String>? variants,
+  ) {
+    return cartItems.any((item) {
+      if (item.productId != productId) return false;
+
+      // Convert variants map to individual properties for comparison
+      final itemColor = item.selectedColor ?? '';
+      final itemSize = item.selectedSize ?? '';
+      final variantColor = variants?['color'] ?? '';
+      final variantSize = variants?['size'] ?? '';
+
+      // If both have no variants, they match
+      if (itemColor.isEmpty &&
+          itemSize.isEmpty &&
+          variantColor.isEmpty &&
+          variantSize.isEmpty) {
+        return true;
+      }
+
+      // Compare color and size
+      return itemColor == variantColor && itemSize == variantSize;
+    });
+  }
+
+  /// Get cart item for product with specific variants
+  CartItem? getCartItemWithVariants(
+    String productId,
+    Map<String, String>? variants,
+  ) {
+    try {
+      return cartItems.firstWhere((item) {
+        if (item.productId != productId) return false;
+
+        // Convert variants map to individual properties for comparison
+        final itemColor = item.selectedColor ?? '';
+        final itemSize = item.selectedSize ?? '';
+        final variantColor = variants?['color'] ?? '';
+        final variantSize = variants?['size'] ?? '';
+
+        // If both have no variants, they match
+        if (itemColor.isEmpty &&
+            itemSize.isEmpty &&
+            variantColor.isEmpty &&
+            variantSize.isEmpty) {
+          return true;
+        }
+
+        // Compare color and size
+        return itemColor == variantColor && itemSize == variantSize;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Remove cart item with specific variants
+  Future<void> removeFromCartWithVariants(
+    String productId,
+    Map<String, String>? variants,
+  ) async {
+    final cartItem = getCartItemWithVariants(productId, variants);
+    if (cartItem != null) {
+      await removeCartItem(cartItem.id);
+    }
   }
 }
