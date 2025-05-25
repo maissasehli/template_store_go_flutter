@@ -22,6 +22,18 @@ class AddressController extends GetxController {
   final zipCodeController = TextEditingController();
   final countryController = TextEditingController();
 
+  // New text controllers for missing fields
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final apartmentController = TextEditingController();
+
+  // For address type selection
+  final addressType = 'shipping'.obs; // Default to shipping
+
+  // For isDefault toggle
+  final isDefault = false.obs;
+
   AddressController({AddressRepository? addressRepository})
     : _addressRepository =
           addressRepository ??
@@ -40,6 +52,10 @@ class AddressController extends GetxController {
     stateController.dispose();
     zipCodeController.dispose();
     countryController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneController.dispose();
+    apartmentController.dispose();
     super.onClose();
   }
 
@@ -60,6 +76,12 @@ class AddressController extends GetxController {
     stateController.clear();
     zipCodeController.clear();
     countryController.clear();
+    firstNameController.clear();
+    lastNameController.clear();
+    phoneController.clear();
+    apartmentController.clear();
+    addressType.value = 'shipping';
+    isDefault.value = false;
     selectedAddress.value = null;
   }
 
@@ -71,6 +93,12 @@ class AddressController extends GetxController {
     stateController.text = address.state;
     zipCodeController.text = address.zipCode;
     countryController.text = address.country;
+    firstNameController.text = address.firstName ?? '';
+    lastNameController.text = address.lastName ?? '';
+    phoneController.text = address.phone ?? '';
+    apartmentController.text = address.apartment ?? '';
+    addressType.value = address.type ?? 'shipping';
+    isDefault.value = address.isDefault;
   }
 
   // Add a new address
@@ -87,7 +115,12 @@ class AddressController extends GetxController {
               countryController.text.trim().isEmpty
                   ? 'TN'
                   : countryController.text.trim(),
-          isDefault: false,
+          firstName: firstNameController.text.trim(),
+          lastName: lastNameController.text.trim(),
+          phone: phoneController.text.trim(),
+          apartment: apartmentController.text.trim(),
+          type: addressType.value,
+          isDefault: isDefault.value,
           status: 'active',
         );
 
@@ -97,6 +130,14 @@ class AddressController extends GetxController {
         addresses.add(createdAddress);
         clearFields();
         Get.back();
+
+        // Show success message
+        Get.snackbar(
+          'address.success_title'.translate(),
+          'address.address_added'.translate(),
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
       } catch (e) {
         Get.snackbar('Error', 'Failed to add address: $e');
       }
@@ -117,7 +158,12 @@ class AddressController extends GetxController {
               countryController.text.trim().isEmpty
                   ? 'TN'
                   : countryController.text.trim(),
-          isDefault: selectedAddress.value!.isDefault,
+          firstName: firstNameController.text.trim(),
+          lastName: lastNameController.text.trim(),
+          phone: phoneController.text.trim(),
+          apartment: apartmentController.text.trim(),
+          type: addressType.value,
+          isDefault: isDefault.value,
           status: selectedAddress.value!.status,
         );
 
@@ -151,8 +197,61 @@ class AddressController extends GetxController {
     }
   }
 
+  // Set an address as default
+  Future<void> setDefaultAddress(String? id) async {
+    if (id != null) {
+      try {
+        final result = await _addressRepository.setAddressAsDefault(id);
+
+        // Update local list: set the selected address as default and others as non-default
+        for (var i = 0; i < addresses.length; i++) {
+          if (addresses[i].id == id) {
+            addresses[i] = addresses[i].copyWith(isDefault: true);
+          } else if (addresses[i].isDefault) {
+            addresses[i] = addresses[i].copyWith(isDefault: false);
+          }
+        }
+
+        // Show success message
+        Get.snackbar(
+          'address.success_title'.translate(),
+          'address.default_set_success'.translate(),
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+      } catch (e) {
+        Get.snackbar(
+          'address.error_title'.translate(),
+          'address.default_set_error'.translate(),
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    }
+  }
+
   // Validate form inputs (made public by removing underscore)
   bool validateInputs() {
+    if (firstNameController.text.trim().isEmpty) {
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.first_name_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+
+    if (lastNameController.text.trim().isEmpty) {
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.last_name_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+
     if (streetController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
@@ -162,6 +261,7 @@ class AddressController extends GetxController {
       );
       return false;
     }
+
     if (cityController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
@@ -171,6 +271,7 @@ class AddressController extends GetxController {
       );
       return false;
     }
+
     if (stateController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
@@ -180,6 +281,7 @@ class AddressController extends GetxController {
       );
       return false;
     }
+
     if (zipCodeController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
@@ -189,6 +291,17 @@ class AddressController extends GetxController {
       );
       return false;
     }
+
+    if (phoneController.text.trim().isEmpty) {
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.phone_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return false;
+    }
+
     return true;
   }
 }

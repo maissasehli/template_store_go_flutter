@@ -144,53 +144,14 @@ class AddressPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressList(BuildContext context, AddressController controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'address.saved_addresses'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              color: AppColors.foreground(context),
-              fontSize: UIConfig.fontSizeMedium,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
-        SizedBox(height: UIConfig.marginMedium),
-        Expanded(
-          child: ListView.separated(
-            itemCount: controller.addresses.length,
-            separatorBuilder:
-                (context, index) => SizedBox(height: UIConfig.marginMedium),
-            itemBuilder: (context, index) {
-              final address = controller.addresses[index];
-              return _buildAddressCard(
-                context,
-                address.formattedAddress,
-                isDefault: address.isDefault,
-                onEdit: () {
-                  controller.setAddressForEditing(address);
-                  Get.toNamed('/edit-address');
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildAddressCard(
     BuildContext context,
     String address, {
     bool isDefault = false,
     required VoidCallback onEdit,
+    required String id,
+    required AddressController controller,
   }) {
-
     return Container(
       padding: EdgeInsets.all(UIConfig.paddingMedium),
       decoration: BoxDecoration(
@@ -207,30 +168,65 @@ class AddressPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isDefault)
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: UIConfig.paddingSmall,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.primary(context),
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
-              ),
-              child: Text(
-                'address.default'.translate(),
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    color: AppColors.primaryForeground(context),
-                    fontSize: UIConfig.fontSizeSmall,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Poppins',
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (isDefault)
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: UIConfig.paddingSmall,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary(context),
+                    borderRadius: BorderRadius.circular(
+                      UIConfig.borderRadiusSmall,
+                    ),
+                  ),
+                  child: Text(
+                    'address.default'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        color: AppColors.primaryForeground(context),
+                        fontSize: UIConfig.fontSizeSmall,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          if (isDefault) SizedBox(height: UIConfig.marginSmall),
+              if (!isDefault)
+                GestureDetector(
+                  onTap: () => controller.setDefaultAddress(id),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: UIConfig.paddingSmall,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.secondary(context).withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(
+                        UIConfig.borderRadiusSmall,
+                      ),
+                    ),
+                    child: Text(
+                      'address.set_as_default'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          fontSize: UIConfig.fontSizeSmall,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Poppins',
+                          color: AppColors.primary(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(height: UIConfig.marginSmall),
           Row(
             children: [
               Expanded(
@@ -279,6 +275,48 @@ class AddressPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAddressList(BuildContext context, AddressController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'address.saved_addresses'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: UIConfig.fontSizeMedium,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ),
+        SizedBox(height: UIConfig.marginMedium),
+        Expanded(
+          child: ListView.separated(
+            itemCount: controller.addresses.length,
+            separatorBuilder:
+                (context, index) => SizedBox(height: UIConfig.marginMedium),
+            itemBuilder: (context, index) {
+              final address = controller.addresses[index];
+              return _buildAddressCard(
+                context,
+                address.formattedAddress,
+                isDefault: address.isDefault,
+                id: address.id ?? '',
+                controller: controller,
+                onEdit: () {
+                  controller.setAddressForEditing(address);
+                  Get.toNamed('/edit-address');
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
