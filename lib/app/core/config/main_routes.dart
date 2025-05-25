@@ -17,7 +17,6 @@ import 'package:store_go/features/auth/views/screen/otp_verification_screen.dart
 import 'package:store_go/features/auth/views/screen/new_reset_password_screen.dart';
 import 'package:store_go/features/payment/view/widget/add_card_screen.dart';
 import 'package:store_go/features/cart/views/screen/cart_screen.dart';
-import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
 import 'package:store_go/features/category/views/category_screen.dart';
 import 'package:store_go/features/home/views/screen/home_screen.dart';
 import 'package:store_go/features/language/language_binding.dart';
@@ -50,6 +49,8 @@ import 'package:store_go/features/settings/views/settings_language_screen.dart';
 import 'package:store_go/features/settings/bindings/settings_language_binding.dart';
 import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
 import 'package:store_go/features/wishlist/binding/wishlist_binding.dart';
+import 'package:store_go/features/checkout/binding/checkout_binding.dart';
+import 'package:store_go/features/checkout/views/screens/checkout_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
   GetPage(name: '/', page: () => const SplashScreen()),
@@ -181,8 +182,8 @@ List<GetPage<dynamic>>? routes = [
   ),
   GetPage(
     name: AppRoute.checkout,
-    page: () => CheckoutScreen(),
-    binding: HomeBinding(),
+    page: () => const CheckoutScreen(),
+    binding: CheckoutBinding(),
   ),
   GetPage(
     name: AppRoute.address,

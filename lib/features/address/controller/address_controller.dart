@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/address/model/address_model.dart';
 import 'package:store_go/features/address/repository/address_repository.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:uuid/uuid.dart';
 
 class AddressController extends GetxController {
@@ -22,7 +23,9 @@ class AddressController extends GetxController {
   final countryController = TextEditingController();
 
   AddressController({AddressRepository? addressRepository})
-      : _addressRepository = addressRepository ?? AddressRepository(apiClient: Get.find<ApiClient>());
+    : _addressRepository =
+          addressRepository ??
+          AddressRepository(apiClient: Get.find<ApiClient>());
 
   @override
   void onInit() {
@@ -80,12 +83,17 @@ class AddressController extends GetxController {
           city: cityController.text.trim(),
           state: stateController.text.trim(),
           zipCode: zipCodeController.text.trim(),
-          country: countryController.text.trim().isEmpty ? 'TN':countryController.text.trim(),
+          country:
+              countryController.text.trim().isEmpty
+                  ? 'TN'
+                  : countryController.text.trim(),
           isDefault: false,
           status: 'active',
         );
 
-        final createdAddress = await _addressRepository.createAddress(newAddress);
+        final createdAddress = await _addressRepository.createAddress(
+          newAddress,
+        );
         addresses.add(createdAddress);
         clearFields();
         Get.back();
@@ -105,13 +113,21 @@ class AddressController extends GetxController {
           city: cityController.text.trim(),
           state: stateController.text.trim(),
           zipCode: zipCodeController.text.trim(),
-          country: countryController.text.trim().isEmpty ? 'TN' : countryController.text.trim(),
+          country:
+              countryController.text.trim().isEmpty
+                  ? 'TN'
+                  : countryController.text.trim(),
           isDefault: selectedAddress.value!.isDefault,
           status: selectedAddress.value!.status,
         );
 
-        final result = await _addressRepository.updateAddress(selectedAddress.value!.id!, updatedAddress);
-        final index = addresses.indexWhere((addr) => addr.id == selectedAddress.value!.id);
+        final result = await _addressRepository.updateAddress(
+          selectedAddress.value!.id!,
+          updatedAddress,
+        );
+        final index = addresses.indexWhere(
+          (addr) => addr.id == selectedAddress.value!.id,
+        );
         if (index != -1) {
           addresses[index] = result;
         }
@@ -138,19 +154,39 @@ class AddressController extends GetxController {
   // Validate form inputs (made public by removing underscore)
   bool validateInputs() {
     if (streetController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Please enter street address');
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.street_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return false;
     }
     if (cityController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Please enter city');
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.city_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return false;
     }
     if (stateController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Please enter state');
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.state_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return false;
     }
     if (zipCodeController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Please enter zip code');
+      Get.snackbar(
+        'address.error_title'.translate(),
+        'address.zip_required'.translate(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return false;
     }
     return true;

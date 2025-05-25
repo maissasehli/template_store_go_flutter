@@ -26,8 +26,7 @@ class SizeSelector extends StatelessWidget {
     final bool isRtl = LocalizationService.isRtl(context);
 
     return Column(
-      crossAxisAlignment:
-          isRtl ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'product_detail.size'.translate(),

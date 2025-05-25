@@ -6,7 +6,6 @@ import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
-import 'package:store_go/features/cart/views/screen/checkout_screen.dart';
 import 'package:store_go/features/cart/views/widgets/cart_item_card.dart';
 import 'package:store_go/features/cart/views/widgets/cart_summary.dart';
 import 'package:store_go/features/cart/views/widgets/coupon_field.dart';
@@ -331,7 +330,8 @@ class CartScreen extends StatelessWidget {
                   controller.cartItems.isEmpty
                       ? null
                       : () {
-                        Get.to(() => const CheckoutScreen());
+                        // Use the named route that's properly defined in app_routes.dart
+                        Get.toNamed('/checkout');
                       },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary(context),
@@ -344,17 +344,15 @@ class CartScreen extends StatelessWidget {
                 ),
                 padding: EdgeInsets.symmetric(vertical: UIConfig.paddingMedium),
               ),
-              child: Obx(
-                () => Text(
-                  '${'cart.checkout'.translate()} (\$${controller.total.value.toStringAsFixed(2)})',
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(
-                      color: AppColors.primaryForeground(context),
-                      fontSize: UIConfig.fontSizeMedium,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Poppins',
-                    ),
+              child: Text(
+                'cart.checkout'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    color: AppColors.primaryForeground(context),
+                    fontSize: UIConfig.fontSizeMedium,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Poppins',
                   ),
                 ),
               ),

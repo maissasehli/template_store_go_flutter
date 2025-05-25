@@ -167,91 +167,26 @@ class CartItemCard extends StatelessWidget {
   }
 
   Widget _buildProductDetails(BuildContext context, bool isRtl) {
-    return Stack(
-      children: [
-        // Quantity controls positioned absolutely at bottom left, same level as price
-        Positioned(
-          left: UIConfig.paddingSmall, // Always on the left regardless of RTL
-          bottom: UIConfig.paddingSmall, // Position at bottom same as price
-          child: _buildQuantityControls(context, isRtl),
-        ),
-
-        // Product info with left margin to avoid overlap
-        Padding(
-          padding: EdgeInsets.only(
-            left: 100, // More space for horizontal quantity controls
-            right: UIConfig.paddingSmall,
-          ),
-          child: Column(
-            crossAxisAlignment:
-                isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-            children: [
-              // Product name
-              Text(
-                item.name,
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    fontSize: UIConfig.fontSizeMedium,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                    color: AppColors.foreground(context),
-                  ),
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: isRtl ? TextAlign.right : TextAlign.left,
+    return Directionality(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left side content (product info)
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: UIConfig.paddingSmall,
+                bottom: UIConfig.paddingSmall,
+                left: isRtl ? 0 : UIConfig.paddingSmall,
+                right: isRtl ? UIConfig.paddingSmall : 0,
               ),
-
-              // Category (if available)
-              if (item.category != null && item.category!.isNotEmpty) ...[
-                SizedBox(height: 2),
-                Text(
-                  item.category!,
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(
-                      fontSize: UIConfig.fontSizeSmall,
-                      color: AppColors.mutedForeground(context),
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                ),
-              ],
-
-              SizedBox(height: UIConfig.paddingSmall),
-
-              // Variants row (color and size indicators)
-              if (_hasVariants())
-                Row(
-                  textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
-                  children: [
-                    if (item.selectedColor != null &&
-                        item.selectedColor!.isNotEmpty) ...[
-                      _buildColorIndicator(context),
-                      SizedBox(width: UIConfig.paddingSmall),
-                    ],
-                    if (item.selectedSize != null &&
-                        item.selectedSize!.isNotEmpty) ...[
-                      _buildSizeIndicator(context),
-                    ],
-                  ],
-                ),
-
-              const Spacer(),
-
-              // Price at bottom - now has space for quantity controls on the left
-              Align(
-                alignment: isRtl ? Alignment.centerRight : Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: UIConfig.paddingSmall,
-                  ), // Match quantity controls position
-                  child: Text(
-                    '\$${item.price.toStringAsFixed(2)}',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product name
+                  Text(
+                    item.name,
                     style: LocalizationService.getLocalizedTextStyle(
                       context,
                       TextStyle(
@@ -261,14 +196,78 @@ class CartItemCard extends StatelessWidget {
                         color: AppColors.foreground(context),
                       ),
                     ),
-                    textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
+
+                  // Category (if available)
+                  if (item.category != null && item.category!.isNotEmpty) ...[
+                    SizedBox(height: 2),
+                    Text(
+                      item.category!,
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          fontSize: UIConfig.fontSizeSmall,
+                          color: AppColors.mutedForeground(context),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+
+                  SizedBox(height: UIConfig.paddingSmall),
+
+                  // Variants row (color and size indicators)
+                  if (_hasVariants())
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (item.selectedColor != null &&
+                            item.selectedColor!.isNotEmpty) ...[
+                          _buildColorIndicator(context),
+                          SizedBox(width: UIConfig.paddingSmall),
+                        ],
+                        if (item.selectedSize != null &&
+                            item.selectedSize!.isNotEmpty) ...[
+                          _buildSizeIndicator(context),
+                        ],
+                      ],
+                    ),
+
+                  SizedBox(height: UIConfig.paddingSmall),
+
+                  // Bottom row with quantity controls and price
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Price on the left in LTR, right in RTL
+                      Text(
+                        '\$${item.price.toStringAsFixed(2)}',
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins',
+                            color: AppColors.foreground(context),
+                          ),
+                        ),
+                      ),
+
+                      // Quantity controls on the right in LTR, left in RTL
+                      _buildQuantityControls(context, isRtl),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -359,6 +358,7 @@ class CartItemCard extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.ltr, // Always LTR for quantity controls
         children: [
           // Minus button
           _buildQuantityButton(

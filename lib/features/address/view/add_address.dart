@@ -5,6 +5,8 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class AddAddressPage extends StatelessWidget {
   const AddAddressPage({super.key});
@@ -17,77 +19,103 @@ class AddAddressPage extends StatelessWidget {
             : Get.put(AddressController());
 
     final isLoading = false.obs;
+    final bool isRtl = LocalizationService.isRtl(context);
 
     return Scaffold(
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
         backgroundColor: AppColors.background(context),
         elevation: 0,
-        leading: Container(
-          margin: EdgeInsets.only(left: UIConfig.marginMedium),
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: AppColors.secondary(context),
-            shape: BoxShape.circle,
+        leading: IconButton(
+          icon: ThemeAwareSvg(
+            assetPath: isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
+            height: 24,
+            width: 24,
           ),
-          child: IconButton(
-            icon: ThemeAwareSvg(
-              assetPath: AssetConfig.backArrow,
-              height: 24,
-              width: 24,
-            ),
-            onPressed: () => Get.back(),
-          ),
+          onPressed: () => Get.back(),
         ),
         centerTitle: true,
         title: Text(
-          'Add Address',
-          style: TextStyle(
-            color: AppColors.foreground(context),
-            fontSize: UIConfig.fontSizeMedium,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+          'address.add_address'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
           ),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: UIConfig.paddingLarge),
+        padding: EdgeInsets.all(UIConfig.paddingLarge),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: UIConfig.marginLarge),
-            _buildTextField(
-              controller.streetController,
-              'Street Address',
-              context,
-            ),
-            SizedBox(height: UIConfig.marginSmall),
-            _buildTextField(controller.cityController, 'City', context),
-            SizedBox(height: UIConfig.marginSmall),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(
-                    controller.stateController,
-                    'State',
-                    context,
-                  ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'address.address_details'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          color: AppColors.foreground(context),
+                          fontSize: UIConfig.fontSizeMedium,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: UIConfig.marginMedium),
+                    _buildTextField(
+                      context,
+                      controller.streetController,
+                      'address.street_address'.translate(),
+                    ),
+                    SizedBox(height: UIConfig.marginMedium),
+                    _buildTextField(
+                      context,
+                      controller.cityController,
+                      'address.city'.translate(),
+                    ),
+                    SizedBox(height: UIConfig.marginMedium),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(
+                            context,
+                            controller.stateController,
+                            'address.state'.translate(),
+                          ),
+                        ),
+                        SizedBox(width: UIConfig.marginMedium),
+                        Expanded(
+                          child: _buildTextField(
+                            context,
+                            controller.zipCodeController,
+                            'address.zip_code'.translate(),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: UIConfig.marginMedium),
+                    _buildTextField(
+                      context,
+                      controller.countryController,
+                      'address.country'.translate(),
+                      hintText: 'address.country_hint'.translate(),
+                    ),
+                  ],
                 ),
-                SizedBox(width: UIConfig.marginSmall),
-                Expanded(
-                  child: _buildTextField(
-                    controller.zipCodeController,
-                    'Zip Code',
-                    context,
-                  ),
-                ),
-              ],
+              ),
             ),
-            const Spacer(),
-            Container(
+            SizedBox(
               width: double.infinity,
-              height: 56,
-              margin: EdgeInsets.only(bottom: UIConfig.marginLarge),
+              height: 55,
               child: Obx(
                 () => ElevatedButton(
                   onPressed:
@@ -102,6 +130,8 @@ class AddAddressPage extends StatelessWidget {
                           },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary(context),
+                    foregroundColor: AppColors.primaryForeground(context),
+                    disabledBackgroundColor: AppColors.muted(context),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
                         UIConfig.borderRadiusCircular,
@@ -112,14 +142,17 @@ class AddAddressPage extends StatelessWidget {
                       isLoading.value
                           ? CircularProgressIndicator(
                             color: AppColors.primaryForeground(context),
+                            strokeWidth: 2,
                           )
                           : Text(
-                            'Save',
-                            style: TextStyle(
-                              color: AppColors.primaryForeground(context),
-                              fontSize: UIConfig.fontSizeMedium,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Poppins',
+                            'address.save'.translate(),
+                            style: LocalizationService.getLocalizedTextStyle(
+                              context,
+                              TextStyle(
+                                fontSize: UIConfig.fontSizeMedium,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                              ),
                             ),
                           ),
                 ),
@@ -132,44 +165,70 @@ class AddAddressPage extends StatelessWidget {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String hint,
     BuildContext context,
-  ) {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      margin: EdgeInsets.only(bottom: UIConfig.marginSmall),
-      decoration: BoxDecoration(
-        color: AppColors.background(context),
-        border: Border.all(color: AppColors.foreground(context), width: 1),
-        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-      ),
-      child: TextField(
-        controller: controller,
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.w400,
-          fontSize: UIConfig.fontSizeRegular,
-          color: AppColors.foreground(context),
-        ),
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: UIConfig.paddingMedium,
-            vertical: UIConfig.paddingMedium,
-          ),
-          border: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          hintText: hint,
-          hintStyle: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-            fontSize: UIConfig.fontSizeRegular,
-            color: AppColors.mutedForeground(context),
+    TextEditingController controller,
+    String label, {
+    String? hintText,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: UIConfig.fontSizeRegular,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Poppins',
+            ),
           ),
         ),
-      ),
+        SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w400,
+              fontSize: UIConfig.fontSizeRegular,
+              color: AppColors.foreground(context),
+            ),
+          ),
+          decoration: InputDecoration(
+            hintText: hintText ?? label,
+            hintStyle: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w400,
+                fontSize: UIConfig.fontSizeRegular,
+                color: AppColors.mutedForeground(context),
+              ),
+            ),
+            filled: true,
+            fillColor: AppColors.input(context),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+              borderSide: BorderSide(color: AppColors.border(context)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+              borderSide: BorderSide(
+                color: AppColors.primary(context),
+                width: 2,
+              ),
+            ),
+            contentPadding: EdgeInsets.all(UIConfig.paddingMedium),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -861,7 +861,6 @@ class ReviewSectionState extends State<ReviewSection> {
   }
 
   Widget _buildQuickTag(String text) {
-    final bool isRtl = LocalizationService.isRtl(context);
 
     return GestureDetector(
       onTap: () {

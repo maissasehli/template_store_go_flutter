@@ -191,7 +191,6 @@ class SubcategoryListView extends GetView<SubcategoryController> {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    final bool isRtl = LocalizationService.isRtl(context);
 
     return GestureDetector(
       onTap: onTap,

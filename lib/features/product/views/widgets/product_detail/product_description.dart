@@ -19,20 +19,20 @@ class ProductDescription extends StatelessWidget {
     final bool isRtl = LocalizationService.isRtl(context);
 
     return Column(
-      crossAxisAlignment:
-          isRtl ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'product_detail.description'.translate(),
           style: LocalizationService.getLocalizedTextStyle(
             context,
             Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.foreground(context),
-            ) ?? TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.foreground(context),
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.foreground(context),
+                ) ??
+                TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.foreground(context),
+                ),
           ),
         ),
         SizedBox(height: UIConfig.paddingSmall),
@@ -41,11 +41,12 @@ class ProductDescription extends StatelessWidget {
           style: LocalizationService.getLocalizedTextStyle(
             context,
             Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.mutedForeground(context),
-            ) ?? TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.foreground(context),
-            ),
+                  color: AppColors.mutedForeground(context),
+                ) ??
+                TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.foreground(context),
+                ),
           ),
           textAlign: isRtl ? TextAlign.right : TextAlign.left,
         ),

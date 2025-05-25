@@ -5,7 +5,6 @@ import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/cus
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/dropdown_row.dart';
 import 'package:store_go/features/profile/views/widgets/profile_edit_widgets/phone_field.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
-import 'package:store_go/app/core/localization/localization_service.dart';
 
 class ProfileForm extends StatelessWidget {
   final EditProfileController controller;
