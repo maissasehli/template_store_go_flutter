@@ -38,6 +38,8 @@ import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart
 import 'package:store_go/features/notifications/views/notification_screen.dart';
 import 'package:store_go/features/order/view/widget/orders_details_screen.dart';
 import 'package:store_go/features/order/view/screen/orders_screen.dart';
+import 'package:store_go/features/order/view/screen/order_confirmation_screen.dart';
+import 'package:store_go/app/screens/order_failure_screen.dart';
 import 'package:store_go/features/payment/view/screen/payment_screen.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
@@ -51,6 +53,7 @@ import 'package:store_go/features/wishlist/views/wishlist_screen.dart';
 import 'package:store_go/features/wishlist/binding/wishlist_binding.dart';
 import 'package:store_go/features/checkout/binding/checkout_binding.dart';
 import 'package:store_go/features/checkout/views/screens/checkout_screen.dart';
+import 'package:store_go/features/payment/view/screen/payment_processing_screen.dart';
 
 List<GetPage<dynamic>>? routes = [
   GetPage(name: '/', page: () => const SplashScreen()),
@@ -184,6 +187,21 @@ List<GetPage<dynamic>>? routes = [
     name: AppRoute.checkout,
     page: () => const CheckoutScreen(),
     binding: CheckoutBinding(),
+  ),
+  GetPage(
+    name: AppRoute.paymentProcessing,
+    page: () => const PaymentProcessingScreen(),
+    binding: CheckoutBinding(),
+  ),
+  GetPage(
+    name: AppRoute.orderConfirmation,
+    page: () => const OrderConfirmationScreen(),
+    binding: OrderBinding(),
+  ),
+  GetPage(
+    name: AppRoute.orderFailure,
+    page: () => const OrderFailureScreen(),
+    binding: OrderBinding(),
   ),
   GetPage(
     name: AppRoute.address,

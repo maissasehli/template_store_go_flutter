@@ -316,5 +316,31 @@
         "shipping_address": "Shipping Address",
         "payment_method": "Payment Method",
         "order_items": "Order Items"
+    },
+    "order_confirmation": {
+        "title": "Order Confirmed",
+        "success_title": "Order Placed Successfully!",
+        "success_message": "Thank you for your purchase. Your order has been confirmed and is being processed.",
+        "order_details": "Order Details",
+        "order_id": "Order ID",
+        "total_amount": "Total Amount",
+        "payment_status": "Payment Status",
+        "order_status": "Order Status",
+        "view_order_details": "View Order Details",
+        "continue_shopping": "Continue Shopping"
+    },
+    "order_failure": {
+        "title": "Payment Failed",
+        "error_title": "Payment Failed",
+        "error_message": "Something went wrong with your payment. Please try again or use a different payment method.",
+        "order_information": "Order Information",
+        "order_id": "Order ID",
+        "status": "Status",
+        "payment_failed": "Payment Failed",
+        "what_can_you_do": "What can you do?",
+        "helpful_tips": "• Check your card details and try again\n• Ensure you have sufficient funds\n• Try a different payment method\n• Contact your bank if the issue persists",
+        "retry_payment": "Retry Payment",
+        "try_different_method": "Try Different Method",
+        "continue_shopping": "Continue Shopping"
     }
 }

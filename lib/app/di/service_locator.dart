@@ -9,13 +9,32 @@ import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/app/core/services/theme_aware_snackbar_service.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
+import 'package:store_go/features/payment/services/payment_service.dart';
+import 'package:store_go/features/order/repositories/order_repository.dart';
+import 'package:store_go/features/cart/repositories/cart_repository.dart';
+import 'package:store_go/features/payment/services/payment_service.dart';
+import 'package:store_go/features/order/repositories/order_repository.dart';
+import 'package:store_go/features/cart/repositories/cart_repository.dart';
 
 class ServiceLocator {
   static Future<void> registerDependencies() async {
     // Register services - these are truly app-wide
     Get.put<ApiClient>(ApiClient(), permanent: true);
+
+    // Register repositories
     Get.put<ProfileRepository>(
       ProfileRepository(apiClient: Get.find<ApiClient>()),
+      permanent: true,
+    );
+    Get.put<CartRepository>(CartRepository(), permanent: true);
+    Get.put<OrderRepository>(
+      OrderRepository(apiClient: Get.find<ApiClient>()),
+      permanent: true,
+    );
+
+    // Register payment service
+    Get.put<PaymentService>(
+      PaymentService(apiClient: Get.find<ApiClient>()),
       permanent: true,
     );
 

@@ -284,7 +284,6 @@ class CheckoutScreen extends StatelessWidget {
                     if (!_validateCheckoutData(context)) {
                       return;
                     }
-
                     try {
                       // Create order from cart items
                       final orderId = await checkoutController.createOrder(
@@ -296,10 +295,14 @@ class CheckoutScreen extends StatelessWidget {
                         total: cartController.total.value,
                       );
 
-                      // Navigate to payment processing or success
+                      // Navigate to payment processing screen
                       Get.toNamed(
-                        '/order-confirmation',
-                        parameters: {'orderId': orderId},
+                        '/payment-processing',
+                        arguments: {
+                          'orderId': orderId,
+                          'amount': cartController.total.value,
+                          'cartItems': cartController.cartItems,
+                        },
                       );
                     } catch (e) {
                       Get.snackbar(

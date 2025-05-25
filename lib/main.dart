@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/services/activity_detector.dart';
 import 'package:store_go/app/core/services/connection_service.dart';
 import 'package:store_go/app/core/services/pusher_service.dart';
@@ -15,6 +17,9 @@ Future<void> main() async {
 
   // First load environment variables
   await dotenv.load();
+
+  // Initialize Stripe
+  await _initializeStripe();
 
   // Then initialize Easy Localization
   await EasyLocalization.ensureInitialized();
@@ -36,6 +41,15 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+}
+
+Future<void> _initializeStripe() async {
+  final publishableKey = AppConfig.stripePublishableKey;
+  if (publishableKey.isNotEmpty) {
+    Stripe.publishableKey = publishableKey;
+    Stripe.merchantIdentifier = 'merchant.com.storego';
+    await Stripe.instance.applySettings();
+  }
 }
 
 class MyApp extends StatelessWidget {

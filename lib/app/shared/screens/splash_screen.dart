@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
@@ -17,10 +18,11 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   final AuthService authService = Get.find<AuthService>();
   final TokenManager tokenManager = Get.find<TokenManager>();
-
   @override
   void initState() {
     super.initState();
+    // Remove the native splash screen
+    FlutterNativeSplash.remove();
     _checkNavigation();
     _logStorageProperties();
   }

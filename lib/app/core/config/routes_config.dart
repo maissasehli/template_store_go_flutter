@@ -29,11 +29,13 @@ class AppRoute {
       "/products/featured"; // Optional, for specific lists
   static const String newProducts =
       "/products/new"; // Optional, for specific lists
-
   // Cart and checkout
   static const String cart = "/cart";
   static const String addCart = "/add-cart";
   static const String checkout = "/checkout";
+  static const String paymentProcessing = "/payment-processing";
+  static const String orderConfirmation = "/order-confirmation";
+  static const String orderFailure = "/order-failure";
 
   // User profile
   static const String editProfile = "/edit-profile";

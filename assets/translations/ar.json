@@ -314,5 +314,31 @@
         "shipping_address": "عنوان الشحن",
         "payment_method": "طريقة الدفع",
         "order_items": "عناصر الطلب"
+    },
+    "order_confirmation": {
+        "title": "تم تأكيد الطلب",
+        "success_title": "تم إنشاء الطلب بنجاح!",
+        "success_message": "شكراً لك على شرائك. تم تأكيد طلبك وهو الآن قيد المعالجة.",
+        "order_details": "تفاصيل الطلب",
+        "order_id": "رقم الطلب",
+        "total_amount": "المبلغ الإجمالي",
+        "payment_status": "حالة الدفع",
+        "order_status": "حالة الطلب",
+        "view_order_details": "عرض تفاصيل الطلب",
+        "continue_shopping": "مواصلة التسوق"
+    },
+    "order_failure": {
+        "title": "فشل الدفع",
+        "error_title": "فشل الدفع",
+        "error_message": "حدث خطأ أثناء عملية الدفع. يرجى المحاولة مرة أخرى أو استخدام طريقة دفع مختلفة.",
+        "order_information": "معلومات الطلب",
+        "order_id": "رقم الطلب",
+        "status": "الحالة",
+        "payment_failed": "فشل الدفع",
+        "what_can_you_do": "ماذا يمكنك أن تفعل؟",
+        "helpful_tips": "• تحقق من تفاصيل بطاقتك وحاول مرة أخرى\n• تأكد من وجود رصيد كافٍ\n• جرب طريقة دفع مختلفة\n• اتصل بالبنك إذا استمرت المشكلة",
+        "retry_payment": "إعادة المحاولة",
+        "try_different_method": "جرب طريقة مختلفة",
+        "continue_shopping": "مواصلة التسوق"
     }
 }
