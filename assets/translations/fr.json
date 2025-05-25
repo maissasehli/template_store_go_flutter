@@ -295,5 +295,24 @@
         "city_required": "Veuillez saisir la ville",
         "state_required": "Veuillez saisir l'état/province",
         "zip_required": "Veuillez saisir le code postal"
+    },
+    "orders": {
+        "title": "Mes Commandes",
+        "order_number": "Commande #{number}",
+        "items_count": "{count} articles",
+        "empty_orders": "Aucune commande pour le moment",
+        "empty_orders_subtitle": "Commencez vos achats pour voir vos commandes ici",
+        "status": {
+            "pending": "En attente",
+            "processing": "En traitement",
+            "shipped": "Expédié",
+            "delivered": "Livré",
+            "cancelled": "Annulé"
+        },
+        "order_details": "Détails de la commande",
+        "order_summary": "Résumé de la commande",
+        "shipping_address": "Adresse de livraison",
+        "payment_method": "Méthode de paiement",
+        "order_items": "Articles de la commande"
     }
 }

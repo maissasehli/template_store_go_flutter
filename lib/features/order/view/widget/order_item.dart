@@ -1,86 +1,143 @@
-// File: lib/features/order/views/widgets/order_item.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/features/order/model/order_model.dart';
-import 'package:store_go/features/order/view/widget/status_color_helper.dart';
 
 class OrderItem extends StatelessWidget {
   final OrderModel order;
 
-  const OrderItem({
-    super.key,
-    required this.order,
-  });
+  const OrderItem({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: UIConfig.marginMedium),
+      padding: EdgeInsets.all(UIConfig.paddingMedium),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.card(context),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: InkWell(
         onTap: () => Get.toNamed('/order-details', arguments: order.id),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
         child: Row(
           children: [
-            Icon(Icons.receipt_outlined, size: 24, color: Colors.grey[700]),
-            const SizedBox(width: 12),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.secondary(context),
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
+              ),
+              child: Icon(
+                Icons.receipt_outlined,
+                size: 20,
+                color: AppColors.foreground(context),
+              ),
+            ),
+            SizedBox(width: UIConfig.marginMedium),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Order #${order.orderNumber}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
+                    'orders.order_number'.translate().replaceFirst(
+                      '{number}',
+                      order.orderNumber,
+                    ),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: UIConfig.fontSizeMedium,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'Poppins',
+                        color: AppColors.foreground(context),
+                      ),
                     ),
                   ),
+                  SizedBox(height: 4),
                   Text(
-                    '${order.itemCount} items',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Poppins',
-                      color: Colors.grey[600],
+                    'orders.items_count'.translate().replaceFirst(
+                      '{count}',
+                      order.itemCount.toString(),
+                    ),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: UIConfig.fontSizeRegular,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Poppins',
+                        color: AppColors.mutedForeground(context),
+                      ),
                     ),
                   ),
+                  SizedBox(height: 4),
                   Text(
                     order.formattedDate,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      fontFamily: 'Poppins',
-                      color: Colors.grey[500],
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: UIConfig.fontSizeSmall,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Poppins',
+                        color: AppColors.mutedForeground(context),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: EdgeInsets.symmetric(
+                horizontal: UIConfig.paddingSmall,
+                vertical: 4,
+              ),
               decoration: BoxDecoration(
-                color: getStatusColor(order.status).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
+                color: _getStatusColor(order.status).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
               ),
               child: Text(
-                order.status,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: getStatusColor(order.status),
+                'orders.status.${order.status.toLowerCase()}'.translate(),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: UIConfig.fontSizeSmall,
+                    fontWeight: FontWeight.w500,
+                    color: _getStatusColor(order.status),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
-            const Icon(Icons.chevron_right, color: Colors.black),
+            SizedBox(width: UIConfig.marginSmall),
+            Icon(
+              Icons.chevron_right,
+              color: AppColors.mutedForeground(context),
+              size: 20,
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return const Color(0xFFFFA500);
+      case 'processing':
+        return const Color(0xFF007BFF);
+      case 'shipped':
+        return const Color(0xFF28A745);
+      case 'delivered':
+        return const Color(0xFF28A745);
+      case 'cancelled':
+        return const Color(0xFFDC3545);
+      default:
+        return const Color(0xFF6C757D);
+    }
   }
 }

@@ -251,19 +251,20 @@
     "checkout": {
         "title": "Checkout",
         "shipping_address": "Shipping Address",
-        "add_shipping_address": "Add Shipping Address",
+        "add_shipping_address": "Add shipping address",
         "payment_method": "Payment Method",
-        "add_payment_method": "Add Payment Method",
+        "add_payment_method": "Add payment method",
         "subtotal": "Subtotal",
-        "shipping_cost": "Shipping Cost",
+        "shipping_cost": "Shipping",
         "tax": "Tax",
         "discount": "Discount",
         "total": "Total",
         "place_order": "Place Order",
-        "success_title": "Order Placed",
+        "success_title": "Success",
         "success_message": "Your order has been placed successfully!",
-        "error_title": "Checkout Error",
-        "error_message": "There was an error processing your order. Please try again."
+        "order_created_message": "Order created successfully",
+        "error_title": "Error",
+        "error_message": "Failed to place order. Please try again."
     },
     "app": {
         "name": "StoreGo"
@@ -295,5 +296,25 @@
         "city_required": "Please enter city",
         "state_required": "Please enter state/province",
         "zip_required": "Please enter ZIP/postal code"
+    },
+    "orders": {
+        "title": "My Orders",
+        "order_number": "Order #{number}",
+        "items_count": "{count} items",
+        "empty_orders": "No orders yet",
+        "empty_orders_subtitle": "Start shopping to see your orders here",
+        "retry": "Try Again",
+        "status": {
+            "pending": "Pending",
+            "processing": "Processing",
+            "shipped": "Shipped",
+            "delivered": "Delivered",
+            "cancelled": "Cancelled"
+        },
+        "order_details": "Order Details",
+        "order_summary": "Order Summary",
+        "shipping_address": "Shipping Address",
+        "payment_method": "Payment Method",
+        "order_items": "Order Items"
     }
 }

@@ -18,5 +18,4 @@ class AppConfig {
   // Add Stripe configuration
   static String get stripePublishableKey =>
       dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? "";
-  static bool get isStripeTestMode => dotenv.env['ENVIRONMENT'] == 'dev';
 }

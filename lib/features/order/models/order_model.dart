@@ -63,7 +63,7 @@ class Address {
   );
 }
 
-class OrderModel {
+class Order {
   final String id;
   final String orderNumber;
   final String status;
@@ -76,11 +76,10 @@ class OrderModel {
   final Address shippingAddress;
   final Address billingAddress;
   final String paymentMethod;
-  final List<OrderItemModel> items;
+  final List<OrderItem> items;
   final DateTime createdAt;
-  final DateTime updatedAt;
 
-  OrderModel({
+  Order({
     required this.id,
     required this.orderNumber,
     required this.status,
@@ -95,10 +94,9 @@ class OrderModel {
     required this.paymentMethod,
     required this.items,
     required this.createdAt,
-    required this.updatedAt,
   });
 
-  factory OrderModel.fromJson(Map<String, dynamic> json) => OrderModel(
+  factory Order.fromJson(Map<String, dynamic> json) => Order(
     id: json['id'] ?? '',
     orderNumber: json['orderNumber'] ?? '',
     status: json['status'] ?? 'pending',
@@ -113,78 +111,16 @@ class OrderModel {
     paymentMethod: json['paymentMethod'] ?? '',
     items:
         (json['items'] as List?)
-            ?.map((item) => OrderItemModel.fromJson(item))
+            ?.map((item) => OrderItem.fromJson(item))
             .toList() ??
         [],
     createdAt: DateTime.parse(
       json['created_at'] ?? DateTime.now().toIso8601String(),
     ),
-    updatedAt: DateTime.parse(
-      json['updated_at'] ?? DateTime.now().toIso8601String(),
-    ),
   );
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'orderNumber': orderNumber,
-    'status': status,
-    'paymentStatus': paymentStatus,
-    'subtotal': subtotal,
-    'tax': tax,
-    'shippingCost': shippingCost,
-    'discount': discount,
-    'totalAmount': totalAmount,
-    'shippingAddress': shippingAddress.toJson(),
-    'billingAddress': billingAddress.toJson(),
-    'paymentMethod': paymentMethod,
-    'items': items.map((item) => item.toJson()).toList(),
-    'created_at': createdAt.toIso8601String(),
-    'updated_at': updatedAt.toIso8601String(),
-  };
-
-  // Getter for formatted address
-  String get formattedShippingAddress =>
-      '${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}';
-
-  // Getter for formatted date
-  String get formattedDate {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-
-    if (difference.inDays == 0) {
-      return 'Today';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else {
-      return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
-    }
-  }
-
-  // Getter for order status color
-  String get statusColor {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return '#FFA500';
-      case 'processing':
-        return '#007BFF';
-      case 'shipped':
-        return '#28A745';
-      case 'delivered':
-        return '#28A745';
-      case 'cancelled':
-        return '#DC3545';
-      default:
-        return '#6C757D';
-    }
-  }
-
-  // Getter for item count
-  int get itemCount => items.fold(0, (total, item) => total + item.quantity);
 }
 
-class OrderItemModel {
+class OrderItem {
   final String id;
   final String productId;
   final String productName;
@@ -192,9 +128,8 @@ class OrderItemModel {
   final double unitPrice;
   final double totalPrice;
   final Map<String, dynamic> variants;
-  final ProductInfo? product;
 
-  OrderItemModel({
+  OrderItem({
     required this.id,
     required this.productId,
     required this.productName,
@@ -202,10 +137,9 @@ class OrderItemModel {
     required this.unitPrice,
     required this.totalPrice,
     required this.variants,
-    this.product,
   });
 
-  factory OrderItemModel.fromJson(Map<String, dynamic> json) => OrderItemModel(
+  factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
     id: json['id'] ?? '',
     productId: json['productId'] ?? '',
     productName: json['productName'] ?? '',
@@ -213,46 +147,5 @@ class OrderItemModel {
     unitPrice: (json['unitPrice'] ?? 0.0).toDouble(),
     totalPrice: (json['totalPrice'] ?? 0.0).toDouble(),
     variants: json['variants'] ?? {},
-    product:
-        json['product'] != null ? ProductInfo.fromJson(json['product']) : null,
   );
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'productId': productId,
-    'productName': productName,
-    'quantity': quantity,
-    'unitPrice': unitPrice,
-    'totalPrice': totalPrice,
-    'variants': variants,
-    if (product != null) 'product': product!.toJson(),
-  };
-}
-
-class ProductInfo {
-  final String id;
-  final String name;
-  final double price;
-  final List<String> imageUrls;
-
-  ProductInfo({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.imageUrls,
-  });
-
-  factory ProductInfo.fromJson(Map<String, dynamic> json) => ProductInfo(
-    id: json['id'] ?? '',
-    name: json['name'] ?? '',
-    price: (json['price'] ?? 0.0).toDouble(),
-    imageUrls: List<String>.from(json['imageUrls'] ?? json['image_urls'] ?? []),
-  );
-
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'price': price,
-    'imageUrls': imageUrls,
-  };
 }

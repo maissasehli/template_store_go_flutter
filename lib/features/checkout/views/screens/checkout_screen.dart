@@ -274,51 +274,94 @@ class CheckoutScreen extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 55,
-      child: ElevatedButton(
-        onPressed: () {
-          Get.snackbar(
-            'checkout.success_title'.translate(),
-            'checkout.success_message'.translate(),
-            snackPosition: SnackPosition.BOTTOM,
+      child: Obx(
+        () => ElevatedButton(
+          onPressed:
+              checkoutController.isProcessing.value
+                  ? null
+                  : () async {
+                    // Validate address and payment method are selected
+                    if (!_validateCheckoutData(context)) {
+                      return;
+                    }
+
+                    try {
+                      // Create order from cart items
+                      final orderId = await checkoutController.createOrder(
+                        cartItems: cartController.cartItems,
+                        subtotal: cartController.subtotal.value,
+                        tax: cartController.tax.value,
+                        shippingCost: cartController.shipping.value,
+                        discount: cartController.discount.value,
+                        total: cartController.total.value,
+                      );
+
+                      // Navigate to payment processing or success
+                      Get.toNamed(
+                        '/order-confirmation',
+                        parameters: {'orderId': orderId},
+                      );
+                    } catch (e) {
+                      Get.snackbar(
+                        'checkout.error_title'.translate(),
+                        e.toString(),
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: AppColors.destructive(context),
+                        colorText: AppColors.destructiveForeground(context),
+                      );
+                    }
+                  },
+          style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary(context),
-            colorText: AppColors.primaryForeground(context),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary(context),
-          foregroundColor: AppColors.primaryForeground(context),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(UIConfig.borderRadiusCircular),
+            foregroundColor: AppColors.primaryForeground(context),
+            disabledBackgroundColor: AppColors.muted(context),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                UIConfig.borderRadiusCircular,
+              ),
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '\$${cartController.total.value.toStringAsFixed(2)}',
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.primaryForeground(context),
-                  fontSize: UIConfig.fontSizeMedium,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Text(
-              'checkout.place_order'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.primaryForeground(context),
-                  fontSize: UIConfig.fontSizeMedium,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+          child:
+              checkoutController.isProcessing.value
+                  ? CircularProgressIndicator(
+                    color: AppColors.primaryForeground(context),
+                    strokeWidth: 2,
+                  )
+                  : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${cartController.total.value.toStringAsFixed(2)}',
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            color: AppColors.primaryForeground(context),
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'checkout.place_order'.translate(),
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            color: AppColors.primaryForeground(context),
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
         ),
       ),
     );
+  }
+
+  bool _validateCheckoutData(BuildContext context) {
+    // Add validation for address and payment method selection
+    // For now, just return true - you'll implement this when address/payment are ready
+    return true;
   }
 }

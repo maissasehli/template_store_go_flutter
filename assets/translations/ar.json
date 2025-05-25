@@ -295,5 +295,24 @@
         "city_required": "يرجى إدخال المدينة",
         "state_required": "يرجى إدخال الولاية/المحافظة",
         "zip_required": "يرجى إدخال الرمز البريدي"
+    },
+    "orders": {
+        "title": "طلباتي",
+        "order_number": "طلب #{number}",
+        "items_count": "{count} عناصر",
+        "empty_orders": "لا توجد طلبات حتى الآن",
+        "empty_orders_subtitle": "ابدأ التسوق لرؤية طلباتك هنا",
+        "status": {
+            "pending": "قيد الانتظار",
+            "processing": "قيد المعالجة",
+            "shipped": "تم الشحن",
+            "delivered": "تم التسليم",
+            "cancelled": "ملغي"
+        },
+        "order_details": "تفاصيل الطلب",
+        "order_summary": "ملخص الطلب",
+        "shipping_address": "عنوان الشحن",
+        "payment_method": "طريقة الدفع",
+        "order_items": "عناصر الطلب"
     }
 }

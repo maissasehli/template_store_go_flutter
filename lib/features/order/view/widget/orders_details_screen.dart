@@ -385,15 +385,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               color: Colors.grey[200],
               borderRadius: BorderRadius.circular(8),
               image:
-                  item.product.imageUrls.isNotEmpty
+                  item.product?.imageUrls.isNotEmpty == true
                       ? DecorationImage(
-                        image: NetworkImage(item.product.imageUrls.first),
+                        image: NetworkImage(item.product!.imageUrls.first),
                         fit: BoxFit.cover,
                       )
                       : null,
             ),
             child:
-                item.product.imageUrls.isEmpty
+                item.product?.imageUrls.isEmpty != false
                     ? const Icon(Icons.image_not_supported, color: Colors.grey)
                     : null,
           ),
@@ -403,7 +403,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.product.name,
+                  item.productName,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -424,7 +424,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
           ),
           Text(
-            '\$${item.price.toStringAsFixed(2)}',
+            '\$${item.totalPrice.toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -583,9 +583,12 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildAddressRow(Icons.location_on_outlined, order.shippingAddress),
+          _buildAddressRow(
+            Icons.location_on_outlined,
+            order.formattedShippingAddress,
+          ),
           const SizedBox(height: 8),
-          _buildAddressRow(Icons.phone_outlined, order.phoneNumber),
+          _buildAddressRow(Icons.phone_outlined, order.shippingAddress.phone),
         ],
       ),
     );
