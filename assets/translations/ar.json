@@ -12,7 +12,9 @@
         "retry": "إعادة المحاولة",
         "save": "حفظ",
         "cancel": "إلغاء",
-        "delete": "حذف"
+        "delete": "حذف",
+        "success": "نجاح",
+        "error": "خطأ"
     },
     "auth": {
         "login": "تسجيل الدخول",
@@ -333,13 +335,31 @@
             "processing": "قيد المعالجة",
             "shipped": "تم الشحن",
             "delivered": "تم التسليم",
-            "cancelled": "ملغي"
+            "cancelled": "ملغي",
+            "placed": "تم الطلب",
+            "confirmed": "تم التأكيد",
+            "returned": "تم الإرجاع"
         },
         "order_details": "تفاصيل الطلب",
         "order_summary": "ملخص الطلب",
         "shipping_address": "عنوان الشحن",
         "payment_method": "طريقة الدفع",
-        "order_items": "عناصر الطلب"
+        "order_items": "عناصر الطلب",
+        "load_error": "فشل في تحميل الطلبات",
+        "load_details_error": "فشل في تحميل تفاصيل الطلب",
+        "order_not_found": "لم يتم العثور على الطلب",
+        "cancel_success": "تم إلغاء الطلب بنجاح",
+        "cancel_error": "فشل في إلغاء الطلب",
+        "view_all_items": "عرض جميع العناصر {count}",
+        "all_items": "جميع العناصر",
+        "quantity": "الكمية: {qty}",
+        "shipping_fee": "رسوم الشحن",
+        "subtotal": "المجموع الفرعي",
+        "cancel_order": "إلغاء الطلب",
+        "cancel_order_confirmation": "هل أنت متأكد من أنك تريد إلغاء هذا الطلب؟",
+        "confirm_cancel": "نعم، إلغاء",
+        "order_status": "حالة الطلب",
+        "retry": "إعادة المحاولة"
     },
     "order_confirmation": {
         "title": "تم تأكيد الطلب",

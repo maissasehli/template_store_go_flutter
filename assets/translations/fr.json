@@ -12,7 +12,9 @@
         "retry": "Réessayer",
         "save": "Enregistrer",
         "cancel": "Annuler",
-        "delete": "Supprimer"
+        "delete": "Supprimer",
+        "success": "Succès",
+        "error": "Erreur"
     },
     "auth": {
         "login": "Connexion",
@@ -333,13 +335,31 @@
             "processing": "En traitement",
             "shipped": "Expédié",
             "delivered": "Livré",
-            "cancelled": "Annulé"
+            "cancelled": "Annulé",
+            "placed": "Placée",
+            "confirmed": "Confirmée",
+            "returned": "Retournée"
         },
         "order_details": "Détails de la commande",
         "order_summary": "Résumé de la commande",
         "shipping_address": "Adresse de livraison",
         "payment_method": "Méthode de paiement",
-        "order_items": "Articles de la commande"
+        "order_items": "Articles de la commande",
+        "load_error": "Échec du chargement des commandes",
+        "load_details_error": "Échec du chargement des détails de la commande",
+        "order_not_found": "Commande introuvable",
+        "cancel_success": "Commande annulée avec succès",
+        "cancel_error": "Échec de l'annulation de la commande",
+        "view_all_items": "Voir tous les {count} articles",
+        "all_items": "Tous les Articles",
+        "quantity": "Qté: {qty}",
+        "shipping_fee": "Frais de livraison",
+        "subtotal": "Sous-total",
+        "cancel_order": "Annuler la commande",
+        "cancel_order_confirmation": "Êtes-vous sûr de vouloir annuler cette commande?",
+        "confirm_cancel": "Oui, Annuler",
+        "order_status": "Statut de la commande",
+        "retry": "Réessayer"
     },
     "order_confirmation": {
         "title": "Commande Confirmée!",

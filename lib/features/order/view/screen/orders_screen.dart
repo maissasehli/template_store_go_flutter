@@ -25,7 +25,7 @@ class OrdersPage extends StatelessWidget {
         backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: Container(
-          margin: const EdgeInsets.only(left: 16),
+          margin: EdgeInsets.only(left: isRtl ? 0 : 16, right: isRtl ? 16 : 0),
           width: 40,
           height: 40,
           decoration: BoxDecoration(

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
 import 'package:store_go/features/order/view/widget/order_item.dart';
 
@@ -15,15 +16,20 @@ class OrderList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Obx(() {
       if (controller.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
+        return Center(
+          child: CircularProgressIndicator(color: AppColors.primary(context)),
+        );
       }
 
       if (controller.hasError.value) {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             children: [
               Icon(
                 Icons.error_outline,
@@ -34,9 +40,12 @@ class OrderList extends StatelessWidget {
               Text(
                 controller.errorMessage.value,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.mutedForeground(context),
-                  fontSize: UIConfig.fontSizeRegular,
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    color: AppColors.mutedForeground(context),
+                    fontSize: UIConfig.fontSizeRegular,
+                  ),
                 ),
               ),
               SizedBox(height: UIConfig.marginMedium),
@@ -46,7 +55,13 @@ class OrderList extends StatelessWidget {
                   backgroundColor: AppColors.primary(context),
                   foregroundColor: AppColors.primaryForeground(context),
                 ),
-                child: Text('orders.retry'.translate()),
+                child: Text(
+                  'common.retry'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(color: AppColors.primaryForeground(context)),
+                  ),
+                ),
               ),
             ],
           ),
@@ -57,6 +72,7 @@ class OrderList extends StatelessWidget {
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             children: [
               Icon(
                 Icons.shopping_bag_outlined,
@@ -66,19 +82,25 @@ class OrderList extends StatelessWidget {
               SizedBox(height: UIConfig.marginMedium),
               Text(
                 'orders.empty_orders'.translate(),
-                style: TextStyle(
-                  fontSize: UIConfig.fontSizeLarge,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.foreground(context),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: UIConfig.fontSizeLarge,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.foreground(context),
+                  ),
                 ),
               ),
               SizedBox(height: UIConfig.marginSmall),
               Text(
                 'orders.empty_orders_subtitle'.translate(),
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: UIConfig.fontSizeRegular,
-                  color: AppColors.mutedForeground(context),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(
+                    fontSize: UIConfig.fontSizeRegular,
+                    color: AppColors.mutedForeground(context),
+                  ),
                 ),
               ),
             ],

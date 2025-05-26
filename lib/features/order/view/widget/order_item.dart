@@ -4,6 +4,7 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/order/model/order_model.dart';
 
 class OrderItem extends StatelessWidget {
@@ -49,44 +50,21 @@ class OrderItem extends StatelessWidget {
                       '{number}',
                       order.orderNumber,
                     ),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: UIConfig.fontSizeMedium,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                        color: AppColors.foreground(context),
-                      ),
-                    ),
-                  ),
+                  ).subtitle1(context),
                   SizedBox(height: 4),
                   Text(
                     'orders.items_count'.translate().replaceFirst(
                       '{count}',
                       order.itemCount.toString(),
                     ),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: UIConfig.fontSizeRegular,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Poppins',
-                        color: AppColors.mutedForeground(context),
-                      ),
-                    ),
+                  ).body(
+                    context,
+                    style: TextStyle(color: AppColors.mutedForeground(context)),
                   ),
                   SizedBox(height: 4),
-                  Text(
-                    order.formattedDate,
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: UIConfig.fontSizeSmall,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Poppins',
-                        color: AppColors.mutedForeground(context),
-                      ),
-                    ),
+                  Text(order.formattedDate).caption(
+                    context,
+                    style: TextStyle(color: AppColors.mutedForeground(context)),
                   ),
                 ],
               ),
@@ -101,14 +79,13 @@ class OrderItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
               ),
               child: Text(
+                // Ensure correct translation by using a valid translation key
                 'orders.status.${order.status.toLowerCase()}'.translate(),
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    fontSize: UIConfig.fontSizeSmall,
-                    fontWeight: FontWeight.w500,
-                    color: _getStatusColor(order.status, context),
-                  ),
+              ).caption(
+                context,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: _getStatusColor(order.status, context),
                 ),
               ),
             ),
@@ -135,7 +112,13 @@ class OrderItem extends StatelessWidget {
       case 'delivered':
         return const Color(0xFF28A745); // Green for delivered
       case 'cancelled':
-        return AppColors.destructive(context);
+        return AppColors.destructive(context); // Red for cancelled
+      case 'placed':
+        return const Color(0xFF9C27B0); // Purple for placed
+      case 'confirmed':
+        return const Color(0xFF3F51B5); // Indigo for confirmed
+      case 'returned':
+        return const Color(0xFF795548); // Brown for returned
       default:
         return AppColors.mutedForeground(context);
     }

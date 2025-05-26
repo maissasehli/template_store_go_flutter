@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/shared/extensions/buttons/primary_button.dart';
@@ -13,8 +14,11 @@ class OrderConfirmationScreen extends StatelessWidget {
   final String? orderId;
 
   const OrderConfirmationScreen({super.key, this.order, this.orderId});
+
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Scaffold(
       backgroundColor: AppColors.background(context),
       appBar: AppBar(
@@ -28,6 +32,7 @@ class OrderConfirmationScreen extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.all(UIConfig.paddingLarge),
           child: Column(
+            textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             children: [
               Expanded(
                 child: Column(
@@ -149,7 +154,10 @@ class OrderConfirmationScreen extends StatelessWidget {
                       context,
                       onPressed: () {
                         if (order != null) {
-                          Get.toNamed(AppRoute.orderDetails, arguments: order);
+                          Get.toNamed(
+                            AppRoute.orderDetails,
+                            arguments: order?.id,
+                          );
                         } else {
                           Get.toNamed(AppRoute.orders);
                         }
@@ -191,7 +199,10 @@ class OrderConfirmationScreen extends StatelessWidget {
   }
 
   Widget _buildDetailRow(BuildContext context, String label, String value) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Row(
+      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [Text(label).caption(context), Text(value).subtitle2(context)],
     );

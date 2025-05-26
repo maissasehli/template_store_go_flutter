@@ -1,6 +1,7 @@
 // File: lib/features/order/views/widgets/status_tab.dart
 
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class StatusTab extends StatelessWidget {
   final String status;
@@ -16,10 +17,12 @@ class StatusTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(right: 12),
+        margin: EdgeInsets.only(left: isRtl ? 12 : 0, right: isRtl ? 0 : 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected ? Colors.black : Colors.transparent,
@@ -31,11 +34,14 @@ class StatusTab extends StatelessWidget {
         ),
         child: Text(
           status,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
-            color: isSelected ? Colors.white : Colors.black,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Poppins',
+              color: isSelected ? Colors.white : Colors.black,
+            ),
           ),
         ),
       ),

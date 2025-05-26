@@ -5,6 +5,7 @@ import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
 import 'package:store_go/features/order/model/order_model.dart';
@@ -96,23 +97,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         appBar: AppBar(
           backgroundColor: AppColors.background(context),
           elevation: 0,
-          title: Text(
-            'orders.order_details'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: AppColors.foreground(context),
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
+          title: Text('orders.order_details'.translate()).heading4(context),
           leading: IconButton(
             icon: ThemeAwareSvg(
-              assetPath: LocalizationService.isRtl(context)
-                  ? AssetConfig.arrowRight
-                  : AssetConfig.arrowLeft,
+              assetPath:
+                  LocalizationService.isRtl(context)
+                      ? AssetConfig.arrowRight
+                      : AssetConfig.arrowLeft,
               height: 24,
               width: 24,
             ),
@@ -133,9 +124,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         elevation: 0,
         leading: IconButton(
           icon: ThemeAwareSvg(
-            assetPath: LocalizationService.isRtl(context)
-                ? AssetConfig.arrowRight
-                : AssetConfig.arrowLeft,
+            assetPath:
+                LocalizationService.isRtl(context)
+                    ? AssetConfig.arrowRight
+                    : AssetConfig.arrowLeft,
             height: 24,
             width: 24,
           ),
@@ -145,19 +137,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         title: Obx(() {
           final order = controller.selectedOrder.value;
           return Text(
-            order != null 
-                ? 'orders.order_number'.translate().replaceFirst('{number}', order.orderNumber)
+            order != null
+                ? 'orders.order_number'.translate().replaceFirst(
+                  '{number}',
+                  order.orderNumber,
+                )
                 : 'orders.order_details'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: AppColors.foreground(context),
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          );
+          ).heading4(context);
         }),
       ),
       body: Obx(() {
@@ -180,16 +166,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         final order = controller.selectedOrder.value;
         if (order == null) {
           return Center(
-            child: Text(
-              'orders.order_not_found'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.foreground(context),
-                  fontSize: UIConfig.fontSizeMedium,
-                ),
-              ),
-            ),
+            child: Text('orders.order_not_found'.translate()).body(context),
           );
         }
 
@@ -233,14 +210,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         children: [
           Text(
             'common.error'.translate() + ': ${controller.errorMessage.value}',
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: AppColors.foreground(context),
-                fontSize: UIConfig.fontSizeMedium,
-              ),
-            ),
-          ),
+          ).body(context),
           SizedBox(height: UIConfig.marginMedium),
           ElevatedButton(
             onPressed: () => controller.fetchOrderDetails(orderId),
@@ -251,13 +221,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
               ),
             ),
-            child: Text(
-              'common.retry'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(color: AppColors.primaryForeground(context)),
-              ),
-            ),
+            child: Text('common.retry'.translate()).button(context),
           ),
         ],
       ),
@@ -267,7 +231,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   Widget _buildOrderTimeline(OrderModel order) {
     // Create timeline steps based on order status
     final steps = <Map<String, dynamic>>[
-      {'status': 'orders.status.placed'.translate(), 'isActive': true, 'isLast': false},
+      {
+        'status': 'orders.status.placed'.translate(),
+        'isActive': true,
+        'isLast': false,
+      },
       {
         'status': 'orders.status.confirmed'.translate(),
         'isActive': order.status != 'Cancelled',
@@ -286,28 +254,24 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     ];
 
     if (order.status == 'Cancelled') {
-      steps.add({'status': 'orders.status.cancelled'.translate(), 'isActive': true, 'isLast': true});
+      steps.add({
+        'status': 'orders.status.cancelled'.translate(),
+        'isActive': true,
+        'isLast': true,
+      });
     }
 
     if (order.status == 'Returns') {
-      steps.add({'status': 'orders.status.returned'.translate(), 'isActive': true, 'isLast': true});
+      steps.add({
+        'status': 'orders.status.returned'.translate(),
+        'isActive': true,
+        'isLast': true,
+      });
     }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'orders.order_status'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeMedium,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-              color: AppColors.foreground(context),
-            ),
-          ),
-        ),
+        Text('orders.order_status'.translate()).heading4(context),
         SizedBox(height: UIConfig.marginSmall),
         ...steps.map(
           (step) => _buildTimelineItem(
@@ -337,9 +301,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               height: 12,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isActive ? AppColors.primary(context) : AppColors.muted(context),
+                color:
+                    isActive
+                        ? AppColors.primary(context)
+                        : AppColors.muted(context),
                 border: Border.all(
-                  color: isActive ? AppColors.primary(context) : AppColors.muted(context),
+                  color:
+                      isActive
+                          ? AppColors.primary(context)
+                          : AppColors.muted(context),
                   width: 2,
                 ),
               ),
@@ -348,7 +318,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               Container(
                 width: 2,
                 height: 40,
-                color: isActive ? AppColors.primary(context) : AppColors.muted(context),
+                color:
+                    isActive
+                        ? AppColors.primary(context)
+                        : AppColors.muted(context),
               ),
           ],
         ),
@@ -357,32 +330,22 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                status,
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    fontSize: UIConfig.fontSizeRegular,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                    color: isActive ? AppColors.foreground(context) : AppColors.mutedForeground(context),
-                  ),
+              Text(status).subtitle1(
+                context,
+                style: TextStyle(
+                  color:
+                      isActive
+                          ? AppColors.foreground(context)
+                          : AppColors.mutedForeground(context),
                 ),
               ),
               SizedBox(height: isLast ? 0 : UIConfig.marginLarge),
             ],
           ),
         ),
-        Text(
-          date,
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeSmall,
-              fontFamily: 'Poppins',
-              color: isActive ? AppColors.mutedForeground(context) : AppColors.mutedForeground(context),
-            ),
-          ),
+        Text(date).caption(
+          context,
+          style: TextStyle(color: AppColors.mutedForeground(context)),
         ),
       ],
     );
@@ -399,18 +362,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'orders.order_items'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
+          Text('orders.order_items'.translate()).heading4(context),
           SizedBox(height: UIConfig.marginMedium),
 
           // Display the first 2 items directly
@@ -427,18 +379,19 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'orders.view_all_items'.translate().replaceFirst('{count}', order.items.length.toString()),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: UIConfig.fontSizeRegular,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.primary(context),
-                        fontFamily: 'Poppins',
-                      ),
+                    'orders.view_all_items'.translate().replaceFirst(
+                      '{count}',
+                      order.items.length.toString(),
                     ),
+                  ).body(
+                    context,
+                    style: TextStyle(color: AppColors.primary(context)),
                   ),
-                  Icon(Icons.keyboard_arrow_down, size: 16, color: AppColors.primary(context)),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 16,
+                    color: AppColors.primary(context),
+                  ),
                 ],
               ),
             ),
@@ -470,7 +423,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
             child:
                 item.product?.imageUrls.isEmpty != false
-                    ? Icon(Icons.image_not_supported, color: AppColors.mutedForeground(context))
+                    ? Icon(
+                      Icons.image_not_supported,
+                      color: AppColors.mutedForeground(context),
+                    )
                     : null,
           ),
           SizedBox(width: UIConfig.marginSmall),
@@ -480,44 +436,19 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               children: [
                 Text(
                   item.productName,
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(
-                      fontSize: UIConfig.fontSizeRegular,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Poppins',
-                      color: AppColors.foreground(context),
-                    ),
-                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                ),
+                ).body(context),
                 Text(
-                  'orders.quantity'.translate().replaceFirst('{qty}', item.quantity.toString()),
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(
-                      fontSize: UIConfig.fontSizeSmall,
-                      color: AppColors.mutedForeground(context),
-                      fontFamily: 'Poppins',
-                    ),
+                  'orders.quantity'.translate().replaceFirst(
+                    '{qty}',
+                    item.quantity.toString(),
                   ),
-                ),
+                ).caption(context),
               ],
             ),
           ),
-          Text(
-            '\$${item.totalPrice.toStringAsFixed(2)}',
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeRegular,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
+          Text('\$${item.totalPrice.toStringAsFixed(2)}').body(context),
         ],
       ),
     );
@@ -529,7 +460,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       isScrollControlled: true,
       backgroundColor: AppColors.background(context),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(UIConfig.borderRadiusMedium)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(UIConfig.borderRadiusMedium),
+        ),
       ),
       builder: (context) {
         return Container(
@@ -544,20 +477,12 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'orders.all_items'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: UIConfig.fontSizeMedium,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'Poppins',
-                        color: AppColors.foreground(context),
-                      ),
-                    ),
-                  ),
+                  Text('orders.all_items'.translate()).heading4(context),
                   IconButton(
-                    icon: Icon(Icons.close, color: AppColors.foreground(context)),
+                    icon: Icon(
+                      Icons.close,
+                      color: AppColors.foreground(context),
+                    ),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -589,18 +514,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'orders.order_summary'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
+          Text('orders.order_summary'.translate()).heading4(context),
           SizedBox(height: UIConfig.marginMedium),
           _buildSummaryRow(
             'orders.subtotal'.translate(),
@@ -611,7 +525,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             'orders.tax'.translate(),
             '\$${_calculateTax(order).toStringAsFixed(2)}',
           ),
-          Divider(height: UIConfig.marginLarge, color: AppColors.border(context)),
+          Divider(
+            height: UIConfig.marginLarge,
+            color: AppColors.border(context),
+          ),
           _buildSummaryRow(
             'orders.total'.translate(),
             '\$${order.totalAmount.toStringAsFixed(2)}',
@@ -637,32 +554,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       padding: EdgeInsets.only(bottom: UIConfig.paddingSmall),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeRegular,
-                fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
-          Text(
-            value,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeRegular,
-                fontWeight: isBold ? FontWeight.w600 : FontWeight.w400,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
-        ],
+        children: [Text(label).body(context), Text(value).body(context)],
       ),
     );
   }
@@ -678,18 +570,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'orders.shipping_details'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w600,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
+          Text('orders.shipping_details'.translate()).heading4(context),
           SizedBox(height: UIConfig.marginMedium),
           _buildAddressRow(
             Icons.location_on_outlined,
@@ -708,19 +589,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       children: [
         Icon(icon, size: 18, color: AppColors.mutedForeground(context)),
         SizedBox(width: UIConfig.paddingSmall),
-        Expanded(
-          child: Text(
-            text,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: UIConfig.fontSizeRegular,
-                fontFamily: 'Poppins',
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
-        ),
+        Expanded(child: Text(text).body(context)),
       ],
     );
   }
@@ -739,18 +608,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
           ),
         ),
-        child: Text(
-          'orders.cancel_order'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeRegular,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
-              color: AppColors.destructive(context),
-            ),
-          ),
-        ),
+        child: Text('orders.cancel_order'.translate()).button(context),
       ),
     );
   }
@@ -759,42 +617,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     Get.dialog(
       AlertDialog(
         backgroundColor: AppColors.card(context),
-        title: Text(
-          'orders.cancel_order'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeMedium,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-              color: AppColors.foreground(context),
-            ),
-          ),
-        ),
+        title: Text('orders.cancel_order'.translate()).heading4(context),
         content: Text(
           'orders.cancel_order_confirmation'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              fontSize: UIConfig.fontSizeRegular,
-              fontFamily: 'Poppins',
-              color: AppColors.foreground(context),
-            ),
-          ),
-        ),
+        ).body(context),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text(
-              'common.cancel'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.foreground(context),
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ),
+            child: Text('common.cancel'.translate()).button(context),
           ),
           ElevatedButton(
             onPressed: () {
@@ -805,16 +635,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               backgroundColor: AppColors.destructive(context),
               foregroundColor: AppColors.destructiveForeground(context),
             ),
-            child: Text(
-              'orders.confirm_cancel'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  fontFamily: 'Poppins',
-                  color: AppColors.destructiveForeground(context),
-                ),
-              ),
-            ),
+            child: Text('orders.confirm_cancel'.translate()).button(context),
           ),
         ],
       ),

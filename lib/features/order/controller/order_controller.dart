@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/features/order/model/order_model.dart';
 import 'package:store_go/features/order/repositories/order_repository.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class OrderController extends GetxController {
   final OrderRepository _repository;
@@ -19,7 +20,7 @@ class OrderController extends GetxController {
   final RxBool isLoadingDetails = false.obs;
 
   OrderController({required OrderRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   @override
   void onInit() {
@@ -41,7 +42,7 @@ class OrderController extends GetxController {
       orders.value = [];
       hasOrders.value = false;
       hasError.value = true;
-      errorMessage.value = 'Failed to load orders. Please try again later.';
+      errorMessage.value = 'orders.load_error'.translate();
     } finally {
       isLoading.value = false;
     }
@@ -58,11 +59,11 @@ class OrderController extends GetxController {
         selectedOrder.value = orderDetails;
       } else {
         hasError.value = true;
-        errorMessage.value = 'Order details not available';
+        errorMessage.value = 'orders.order_not_found'.translate();
       }
     } catch (e) {
       hasError.value = true;
-      errorMessage.value = 'Failed to load order details. Please try again.';
+      errorMessage.value = 'orders.load_details_error'.translate();
     } finally {
       isLoadingDetails.value = false;
     }
@@ -106,11 +107,14 @@ class OrderController extends GetxController {
       );
     }
   }
-  // Add this method to your OrderController class
-void changeOrderStatus(String status) {
-  if (selectedStatus.value != status) {
-    selectedStatus.value = status;
-    fetchOrders();
+
+  void changeOrderStatus(String status) {
+    if (selectedStatus.value.toLowerCase() != status.toLowerCase()) {
+      // Capitalize first letter for consistent display
+      selectedStatus.value =
+          status.substring(0, 1).toUpperCase() +
+          status.substring(1).toLowerCase();
+      fetchOrders();
+    }
   }
-}
 }

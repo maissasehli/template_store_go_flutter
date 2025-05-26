@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
 
 class OrderStatusTabs extends StatelessWidget {
@@ -14,6 +15,8 @@ class OrderStatusTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: EdgeInsets.symmetric(
@@ -22,33 +25,34 @@ class OrderStatusTabs extends StatelessWidget {
       ),
       child: Obx(
         () => Row(
+          textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
           children: [
             _buildStatusTab(
               context,
               'orders.status.processing'.translate(),
               'processing',
-              controller.selectedStatus.value == 'processing',
+              controller.selectedStatus.value.toLowerCase() == 'processing',
             ),
             SizedBox(width: UIConfig.marginSmall),
             _buildStatusTab(
               context,
               'orders.status.shipped'.translate(),
               'shipped',
-              controller.selectedStatus.value == 'shipped',
+              controller.selectedStatus.value.toLowerCase() == 'shipped',
             ),
             SizedBox(width: UIConfig.marginSmall),
             _buildStatusTab(
               context,
               'orders.status.delivered'.translate(),
               'delivered',
-              controller.selectedStatus.value == 'delivered',
+              controller.selectedStatus.value.toLowerCase() == 'delivered',
             ),
             SizedBox(width: UIConfig.marginSmall),
             _buildStatusTab(
               context,
               'orders.status.cancelled'.translate(),
               'cancelled',
-              controller.selectedStatus.value == 'cancelled',
+              controller.selectedStatus.value.toLowerCase() == 'cancelled',
             ),
           ],
         ),
@@ -84,13 +88,16 @@ class OrderStatusTabs extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: UIConfig.fontSizeRegular,
-            fontWeight: FontWeight.w500,
-            color:
-                isSelected
-                    ? AppColors.primaryForeground(context)
-                    : AppColors.foreground(context),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: UIConfig.fontSizeRegular,
+              fontWeight: FontWeight.w500,
+              color:
+                  isSelected
+                      ? AppColors.primaryForeground(context)
+                      : AppColors.foreground(context),
+            ),
           ),
         ),
       ),

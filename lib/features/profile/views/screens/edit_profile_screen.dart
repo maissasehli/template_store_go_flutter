@@ -157,18 +157,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       child: Obx(() {
         // Show loading only during avatar upload
-        final isButtonDisabled = controller.isUploading.value && controller.selectedImage.value != null;
-        
+        final isButtonDisabled =
+            controller.isUploading.value &&
+            controller.selectedImage.value != null;
+
         return TextButton(
-          onPressed: isButtonDisabled ? null : () async {
-            _unfocusAll(); // Unfocus before saving
-            try {
-              await controller.saveProfile();
-            } catch (e) {
-              // Handle any potential errors from saveProfile
-              print('Error in save button: $e');
-            }
-          },
+          onPressed:
+              isButtonDisabled
+                  ? null
+                  : () async {
+                    _unfocusAll(); // Unfocus before saving
+                    try {
+                      await controller.saveProfile();
+                    } catch (e) {
+                      // Handle any potential errors from saveProfile
+                      print('Error in save button: $e');
+                    }
+                  },
           style: TextButton.styleFrom(
             padding: EdgeInsets.symmetric(
               horizontal: UIConfig.paddingLarge,
@@ -178,26 +183,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
               borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
             ),
           ),
-          child: isButtonDisabled
-              ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryForeground(context),
-                    strokeWidth: 2,
-                  ),
-                )
-              : Text(
-                  'common.save'.translate(),
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+          child:
+              isButtonDisabled
+                  ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
                       color: AppColors.primaryForeground(context),
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : Text(
+                    'common.save'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryForeground(context),
+                      ),
                     ),
                   ),
-                ),
         );
       }),
     );

@@ -10,14 +10,18 @@ class ErrorView extends StatelessWidget {
   final OrderController controller;
 
   const ErrorView({super.key, required this.controller});
+
   @override
   Widget build(BuildContext context) {
+    final bool isRtl = LocalizationService.isRtl(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
         children: [
           Text(
-            'Error: ${controller.errorMessage.value}',
+            controller.errorMessage.value,
             style: LocalizationService.getLocalizedTextStyle(
               context,
               TextStyle(
@@ -39,7 +43,7 @@ class ErrorView extends StatelessWidget {
               ),
             ),
             child: Text(
-              'orders.retry'.translate(),
+              'common.retry'.translate(),
               style: LocalizationService.getLocalizedTextStyle(
                 context,
                 const TextStyle(fontWeight: FontWeight.w500),
