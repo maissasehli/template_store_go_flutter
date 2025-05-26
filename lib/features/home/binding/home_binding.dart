@@ -9,6 +9,7 @@ import 'package:store_go/features/home/controllers/home_controller.dart';
 import 'package:store_go/features/order/repositories/order_repository.dart';
 import 'package:store_go/features/payment/controller/payment_controller.dart';
 import 'package:store_go/features/payment/repositories/payment_repository.dart';
+import 'package:store_go/features/payment/services/payment_service.dart';
 import 'package:store_go/features/category_product/controller/category_product_controller.dart';
 import 'package:store_go/features/product/controllers/product_controller.dart';
 import 'package:store_go/features/product/repositories/product_repository.dart';
@@ -33,40 +34,40 @@ class HomeBinding implements Bindings {
     }
 
     // Register repositories
-    Get.lazyPut(() => ProductRepository(
-          apiClient: Get.find<ApiClient>(), reviewRepository: ReviewRepository(apiClient: apiClient),
-        ));
-        
-    Get.put<CartRepository>(
-      CartRepository(),
-      permanent: true,
+    Get.lazyPut(
+      () => ProductRepository(
+        apiClient: Get.find<ApiClient>(),
+        reviewRepository: ReviewRepository(apiClient: apiClient),
+      ),
     );
-    
+
+    Get.put<CartRepository>(CartRepository(), permanent: true);
+
     Get.put<WishlistRepository>(
       WishlistRepository(apiClient: apiClient),
       permanent: true,
     );
-    
+
     Get.put<CategoryRepository>(
       CategoryRepository(apiClient: apiClient),
       permanent: true,
     );
-    
+
     Get.put<ProfileRepository>(
       ProfileRepository(apiClient: apiClient),
       permanent: true,
     );
-    
+
     Get.put<PaymentRepository>(
       PaymentRepository(apiClient: apiClient),
       permanent: true,
     );
-    
+
     Get.put<AddressRepository>(
       AddressRepository(apiClient: apiClient),
       permanent: true,
     );
-    
+
     Get.lazyPut<OrderRepository>(
       () => OrderRepository(apiClient: apiClient),
       fenix: true,
@@ -76,45 +77,42 @@ class HomeBinding implements Bindings {
     Get.lazyPut<ProductController>(
       () => ProductController(
         repository: Get.find<ProductRepository>(),
-        promotionRepository: Get.find(), // Make sure PromotionRepository is registered in your dependencies
+        promotionRepository:
+            Get.find(), // Make sure PromotionRepository is registered in your dependencies
       ),
       fenix: true,
     );
-    
-    Get.lazyPut<HomeController>(
-      () => HomeController(),
-      fenix: true,
-    );
-    
+
+    Get.lazyPut<HomeController>(() => HomeController(), fenix: true);
+
     Get.lazyPut<CategoryController>(
       () => CategoryController(repository: Get.find<CategoryRepository>()),
       fenix: true,
     );
-    
+
     Get.lazyPut<WishlistController>(
       () => WishlistController(repository: Get.find<WishlistRepository>()),
       fenix: true,
     );
-    
+
     Get.lazyPut<ProfileController>(
       () => ProfileController(repository: Get.find<ProfileRepository>()),
       fenix: true,
     );
-    
+
     Get.lazyPut<CategoryProductController>(
-      () => CategoryProductController(repository: Get.find<ProductRepository>()),
+      () =>
+          CategoryProductController(repository: Get.find<ProductRepository>()),
       fenix: true,
     );
-    
     Get.put<CartController>(
       CartController(repository: Get.find<CartRepository>()),
       permanent: true,
     );
-    
+
     Get.put<PaymentController>(
-      PaymentController(repository: Get.find<PaymentRepository>()),
+      PaymentController(paymentService: Get.find<PaymentService>()),
       permanent: true,
     );
   }
-  
-} 
+}

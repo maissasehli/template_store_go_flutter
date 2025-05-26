@@ -41,6 +41,10 @@ import 'package:store_go/features/order/view/screen/orders_screen.dart';
 import 'package:store_go/features/order/view/screen/order_confirmation_screen.dart';
 import 'package:store_go/app/screens/order_failure_screen.dart';
 import 'package:store_go/features/payment/view/screen/payment_screen.dart';
+import 'package:store_go/features/payment/view/screen/payment_history_screen.dart';
+import 'package:store_go/features/payment/view/screen/payment_success_screen.dart';
+import 'package:store_go/features/payment/view/screen/payment_failure_screen.dart';
+import 'package:store_go/features/payment/binding/payment_binding.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
@@ -220,13 +224,28 @@ List<GetPage<dynamic>>? routes = [
   ),
   GetPage(
     name: AppRoute.payments,
-    page: () => PaymentMethodPage(),
-    binding: HomeBinding(),
+    page: () => const PaymentMethodPage(),
+    binding: PaymentBinding(),
   ),
   GetPage(
     name: AppRoute.addPayment,
-    page: () => const AddCardPage(),
-    binding: HomeBinding(),
+    page: () => const AddCardScreen(),
+    binding: PaymentBinding(),
+  ),
+  GetPage(
+    name: AppRoute.paymentHistory,
+    page: () => const PaymentHistoryScreen(),
+    binding: PaymentBinding(),
+  ),
+  GetPage(
+    name: AppRoute.paymentSuccess,
+    page: () => const PaymentSuccessScreen(),
+    binding: PaymentBinding(),
+  ),
+  GetPage(
+    name: AppRoute.paymentFailure,
+    page: () => const PaymentFailureScreen(),
+    binding: PaymentBinding(),
   ),
   GetPage(
     name: AppRoute.orders,

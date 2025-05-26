@@ -274,6 +274,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
       // Process payment using the orderId from arguments
       final paymentResult = await checkoutController.processPaymentForOrder(
         orderId: orderId,
+        total: amount,
         cardDetails: _cardDetails!,
         savePaymentMethod: _savePaymentMethod,
       );

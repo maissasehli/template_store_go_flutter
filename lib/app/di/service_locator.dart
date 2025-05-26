@@ -10,6 +10,8 @@ import 'package:store_go/app/core/services/theme_aware_snackbar_service.dart';
 import 'package:store_go/features/profile/repositories/profile_repository.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/payment/services/payment_service.dart';
+import 'package:store_go/features/payment/services/stripe_service.dart';
+import 'package:store_go/features/payment/repositories/payment_repository.dart';
 import 'package:store_go/features/order/repositories/order_repository.dart';
 import 'package:store_go/features/cart/repositories/cart_repository.dart';
 
@@ -29,9 +31,19 @@ class ServiceLocator {
       permanent: true,
     );
 
-    // Register payment service
+    // Register payment services
+    Get.put<PaymentRepository>(
+      PaymentRepository(apiClient: Get.find<ApiClient>()),
+      permanent: true,
+    );
+
+    Get.put<StripeService>(StripeService(), permanent: true);
+
     Get.put<PaymentService>(
-      PaymentService(apiClient: Get.find<ApiClient>()),
+      PaymentService(
+        paymentRepository: Get.find<PaymentRepository>(),
+        stripeService: Get.find<StripeService>(),
+      ),
       permanent: true,
     );
 

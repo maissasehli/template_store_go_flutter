@@ -65,6 +65,9 @@ class AppRoute {
   static const String payments = "/payments";
   static const String addPayment = "/add-payment";
   static const String editPayment = "/edit-payment";
+  static const String paymentHistory = "/payment-history";
+  static const String paymentSuccess = "/payment-success";
+  static const String paymentFailure = "/payment-failure";
   static const String notifications = "/notifications";
   static const String filter = "/filter";
   static const String subcategoryProducts = '/subcategory-products';

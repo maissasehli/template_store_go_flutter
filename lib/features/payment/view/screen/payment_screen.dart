@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/payment/controller/payment_controller.dart';
-import 'package:store_go/features/payment/repositories/payment_repository.dart';
+import '../widget/add_card_screen.dart';
+import '../widget/payment_method_card.dart';
 
 class PaymentMethodPage extends StatelessWidget {
   const PaymentMethodPage({super.key});
@@ -14,14 +15,14 @@ class PaymentMethodPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.only(left: 16),
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: Theme.of(context).colorScheme.surface,
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -34,11 +35,9 @@ class PaymentMethodPage extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        title: const Text(
-          'Payment Methods',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
+        title: Text(
+          'payment.title'.tr,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
             fontFamily: 'Poppins',
           ),
@@ -54,98 +53,161 @@ class PaymentMethodPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 24),
+
+                      // Add Payment Method Button
                       GestureDetector(
-                        onTap: () {
-                          // Navigate to add payment method page (implement if needed)
-                          controller.addPaymentMethod(
-                            PaymentMethod(
-                              id: DateTime.now().toString(),
-                              type: 'card',
-                              lastFour: '1234',
-                              isDefault: controller.paymentMethods.isEmpty,
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          'Add Payment Method',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Gabarito',
-                            color: Colors.black,
+                        onTap: () => _showAddPaymentMethodBottomSheet(context),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'payment.add_payment_method'.tr,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  fontFamily: 'Gabarito',
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
+
+                      const SizedBox(height: 24),
+
+                      // Saved Payment Methods Section
+                      Text(
+                        'payment.saved_payment_methods'.tr,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Gabarito',
+                        ),
+                      ),
+
                       const SizedBox(height: 16),
+
+                      // Payment Methods List or Empty State
                       Expanded(
                         child:
                             controller.paymentMethods.isEmpty
-                                ? const Center(
-                                  child: Text(
-                                    'No payment methods added yet',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 16,
-                                      fontFamily: 'Poppins',
-                                    ),
-                                  ),
-                                )
-                                : ListView.separated(
-                                  itemCount: controller.paymentMethods.length,
-                                  separatorBuilder:
-                                      (context, index) =>
-                                          const SizedBox(height: 12),
-                                  itemBuilder: (context, index) {
-                                    final method =
-                                        controller.paymentMethods[index];
-                                    return GestureDetector(
-                                      onTap: () {
-                                        controller.selectPaymentMethod(method);
-                                        Get.back();
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 16,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFF4F4F4),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              method.displayName,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                fontFamily: 'Poppins',
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            if (controller
-                                                    .selectedPaymentMethod
-                                                    .value
-                                                    ?.id ==
-                                                method.id)
-                                              const Icon(
-                                                Icons.check,
-                                                color: Colors.green,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                                ? _buildEmptyState(context)
+                                : _buildPaymentMethodsList(controller),
                       ),
                     ],
                   ),
                 ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.credit_card_outlined,
+            size: 64,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'payment.no_payment_methods'.tr,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).colorScheme.outline,
+              fontFamily: 'Poppins',
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'payment.add_new_method'.tr,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.outline,
+              fontFamily: 'Poppins',
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodsList(PaymentController controller) {
+    return ListView.separated(
+      itemCount: controller.paymentMethods.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final method = controller.paymentMethods[index];
+        return PaymentMethodCard(
+          paymentMethod: method,
+          isSelected: controller.selectedPaymentMethod.value?.id == method.id,
+          onTap: () {
+            controller.selectPaymentMethod(method);
+            Get.back();
+          },
+          onSetDefault: () => controller.setDefaultPaymentMethod(method.id),
+          onDelete: () => _showDeleteConfirmation(context, controller, method),
+        );
+      },
+    );
+  }
+
+  void _showAddPaymentMethodBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddCardScreen(),
+    );
+  }
+
+  void _showDeleteConfirmation(
+    BuildContext context,
+    PaymentController controller,
+    paymentMethod,
+  ) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('common.delete'.tr),
+        content: Text('payment.confirm_delete'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('common.cancel'.tr),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              controller.deletePaymentMethod(paymentMethod.id);
+            },
+            child: Text(
+              'payment.delete_confirm'.tr,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        ],
       ),
     );
   }

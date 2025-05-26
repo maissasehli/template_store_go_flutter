@@ -188,12 +188,12 @@ class CheckoutController extends GetxController {
         total: total,
       );
 
-      currentOrderId.value = orderId;
-
-      // Step 2: Process payment if card details provided
+      currentOrderId.value =
+          orderId; // Step 2: Process payment if card details provided
       if (cardDetails != null) {
         final paymentResult = await processPaymentForOrder(
           orderId: orderId,
+          total: total,
           cardDetails: cardDetails,
           savePaymentMethod: savePaymentMethod,
         );
@@ -295,24 +295,26 @@ class CheckoutController extends GetxController {
   /// Process payment for an existing order
   Future<PaymentResult> processPaymentForOrder({
     required String orderId,
+    required double total,
     required Map<String, dynamic> cardDetails,
     bool savePaymentMethod = false,
   }) async {
     try {
       // Step 1: Create payment method using Stripe
-      final paymentMethod = await _paymentService.createPaymentMethod(
-        cardDetails: cardDetails,
-        billingDetails:
-            selectedBillingAddress.value != null
-                ? _addressToJson(selectedBillingAddress.value!)
-                : (selectedShippingAddress.value != null
-                    ? _addressToJson(selectedShippingAddress.value!)
-                    : null),
+      final paymentMethod = await _paymentService.createAndSavePaymentMethod(
+        cardNumber: cardDetails['cardNumber'] ?? '',
+        expiryMonth: cardDetails['expiryMonth'] ?? 1,
+        expiryYear: cardDetails['expiryYear'] ?? 2025,
+        cvc: cardDetails['cvc'] ?? '',
+        cardholderName: cardDetails['cardholderName'] ?? '',
+        setAsDefault: savePaymentMethod,
       );
 
       // Step 2: Process payment
       final paymentResult = await _paymentService.processPayment(
         orderId: orderId,
+        amount: total,
+        currency: 'USD',
         paymentMethodId: paymentMethod.id,
         savePaymentMethod: savePaymentMethod,
       );
@@ -334,12 +336,9 @@ class CheckoutController extends GetxController {
         paymentResult.paymentIntentId == null) {
       throw Exception('Invalid 3D Secure parameters');
     }
-
     try {
       final authResult = await _paymentService.handle3DSecure(
         clientSecret: paymentResult.clientSecret!,
-        paymentIntentId: paymentResult.paymentIntentId!,
-        orderId: paymentResult.orderId ?? currentOrderId.value,
       );
 
       if (authResult.isSuccess) {
@@ -406,43 +405,6 @@ class CheckoutController extends GetxController {
       country: address.country,
       phone: userData['phone'] ?? '',
     );
-  }
-
-  /// Convert AddressModel.Address to JSON for billing details
-  Map<String, dynamic> _addressToJson(AddressModel.Address address) {
-    // Get user data from profile
-    final userData = _getUserProfileData();
-
-    // If no user data available, throw an exception
-    if (userData == null) {
-      throw Exception(
-        'User profile data not available. Please complete your profile before checkout.',
-      );
-    }
-
-    // Validate required fields
-    if (userData['email'] == null || userData['email']!.isEmpty) {
-      throw Exception('Email is required. Please update your profile.');
-    }
-    final firstName = userData['firstName'] ?? '';
-    final lastName = userData['lastName'] ?? '';
-    final fullName = '$firstName $lastName'.trim();
-
-    return {
-      'name':
-          fullName.isNotEmpty
-              ? fullName
-              : 'Customer', // Professional fallback consistent with _convertToOrderAddress
-      'email': userData['email']!,
-      'phone': userData['phone'] ?? '',
-      'address': {
-        'line1': address.street,
-        'city': address.city,
-        'state': address.state,
-        'postal_code': address.postalCode,
-        'country': address.country,
-      },
-    };
   }
 
   /// Get the display text for shipping address section
