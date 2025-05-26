@@ -1,3 +1,5 @@
+import 'package:store_go/app/core/localization/translation_extension.dart';
+
 class OrderRequest {
   final Address shippingAddress;
   final Address billingAddress;
@@ -145,18 +147,19 @@ class OrderModel {
   // Getter for formatted address
   String get formattedShippingAddress =>
       '${shippingAddress.street}, ${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.zipCode}';
-
   // Getter for formatted date
   String get formattedDate {
     final now = DateTime.now();
     final difference = now.difference(createdAt);
 
     if (difference.inDays == 0) {
-      return 'Today';
+      return 'date_format.today'.translate();
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return 'date_format.yesterday'.translate();
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
+      return 'date_format.days_ago'.translateWithParam({
+        'count': difference.inDays.toString(),
+      });
     } else {
       return '${createdAt.day}/${createdAt.month}/${createdAt.year}';
     }

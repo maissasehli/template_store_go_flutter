@@ -359,7 +359,10 @@
         "cancel_order_confirmation": "Êtes-vous sûr de vouloir annuler cette commande?",
         "confirm_cancel": "Oui, Annuler",
         "order_status": "Statut de la commande",
-        "retry": "Réessayer"
+        "retry": "Réessayer",
+        "shipping_details": "Détails de livraison",
+        "tax": "Taxe",
+        "total": "Total"
     },
     "order_confirmation": {
         "title": "Commande Confirmée!",
@@ -405,5 +408,10 @@
         "failed_amount": "Montant: {amount}",
         "help_text": "Si vous continuez à rencontrer des problèmes, notre équipe d'assistance est là pour vous aider",
         "save_for_later": "Vos articles sont toujours dans votre panier et peuvent être commandés plus tard"
+    },
+    "date_format": {
+        "today": "Aujourd'hui",
+        "yesterday": "Hier",
+        "days_ago": "Il y a {count} jours"
     }
 }

@@ -570,7 +570,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('orders.shipping_details'.translate()).heading4(context),
+          Text('orders.shipping_details'.translate()).heading4(context), // Fixed hardcoded text
           SizedBox(height: UIConfig.marginMedium),
           _buildAddressRow(
             Icons.location_on_outlined,
