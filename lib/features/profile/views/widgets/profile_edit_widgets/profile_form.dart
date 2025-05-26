@@ -21,7 +21,6 @@ class ProfileForm extends StatelessWidget {
     required this.onCountryChanged,
     required this.onGenderChanged,
   });
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -34,20 +33,7 @@ class ProfileForm extends StatelessWidget {
         ),
         SizedBox(height: UIConfig.marginLarge),
 
-        // Nick name field
-        CustomFormField(
-          label: 'profile.nick_name'.translate(),
-          controller: controller.userNameController,
-        ),
-        SizedBox(height: UIConfig.marginLarge),
-
-        // Email field
-        CustomFormField(
-          label: 'auth.email'.translate(),
-          controller: controller.emailController,
-          keyboardType: TextInputType.emailAddress,
-        ),
-        SizedBox(height: UIConfig.marginLarge), // Phone field with custom icon
+        // Phone field with custom icon
         PhoneField(controller: controller.phoneController),
         SizedBox(height: UIConfig.marginLarge),
 

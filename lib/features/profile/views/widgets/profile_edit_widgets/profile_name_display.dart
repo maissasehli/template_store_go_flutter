@@ -25,11 +25,8 @@ class ProfileNameDisplay extends StatelessWidget {
         }),
         SizedBox(height: UIConfig.paddingSmall / 2),
         Obx(() {
-          final username =
-              controller.user.value?.name.split(' ').first.toLowerCase() ??
-              'username';
           return Text(
-            '@$username',
+            controller.user.value?.email ?? 'user@example.com',
             style: TextStyle(
               fontSize: 14,
               color: AppColors.mutedForeground(context),

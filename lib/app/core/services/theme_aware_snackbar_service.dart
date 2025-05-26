@@ -291,4 +291,131 @@ class ThemeAwareSnackbarService {
       onTap: onTap,
     );
   }
+
+  // Show an error notification that respects the app theme
+  void showErrorNotification({
+    required String title,
+    required String message,
+    Duration duration = const Duration(seconds: 4),
+  }) {
+    // Get theme controller
+    final ThemeController themeController = Get.find<ThemeController>();
+    final ThemeData currentTheme = themeController.theme;
+    final bool isRtl = LocalizationService.isRtl(Get.context!);
+
+    // Get colors from theme extension
+    final appColors = currentTheme.extension<AppColorExtension>()!;
+
+    // Use theme colors for error styling
+    final backgroundColor = appColors.destructive;
+    final textColor = appColors.destructiveForeground;
+
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.TOP,
+      duration: duration,
+      backgroundColor: backgroundColor,
+      colorText: textColor,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      padding: const EdgeInsets.all(16),
+      icon: Icon(Icons.error_outline, color: textColor, size: 28),
+      titleText: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+        children: [
+          Icon(Icons.error_outline, color: textColor, size: 24),
+          SizedBox(width: isRtl ? 0 : 8, height: isRtl ? 8 : 0),
+          Expanded(
+            child: Text(
+              title,
+              style: LocalizationService.getLocalizedTextStyle(
+                Get.context!,
+                TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      messageText: Padding(
+        padding: EdgeInsets.only(left: isRtl ? 0 : 32, right: isRtl ? 32 : 0),
+        child: Text(
+          message,
+          style: LocalizationService.getLocalizedTextStyle(
+            Get.context!,
+            TextStyle(fontSize: 14, color: textColor),
+          ),
+        ),
+      ),
+      isDismissible: true,
+      dismissDirection: DismissDirection.horizontal,
+    );
+  }
+
+  // Show a success notification that respects the app theme
+  void showSuccessNotification({
+    required String title,
+    required String message,
+    Duration duration = const Duration(seconds: 3),
+  }) {
+    // Get theme controller
+    final ThemeController themeController = Get.find<ThemeController>();
+    final ThemeData currentTheme = themeController.theme;
+    final bool isRtl = LocalizationService.isRtl(Get.context!);
+
+    // Get colors from theme extension
+    final appColors = currentTheme.extension<AppColorExtension>()!;
+
+    // Use theme colors for success styling
+    final backgroundColor = Colors.green;
+    final textColor = Colors.white;
+
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: duration,
+      backgroundColor: backgroundColor,
+      colorText: textColor,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 12,
+      padding: const EdgeInsets.all(16),
+      titleText: Row(
+        textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
+        children: [
+          Icon(Icons.check_circle_outline, color: textColor, size: 24),
+          SizedBox(width: isRtl ? 0 : 8, height: isRtl ? 8 : 0),
+          Expanded(
+            child: Text(
+              title,
+              style: LocalizationService.getLocalizedTextStyle(
+                Get.context!,
+                TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      messageText: Padding(
+        padding: EdgeInsets.only(left: isRtl ? 0 : 32, right: isRtl ? 32 : 0),
+        child: Text(
+          message,
+          style: LocalizationService.getLocalizedTextStyle(
+            Get.context!,
+            TextStyle(fontSize: 14, color: textColor),
+          ),
+        ),
+      ),
+      isDismissible: true,
+      dismissDirection: DismissDirection.horizontal,
+    );
+  }
 }

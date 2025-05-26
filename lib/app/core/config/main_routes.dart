@@ -36,7 +36,7 @@ import 'package:store_go/features/address/view/add_address.dart';
 import 'package:store_go/features/address/view/address_screen.dart';
 import 'package:store_go/features/profile/views/screens/edit_profile_screen.dart';
 import 'package:store_go/features/notifications/views/notification_screen.dart';
-import 'package:store_go/features/order/view/widget/orders_details_screen.dart';
+import 'package:store_go/features/order/view/screen/orders_details_screen.dart';
 import 'package:store_go/features/order/view/screen/orders_screen.dart';
 import 'package:store_go/features/order/view/screen/order_confirmation_screen.dart';
 import 'package:store_go/app/screens/order_failure_screen.dart';
@@ -235,7 +235,7 @@ List<GetPage<dynamic>>? routes = [
   ),
   GetPage(
     name: AppRoute.orderDetails,
-    page: () => OrderDetailsPage(),
+    page: () => const OrderDetailsPage(),
     binding: OrderBinding(),
   ),
   GetPage(

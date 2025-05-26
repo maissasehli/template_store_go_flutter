@@ -36,6 +36,11 @@ class _CustomFormFieldState extends State<CustomFormField> {
         _isFocused = _focusNode.hasFocus;
       });
     });
+
+    // Add listener to controller to debug value changes
+    widget.controller.addListener(() {
+      print('${widget.label} controller value: ${widget.controller.text}');
+    });
   }
 
   @override

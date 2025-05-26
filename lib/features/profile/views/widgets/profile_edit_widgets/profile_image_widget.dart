@@ -42,18 +42,7 @@ class ProfileImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final hasSelectedImage = controller.selectedImage.value != null;
-      logger.d(
-        'ProfileImageWidget: Building widget, hasSelectedImage: $hasSelectedImage',
-      );
-      logger.d(
-        'ProfileImageWidget: Controller user: ${controller.user.value?.name}',
-      );
-      logger.d(
-        'ProfileImageWidget: Controller user avatar: ${controller.user.value?.avatar}',
-      );
-
       final imageUrl = _getFullImageUrl(controller.user.value?.avatar);
-      logger.d('ProfileImageWidget: Final image URL to display: $imageUrl');
 
       return Stack(
         alignment: Alignment.bottomRight,
@@ -73,7 +62,7 @@ class ProfileImageWidget extends StatelessWidget {
                         controller.selectedImage.value!,
                         fit: BoxFit.cover,
                       )
-                      : imageUrl != null
+                      : (imageUrl != null && !imageUrl.startsWith('/'))
                       ? Image.network(
                         imageUrl,
                         fit: BoxFit.cover,
@@ -90,28 +79,10 @@ class ProfileImageWidget extends StatelessWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: AppColors.muted(context).withAlpha(51),
-                            child: Center(
-                              child: Icon(
-                                Icons.person_outline,
-                                color: AppColors.muted(context),
-                                size: 40,
-                              ),
-                            ),
-                          );
+                          return _buildPlaceholder(context);
                         },
                       )
-                      : Container(
-                        color: AppColors.muted(context).withAlpha(51),
-                        child: Center(
-                          child: Icon(
-                            Icons.person_outline,
-                            color: AppColors.muted(context),
-                            size: 40,
-                          ),
-                        ),
-                      ),
+                      : _buildPlaceholder(context),
             ),
           ),
           GestureDetector(
@@ -139,6 +110,19 @@ class ProfileImageWidget extends StatelessWidget {
         ],
       );
     });
+  }
+
+  Widget _buildPlaceholder(BuildContext context) {
+    return Container(
+      color: AppColors.muted(context).withAlpha(51),
+      child: Center(
+        child: Icon(
+          Icons.person_outline,
+          color: AppColors.muted(context),
+          size: 40,
+        ),
+      ),
+    );
   }
 
   void _showImageSourceActionSheet(BuildContext context) {

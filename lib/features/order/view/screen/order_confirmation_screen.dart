@@ -94,13 +94,13 @@ class OrderConfirmationScreen extends StatelessWidget {
                             SizedBox(height: UIConfig.paddingSmall),
                             _buildDetailRow(
                               context,
-                              'Payment Status',
+                              'order_confirmation.payment_status'.translate(),
                               order!.paymentStatus,
                             ),
                             SizedBox(height: UIConfig.paddingSmall),
                             _buildDetailRow(
                               context,
-                              'Order Status',
+                              'order_confirmation.order_status'.translate(),
                               order!.status,
                             ),
                           ],

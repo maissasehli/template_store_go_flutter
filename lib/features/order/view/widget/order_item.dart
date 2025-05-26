@@ -97,7 +97,7 @@ class OrderItem extends StatelessWidget {
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                color: _getStatusColor(order.status).withOpacity(0.1),
+                color: _getStatusColor(order.status, context).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
               ),
               child: Text(
@@ -107,7 +107,7 @@ class OrderItem extends StatelessWidget {
                   TextStyle(
                     fontSize: UIConfig.fontSizeSmall,
                     fontWeight: FontWeight.w500,
-                    color: _getStatusColor(order.status),
+                    color: _getStatusColor(order.status, context),
                   ),
                 ),
               ),
@@ -124,20 +124,20 @@ class OrderItem extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(String status, BuildContext context) {
     switch (status.toLowerCase()) {
       case 'pending':
-        return const Color(0xFFFFA500);
+        return const Color(0xFFFFA500); // Orange for pending
       case 'processing':
-        return const Color(0xFF007BFF);
+        return AppColors.primary(context); // Primary color for processing
       case 'shipped':
-        return const Color(0xFF28A745);
+        return const Color(0xFF007BFF); // Blue for shipped
       case 'delivered':
-        return const Color(0xFF28A745);
+        return const Color(0xFF28A745); // Green for delivered
       case 'cancelled':
-        return const Color(0xFFDC3545);
+        return AppColors.destructive(context);
       default:
-        return const Color(0xFF6C757D);
+        return AppColors.mutedForeground(context);
     }
   }
 }

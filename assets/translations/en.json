@@ -89,7 +89,23 @@
         "date_of_birth": "Date of Birth",
         "country": "Country",
         "select_country": "Select country",
-        "select_gender": "Select gender"
+        "select_gender": "Select gender",
+        "genders": {
+            "male": "Male",
+            "female": "Female",
+            "other": "Other"
+        },
+        "countries": {
+            "tunisia": "Tunisia",
+            "algeria": "Algeria",
+            "morocco": "Morocco",
+            "egypt": "Egypt",
+            "libya": "Libya",
+            "usa": "USA",
+            "canada": "Canada",
+            "uk": "UK",
+            "france": "France"
+        }
     },
     "cart": {
         "enter_coupon": "Enter Promo Code",

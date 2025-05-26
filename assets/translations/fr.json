@@ -89,7 +89,23 @@
         "date_of_birth": "Date de naissance",
         "country": "Pays",
         "select_country": "Sélectionnez un pays",
-        "select_gender": "Sélectionnez un genre"
+        "select_gender": "Sélectionnez un genre",
+        "genders": {
+            "male": "Homme",
+            "female": "Femme",
+            "other": "Autre"
+        },
+        "countries": {
+            "tunisia": "Tunisie",
+            "algeria": "Algérie",
+            "morocco": "Maroc",
+            "egypt": "Égypte",
+            "libya": "Libye",
+            "usa": "États-Unis",
+            "canada": "Canada",
+            "uk": "Royaume-Uni",
+            "france": "France"
+        }
     },
     "cart": {
         "title": "Panier",

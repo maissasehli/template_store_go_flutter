@@ -60,6 +60,18 @@ class ProfileRepository {
     }
   }
 
+  // Helper method to create form data
+  Future<dio.FormData> _createFormData(File imageFile) async {
+    return dio.FormData.fromMap({
+      'avatar': await dio.MultipartFile.fromFile(
+        // Use 'avatar' field name as per API docs
+        imageFile.path,
+        filename: 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        contentType: MediaType('image', 'jpeg'),
+      ),
+    });
+  }
+
   // Upload avatar
   Future<UserModel> uploadAvatar(File imageFile) async {
     try {
@@ -67,7 +79,9 @@ class ProfileRepository {
       logger.d("Uploading avatar for user: $userId");
 
       // Create form data
-      final formData = await _createFormData(imageFile); // Send the request
+      final formData = await _createFormData(imageFile);
+
+      // Send the request
       final response = await _apiClient.post(
         "/users/$userId/avatar", // Correct API endpoint
         data: formData,
@@ -76,10 +90,13 @@ class ProfileRepository {
 
       logger.d("Avatar upload response: ${response.data}");
 
-      if (response.statusCode == 200) {
-        return UserModel.fromJson(response.data['data']);
+      // Handle new API response structure
+      if (response.data['status'] == 'success') {
+        // The avatar upload response contains avatarUrl, but we need full user data
+        // So fetch the current user again to get updated data
+        return await getCurrentUser();
       } else {
-        throw Exception('Failed to upload avatar');
+        throw Exception(response.data['message'] ?? 'Failed to upload avatar');
       }
     } catch (e) {
       logger.e("Error uploading avatar: $e");
@@ -91,35 +108,25 @@ class ProfileRepository {
   Future<UserModel> updateProfile(Map<String, dynamic> userData) async {
     try {
       final userId = await getCurrentUserId();
-      logger.d("Updating profile for user: $userId");
+      logger.d("Updating profile for user: $userId with data: $userData");
 
       final response = await _apiClient.put(
         "/users/$userId",
         data: userData,
       ); // Correct API endpoint
 
-      if (response.statusCode == 200) {
-        logger.d("Profile updated successfully");
+      logger.d("Profile update response: ${response.data}");
+
+      // Handle new API response structure
+      if (response.data['status'] == 'success') {
         return UserModel.fromJson(response.data['data']);
       } else {
-        throw Exception('Failed to update profile');
+        throw Exception(response.data['message'] ?? 'Failed to update profile');
       }
     } catch (e) {
       logger.e("Error updating profile: $e");
       rethrow;
     }
-  }
-
-  // Helper method to create form data
-  Future<dio.FormData> _createFormData(File imageFile) async {
-    return dio.FormData.fromMap({
-      'image': await dio.MultipartFile.fromFile(
-        // Updated field name from 'avatar' to 'image'
-        imageFile.path,
-        filename: 'avatar_${DateTime.now().millisecondsSinceEpoch}.png',
-        contentType: MediaType('image', 'png'),
-      ),
-    });
   }
 
   // Delete user avatar

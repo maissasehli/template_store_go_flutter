@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/order/controller/order_controller.dart';
 import 'package:store_go/features/order/view/widget/empty_order_state.dart';
@@ -14,23 +17,24 @@ class OrdersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<OrderController>();
+    final bool isRtl = LocalizationService.isRtl(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.only(left: 16),
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: AppColors.secondary(context),
             shape: BoxShape.circle,
           ),
           child: IconButton(
             icon: ThemeAwareSvg(
-              assetPath: AssetConfig.backArrow,
+              assetPath: isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
               height: 24,
               width: 24,
             ),
@@ -38,18 +42,22 @@ class OrdersPage extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        title: const Text(
-          'Orders',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+        title: Text(
+          'orders.title'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
           ),
         ),
       ),
       body: RefreshIndicator(
         onRefresh: () => controller.fetchOrders(),
+        color: AppColors.primary(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -64,7 +72,11 @@ class OrdersPage extends StatelessWidget {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value && controller.orders.isEmpty) {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primary(context),
+                    ),
+                  );
                 }
 
                 if (controller.hasError.value) {
@@ -83,9 +95,11 @@ class OrdersPage extends StatelessWidget {
       ),
       bottomNavigationBar: Container(
         height: 60,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0xFFE0E0E0), width: 1)),
+        decoration: BoxDecoration(
+          color: AppColors.background(context),
+          border: Border(
+            top: BorderSide(color: AppColors.border(context), width: 1),
+          ),
         ),
       ),
     );

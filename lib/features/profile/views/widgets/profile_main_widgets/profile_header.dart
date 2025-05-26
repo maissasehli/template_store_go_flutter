@@ -83,7 +83,7 @@ class ProfileHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        // User Name and Username
+        // User Name and Email
         Center(
           child: Text(
             user?.name ?? 'User',
@@ -97,7 +97,7 @@ class ProfileHeader extends StatelessWidget {
         ),
         Center(
           child: Text(
-            '@${user?.name.toLowerCase().replaceAll(' ', '') ?? 'username'}',
+            user?.email ?? 'user@example.com',
             style: TextStyle(
               fontSize: 12,
               color: AppColors.mutedForeground(context),

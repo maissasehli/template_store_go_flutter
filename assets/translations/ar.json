@@ -89,7 +89,23 @@
         "date_of_birth": "تاريخ الميلاد",
         "country": "البلد",
         "select_country": "اختر البلد",
-        "select_gender": "اختر الجنس"
+        "select_gender": "اختر الجنس",
+        "genders": {
+            "male": "ذكر",
+            "female": "أنثى",
+            "other": "آخر"
+        },
+        "countries": {
+            "tunisia": "تونس",
+            "algeria": "الجزائر",
+            "morocco": "المغرب",
+            "egypt": "مصر",
+            "libya": "ليبيا",
+            "usa": "الولايات المتحدة",
+            "canada": "كندا",
+            "uk": "المملكة المتحدة",
+            "france": "فرنسا"
+        }
     },
     "cart": {
         "title": "سلة التسوق",

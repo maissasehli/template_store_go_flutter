@@ -23,20 +23,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Get the controller
   final EditProfileController controller = Get.find<EditProfileController>();
 
-  // Variables for dropdowns
-  String _selectedCountry = "Tunisia";
-  String _selectedGender = "Female";
-
   // Create focus node list to manage focus
   final List<FocusNode> _focusNodes = [];
 
   @override
   void initState() {
     super.initState();
-    // Set gender from user model if available
-    if (controller.user.value?.gender != null) {
-      _selectedGender = controller.user.value!.gender!.capitalize!;
-    }
+
+    // Use post frame callback to ensure proper initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Initialize controller values from user data if available
+      if (controller.user.value?.country != null) {
+        controller.updateCountry(controller.user.value!.country!);
+      }
+      if (controller.user.value?.gender != null) {
+        controller.updateGender(controller.user.value!.gender!.toLowerCase());
+      }
+    });
   }
 
   @override
@@ -110,28 +113,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     SizedBox(height: UIConfig.marginMedium),
                     // Profile Name Display
                     ProfileNameDisplay(controller: controller),
-                    SizedBox(height: UIConfig.marginLarge),
-                    // Form Fields
-                    ProfileForm(
-                      controller: controller,
-                      selectedCountry: _selectedCountry,
-                      selectedGender: _selectedGender,
-                      onCountryChanged: (value) {
-                        _unfocusAll(); // Also unfocus when changing dropdown
-                        if (value != null) {
-                          setState(() {
-                            _selectedCountry = value;
-                          });
-                        }
-                      },
-                      onGenderChanged: (value) {
-                        _unfocusAll(); // Also unfocus when changing dropdown
-                        if (value != null) {
-                          setState(() {
-                            _selectedGender = value;
-                          });
-                        }
-                      },
+                    SizedBox(height: UIConfig.marginLarge), // Form Fields
+                    Obx(
+                      () => ProfileForm(
+                        controller: controller,
+                        selectedCountry: controller.selectedCountry.value,
+                        selectedGender: controller.selectedGender.value,
+                        onCountryChanged: (value) {
+                          _unfocusAll(); // Also unfocus when changing dropdown
+                          if (value != null) {
+                            controller.updateCountry(value);
+                          }
+                        },
+                        onGenderChanged: (value) {
+                          _unfocusAll(); // Also unfocus when changing dropdown
+                          if (value != null) {
+                            controller.updateGender(value);
+                          }
+                        },
+                      ),
                     ),
                     SizedBox(height: UIConfig.marginLarge),
                     // Save Button
@@ -155,43 +155,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
         color: AppColors.primary(context),
         borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
       ),
-      child: TextButton(
-        onPressed: () {
-          _unfocusAll(); // Unfocus before saving
-          controller.saveProfile();
-        },
-        style: TextButton.styleFrom(
-          padding: EdgeInsets.symmetric(
-            horizontal: UIConfig.paddingLarge,
-            vertical: UIConfig.paddingMedium,
+      child: Obx(() {
+        // Show loading only during avatar upload
+        final isButtonDisabled = controller.isUploading.value && controller.selectedImage.value != null;
+        
+        return TextButton(
+          onPressed: isButtonDisabled ? null : () async {
+            _unfocusAll(); // Unfocus before saving
+            try {
+              await controller.saveProfile();
+            } catch (e) {
+              // Handle any potential errors from saveProfile
+              print('Error in save button: $e');
+            }
+          },
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.symmetric(
+              horizontal: UIConfig.paddingLarge,
+              vertical: UIConfig.paddingMedium,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
+            ),
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
-          ),
-        ),
-        child: Obx(() {
-          return controller.isUploading.value
+          child: isButtonDisabled
               ? SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryForeground(context),
-                  strokeWidth: 2,
-                ),
-              )
-              : Text(
-                'common.save'.translate(),
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
                     color: AppColors.primaryForeground(context),
+                    strokeWidth: 2,
+                  ),
+                )
+              : Text(
+                  'common.save'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryForeground(context),
+                    ),
                   ),
                 ),
-              );
-        }),
-      ),
+        );
+      }),
     );
   }
 }

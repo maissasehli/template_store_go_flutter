@@ -25,6 +25,11 @@ class _PhoneFieldState extends State<PhoneField> {
         _isFocused = _focusNode.hasFocus;
       });
     });
+
+    // Add listener to controller to debug value changes
+    widget.controller.addListener(() {
+      print('Phone controller value changed: ${widget.controller.text}');
+    });
   }
 
   @override
