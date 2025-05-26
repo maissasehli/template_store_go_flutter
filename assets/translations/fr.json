@@ -86,6 +86,7 @@
         "full_name": "Nom complet",
         "nick_name": "Surnom",
         "phone_number": "Numéro de téléphone",
+        "date_of_birth": "Date de naissance",
         "country": "Pays",
         "select_country": "Sélectionnez un pays",
         "select_gender": "Sélectionnez un genre"
@@ -266,7 +267,10 @@
         "success_title": "Commande passée",
         "success_message": "Votre commande a été passée avec succès!",
         "error_title": "Erreur de commande",
-        "error_message": "Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer."
+        "error_message": "Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.",
+        "profile_incomplete_title": "Profil incomplet",
+        "address_required": "Veuillez ajouter une adresse de livraison pour continuer",
+        "payment_method_required": "Veuillez ajouter une méthode de paiement pour continuer"
     },
     "address": {
         "title": "Adresses",

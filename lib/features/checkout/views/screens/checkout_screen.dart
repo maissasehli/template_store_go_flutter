@@ -389,8 +389,45 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   bool _validateCheckoutData(BuildContext context) {
-    // Add validation for address and payment method selection
-    // For now, just return true - you'll implement this when address/payment are ready
+    final checkoutController = Get.find<CheckoutController>();
+
+    // First, validate user profile is complete
+    if (!checkoutController.isUserProfileComplete) {
+      Get.snackbar(
+        'checkout.profile_incomplete_title'.translate(),
+        checkoutController.profileValidationMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.destructive(context),
+        colorText: AppColors.destructiveForeground(context),
+        duration: Duration(seconds: 4),
+      );
+      return false;
+    }
+
+    // Add validation for address selection
+    if (!checkoutController.hasSelectedAddress) {
+      Get.snackbar(
+        'checkout.error_title'.translate(),
+        'checkout.address_required'.translate(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.destructive(context),
+        colorText: AppColors.destructiveForeground(context),
+      );
+      return false;
+    }
+
+    // Add validation for payment method selection
+    if (checkoutController.selectedPaymentMethod.value.isEmpty) {
+      Get.snackbar(
+        'checkout.error_title'.translate(),
+        'checkout.payment_method_required'.translate(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.destructive(context),
+        colorText: AppColors.destructiveForeground(context),
+      );
+      return false;
+    }
+
     return true;
   }
 }

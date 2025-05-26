@@ -4,17 +4,56 @@ import 'package:image_picker/image_picker.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/features/profile/controllers/edit_profile_controller.dart';
+import 'package:store_go/app/core/config/app_config.dart';
+import 'package:logger/logger.dart';
 
 class ProfileImageWidget extends StatelessWidget {
   final EditProfileController controller;
+  static final Logger logger = Logger();
 
   const ProfileImageWidget({super.key, required this.controller});
+
+  String? _getFullImageUrl(String? imagePath) {
+    logger.d('ProfileImageWidget: Raw image path from user: $imagePath');
+    logger.d('ProfileImageWidget: AppConfig.baseUrl: ${AppConfig.baseUrl}');
+
+    if (imagePath == null || imagePath.isEmpty) {
+      logger.d(
+        'ProfileImageWidget: Image path is null or empty, returning null',
+      );
+      return null;
+    }
+
+    // If the image path is already a full URL, return it as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      logger.d(
+        'ProfileImageWidget: Image path is already a full URL: $imagePath',
+      );
+      return imagePath;
+    }
+
+    // Otherwise, combine with base URL
+    final fullUrl = '${AppConfig.baseUrl}$imagePath';
+    logger.d('ProfileImageWidget: Combined URL: $fullUrl');
+    return fullUrl;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final hasSelectedImage = controller.selectedImage.value != null;
-      final avatarUrl = controller.user.value?.avatar;
+      logger.d(
+        'ProfileImageWidget: Building widget, hasSelectedImage: $hasSelectedImage',
+      );
+      logger.d(
+        'ProfileImageWidget: Controller user: ${controller.user.value?.name}',
+      );
+      logger.d(
+        'ProfileImageWidget: Controller user avatar: ${controller.user.value?.avatar}',
+      );
+
+      final imageUrl = _getFullImageUrl(controller.user.value?.avatar);
+      logger.d('ProfileImageWidget: Final image URL to display: $imageUrl');
 
       return Stack(
         alignment: Alignment.bottomRight,
@@ -34,9 +73,9 @@ class ProfileImageWidget extends StatelessWidget {
                         controller.selectedImage.value!,
                         fit: BoxFit.cover,
                       )
-                      : avatarUrl != null && avatarUrl.isNotEmpty
+                      : imageUrl != null
                       ? Image.network(
-                        avatarUrl,
+                        imageUrl,
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
@@ -114,9 +153,9 @@ class ProfileImageWidget extends StatelessWidget {
                 padding: EdgeInsets.all(UIConfig.paddingMedium),
                 child: Text(
                   'Select Photo',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),

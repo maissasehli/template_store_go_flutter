@@ -26,11 +26,18 @@ class ProfileRepository {
   Future<UserModel> getUserById(String id) async {
     try {
       logger.d("Getting user by ID: $id");
-      final response = await _apiClient.get("/users/$id");
+      final response = await _apiClient.get(
+        "/users/$id",
+      ); // Updated API endpoint
 
       if (response.statusCode == 200) {
         logger.d("User data retrieved: ${response.data}");
-        return UserModel.fromJson(response.data['data']);
+        logger.d(
+          "User avatar field in response: ${response.data['data']?['avatar']}",
+        );
+        final userModel = UserModel.fromJson(response.data['data']);
+        logger.d("UserModel created with avatar: ${userModel.avatar}");
+        return userModel;
       } else {
         throw Exception('Failed to get user data');
       }
@@ -60,11 +67,9 @@ class ProfileRepository {
       logger.d("Uploading avatar for user: $userId");
 
       // Create form data
-      final formData = await _createFormData(imageFile);
-
-      // Send the request
+      final formData = await _createFormData(imageFile); // Send the request
       final response = await _apiClient.post(
-        "/users/$userId/avatar",
+        "/users/$userId/avatar", // Correct API endpoint
         data: formData,
         options: dio.Options(contentType: 'multipart/form-data'),
       );
@@ -88,7 +93,10 @@ class ProfileRepository {
       final userId = await getCurrentUserId();
       logger.d("Updating profile for user: $userId");
 
-      final response = await _apiClient.put("/users/$userId", data: userData);
+      final response = await _apiClient.put(
+        "/users/$userId",
+        data: userData,
+      ); // Correct API endpoint
 
       if (response.statusCode == 200) {
         logger.d("Profile updated successfully");
@@ -105,11 +113,55 @@ class ProfileRepository {
   // Helper method to create form data
   Future<dio.FormData> _createFormData(File imageFile) async {
     return dio.FormData.fromMap({
-      'avatar': await dio.MultipartFile.fromFile(
+      'image': await dio.MultipartFile.fromFile(
+        // Updated field name from 'avatar' to 'image'
         imageFile.path,
         filename: 'avatar_${DateTime.now().millisecondsSinceEpoch}.png',
         contentType: MediaType('image', 'png'),
       ),
     });
+  }
+
+  // Delete user avatar
+  Future<UserModel> deleteAvatar() async {
+    try {
+      final userId = await getCurrentUserId();
+      logger.d("Deleting avatar for user: $userId");
+
+      final response = await _apiClient.delete("/users/$userId/avatar");
+
+      if (response.statusCode == 200) {
+        logger.d("Avatar deleted successfully");
+        return UserModel.fromJson(response.data['data']);
+      } else {
+        throw Exception('Failed to delete avatar');
+      }
+    } catch (e) {
+      logger.e("Error deleting avatar: $e");
+      rethrow;
+    }
+  }
+
+  // Update user status
+  Future<void> updateUserStatus(bool isOnline) async {
+    try {
+      final userId = await getCurrentUserId();
+      logger.d("Updating user status for user: $userId, isOnline: $isOnline");
+      final response = await _apiClient.post(
+        "/users/status",
+        data: {
+          'user_id': userId,
+          'is_online': isOnline,
+          'last_seen': DateTime.now().toIso8601String(),
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update user status');
+      }
+    } catch (e) {
+      logger.e("Error updating user status: $e");
+      rethrow;
+    }
   }
 }

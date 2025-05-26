@@ -86,6 +86,7 @@
         "full_name": "الاسم الكامل",
         "nick_name": "الاسم المستعار",
         "phone_number": "رقم الهاتف",
+        "date_of_birth": "تاريخ الميلاد",
         "country": "البلد",
         "select_country": "اختر البلد",
         "select_gender": "اختر الجنس"
@@ -266,7 +267,10 @@
         "success_title": "تم تأكيد الطلب",
         "success_message": "تم تأكيد طلبك بنجاح!",
         "error_title": "خطأ في إتمام الطلب",
-        "error_message": "حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى."
+        "error_message": "حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.",
+        "profile_incomplete_title": "الملف الشخصي غير مكتمل",
+        "address_required": "يرجى إضافة عنوان للشحن للمتابعة",
+        "payment_method_required": "يرجى إضافة طريقة دفع للمتابعة"
     },
     "address": {
         "title": "العناوين",

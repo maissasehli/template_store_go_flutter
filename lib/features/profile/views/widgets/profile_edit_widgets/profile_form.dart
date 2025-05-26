@@ -47,10 +47,21 @@ class ProfileForm extends StatelessWidget {
           controller: controller.emailController,
           keyboardType: TextInputType.emailAddress,
         ),
+        SizedBox(height: UIConfig.marginLarge), // Phone field with custom icon
+        PhoneField(controller: controller.phoneController),
         SizedBox(height: UIConfig.marginLarge),
 
-        // Phone field with custom icon
-        PhoneField(controller: controller.phoneController),
+        // Date of birth field with date picker
+        GestureDetector(
+          onTap: () => controller.selectDateOfBirth(context),
+          child: AbsorbPointer(
+            child: CustomFormField(
+              label: 'profile.date_of_birth'.translate(),
+              controller: controller.dateOfBirthController,
+              readOnly: true,
+            ),
+          ),
+        ),
         SizedBox(height: UIConfig.marginLarge),
 
         // Country and Gender dropdowns

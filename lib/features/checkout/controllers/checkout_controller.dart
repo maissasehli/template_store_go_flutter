@@ -9,6 +9,7 @@ import 'package:store_go/features/payment/models/payment_result_model.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
 import 'package:store_go/features/address/model/address_model.dart'
     as AddressModel;
+import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
 
 class CheckoutController extends GetxController {
@@ -382,15 +383,28 @@ class CheckoutController extends GetxController {
     // Get user data from profile
     final userData = _getUserProfileData();
 
+    // If no user data available, throw an exception to force user to complete profile
+    if (userData == null) {
+      throw Exception(
+        'User profile data not available. Please complete your profile before checkout.',
+      );
+    }
+
+    // Only email is strictly required for orders
+    if (userData['email'] == null || userData['email']!.isEmpty) {
+      throw Exception('Email is required. Please update your profile.');
+    }
+
     return Address(
-      firstName: userData['firstName']!,
-      lastName: userData['lastName']!,
+      firstName:
+          userData['firstName'] ?? 'Customer', // More professional fallback
+      lastName: userData['lastName'] ?? '',
       street: address.street,
       city: address.city,
       state: address.state,
       zipCode: address.postalCode,
       country: address.country,
-      phone: userData['phone']!,
+      phone: userData['phone'] ?? '',
     );
   }
 
@@ -399,10 +413,28 @@ class CheckoutController extends GetxController {
     // Get user data from profile
     final userData = _getUserProfileData();
 
+    // If no user data available, throw an exception
+    if (userData == null) {
+      throw Exception(
+        'User profile data not available. Please complete your profile before checkout.',
+      );
+    }
+
+    // Validate required fields
+    if (userData['email'] == null || userData['email']!.isEmpty) {
+      throw Exception('Email is required. Please update your profile.');
+    }
+    final firstName = userData['firstName'] ?? '';
+    final lastName = userData['lastName'] ?? '';
+    final fullName = '$firstName $lastName'.trim();
+
     return {
-      'name': '${userData['firstName']} ${userData['lastName']}',
-      'email': userData['email'],
-      'phone': userData['phone'],
+      'name':
+          fullName.isNotEmpty
+              ? fullName
+              : 'Customer', // Professional fallback consistent with _convertToOrderAddress
+      'email': userData['email']!,
+      'phone': userData['phone'] ?? '',
       'address': {
         'line1': address.street,
         'city': address.city,
@@ -421,12 +453,49 @@ class CheckoutController extends GetxController {
     return 'checkout.add_shipping_address'.translate();
   }
 
+  /// Check if user profile is complete for checkout
+  bool get isUserProfileComplete {
+    final userData = _getUserProfileData();
+    if (userData == null) return false;
+
+    // Check required fields
+    return userData['firstName'] != null &&
+        userData['firstName']!.isNotEmpty &&
+        userData['email'] != null &&
+        userData['email']!.isNotEmpty;
+  }
+
+  /// Get validation message for incomplete profile
+  String get profileValidationMessage {
+    final userData = _getUserProfileData();
+    if (userData == null) {
+      return 'Please complete your profile before checkout';
+    }
+
+    if (userData['firstName'] == null || userData['firstName']!.isEmpty) {
+      return 'Please add your first name to your profile';
+    }
+
+    if (userData['email'] == null || userData['email']!.isEmpty) {
+      return 'Please add your email to your profile';
+    }
+
+    return '';
+  }
+
   /// Check if a default address is selected
   bool get hasSelectedAddress => selectedShippingAddress.value != null;
 
   /// Get user profile data for address completion
-  Map<String, String> _getUserProfileData() {
+  /// Returns null if user data is not available
+  Map<String, String?>? _getUserProfileData() {
     try {
+      // Check if AuthService is available (optional authentication check)
+      bool isAuthServiceAvailable = Get.isRegistered<AuthService>();
+      if (!isAuthServiceAvailable) {
+        print('AuthService not registered, proceeding without auth check');
+      }
+
       if (Get.isRegistered<ProfileController>()) {
         final profileController = Get.find<ProfileController>();
         final user = profileController.user.value;
@@ -434,10 +503,10 @@ class CheckoutController extends GetxController {
         if (user != null) {
           final nameParts = user.name.split(' ');
           return {
-            'firstName': nameParts.isNotEmpty ? nameParts.first : 'User',
+            'firstName': nameParts.isNotEmpty ? nameParts.first : null,
             'lastName':
-                nameParts.length > 1 ? nameParts.sublist(1).join(' ') : 'Name',
-            'phone': user.phone ?? '+1-555-0123',
+                nameParts.length > 1 ? nameParts.sublist(1).join(' ') : null,
+            'phone': user.phoneNumber,
             'email': user.email,
           };
         }
@@ -446,12 +515,7 @@ class CheckoutController extends GetxController {
       print('Error getting user profile data: $e');
     }
 
-    // Return default values if profile not available
-    return {
-      'firstName': 'User',
-      'lastName': 'Name',
-      'phone': '+1-555-0123',
-      'email': 'user@example.com',
-    };
+    // Return null if profile not available - force explicit handling
+    return null;
   }
 }

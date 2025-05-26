@@ -34,6 +34,8 @@ class ProfileController extends GetxController {
       final userData = await _repository.getCurrentUser();
       user.value = userData;
       logger.d('User data fetched successfully: ${user.value?.name}');
+      logger.d('User avatar field: ${user.value?.avatar}');
+      logger.d('Full user data: ${user.value?.toJson()}');
     } catch (e) {
       logger.e('Error fetching user: $e');
       hasError.value = true;
@@ -53,10 +55,10 @@ class ProfileController extends GetxController {
       final updatedUser = await _repository.updateProfile(userData);
       user.value = updatedUser;
       logger.d('Profile updated successfully');
-      
+
       // Notify UI that user data has been updated
       update();
-      
+
       Get.snackbar(
         'Success',
         'Profile updated successfully',
@@ -68,7 +70,7 @@ class ProfileController extends GetxController {
       logger.e('Error updating profile: $e');
       hasError.value = true;
       errorMessage.value = 'Failed to update profile. Please try again.';
-      
+
       Get.snackbar(
         'Error',
         'Failed to update profile. Please try again.',
@@ -91,10 +93,10 @@ class ProfileController extends GetxController {
       final updatedUser = await _repository.uploadAvatar(imageFile);
       user.value = updatedUser;
       logger.d('Avatar uploaded successfully');
-      
+
       // Notify UI that user data has been updated
       update();
-      
+
       Get.snackbar(
         'Success',
         'Avatar uploaded successfully',
@@ -106,7 +108,7 @@ class ProfileController extends GetxController {
       logger.e('Error uploading avatar: $e');
       hasError.value = true;
       errorMessage.value = 'Failed to upload avatar. Please try again.';
-      
+
       Get.snackbar(
         'Error',
         'Failed to upload avatar. Please try again.',
