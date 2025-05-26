@@ -33,7 +33,10 @@ class OrderRepository {
   Future<List<OrderModel>> getOrders({String? status}) async {
     try {
       String endpoint = '/orders';
-      if (status != null && status.isNotEmpty) {
+      // Only add status filter if it's not 'All' and not empty
+      if (status != null &&
+          status.isNotEmpty &&
+          status.toLowerCase() != 'all') {
         endpoint += '?status=${status.toLowerCase()}';
       }
 

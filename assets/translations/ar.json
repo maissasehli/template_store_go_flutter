@@ -349,6 +349,7 @@
         "empty_orders": "لا توجد طلبات حتى الآن",
         "empty_orders_subtitle": "ابدأ التسوق لرؤية طلباتك هنا",
         "status": {
+            "all": "الكل",
             "pending": "قيد الانتظار",
             "processing": "قيد المعالجة",
             "shipped": "تم الشحن",

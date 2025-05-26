@@ -333,6 +333,7 @@
         "empty_orders_subtitle": "Start shopping to see your orders here",
         "retry": "Try Again",
         "status": {
+            "all": "All",
             "pending": "Pending",
             "processing": "Processing",
             "shipped": "Shipped",

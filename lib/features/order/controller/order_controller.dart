@@ -12,7 +12,7 @@ class OrderController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool hasError = false.obs;
   final RxString errorMessage = ''.obs;
-  final RxString selectedStatus = 'Processing'.obs;
+  final RxString selectedStatus = 'All'.obs;
   final RxBool hasOrders = false.obs;
 
   // For order details

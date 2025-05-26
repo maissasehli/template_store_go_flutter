@@ -29,6 +29,13 @@ class OrderStatusTabs extends StatelessWidget {
           children: [
             _buildStatusTab(
               context,
+              'orders.status.all'.translate(),
+              'all',
+              controller.selectedStatus.value.toLowerCase() == 'all',
+            ),
+            SizedBox(width: UIConfig.marginSmall),
+            _buildStatusTab(
+              context,
               'orders.status.processing'.translate(),
               'processing',
               controller.selectedStatus.value.toLowerCase() == 'processing',
