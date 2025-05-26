@@ -76,53 +76,79 @@ class CheckoutScreen extends StatelessWidget {
     BuildContext context,
     CheckoutController controller,
   ) {
-    return InkWell(
-      onTap: () => Get.toNamed('/address'),
-      borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-      child: Container(
-        padding: EdgeInsets.all(UIConfig.paddingMedium),
-        decoration: BoxDecoration(
-          color: AppColors.card(context),
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-          border: Border.all(color: AppColors.border(context)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'checkout.shipping_address'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.mutedForeground(context),
-                        fontSize: UIConfig.fontSizeMedium,
+    return Obx(
+      () => InkWell(
+        onTap: () => controller.navigateToAddressSelection(),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+        child: Container(
+          padding: EdgeInsets.all(UIConfig.paddingMedium),
+          decoration: BoxDecoration(
+            color: AppColors.card(context),
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+            border: Border.all(color: AppColors.border(context)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'checkout.shipping_address'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          color: AppColors.mutedForeground(context),
+                          fontSize: UIConfig.fontSizeMedium,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'checkout.add_shipping_address'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.foreground(context),
-                        fontSize: UIConfig.fontSizeMedium,
-                        fontWeight: FontWeight.w500,
+                    SizedBox(height: 4),
+                    if (controller.isLoadingAddress.value)
+                      SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.foreground(context),
+                        ),
+                      )
+                    else if (controller.hasSelectedAddress)
+                      Text(
+                        controller.shippingAddressDisplayText,
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            color: AppColors.foreground(context),
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    else
+                      Text(
+                        'checkout.add_shipping_address'.translate(),
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            color: AppColors.foreground(context),
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: AppColors.muted(context),
-              size: 24,
-            ),
-          ],
+              Icon(
+                Icons.chevron_right,
+                color: AppColors.muted(context),
+                size: 24,
+              ),
+            ],
+          ),
         ),
       ),
     );

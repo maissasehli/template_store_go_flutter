@@ -6,27 +6,139 @@ import 'package:store_go/features/order/model/order_model.dart';
 import 'package:store_go/features/order/repositories/order_repository.dart';
 import 'package:store_go/features/payment/services/payment_service.dart';
 import 'package:store_go/features/payment/models/payment_result_model.dart';
+import 'package:store_go/features/address/controller/address_controller.dart';
+import 'package:store_go/features/address/model/address_model.dart'
+    as AddressModel;
 
 class CheckoutController extends GetxController {
   // Use dependency injection instead of creating a new instance
   OrderRepository get _orderRepository => Get.find<OrderRepository>();
   PaymentService get _paymentService => Get.find<PaymentService>();
-
   final RxBool isProcessing = false.obs;
-  final Rx<Address?> selectedShippingAddress = Rx<Address?>(null);
-  final Rx<Address?> selectedBillingAddress = Rx<Address?>(null);
+  final Rx<AddressModel.Address?> selectedShippingAddress =
+      Rx<AddressModel.Address?>(null);
+  final Rx<AddressModel.Address?> selectedBillingAddress =
+      Rx<AddressModel.Address?>(null);
   final RxString selectedPaymentMethod = ''.obs;
   final RxString currentOrderId = ''.obs;
-
+  final RxBool isLoadingAddress = false.obs;
   @override
   void onInit() {
     super.onInit();
-    // Initialize any required data
+    _initializeDefaultAddress();
+    _listenToAddressChanges();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    // Refresh addresses when the controller is ready
+    refreshAddresses();
+  }
+
+  @override
+  void onClose() {
+    // Clean up any listeners if needed
+    super.onClose();
+  }
+
+  /// Initialize default address from address controller
+  void _initializeDefaultAddress() async {
+    try {
+      isLoadingAddress.value = true;
+
+      // Ensure AddressController is available
+      if (!Get.isRegistered<AddressController>()) {
+        // Register AddressController if not already registered
+        Get.put(AddressController());
+      }
+
+      final addressController = Get.find<AddressController>();
+
+      // Ensure addresses are loaded
+      await addressController.fetchAddresses();
+
+      // Find default address
+      _updateSelectedAddress();
+    } catch (e) {
+      print('Error loading default address: $e');
+    } finally {
+      isLoadingAddress.value = false;
+    }
+  }
+
+  /// Listen to changes in the address controller
+  void _listenToAddressChanges() {
+    try {
+      // Ensure AddressController is available before setting up listener
+      if (!Get.isRegistered<AddressController>()) {
+        Get.put(AddressController());
+      }
+
+      // Listen to address list changes
+      ever(Get.find<AddressController>().addresses, (_) {
+        _updateSelectedAddress();
+      });
+    } catch (e) {
+      print('Error setting up address change listener: $e');
+    }
+  }
+
+  /// Update selected address based on current addresses
+  void _updateSelectedAddress() {
+    final addressController = Get.find<AddressController>();
+
+    // Check if current selected address still exists and is still default
+    if (selectedShippingAddress.value != null) {
+      final currentAddress = addressController.addresses.firstWhereOrNull(
+        (addr) => addr.id == selectedShippingAddress.value!.id,
+      );
+
+      if (currentAddress == null) {
+        // Current address was deleted, clear it
+        selectedShippingAddress.value = null;
+      } else if (!currentAddress.isDefault) {
+        // Current address is no longer default, clear it to find new default
+        selectedShippingAddress.value = null;
+      }
+    }
+
+    // If no address is selected, find the current default one
+    if (selectedShippingAddress.value == null) {
+      final defaultAddress = addressController.addresses.firstWhereOrNull(
+        (address) => address.isDefault,
+      );
+
+      if (defaultAddress != null) {
+        selectedShippingAddress.value = defaultAddress;
+      }
+    }
   }
 
   void navigateToAddressSelection() {
-    // Navigate to address selection screen
-    Get.toNamed('/address');
+    // Navigate to address selection screen and refresh when returning
+    Get.toNamed('/address')?.then((_) {
+      // Refresh addresses when returning from address screen
+      refreshAddresses();
+    });
+  }
+
+  /// Refresh addresses and update selected address
+  Future<void> refreshAddresses() async {
+    try {
+      final addressController = Get.find<AddressController>();
+      await addressController.fetchAddresses();
+      _updateSelectedAddress();
+    } catch (e) {
+      print('Error refreshing addresses: $e');
+    }
+  }
+
+  /// Clear selected address and refresh from current default
+  void clearAndRefreshSelectedAddress() {
+    selectedShippingAddress.value = null;
+    selectedBillingAddress.value = null;
+    _updateSelectedAddress();
   }
 
   void navigateToPaymentMethodSelection() {
@@ -115,15 +227,18 @@ class CheckoutController extends GetxController {
     required double total,
   }) async {
     try {
-      isProcessing.value = true;
-
-      // Create order request
+      isProcessing.value = true; // Create order request
       final orderRequest = OrderRequest(
-        shippingAddress: selectedShippingAddress.value ?? _getDefaultAddress(),
+        shippingAddress:
+            selectedShippingAddress.value != null
+                ? _convertToOrderAddress(selectedShippingAddress.value!)
+                : _getDefaultAddress(),
         billingAddress:
-            selectedBillingAddress.value ??
-            selectedShippingAddress.value ??
-            _getDefaultAddress(),
+            selectedBillingAddress.value != null
+                ? _convertToOrderAddress(selectedBillingAddress.value!)
+                : (selectedShippingAddress.value != null
+                    ? _convertToOrderAddress(selectedShippingAddress.value!)
+                    : _getDefaultAddress()),
         paymentMethod:
             selectedPaymentMethod.value.isNotEmpty
                 ? selectedPaymentMethod.value
@@ -170,8 +285,11 @@ class CheckoutController extends GetxController {
       final paymentMethod = await _paymentService.createPaymentMethod(
         cardDetails: cardDetails,
         billingDetails:
-            selectedBillingAddress.value?.toJson() ??
-            selectedShippingAddress.value?.toJson(),
+            selectedBillingAddress.value != null
+                ? _addressToJson(selectedBillingAddress.value!)
+                : (selectedShippingAddress.value != null
+                    ? _addressToJson(selectedShippingAddress.value!)
+                    : null),
       );
 
       // Step 2: Process payment
@@ -235,6 +353,11 @@ class CheckoutController extends GetxController {
   }
 
   Address _getDefaultAddress() {
+    // Convert AddressModel.Address to Order Address or return a default address
+    if (selectedShippingAddress.value != null) {
+      return _convertToOrderAddress(selectedShippingAddress.value!);
+    }
+
     // Return a default address or throw error if no address selected
     return Address(
       firstName: 'John',
@@ -247,4 +370,42 @@ class CheckoutController extends GetxController {
       phone: '+1-555-0123',
     );
   }
+
+  /// Convert AddressModel.Address to Order Address
+  Address _convertToOrderAddress(AddressModel.Address address) {
+    return Address(
+      firstName:
+          'User', // Default values since AddressModel.Address doesn't have firstName/lastName
+      lastName: 'Name',
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      zipCode: address.postalCode,
+      country: address.country,
+      phone:
+          '+1-555-0123', // Default phone since AddressModel.Address doesn't have phone
+    );
+  }
+
+  /// Convert AddressModel.Address to JSON for billing details
+  Map<String, dynamic> _addressToJson(AddressModel.Address address) {
+    return {
+      'street': address.street,
+      'city': address.city,
+      'state': address.state,
+      'postalCode': address.postalCode,
+      'country': address.country,
+    };
+  }
+
+  /// Get the display text for shipping address section
+  String get shippingAddressDisplayText {
+    if (selectedShippingAddress.value != null) {
+      return selectedShippingAddress.value!.formattedAddress;
+    }
+    return 'checkout.add_shipping_address'.translate();
+  }
+
+  /// Check if a default address is selected
+  bool get hasSelectedAddress => selectedShippingAddress.value != null;
 }
