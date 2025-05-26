@@ -9,6 +9,7 @@ import 'package:store_go/features/payment/models/payment_result_model.dart';
 import 'package:store_go/features/address/controller/address_controller.dart';
 import 'package:store_go/features/address/model/address_model.dart'
     as AddressModel;
+import 'package:store_go/features/profile/controllers/profile_controller.dart';
 
 class CheckoutController extends GetxController {
   // Use dependency injection instead of creating a new instance
@@ -25,6 +26,7 @@ class CheckoutController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _ensureProfileController();
     _initializeDefaultAddress();
     _listenToAddressChanges();
   }
@@ -40,6 +42,21 @@ class CheckoutController extends GetxController {
   void onClose() {
     // Clean up any listeners if needed
     super.onClose();
+  }
+
+  /// Initialize profile controller if needed
+  void _ensureProfileController() {
+    try {
+      if (!Get.isRegistered<ProfileController>()) {
+        // If ProfileController isn't registered, we'll try to register it
+        // This should normally be done during app initialization
+        print(
+          'ProfileController not registered, user data may not be available',
+        );
+      }
+    } catch (e) {
+      print('Error ensuring profile controller: $e');
+    }
   }
 
   /// Initialize default address from address controller
@@ -353,48 +370,46 @@ class CheckoutController extends GetxController {
   }
 
   Address _getDefaultAddress() {
-    // Convert AddressModel.Address to Order Address or return a default address
-    if (selectedShippingAddress.value != null) {
-      return _convertToOrderAddress(selectedShippingAddress.value!);
-    }
-
-    // Return a default address or throw error if no address selected
-    return Address(
-      firstName: 'John',
-      lastName: 'Doe',
-      street: '123 Main Street',
-      city: 'Boston',
-      state: 'MA',
-      zipCode: '02101',
-      country: 'USA',
-      phone: '+1-555-0123',
+    // No longer return hardcoded default address
+    // Force user to select a proper address instead of using fake data
+    throw Exception(
+      'No shipping address selected. Please add or select a default address.',
     );
   }
 
   /// Convert AddressModel.Address to Order Address
   Address _convertToOrderAddress(AddressModel.Address address) {
+    // Get user data from profile
+    final userData = _getUserProfileData();
+
     return Address(
-      firstName:
-          'User', // Default values since AddressModel.Address doesn't have firstName/lastName
-      lastName: 'Name',
+      firstName: userData['firstName']!,
+      lastName: userData['lastName']!,
       street: address.street,
       city: address.city,
       state: address.state,
       zipCode: address.postalCode,
       country: address.country,
-      phone:
-          '+1-555-0123', // Default phone since AddressModel.Address doesn't have phone
+      phone: userData['phone']!,
     );
   }
 
   /// Convert AddressModel.Address to JSON for billing details
   Map<String, dynamic> _addressToJson(AddressModel.Address address) {
+    // Get user data from profile
+    final userData = _getUserProfileData();
+
     return {
-      'street': address.street,
-      'city': address.city,
-      'state': address.state,
-      'postalCode': address.postalCode,
-      'country': address.country,
+      'name': '${userData['firstName']} ${userData['lastName']}',
+      'email': userData['email'],
+      'phone': userData['phone'],
+      'address': {
+        'line1': address.street,
+        'city': address.city,
+        'state': address.state,
+        'postal_code': address.postalCode,
+        'country': address.country,
+      },
     };
   }
 
@@ -408,4 +423,35 @@ class CheckoutController extends GetxController {
 
   /// Check if a default address is selected
   bool get hasSelectedAddress => selectedShippingAddress.value != null;
+
+  /// Get user profile data for address completion
+  Map<String, String> _getUserProfileData() {
+    try {
+      if (Get.isRegistered<ProfileController>()) {
+        final profileController = Get.find<ProfileController>();
+        final user = profileController.user.value;
+
+        if (user != null) {
+          final nameParts = user.name.split(' ');
+          return {
+            'firstName': nameParts.isNotEmpty ? nameParts.first : 'User',
+            'lastName':
+                nameParts.length > 1 ? nameParts.sublist(1).join(' ') : 'Name',
+            'phone': user.phone ?? '+1-555-0123',
+            'email': user.email,
+          };
+        }
+      }
+    } catch (e) {
+      print('Error getting user profile data: $e');
+    }
+
+    // Return default values if profile not available
+    return {
+      'firstName': 'User',
+      'lastName': 'Name',
+      'phone': '+1-555-0123',
+      'email': 'user@example.com',
+    };
+  }
 }
