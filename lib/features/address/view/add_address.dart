@@ -72,142 +72,10 @@ class AddAddressPage extends StatelessWidget {
                     ),
                     SizedBox(height: UIConfig.marginMedium),
 
-                    // Address Type Selection
-                    Text(
-                      'address.address_type'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.foreground(context),
-                          fontSize: UIConfig.fontSizeRegular,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Obx(
-                      () => Row(
-                        children: [
-                          Expanded(
-                            child: RadioListTile<String>(
-                              title: Text(
-                                'address.shipping'.translate(),
-                                style:
-                                    LocalizationService.getLocalizedTextStyle(
-                                      context,
-                                      TextStyle(
-                                        fontSize: UIConfig.fontSizeSmall,
-                                        color: AppColors.foreground(context),
-                                      ),
-                                    ),
-                              ),
-                              value: 'shipping',
-                              groupValue: controller.addressType.value,
-                              onChanged:
-                                  (value) =>
-                                      controller.addressType.value = value!,
-                              activeColor: AppColors.primary(context),
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                          Expanded(
-                            child: RadioListTile<String>(
-                              title: Text(
-                                'address.billing'.translate(),
-                                style:
-                                    LocalizationService.getLocalizedTextStyle(
-                                      context,
-                                      TextStyle(
-                                        fontSize: UIConfig.fontSizeSmall,
-                                        color: AppColors.foreground(context),
-                                      ),
-                                    ),
-                              ),
-                              value: 'billing',
-                              groupValue: controller.addressType.value,
-                              onChanged:
-                                  (value) =>
-                                      controller.addressType.value = value!,
-                              activeColor: AppColors.primary(context),
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: UIConfig.marginMedium),
-
-                    // Personal Information
-                    Text(
-                      'address.personal_info'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.foreground(context),
-                          fontSize: UIConfig.fontSizeMedium,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: UIConfig.marginSmall),
-
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            context,
-                            controller.firstNameController,
-                            'address.first_name'.translate(),
-                          ),
-                        ),
-                        SizedBox(width: UIConfig.marginMedium),
-                        Expanded(
-                          child: _buildTextField(
-                            context,
-                            controller.lastNameController,
-                            'address.last_name'.translate(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: UIConfig.marginMedium),
-
-                    _buildTextField(
-                      context,
-                      controller.phoneController,
-                      'address.phone'.translate(),
-                    ),
-                    SizedBox(height: UIConfig.marginMedium),
-
-                    // Address Information
-                    Text(
-                      'address.location_info'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.foreground(context),
-                          fontSize: UIConfig.fontSizeMedium,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: UIConfig.marginSmall),
-
                     _buildTextField(
                       context,
                       controller.streetController,
                       'address.street_address'.translate(),
-                    ),
-                    SizedBox(height: UIConfig.marginMedium),
-
-                    _buildTextField(
-                      context,
-                      controller.apartmentController,
-                      'address.apartment'.translate(),
-                      hintText: 'address.apartment_hint'.translate(),
                     ),
                     SizedBox(height: UIConfig.marginMedium),
 
@@ -231,8 +99,8 @@ class AddAddressPage extends StatelessWidget {
                         Expanded(
                           child: _buildTextField(
                             context,
-                            controller.zipCodeController,
-                            'address.zip_code'.translate(),
+                            controller.postalCodeController,
+                            'address.postal_code'.translate(),
                           ),
                         ),
                       ],

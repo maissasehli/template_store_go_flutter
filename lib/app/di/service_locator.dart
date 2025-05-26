@@ -12,9 +12,6 @@ import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/payment/services/payment_service.dart';
 import 'package:store_go/features/order/repositories/order_repository.dart';
 import 'package:store_go/features/cart/repositories/cart_repository.dart';
-import 'package:store_go/features/payment/services/payment_service.dart';
-import 'package:store_go/features/order/repositories/order_repository.dart';
-import 'package:store_go/features/cart/repositories/cart_repository.dart';
 
 class ServiceLocator {
   static Future<void> registerDependencies() async {

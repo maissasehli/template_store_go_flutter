@@ -4,7 +4,6 @@ import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/address/model/address_model.dart';
 import 'package:store_go/features/address/repository/address_repository.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
-import 'package:uuid/uuid.dart';
 
 class AddressController extends GetxController {
   final AddressRepository _addressRepository;
@@ -15,21 +14,13 @@ class AddressController extends GetxController {
   // Selected address for editing
   final Rx<Address?> selectedAddress = Rx<Address?>(null);
 
-  // Text controllers for form fields
+  // Text controllers for form fields - only the required ones
   final streetController = TextEditingController();
   final cityController = TextEditingController();
   final stateController = TextEditingController();
-  final zipCodeController = TextEditingController();
+  final postalCodeController =
+      TextEditingController(); // Changed from zipCodeController
   final countryController = TextEditingController();
-
-  // New text controllers for missing fields
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final phoneController = TextEditingController();
-  final apartmentController = TextEditingController();
-
-  // For address type selection
-  final addressType = 'shipping'.obs; // Default to shipping
 
   // For isDefault toggle
   final isDefault = false.obs;
@@ -50,12 +41,8 @@ class AddressController extends GetxController {
     streetController.dispose();
     cityController.dispose();
     stateController.dispose();
-    zipCodeController.dispose();
+    postalCodeController.dispose();
     countryController.dispose();
-    firstNameController.dispose();
-    lastNameController.dispose();
-    phoneController.dispose();
-    apartmentController.dispose();
     super.onClose();
   }
 
@@ -74,13 +61,8 @@ class AddressController extends GetxController {
     streetController.clear();
     cityController.clear();
     stateController.clear();
-    zipCodeController.clear();
+    postalCodeController.clear();
     countryController.clear();
-    firstNameController.clear();
-    lastNameController.clear();
-    phoneController.clear();
-    apartmentController.clear();
-    addressType.value = 'shipping';
     isDefault.value = false;
     selectedAddress.value = null;
   }
@@ -91,13 +73,8 @@ class AddressController extends GetxController {
     streetController.text = address.street;
     cityController.text = address.city;
     stateController.text = address.state;
-    zipCodeController.text = address.zipCode;
+    postalCodeController.text = address.postalCode;
     countryController.text = address.country;
-    firstNameController.text = address.firstName ?? '';
-    lastNameController.text = address.lastName ?? '';
-    phoneController.text = address.phone ?? '';
-    apartmentController.text = address.apartment ?? '';
-    addressType.value = address.type ?? 'shipping';
     isDefault.value = address.isDefault;
   }
 
@@ -106,20 +83,14 @@ class AddressController extends GetxController {
     if (validateInputs()) {
       try {
         final newAddress = Address(
-          id: const Uuid().v4(),
           street: streetController.text.trim(),
           city: cityController.text.trim(),
           state: stateController.text.trim(),
-          zipCode: zipCodeController.text.trim(),
+          postalCode: postalCodeController.text.trim(),
           country:
               countryController.text.trim().isEmpty
                   ? 'TN'
                   : countryController.text.trim(),
-          firstName: firstNameController.text.trim(),
-          lastName: lastNameController.text.trim(),
-          phone: phoneController.text.trim(),
-          apartment: apartmentController.text.trim(),
-          type: addressType.value,
           isDefault: isDefault.value,
           status: 'active',
         );
@@ -153,16 +124,11 @@ class AddressController extends GetxController {
           street: streetController.text.trim(),
           city: cityController.text.trim(),
           state: stateController.text.trim(),
-          zipCode: zipCodeController.text.trim(),
+          postalCode: postalCodeController.text.trim(),
           country:
               countryController.text.trim().isEmpty
                   ? 'TN'
                   : countryController.text.trim(),
-          firstName: firstNameController.text.trim(),
-          lastName: lastNameController.text.trim(),
-          phone: phoneController.text.trim(),
-          apartment: apartmentController.text.trim(),
-          type: addressType.value,
           isDefault: isDefault.value,
           status: selectedAddress.value!.status,
         );
@@ -201,7 +167,7 @@ class AddressController extends GetxController {
   Future<void> setDefaultAddress(String? id) async {
     if (id != null) {
       try {
-        final result = await _addressRepository.setAddressAsDefault(id);
+        await _addressRepository.setAddressAsDefault(id);
 
         // Update local list: set the selected address as default and others as non-default
         for (var i = 0; i < addresses.length; i++) {
@@ -230,28 +196,8 @@ class AddressController extends GetxController {
     }
   }
 
-  // Validate form inputs (made public by removing underscore)
+  // Validate form inputs
   bool validateInputs() {
-    if (firstNameController.text.trim().isEmpty) {
-      Get.snackbar(
-        'address.error_title'.translate(),
-        'address.first_name_required'.translate(),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
-
-    if (lastNameController.text.trim().isEmpty) {
-      Get.snackbar(
-        'address.error_title'.translate(),
-        'address.last_name_required'.translate(),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
-
     if (streetController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
@@ -282,20 +228,20 @@ class AddressController extends GetxController {
       return false;
     }
 
-    if (zipCodeController.text.trim().isEmpty) {
+    if (postalCodeController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
-        'address.zip_required'.translate(),
+        'address.postal_required'.translate(),
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
       return false;
     }
 
-    if (phoneController.text.trim().isEmpty) {
+    if (countryController.text.trim().isEmpty) {
       Get.snackbar(
         'address.error_title'.translate(),
-        'address.phone_required'.translate(),
+        'address.country_required'.translate(),
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );

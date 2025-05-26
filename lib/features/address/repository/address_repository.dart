@@ -1,4 +1,3 @@
-import 'package:store_go/app/core/config/app_config.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/address/model/address_model.dart';
 
@@ -41,21 +40,14 @@ class AddressRepository {
   /// Create a new address
   Future<Address> createAddress(Address address) async {
     try {
-      // Format data according to API requirements
+      // Format data according to API requirements - only send required fields
       final addressData = {
-        "type": address.type ?? "shipping",
-        "isDefault": address.isDefault,
-        "firstName": address.firstName,
-        "lastName": address.lastName,
         "street": address.street,
-        "apartment": address.apartment,
         "city": address.city,
         "state": address.state,
-        "zipCode": address.zipCode,
+        "postalCode": address.postalCode,
         "country": address.country,
-        "phone": address.phone,
-        "storeId": AppConfig.storeId,
-        "status": address.status ?? 'active',
+        "isDefault": address.isDefault,
       };
 
       final response = await _apiClient.post('/addresses', data: addressData);
@@ -66,6 +58,7 @@ class AddressRepository {
         throw Exception('Failed to create address: ${response.statusCode}');
       }
     } catch (e) {
+      print('API Error: $e');
       throw Exception('Failed to create address: $e');
     }
   }
@@ -73,21 +66,14 @@ class AddressRepository {
   /// Update an existing address
   Future<Address> updateAddress(String addressId, Address address) async {
     try {
-      // Format data according to API requirements
+      // Format data according to API requirements - only send required fields
       final addressData = {
-        "type": address.type ?? "shipping",
-        "isDefault": address.isDefault,
-        "firstName": address.firstName,
-        "lastName": address.lastName,
         "street": address.street,
-        "apartment": address.apartment,
         "city": address.city,
         "state": address.state,
-        "zipCode": address.zipCode,
+        "postalCode": address.postalCode,
         "country": address.country,
-        "phone": address.phone,
-        "storeId": AppConfig.storeId,
-        "status": address.status ?? 'active',
+        "isDefault": address.isDefault,
       };
 
       final response = await _apiClient.put(
@@ -101,6 +87,7 @@ class AddressRepository {
         throw Exception('Failed to update address: ${response.statusCode}');
       }
     } catch (e) {
+      print('API Error: $e');
       throw Exception('Failed to update address: $e');
     }
   }

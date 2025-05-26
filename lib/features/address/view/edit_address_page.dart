@@ -180,8 +180,8 @@ class EditAddressPage extends StatelessWidget {
                         Expanded(
                           child: _buildTextField(
                             context,
-                            controller.zipCodeController,
-                            'address.zip_code'.translate(),
+                            controller.postalCodeController,
+                            'address.postal_code'.translate(),
                           ),
                         ),
                       ],
@@ -192,6 +192,30 @@ class EditAddressPage extends StatelessWidget {
                       controller.countryController,
                       'address.country'.translate(),
                       hintText: 'address.country_hint'.translate(),
+                    ),
+                    SizedBox(height: UIConfig.marginLarge),
+
+                    // Default address toggle
+                    Obx(
+                      () => SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          'address.set_as_default'.translate(),
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              color: AppColors.foreground(context),
+                              fontSize: UIConfig.fontSizeRegular,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ),
+                        value: controller.isDefault.value,
+                        onChanged:
+                            (value) => controller.isDefault.value = value,
+                        activeColor: AppColors.primary(context),
+                      ),
                     ),
                   ],
                 ),

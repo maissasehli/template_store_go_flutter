@@ -1,5 +1,4 @@
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/services/api_client.dart';
 import 'package:store_go/features/payment/models/payment_result_model.dart';

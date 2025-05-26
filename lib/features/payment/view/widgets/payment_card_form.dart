@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:get/get.dart';
 
 class PaymentCardForm extends StatefulWidget {
   final Function(Map<String, dynamic>)? onCardChanged;
@@ -19,7 +18,6 @@ class PaymentCardForm extends StatefulWidget {
 }
 
 class _PaymentCardFormState extends State<PaymentCardForm> {
-  CardEditController? _cardController;
   bool _cardComplete = false;
 
   @override
