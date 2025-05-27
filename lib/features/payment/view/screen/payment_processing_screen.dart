@@ -41,11 +41,10 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
     orderId = arguments['orderId'] ?? '';
     amount = arguments['amount'] ?? cartController.total.value;
     cartItems = arguments['cartItems'] ?? cartController.cartItems;
-
     if (orderId.isEmpty) {
       Get.snackbar(
-        'Error'.tr,
-        'Invalid order information'.tr,
+        'Error'.translate(),
+        'Invalid order information'.translate(),
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );

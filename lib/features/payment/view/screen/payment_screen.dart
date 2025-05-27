@@ -201,6 +201,9 @@ class PaymentMethodPage extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      enableDrag: true,
+      // Use a value that ensures proper height
+      useSafeArea: true,
       builder: (context) => AddCardScreen(),
     );
   }

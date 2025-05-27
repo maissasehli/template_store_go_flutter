@@ -10,6 +10,12 @@
         "search": "بحث",
         "see_all": "عرض الكل",
         "retry": "إعادة المحاولة",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "delete": "حذف",
+        "success": "نجاح",
+        "error": "خطأ",
+        "optional": "اختياري",
         "order_failure": {
             "title": "فشل الدفع",
             "error_title": "فشل الدفع",
@@ -28,11 +34,7 @@
             "today": "اليوم",
             "yesterday": "الأمس",
             "days_ago": "منذ {count} أيام"
-        },
-        "cancel": "إلغاء",
-        "delete": "حذف",
-        "success": "نجاح",
-        "error": "خطأ"
+        }
     },
     "auth": {
         "login": "تسجيل الدخول",

@@ -4,6 +4,7 @@ import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import '../../controller/payment_controller.dart';
@@ -85,7 +86,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         ),
         centerTitle: true,
         title: Text(
-          'payment.payment_history'.tr,
+          'payment.payment_history'.translate(),
           style: LocalizationService.getLocalizedTextStyle(
             context,
             TextStyle(
@@ -138,7 +139,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             ),
             SizedBox(height: UIConfig.marginMedium),
             Text(
-              'payment.error_loading_history'.tr,
+              'payment.error_loading_history'.translate(),
               style: LocalizationService.getLocalizedTextStyle(
                 context,
                 TextStyle(
@@ -176,7 +177,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                   ),
                 ),
               ),
-              child: Text('common.retry'.tr).button(context),
+              child: Text('common.retry'.translate()).button(context),
             ),
           ],
         ),
@@ -198,7 +199,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             ),
             SizedBox(height: UIConfig.marginMedium),
             Text(
-              'payment.no_payment_history'.tr,
+              'payment.no_payment_history'.translate(),
               style: LocalizationService.getLocalizedTextStyle(
                 context,
                 TextStyle(
@@ -211,7 +212,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             ),
             SizedBox(height: UIConfig.marginSmall),
             Text(
-              'payment.no_payment_history_desc'.tr,
+              'payment.no_payment_history_desc'.translate(),
               style: LocalizationService.getLocalizedTextStyle(
                 context,
                 TextStyle(
@@ -275,7 +276,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             children: [
               Expanded(
                 child: Text(
-                  'payment.order_id'.tr.replaceFirst('{id}', payment.orderId),
+                  'payment.order_id'.translate().replaceFirst('{id}', payment.orderId),
                   style: LocalizationService.getLocalizedTextStyle(
                     context,
                     TextStyle(
@@ -365,7 +366,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                   ),
                   SizedBox(width: 4),
                   Text(
-                    'payment.view_receipt'.tr,
+                    'payment.view_receipt'.translate(),
                     style: LocalizationService.getLocalizedTextStyle(
                       context,
                       TextStyle(
@@ -392,15 +393,15 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     if (payment.isSuccessful) {
       backgroundColor = Colors.green.withOpacity(0.1);
       textColor = Colors.green;
-      statusText = 'payment.status.success'.tr;
+      statusText = 'payment.status.success'.translate();
     } else if (payment.isPending) {
       backgroundColor = Colors.orange.withOpacity(0.1);
       textColor = Colors.orange;
-      statusText = 'payment.status.pending'.tr;
+      statusText = 'payment.status.pending'.translate();
     } else {
       backgroundColor = Colors.red.withOpacity(0.1);
       textColor = Colors.red;
-      statusText = 'payment.status.failed'.tr;
+      statusText = 'payment.status.failed'.translate();
     }
 
     return Container(
@@ -430,15 +431,15 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     switch (paymentMethod.toLowerCase()) {
       case 'credit_card':
       case 'card':
-        return 'payment.method.credit_card'.tr;
+        return 'payment.method.credit_card'.translate();
       case 'debit_card':
-        return 'payment.method.debit_card'.tr;
+        return 'payment.method.debit_card'.translate();
       case 'paypal':
-        return 'payment.method.paypal'.tr;
+        return 'payment.method.paypal'.translate();
       case 'apple_pay':
-        return 'payment.method.apple_pay'.tr;
+        return 'payment.method.apple_pay'.translate();
       case 'google_pay':
-        return 'payment.method.google_pay'.tr;
+        return 'payment.method.google_pay'.translate();
       default:
         return paymentMethod.replaceAll('_', ' ').toUpperCase();
     }
@@ -449,11 +450,11 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     final difference = now.difference(date);
 
     if (difference.inDays == 0) {
-      return 'common.today'.tr + ' ${_formatTime(date)}';
+      return 'common.today'.translate() + ' ${_formatTime(date)}';
     } else if (difference.inDays == 1) {
-      return 'common.yesterday'.tr + ' ${_formatTime(date)}';
+      return 'common.yesterday'.translate() + ' ${_formatTime(date)}';
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} ${'common.days_ago'.tr}';
+      return '${difference.inDays} ${'common.days_ago'.translate()}';
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -464,16 +465,9 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     final minute = date.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
-
   void _openReceipt(String receiptUrl) {
     // Navigate to receipt view or open in browser
-    // For now, just show a snackbar
-    Get.snackbar(
-      'payment.receipt'.tr,
-      'payment.receipt_opening'.tr,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.primary(context),
-      colorText: AppColors.primaryForeground(context),
-    );
+    // For now, just show a snackbar - implementation would go here
+    // TODO: Implement receipt opening functionality
   }
 }

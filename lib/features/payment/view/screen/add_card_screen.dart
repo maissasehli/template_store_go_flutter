@@ -30,7 +30,6 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   bool _saveCard = true;
   bool _setAsDefault = false;
-
   final PaymentController _paymentController = Get.find<PaymentController>();
 
   @override
@@ -50,99 +49,95 @@ class _AddCardScreenState extends State<AddCardScreen> {
   @override
   Widget build(BuildContext context) {
     final bool isRtl = LocalizationService.isRtl(context);
-    // Get the status bar height
-    final statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.background(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      // Add padding to respect status bar
-      padding: EdgeInsets.only(top: statusBarHeight),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: ThemeAwareSvg(
-              assetPath: isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
-              height: 24,
-              width: 24,
-            ),
-            onPressed: () => Get.back(),
+    return Scaffold(
+      backgroundColor: AppColors.background(context),
+      appBar: AppBar(
+        backgroundColor: AppColors.background(context),
+        elevation: 0,
+        leading: IconButton(
+          icon: ThemeAwareSvg(
+            assetPath: isRtl ? AssetConfig.arrowRight : AssetConfig.arrowLeft,
+            height: 24,
+            width: 24,
           ),
-          centerTitle: true,
-          title: Text(
-            'payment.add_payment_method'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                  ) ??
-                  const TextStyle(),
-            ),
+          onPressed: () => Get.back(),
+        ),
+        centerTitle: true,
+        title: Text(
+          'payment.add_payment_method'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
-        body: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 24),
-
-                // Card Details Section
-                Text(
-                  'payment.card_details'.tr,
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Gabarito',
-                        ) ??
-                        const TextStyle(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Card Number Field
-                _buildCardNumberField(),
-                const SizedBox(height: 12),
-
-                // CVV and Expiry Date in a row
-                Row(
+      ),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: _buildExpiryField()),
-                    const SizedBox(width: 12),
-                    Expanded(child: _buildCvvField()),
+                    const SizedBox(height: 24),
+
+                    // Card Details Section
+                    Text(
+                      'payment.card_details'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Gabarito',
+                            ) ??
+                            const TextStyle(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Card Number Field
+                    _buildCardNumberField(),
+                    const SizedBox(height: 12),
+
+                    // CVV and Expiry Date in a row
+                    Row(
+                      children: [
+                        Expanded(child: _buildExpiryField()),
+                        const SizedBox(width: 12),
+                        Expanded(child: _buildCvvField()),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Cardholder Name field
+                    _buildCardholderNameField(),
+                    const SizedBox(height: 12),
+
+                    // Email field (optional)
+                    _buildEmailField(),
+                    const SizedBox(height: 24),
+
+                    // Options
+                    _buildSaveCardOption(),
+                    const SizedBox(height: 8),
+                    _buildSetDefaultOption(),
+                    const SizedBox(height: 32),
                   ],
                 ),
-                const SizedBox(height: 12),
-
-                // Cardholder Name field
-                _buildCardholderNameField(),
-                const SizedBox(height: 12),
-
-                // Email field (optional)
-                _buildEmailField(),
-                const SizedBox(height: 24),
-
-                // Options
-                _buildSaveCardOption(),
-                const SizedBox(height: 8),
-                _buildSetDefaultOption(),
-
-                // Spacer to push button to bottom
-                const Spacer(), // Save Button
-                Obx(() => _buildSaveButton()),
-                const SizedBox(height: 16),
-              ],
+              ),
+            ), // Save Button - Fixed at bottom
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() => _buildSaveButton()),
             ),
-          ),
+          ],
         ),
       ),
     );

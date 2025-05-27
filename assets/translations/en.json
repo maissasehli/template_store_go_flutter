@@ -15,6 +15,7 @@
         "delete": "Delete",
         "success": "Success",
         "error": "Error",
+        "optional": "Optional",
         "today": "Today",
         "yesterday": "Yesterday",
         "days_ago": "{count} days ago"
