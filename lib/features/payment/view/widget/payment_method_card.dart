@@ -66,7 +66,7 @@ class PaymentMethodCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${paymentMethod.brand.toUpperCase()} • ${paymentMethod.formattedExpiry}',
+                        _buildCardSubtitle(),
                         style: LocalizationService.getLocalizedTextStyle(
                           context,
                           Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -176,7 +176,7 @@ class PaymentMethodCard extends StatelessWidget {
   }
 
   Widget _buildCardBrandIcon(BuildContext context) {
-    final brand = paymentMethod.brand.toLowerCase();
+    final brand = paymentMethod.brand?.toLowerCase() ?? 'unknown';
     IconData iconData;
     Color? iconColor;
 
@@ -212,6 +212,24 @@ class PaymentMethodCard extends StatelessWidget {
       ),
       child: Icon(iconData, color: iconColor, size: 20),
     );
+  }
+
+  String _buildCardSubtitle() {
+    List<String> parts = [];
+
+    if (paymentMethod.brand != null) {
+      parts.add(paymentMethod.brand!.toUpperCase());
+    }
+
+    if (paymentMethod.formattedExpiry.isNotEmpty) {
+      parts.add(paymentMethod.formattedExpiry);
+    }
+
+    if (parts.isEmpty) {
+      return paymentMethod.type.replaceAll('_', ' ').toUpperCase();
+    }
+
+    return parts.join(' • ');
   }
 
   void _handleMenuSelection(String value) {

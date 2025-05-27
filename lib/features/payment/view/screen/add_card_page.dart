@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
@@ -24,6 +25,7 @@ class _AddCardPageState extends State<AddCardPage> {
   // Stripe card details from CardField
   CardFieldInputDetails? _cardDetails;
   bool _cardComplete = false;
+  bool _isLoading = false;
 
   final PaymentController _paymentController = Get.find<PaymentController>();
   @override
@@ -284,16 +286,38 @@ class _AddCardPageState extends State<AddCardPage> {
       return;
     }
 
+    setState(() {
+      _isLoading = true;
+    });
+
     final cardholderName = _cardholderNameController.text;
 
-    final success = await _paymentController
-        .createAndSavePaymentMethodFromCardField(
-          cardholderName: cardholderName,
-          setAsDefault: false,
-        );
+    try {
+      final success = await _paymentController
+          .createAndSavePaymentMethodFromCardField(
+            cardholderName: cardholderName,
+            setAsDefault: false,
+          );
 
-    if (success) {
-      Get.back();
+      if (success) {
+        // Navigate back to the previous screen
+        Logger().i(
+          'Payment method saved successfully, navigating back',
+        );
+        Get.back();
+      }
+    } catch (e) {
+      // show logger error and not snackbar
+      Logger().e(
+        'Error saving payment method: $e',
+        e,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 }

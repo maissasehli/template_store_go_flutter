@@ -101,16 +101,31 @@ class PaymentService {
     String? cardholderName,
   }) async {
     try {
+      _logger.i('Saving payment method to backend:');
+      _logger.i('- paymentMethodId: $paymentMethodId');
+      _logger.i('- setAsDefault: $setAsDefault');
+      _logger.i('- cardholderName: $cardholderName');
+
       final savedMethod = await _paymentRepository.addPaymentMethod(
         paymentMethodId: paymentMethodId,
         setAsDefault: setAsDefault,
         cardholderName: cardholderName,
       );
 
-      _logger.i('Payment method saved to backend: ${savedMethod.id}');
+      _logger.i(
+        'Payment method saved to backend successfully: ${savedMethod.id}',
+      );
       return savedMethod;
     } catch (e) {
       _logger.e('Error saving payment method to backend: $e');
+      // Provide more specific error information
+      if (e.toString().contains('400')) {
+        _logger.e('400 Bad Request - Possible causes:');
+        _logger.e('1. Invalid paymentMethodId format');
+        _logger.e('2. Required fields missing');
+        _logger.e('3. Stripe payment method not found');
+        _logger.e('4. API endpoint expecting different field names');
+      }
       throw Exception('Failed to save payment method: $e');
     }
   }

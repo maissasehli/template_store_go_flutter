@@ -65,16 +65,28 @@ class PaymentRepository {
     String? cardholderName,
   }) async {
     try {
+      // Create request data according to API documentation
       final data = {
         'type': type,
-        'paymentToken': paymentMethodId, // Corrected field name
-        'isDefault': setAsDefault, // Corrected field name
-        if (cardholderName != null) 'cardholderName': cardholderName,
+        'stripePaymentMethodId':
+            paymentMethodId, // Correct field name per API docs
+        'isDefault': setAsDefault,
+        if (cardholderName != null)
+          'details': {'cardholderName': cardholderName},
       };
+
+      _logger.i('Adding payment method with data: $data');
+      _logger.i('POST /payments/methods');
+
       final response = await _apiClient.post('/payments/methods', data: data);
 
+      _logger.i('Add payment method response status: ${response.statusCode}');
+      _logger.i('Add payment method response body: ${response.data}');
+
       if (response.statusCode == 201 || response.statusCode == 200) {
-        return PaymentMethod.fromJson(response.data['data']);
+        final paymentMethod = PaymentMethod.fromJson(response.data['data']);
+        _logger.i('Successfully created payment method: ${paymentMethod.id}');
+        return paymentMethod;
       } else {
         _logger.w('Failed to add payment method: ${response.statusCode}');
         _logger.w('Response data: ${response.data}');
@@ -82,6 +94,12 @@ class PaymentRepository {
       }
     } catch (e) {
       _logger.e('Error adding payment method: $e');
+      if (e.toString().contains('400')) {
+        _logger.e('400 Bad Request - Check request format and required fields');
+        _logger.e(
+          'Expected fields: type, stripePaymentMethodId, isDefault, details{cardholderName}',
+        );
+      }
       throw Exception('Failed to add payment method: $e');
     }
   }
