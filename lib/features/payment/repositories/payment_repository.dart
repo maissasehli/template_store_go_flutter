@@ -164,10 +164,18 @@ class PaymentRepository {
         savePaymentMethod: savePaymentMethod,
         metadata: metadata,
       );
+
+      _logger.i('Processing payment request:');
+      _logger.i('- URL: /orders/$orderId/pay');
+      _logger.i('- Request data: ${paymentRequest.toJson()}');
+
       final response = await _apiClient.post(
         '/orders/$orderId/pay',
         data: paymentRequest.toJson(),
       );
+
+      _logger.i('Payment response status: ${response.statusCode}');
+      _logger.i('Payment response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final data = response.data;

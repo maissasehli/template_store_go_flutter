@@ -7,6 +7,8 @@ import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
 import 'package:store_go/features/checkout/controllers/checkout_controller.dart';
+import 'package:store_go/features/payment/controller/payment_controller.dart';
+import 'package:store_go/features/payment/models/payment_result_model.dart';
 import 'package:store_go/features/payment/view/widget/payment_card_form.dart';
 
 class PaymentProcessingScreen extends StatefulWidget {
@@ -29,7 +31,6 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
   late String orderId;
   late double amount;
   late List<CartItem> cartItems;
-
   @override
   void initState() {
     super.initState();
@@ -50,6 +51,12 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
       );
       Get.back();
     }
+  }
+
+  /// Check if using saved payment method
+  bool get _usingSavedPaymentMethod {
+    return Get.isRegistered<PaymentController>() &&
+        Get.find<PaymentController>().selectedPaymentMethod.value != null;
   }
 
   @override
@@ -83,52 +90,55 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
           children: [
             // Order summary card
             _buildOrderSummaryCard(),
-
             SizedBox(height: 24),
 
-            // Payment form
-            PaymentCardForm(
-              onCardChanged: (cardDetails) {
-                setState(() {
-                  _cardDetails = cardDetails;
-                });
-              },
-              enabled: !_isProcessing,
-            ),
-
-            SizedBox(height: 16),
-
-            // Save payment method option
-            Row(
-              children: [
-                Checkbox(
-                  value: _savePaymentMethod,
-                  onChanged:
-                      _isProcessing
-                          ? null
-                          : (value) {
-                            setState(() {
-                              _savePaymentMethod = value ?? false;
-                            });
-                          },
-                  activeColor: AppColors.primary(context),
-                ),
-                Expanded(
-                  child: Text(
-                    'payment.save_card'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: 14,
-                        color: AppColors.foreground(context),
+            // Show saved payment method info or payment form
+            if (_usingSavedPaymentMethod) ...[
+              _buildSavedPaymentMethodInfo(),
+            ] else ...[
+              PaymentCardForm(
+                onCardChanged: (cardDetails) {
+                  setState(() {
+                    _cardDetails = cardDetails;
+                  });
+                },
+                enabled: !_isProcessing,
+              ),
+              SizedBox(height: 16),
+              // Save payment method option
+              Row(
+                children: [
+                  Checkbox(
+                    value: _savePaymentMethod,
+                    onChanged:
+                        _isProcessing
+                            ? null
+                            : (value) {
+                              setState(() {
+                                _savePaymentMethod = value ?? false;
+                              });
+                            },
+                    activeColor: AppColors.primary(context),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'payment.save_card'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          fontSize: 14,
+                          color: AppColors.foreground(context),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
 
-            SizedBox(height: 24), // Payment button
+            SizedBox(height: 24),
+
+            // Payment button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -160,8 +170,9 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                         ),
               ),
             ),
+            SizedBox(height: 16),
 
-            SizedBox(height: 16), // Security notice
+            // Security notice
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -275,9 +286,16 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
   }
 
   bool _canProcessPayment() {
-    return !_isProcessing &&
-        _cardDetails != null &&
-        (_cardDetails!['complete'] ?? false);
+    if (_isProcessing) return false;
+
+    if (_usingSavedPaymentMethod) {
+      // For saved payment methods, just need to ensure we have a selected method
+      return Get.isRegistered<PaymentController>() &&
+          Get.find<PaymentController>().selectedPaymentMethod.value != null;
+    } else {
+      // For new cards, need valid card details
+      return _cardDetails != null && (_cardDetails!['complete'] ?? false);
+    }
   }
 
   Future<void> _processPayment() async {
@@ -288,14 +306,35 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
     });
 
     try {
-      // Process payment using the orderId from arguments
-      final paymentResult = await checkoutController.processPaymentForOrder(
-        orderId: orderId,
-        total: amount,
-        cardDetails: _cardDetails!,
-        savePaymentMethod: _savePaymentMethod,
-      );
+      PaymentResult paymentResult;
 
+      if (_usingSavedPaymentMethod) {
+        // Use saved payment method
+        final paymentController = Get.find<PaymentController>();
+        final selectedMethod = paymentController.selectedPaymentMethod.value!;
+
+        print('Processing payment with saved method: ${selectedMethod.id}');
+        print(
+          'Stripe payment method ID: ${selectedMethod.stripePaymentMethodId}',
+        );
+
+        paymentResult = await checkoutController.processPaymentWithSavedMethod(
+          orderId: orderId,
+          total: amount,
+          paymentMethodId: selectedMethod.stripePaymentMethodId!,
+        );
+      } else {
+        // Use new card details
+        print('Processing payment with new card details');
+        paymentResult = await checkoutController.processPaymentForOrder(
+          orderId: orderId,
+          total: amount,
+          cardDetails: _cardDetails!,
+          savePaymentMethod: _savePaymentMethod,
+        );
+      }
+
+      // Handle payment result (same for both flows)
       if (paymentResult.isSuccess) {
         // Navigate to order confirmation screen
         Get.offNamed(
@@ -324,6 +363,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         );
       }
     } catch (e) {
+      print('Error processing payment: $e');
       // Navigate to order failure screen with error details
       Get.offNamed(
         '/order-failure',
@@ -338,5 +378,87 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         _isProcessing = false;
       });
     }
+  }
+
+  Widget _buildSavedPaymentMethodInfo() {
+    if (!Get.isRegistered<PaymentController>()) {
+      return SizedBox.shrink();
+    }
+
+    final paymentController = Get.find<PaymentController>();
+    final selectedMethod = paymentController.selectedPaymentMethod.value;
+
+    if (selectedMethod == null) {
+      return SizedBox.shrink();
+    }
+
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.card(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border(context), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'payment.selected_payment_method'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.foreground(context),
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(
+                Icons.credit_card,
+                size: 24,
+                color: AppColors.primary(context),
+              ),
+              SizedBox(width: 12),
+              Text(
+                selectedMethod.displayName,
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(fontSize: 14, color: AppColors.foreground(context)),
+                ),
+              ),
+            ],
+          ),
+          if (selectedMethod.isDefault) ...[
+            SizedBox(height: 4),
+            Row(
+              children: [
+                SizedBox(width: 36), // Align with card icon
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary(context).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'payment.default'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: 12,
+                        color: AppColors.primary(context),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

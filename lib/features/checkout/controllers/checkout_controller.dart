@@ -373,21 +373,15 @@ class CheckoutController extends GetxController {
         notes: '', // Add notes field if needed
       );
 
-      print('Order request JSON: ${orderRequest.toJson()}');
-
-      // Call API to create order
+      print(
+        'Order request JSON: ${orderRequest.toJson()}',
+      ); // Call API to create order
       final orderId = await _orderRepository.createOrder(orderRequest);
 
-      Get.snackbar(
-        'checkout.success_title'.translate(),
-        'checkout.order_created_message'.translate(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      print('Order created successfully with ID: $orderId');
 
-      // Navigate back to home or orders page
-      Get.offAllNamed('/');
+      // Don't navigate here - let the caller handle navigation
+      // The order creation is just the first step in the checkout flow
       return orderId;
     } catch (e) {
       print('Error in createOrder: $e');
@@ -441,6 +435,38 @@ class CheckoutController extends GetxController {
     }
   }
 
+  /// Process payment for an existing order using saved payment method
+  Future<PaymentResult> processPaymentWithSavedMethod({
+    required String orderId,
+    required double total,
+    required String paymentMethodId,
+  }) async {
+    try {
+      print(
+        'Processing payment with saved method: $paymentMethodId for order: $orderId',
+      );
+
+      // Step 1: Process payment directly with saved payment method
+      final paymentResult = await _paymentService.processPayment(
+        orderId: orderId,
+        amount: total,
+        currency: 'USD',
+        paymentMethodId: paymentMethodId,
+        savePaymentMethod: false, // Not applicable for saved methods
+      );
+
+      print('Payment result status: ${paymentResult.status}');
+      return paymentResult;
+    } catch (e) {
+      print('Error processing payment with saved method: $e');
+      return PaymentResult.failed(
+        orderId: orderId,
+        error: e.toString(),
+        message: 'Payment processing failed: ${e.toString()}',
+      );
+    }
+  }
+
   /// Handle 3D Secure authentication
   Future<void> handle3DSecure(PaymentResult paymentResult) async {
     if (!paymentResult.isRequiresAction ||
@@ -479,13 +505,6 @@ class CheckoutController extends GetxController {
       );
       rethrow;
     }
-  }
-
-  Address _getDefaultAddress() {
-    // Updated to throw a more helpful error message
-    throw Exception(
-      'No shipping address selected. Please add or select a default address.',
-    );
   }
 
   /// Convert AddressModel.Address to Order Address

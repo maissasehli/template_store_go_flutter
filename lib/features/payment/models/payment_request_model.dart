@@ -14,15 +14,13 @@ class PaymentRequest {
     this.savePaymentMethod = false,
     this.metadata,
   });
-
   Map<String, dynamic> toJson() {
     return {
-      'order_id': orderId,
-      'amount': amount,
-      'currency': currency,
-      if (paymentMethodId != null) 'payment_method_id': paymentMethodId,
-      'save_payment_method': savePaymentMethod,
-      if (metadata != null) 'metadata': metadata,
+      'paymentMethod': 'credit_card', // Fixed according to Bruno API
+      'paymentToken': paymentMethodId, // Map paymentMethodId to paymentToken
+      'savePaymentMethod': savePaymentMethod,
+      // Note: Bruno API doesn't expect amount, currency, etc. for order payment
+      // These are likely handled server-side based on the orderId
     };
   }
 
