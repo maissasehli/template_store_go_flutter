@@ -208,6 +208,13 @@
         "receipt_opening": "Opening receipt...",
         "default_label": "Default",
         "secure_payment": "Your payment is secure and encrypted",
+        "pay": "Pay",
+        "order_summary": "Order Summary",
+        "subtotal": "Subtotal",
+        "shipping_cost": "Shipping Cost",
+        "tax": "Tax",
+        "discount": "Discount",
+        "total": "Total",
         "method": {
             "credit_card": "Credit Card",
             "debit_card": "Debit Card",

@@ -469,6 +469,11 @@
             "invalid_amount": "مبلغ الدفع غير صحيح",
             "payment_already_processed": "تم معالجة الدفع بالفعل"
         },
+        "payment_method_reused": "تم استخدام طريقة الدفع هذه مسبقاً. يرجى إعادة إدخال تفاصيل البطاقة.",
+        "processing_failed": "فشل في معالجة الدفع. يرجى المحاولة مرة أخرى.",
+        "error": "خطأ",
+        "selected_payment_method": "طريقة الدفع المحددة",
+        "default": "افتراضي",
         "form_validation": {
             "card_number_required": "رقم البطاقة مطلوب",
             "expiry_date_required": "تاريخ انتهاء الصلاحية مطلوب",
@@ -493,6 +498,13 @@
         "receipt_opening": "جاري فتح الإيصال...",
         "default_label": "افتراضي",
         "secure_payment": "دفعك آمن ومشفر",
+        "pay": "دفع",
+        "order_summary": "ملخص الطلب",
+        "subtotal": "المجموع الفرعي",
+        "shipping_cost": "تكلفة الشحن",
+        "tax": "الضريبة",
+        "discount": "الخصم",
+        "total": "المجموع الكلي",
         "method": {
             "credit_card": "بطاقة ائتمان",
             "debit_card": "بطاقة مدين",

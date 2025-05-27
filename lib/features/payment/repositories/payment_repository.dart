@@ -173,42 +173,72 @@ class PaymentRepository {
         '/orders/$orderId/pay',
         data: paymentRequest.toJson(),
       );
-
       _logger.i('Payment response status: ${response.statusCode}');
       _logger.i('Payment response data: ${response.data}');
 
+      // Add detailed logging of the response structure
+      if (response.data is Map<String, dynamic>) {
+        final responseData = response.data as Map<String, dynamic>;
+        _logger.i('Root status: ${responseData['status']}');
+        _logger.i('Root message: ${responseData['message']}');
+        if (responseData['data'] != null) {
+          _logger.i('Nested data: ${responseData['data']}');
+        }
+      }
       if (response.statusCode == 200) {
-        final data = response.data;
-        final status = data['status'] as String;
+        final responseData = response.data;
+        final rootStatus = responseData['status'] as String;
 
-        switch (status.toLowerCase()) {
-          case 'succeeded':
-            return PaymentResult.success(
-              paymentId: data['payment_id'] as String?,
-              orderId: orderId,
-              paymentIntentId: data['payment_intent_id'] as String?,
-              message: data['message'] as String? ?? 'Payment successful',
-            );
-          case 'requires_action':
-            return PaymentResult.requiresAction(
-              clientSecret: data['client_secret'] as String,
-              paymentIntentId: data['payment_intent_id'] as String?,
-              orderId: orderId,
-              message:
-                  data['message'] as String? ??
-                  'Additional authentication required',
-            );
-          case 'processing':
-            return PaymentResult.processing(
-              orderId: orderId,
-              message: data['message'] as String? ?? 'Payment processing',
-            );
-          default:
-            return PaymentResult.failed(
-              orderId: orderId,
-              error: data['error'] as String?,
-              message: data['message'] as String? ?? 'Payment failed',
-            );
+        // For success responses, check the payment status in the nested data object
+        if (rootStatus.toLowerCase() == 'success') {
+          final paymentData = responseData['data'] as Map<String, dynamic>;
+          final paymentStatus = paymentData['status'] as String;
+
+          switch (paymentStatus.toLowerCase()) {
+            case 'succeeded':
+              return PaymentResult.success(
+                paymentId: paymentData['paymentId'] as String?,
+                orderId: orderId,
+                paymentIntentId: paymentData['paymentIntentId'] as String?,
+                message:
+                    responseData['message'] as String? ?? 'Payment successful',
+              );
+            case 'processing':
+              return PaymentResult.processing(
+                orderId: orderId,
+                message:
+                    responseData['message'] as String? ?? 'Payment processing',
+              );
+            default:
+              return PaymentResult.failed(
+                orderId: orderId,
+                error: paymentData['error'] as String?,
+                message: responseData['message'] as String? ?? 'Payment failed',
+              );
+          }
+        }
+        // For requires_action responses
+        else if (rootStatus.toLowerCase() == 'requires_action') {
+          final paymentData = responseData['data'] as Map<String, dynamic>;
+          return PaymentResult.requiresAction(
+            clientSecret: paymentData['clientSecret'] as String,
+            paymentIntentId: paymentData['paymentIntentId'] as String?,
+            orderId: orderId,
+            message:
+                responseData['message'] as String? ??
+                'Additional authentication required',
+          );
+        }
+        // For error responses
+        else {
+          return PaymentResult.failed(
+            orderId: orderId,
+            error:
+                responseData['errors'] != null
+                    ? responseData['errors'].toString()
+                    : null,
+            message: responseData['message'] as String? ?? 'Payment failed',
+          );
         }
       } else {
         _logger.w('Failed to process payment: ${response.statusCode}');

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import '../../controller/payment_controller.dart';
 
 class AddCardScreen extends StatefulWidget {
@@ -64,17 +67,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: Text(
-          'payment.add_payment_method'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
-          ),
-        ),
+        title: Text('payment.add_payment_method'.translate()).heading5(context),
       ),
       body: Form(
         key: _formKey,
@@ -82,59 +75,49 @@ class _AddCardScreenState extends State<AddCardScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(
+                  horizontal: UIConfig.paddingLarge,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 24),
+                    SizedBox(height: UIConfig.marginLarge),
 
                     // Card Details Section
-                    Text(
-                      'payment.card_details'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Gabarito',
-                            ) ??
-                            const TextStyle(),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    Text('payment.card_details'.translate()).heading5(context),
+                    SizedBox(height: UIConfig.marginMedium),
 
                     // Card Number Field
                     _buildCardNumberField(),
-                    const SizedBox(height: 12),
+                    SizedBox(height: UIConfig.marginSmall),
 
                     // CVV and Expiry Date in a row
                     Row(
                       children: [
                         Expanded(child: _buildExpiryField()),
-                        const SizedBox(width: 12),
+                        SizedBox(width: UIConfig.marginSmall),
                         Expanded(child: _buildCvvField()),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: UIConfig.marginSmall),
 
                     // Cardholder Name field
                     _buildCardholderNameField(),
-                    const SizedBox(height: 12),
+                    SizedBox(height: UIConfig.marginSmall),
 
                     // Email field (optional)
                     _buildEmailField(),
-                    const SizedBox(height: 24),
-
-                    // Options
+                    SizedBox(height: UIConfig.marginLarge), // Options
                     _buildSaveCardOption(),
-                    const SizedBox(height: 8),
+                    SizedBox(height: UIConfig.marginSmall),
                     _buildSetDefaultOption(),
-                    const SizedBox(height: 32),
+                    SizedBox(height: UIConfig.marginXLarge),
                   ],
                 ),
               ),
             ), // Save Button - Fixed at bottom
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(UIConfig.paddingMedium),
               child: Obx(() => _buildSaveButton()),
             ),
           ],
@@ -147,18 +130,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'payment.card_number'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text('payment.card_number'.translate()).body(context),
+        SizedBox(height: UIConfig.marginSmall),
         TextFormField(
           controller: _cardNumberController,
           focusNode: _cardNumberFocus,
@@ -195,18 +168,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'payment.expiry_date'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text('payment.expiry_date'.translate()).body(context),
+        SizedBox(height: UIConfig.marginSmall),
         TextFormField(
           controller: _expiryController,
           focusNode: _expiryFocus,
@@ -239,18 +202,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'payment.cvv'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text('payment.cvv'.translate()).body(context),
+        SizedBox(height: UIConfig.marginSmall),
         TextFormField(
           controller: _cvvController,
           focusNode: _cvvFocus,
@@ -281,18 +234,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'payment.cardholder_name'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
-          ),
-        ),
-        const SizedBox(height: 8),
+        Text('payment.cardholder_name'.translate()).body(context),
+        SizedBox(height: UIConfig.marginSmall),
         TextFormField(
           controller: _cardholderNameController,
           focusNode: _cardholderNameFocus,
@@ -316,16 +259,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
       children: [
         Text(
           'auth.email'.translate() + ' (${'common.optional'.translate()})',
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
-          ),
-        ),
-        const SizedBox(height: 8),
+        ).body(context),
+        SizedBox(height: UIConfig.marginSmall),
         TextFormField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
@@ -347,18 +282,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
             });
           },
         ),
-        Expanded(
-          child: Text(
-            'payment.save_card'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontFamily: 'Poppins') ??
-                  const TextStyle(),
-            ),
-          ),
-        ),
+        Expanded(child: Text('payment.save_card'.translate()).body(context)),
       ],
     );
   }
@@ -380,18 +304,11 @@ class _AddCardScreenState extends State<AddCardScreen> {
         Expanded(
           child: Text(
             'payment.set_as_default'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontFamily: 'Poppins',
-                    color:
-                        _saveCard
-                            ? null
-                            : Theme.of(context).colorScheme.outline,
-                  ) ??
-                  const TextStyle(),
-            ),
-          ),
+            style:
+                _saveCard
+                    ? null
+                    : TextStyle(color: Theme.of(context).colorScheme.outline),
+          ).body(context),
         ),
       ],
     );
@@ -404,10 +321,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
       child: ElevatedButton(
         onPressed: _paymentController.isLoading.value ? null : _handleSaveCard,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).primaryColor,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          backgroundColor: AppColors.primary(context),
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
           ),
         ),
         child:
@@ -417,18 +334,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   width: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-                : Text(
-                  'common.save'.translate(),
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ) ??
-                        const TextStyle(),
-                  ),
-                ),
+                : Text('common.save'.translate()).button(context),
       ),
     );
   }
@@ -437,35 +343,30 @@ class _AddCardScreenState extends State<AddCardScreen> {
     return InputDecoration(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
         borderSide: BorderSide(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
         borderSide: BorderSide(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
+        borderSide: BorderSide(color: AppColors.primary(context), width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
         borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
       ),
       filled: true,
       fillColor: Theme.of(context).colorScheme.surface,
       hintText: hint,
-      hintStyle: LocalizationService.getLocalizedTextStyle(
-        context,
-        Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.outline,
-              fontFamily: 'Poppins',
-            ) ??
-            const TextStyle(),
+      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        color: Theme.of(context).colorScheme.outline,
       ),
     );
   }

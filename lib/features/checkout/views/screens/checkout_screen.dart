@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
-import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/checkout/controllers/checkout_controller.dart';
 
@@ -32,18 +34,7 @@ class CheckoutScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: Text(
-          'checkout.title'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              color: AppColors.foreground(context),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
+        title: Text('checkout.title'.translate()).heading5(context),
       ),
       body: Padding(
         padding: EdgeInsets.all(UIConfig.paddingLarge),
@@ -95,14 +86,10 @@ class CheckoutScreen extends StatelessWidget {
                   children: [
                     Text(
                       'checkout.shipping_address'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.mutedForeground(context),
-                          fontSize: UIConfig.fontSizeMedium,
-                        ),
+                      style: TextStyle(
+                        color: AppColors.mutedForeground(context),
                       ),
-                    ),
+                    ).caption(context),
                     SizedBox(height: 4),
                     if (controller.isLoadingAddress.value)
                       SizedBox(
@@ -116,29 +103,13 @@ class CheckoutScreen extends StatelessWidget {
                     else if (controller.hasSelectedAddress)
                       Text(
                         controller.shippingAddressDisplayText,
-                        style: LocalizationService.getLocalizedTextStyle(
-                          context,
-                          TextStyle(
-                            color: AppColors.foreground(context),
-                            fontSize: UIConfig.fontSizeMedium,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                      )
+                      ).body(context)
                     else
                       Text(
                         'checkout.add_shipping_address'.translate(),
-                        style: LocalizationService.getLocalizedTextStyle(
-                          context,
-                          TextStyle(
-                            color: AppColors.foreground(context),
-                            fontSize: UIConfig.fontSizeMedium,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                      ).body(context),
                   ],
                 ),
               ),
@@ -177,14 +148,10 @@ class CheckoutScreen extends StatelessWidget {
                   children: [
                     Text(
                       'checkout.payment_method'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.mutedForeground(context),
-                          fontSize: UIConfig.fontSizeMedium,
-                        ),
+                      style: TextStyle(
+                        color: AppColors.mutedForeground(context),
                       ),
-                    ),
+                    ).caption(context),
                     SizedBox(height: 4),
                     if (controller.isLoadingPaymentMethod.value)
                       SizedBox(

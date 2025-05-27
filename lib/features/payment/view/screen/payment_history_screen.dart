@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
@@ -85,18 +86,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           ),
         ),
         centerTitle: true,
-        title: Text(
-          'payment.payment_history'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              color: AppColors.foreground(context),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
+        title: Text('payment.payment_history'.translate()).heading5(context),
       ),
       body: RefreshIndicator(
         onRefresh: () => _paymentController.fetchPaymentHistory(),
@@ -140,28 +130,13 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             SizedBox(height: UIConfig.marginMedium),
             Text(
               'payment.error_loading_history'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.foreground(context),
-                  fontSize: UIConfig.fontSizeLarge,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
               textAlign: TextAlign.center,
-            ),
+            ).heading5(context),
             SizedBox(height: UIConfig.marginSmall),
             Text(
               _paymentController.errorMessage.value,
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.mutedForeground(context),
-                  fontSize: UIConfig.fontSizeMedium,
-                ),
-              ),
               textAlign: TextAlign.center,
-            ),
+            ).body(context),
             SizedBox(height: UIConfig.marginLarge),
             ElevatedButton(
               onPressed: () {
@@ -172,9 +147,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                 backgroundColor: AppColors.primary(context),
                 foregroundColor: AppColors.primaryForeground(context),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    UIConfig.borderRadiusLarge,
-                  ),
+                  borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
                 ),
               ),
               child: Text('common.retry'.translate()).button(context),
@@ -200,28 +173,13 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             SizedBox(height: UIConfig.marginMedium),
             Text(
               'payment.no_payment_history'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.foreground(context),
-                  fontSize: UIConfig.fontSizeLarge,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
               textAlign: TextAlign.center,
-            ),
+            ).heading5(context),
             SizedBox(height: UIConfig.marginSmall),
             Text(
               'payment.no_payment_history_desc'.translate(),
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.mutedForeground(context),
-                  fontSize: UIConfig.fontSizeMedium,
-                ),
-              ),
               textAlign: TextAlign.center,
-            ),
+            ).body(context),
           ],
         ),
       ),
@@ -264,7 +222,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       padding: EdgeInsets.all(UIConfig.paddingMedium),
       decoration: BoxDecoration(
         color: AppColors.card(context),
-        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
         border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
@@ -277,16 +235,8 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
               Expanded(
                 child: Text(
                   'payment.order_id'.translate().replaceFirst('{id}', payment.orderId),
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(
-                      color: AppColors.foreground(context),
-                      fontSize: UIConfig.fontSizeMedium,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                   overflow: TextOverflow.ellipsis,
-                ),
+                ).body(context),
               ),
               _buildStatusChip(payment),
             ],
@@ -298,58 +248,23 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                payment.formattedAmount,
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    color: AppColors.foreground(context),
-                    fontSize: UIConfig.fontSizeLarge,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Text(
-                _getPaymentMethodDisplay(payment.paymentMethod),
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(
-                    color: AppColors.mutedForeground(context),
-                    fontSize: UIConfig.fontSizeSmall,
-                  ),
-                ),
-              ),
+              Text(payment.formattedAmount).heading5(context),
+              Text(_getPaymentMethodDisplay(payment.paymentMethod)).caption(context),
             ],
           ),
 
           SizedBox(height: UIConfig.marginSmall),
 
           // Date and description
-          Text(
-            _formatDate(payment.createdAt),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: AppColors.mutedForeground(context),
-                fontSize: UIConfig.fontSizeSmall,
-              ),
-            ),
-          ),
+          Text(_formatDate(payment.createdAt)).caption(context),
 
           if (payment.description != null) ...[
             SizedBox(height: 4),
             Text(
               payment.description!,
-              style: LocalizationService.getLocalizedTextStyle(
-                context,
-                TextStyle(
-                  color: AppColors.mutedForeground(context),
-                  fontSize: UIConfig.fontSizeSmall,
-                ),
-              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-            ),
+            ).caption(context),
           ],
 
           // Receipt link if available
@@ -364,16 +279,12 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
                     size: 16,
                     color: AppColors.primary(context),
                   ),
-                  SizedBox(width: 4),
-                  Text(
+                  SizedBox(width: 4),                  Text(
                     'payment.view_receipt'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.primary(context),
-                        fontSize: UIConfig.fontSizeSmall,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    style: TextStyle(
+                      color: AppColors.primary(context),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -411,17 +322,13 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       ),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(UIConfig.borderRadiusSmall),
-      ),
-      child: Text(
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
+      ),      child: Text(
         statusText,
-        style: LocalizationService.getLocalizedTextStyle(
-          context,
-          TextStyle(
-            color: textColor,
-            fontSize: UIConfig.fontSizeSmall - 1,
-            fontWeight: FontWeight.w500,
-          ),
+        style: TextStyle(
+          color: textColor,
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
@@ -465,6 +372,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     final minute = date.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
+
   void _openReceipt(String receiptUrl) {
     // Navigate to receipt view or open in browser
     // For now, just show a snackbar - implementation would go here

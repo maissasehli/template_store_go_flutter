@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
 import 'package:store_go/features/checkout/controllers/checkout_controller.dart';
@@ -62,26 +66,23 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background(context),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: ThemeAwareSvg(
+            assetPath:
+                LocalizationService.isRtl(context)
+                    ? AssetConfig.arrowRight
+                    : AssetConfig.arrowLeft,
+            height: 24,
+            width: 24,
+          ),
           onPressed: () => Get.back(),
         ),
         centerTitle: true,
-        title: Text(
-          'payment.title'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              color: Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
+        title: Text('payment.processing_payment'.translate()).heading5(context),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(UIConfig.paddingLarge),
@@ -104,7 +105,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                 },
                 enabled: !_isProcessing,
               ),
-              SizedBox(height: 16),
+              SizedBox(height: UIConfig.marginMedium),
               // Save payment method option
               Row(
                 children: [
@@ -121,70 +122,60 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                     activeColor: AppColors.primary(context),
                   ),
                   Expanded(
-                    child: Text(
-                      'payment.save_card'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          fontSize: 14,
-                          color: AppColors.foreground(context),
-                        ),
-                      ),
-                    ),
+                    child: Text('payment.save_card'.translate()).body(context),
                   ),
                 ],
               ),
             ],
 
-            SizedBox(height: 24),
-
-            // Payment button
+            SizedBox(height: UIConfig.marginXLarge), // Payment button
             SizedBox(
               width: double.infinity,
+              height: 55,
               child: ElevatedButton(
                 onPressed: _canProcessPayment() ? _processPayment : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary(context),
                   foregroundColor: AppColors.primaryForeground(context),
                   disabledBackgroundColor: AppColors.muted(context),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: EdgeInsets.symmetric(
+                    vertical: UIConfig.paddingMedium,
+                  ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(
+                      AppTheme.globalButtonsRadius,
+                    ),
                   ),
                 ),
                 child:
                     _isProcessing
                         ? CircularProgressIndicator(
-                          color: AppColors.primaryForeground(context),
+                          color: AppColors.background(context),
                           strokeWidth: 2,
                         )
                         : Text(
-                          '${'payment.processing_payment'.translate()} \$${amount.toStringAsFixed(2)}',
-                          style: LocalizationService.getLocalizedTextStyle(
-                            context,
+                          '${'payment.pay'.translate()} \$${amount.toStringAsFixed(2)}',
+                          style: LocalizationService.getLocalizedTextStyle(context, 
                             TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
+                              color: AppColors.primaryForeground(context),
                             ),
                           ),
                         ),
               ),
             ),
-            SizedBox(height: 16),
-
-            // Security notice
+            SizedBox(height: UIConfig.marginMedium), // Security notice
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.security, size: 16, color: Colors.grey.shade600),
-                SizedBox(width: 4),
-                Text(
-                  'payment.secure_payment'.translate(),
-                  style: LocalizationService.getLocalizedTextStyle(
-                    context,
-                    TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                  ),
+                Icon(
+                  Icons.security,
+                  size: 16,
+                  color: AppColors.mutedForeground(context),
                 ),
+                SizedBox(width: 4),
+                Text('payment.secure_payment'.translate()).caption(context),
               ],
             ),
           ],
@@ -195,42 +186,32 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
 
   Widget _buildOrderSummaryCard() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(UIConfig.paddingLarge),
       decoration: BoxDecoration(
         color: AppColors.card(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
         border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'checkout.order_summary'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
-          SizedBox(height: 12),
+          Text('payment.order_summary'.translate()).heading5(context),
+          SizedBox(height: UIConfig.marginMedium),
           _buildSummaryRow(
-            'checkout.subtotal'.translate(),
+            'payment.subtotal'.translate(),
             '\$${cartController.subtotal.value.toStringAsFixed(2)}',
           ),
           _buildSummaryRow(
-            'checkout.shipping_cost'.translate(),
+            'payment.shipping_cost'.translate(),
             '\$${cartController.shipping.value.toStringAsFixed(2)}',
           ),
           _buildSummaryRow(
-            'checkout.tax'.translate(),
+            'payment.tax'.translate(),
             '\$${cartController.tax.value.toStringAsFixed(2)}',
           ),
           if (cartController.discount.value > 0)
             _buildSummaryRow(
-              'checkout.discount'.translate(),
+              'payment.discount'.translate(),
               '-\$${cartController.discount.value.toStringAsFixed(2)}',
               color: Colors.green,
             ),
@@ -238,7 +219,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
           Divider(height: 24),
 
           _buildSummaryRow(
-            'checkout.total'.translate(),
+            'payment.total'.translate(),
             '\$${cartController.total.value.toStringAsFixed(2)}',
             isTotal: true,
           ),
@@ -258,28 +239,39 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: isTotal ? 16 : 14,
-                fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
-                color: color ?? AppColors.foreground(context),
-              ),
-            ),
+          Expanded(
+            child:
+                isTotal
+                    ? Text(
+                      label,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: color ?? AppColors.foreground(context),
+                      ),
+                    ).heading5(context)
+                    : Text(
+                      label,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: color ?? AppColors.foreground(context),
+                      ),
+                    ).body(context),
           ),
-          Text(
-            value,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: isTotal ? 16 : 14,
-                fontWeight: isTotal ? FontWeight.w600 : FontWeight.w500,
-                color: color ?? AppColors.foreground(context),
-              ),
-            ),
-          ),
+          isTotal
+              ? Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: color ?? AppColors.foreground(context),
+                ),
+              ).heading5(context)
+              : Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: color ?? AppColors.foreground(context),
+                ),
+              ).body(context),
         ],
       ),
     );
@@ -352,27 +344,58 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         // Handle 3D Secure authentication
         await checkoutController.handle3DSecure(paymentResult);
       } else {
-        // Navigate to order failure screen
-        Get.offNamed(
-          '/order-failure',
-          arguments: {
-            'orderId': orderId,
-            'amount': amount,
-            'error': paymentResult.message,
-          },
+        // Payment failed - show user-friendly error message
+        String errorMessage = paymentResult.message;
+        // Handle specific PaymentMethod reuse error
+        if (paymentResult.error != null &&
+            (paymentResult.error!.contains(
+                  'PaymentMethod was previously used',
+                ) ||
+                paymentResult.error!.contains('may not be used again'))) {
+          errorMessage = 'payment.payment_method_reused'.translate();
+
+          // Clear the card details to force user to re-enter them
+          setState(() {
+            _cardDetails = null;
+          });
+        }
+
+        Get.snackbar(
+          'payment.payment_failed'.translate(),
+          errorMessage,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: Duration(seconds: 5),
         );
+
+        // Don't navigate away - let user try again with fresh card details
+        print('Payment failed: ${paymentResult.message}');
       }
     } catch (e) {
       print('Error processing payment: $e');
-      // Navigate to order failure screen with error details
-      Get.offNamed(
-        '/order-failure',
-        arguments: {
-          'orderId': orderId,
-          'amount': amount,
-          'error': e.toString(),
-        },
+      String errorMessage = 'payment.processing_failed'.translate();
+      // Handle specific PaymentMethod reuse error
+      if (e.toString().contains('PaymentMethod was previously used') ||
+          e.toString().contains('may not be used again')) {
+        errorMessage = 'payment.payment_method_reused'.translate();
+
+        // Clear the card details to force user to re-enter them
+        setState(() {
+          _cardDetails = null;
+        });
+      }
+
+      Get.snackbar(
+        'payment.error'.translate(),
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 5),
       );
+
+      // Don't navigate away on this error - let user try again
     } finally {
       setState(() {
         _isProcessing = false;
@@ -393,27 +416,17 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
     }
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(UIConfig.paddingLarge),
       decoration: BoxDecoration(
         color: AppColors.card(context),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.globalRadius),
         border: Border.all(color: AppColors.border(context), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'payment.selected_payment_method'.translate(),
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.foreground(context),
-              ),
-            ),
-          ),
-          SizedBox(height: 12),
+          Text('payment.selected_payment_method'.translate()).heading5(context),
+          SizedBox(height: UIConfig.marginMedium),
           Row(
             children: [
               Icon(
@@ -421,14 +434,8 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                 size: 24,
                 color: AppColors.primary(context),
               ),
-              SizedBox(width: 12),
-              Text(
-                selectedMethod.displayName,
-                style: LocalizationService.getLocalizedTextStyle(
-                  context,
-                  TextStyle(fontSize: 14, color: AppColors.foreground(context)),
-                ),
-              ),
+              SizedBox(width: UIConfig.marginMedium),
+              Text(selectedMethod.displayName).body(context),
             ],
           ),
           if (selectedMethod.isDefault) ...[
@@ -440,19 +447,9 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: AppColors.primary(context).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppTheme.globalRadius),
                   ),
-                  child: Text(
-                    'payment.default'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        fontSize: 12,
-                        color: AppColors.primary(context),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                  child: Text('payment.default'.translate()).caption(context),
                 ),
               ],
             ),

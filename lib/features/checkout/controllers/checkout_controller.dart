@@ -406,7 +406,10 @@ class CheckoutController extends GetxController {
     bool savePaymentMethod = false,
   }) async {
     try {
-      // Step 1: Create payment method using Stripe
+      print('Creating fresh payment method for order: $orderId');
+
+      // Step 1: Create a fresh payment method using Stripe
+      // Note: We create a fresh PaymentMethod each time to avoid reuse issues
       final paymentMethod = await _paymentService.createAndSavePaymentMethod(
         cardNumber: cardDetails['cardNumber'] ?? '',
         expiryMonth: cardDetails['expiryMonth'] ?? 1,
@@ -416,7 +419,9 @@ class CheckoutController extends GetxController {
         setAsDefault: savePaymentMethod,
       );
 
-      // Step 2: Process payment
+      print('Created payment method: ${paymentMethod.id}');
+
+      // Step 2: Process payment with the fresh payment method
       final paymentResult = await _paymentService.processPayment(
         orderId: orderId,
         amount: total,
@@ -427,6 +432,19 @@ class CheckoutController extends GetxController {
 
       return paymentResult;
     } catch (e) {
+      print('Error in processPaymentForOrder: $e');
+
+      // Check if this is a PaymentMethod reuse error
+      if (e.toString().contains('PaymentMethod was previously used') ||
+          e.toString().contains('may not be used again')) {
+        return PaymentResult.failed(
+          orderId: orderId,
+          error: e.toString(),
+          message:
+              'Payment method has been used before. Please try again with fresh payment details.',
+        );
+      }
+
       return PaymentResult.failed(
         orderId: orderId,
         error: e.toString(),

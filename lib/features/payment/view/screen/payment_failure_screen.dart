@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
-import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 
 class PaymentFailureScreen extends StatelessWidget {
   const PaymentFailureScreen({super.key});
@@ -24,18 +25,7 @@ class PaymentFailureScreen extends StatelessWidget {
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(
-          'order_failure.title'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              color: AppColors.foreground(context),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
+        title: Text('order_failure.title'.translate()).heading5(context),
       ),
       body: Padding(
         padding: EdgeInsets.all(UIConfig.paddingLarge),
@@ -59,37 +49,17 @@ class PaymentFailureScreen extends StatelessWidget {
                       color: Colors.red,
                     ),
                   ),
+                  SizedBox(height: UIConfig.marginXLarge),
 
-                  SizedBox(height: UIConfig.marginXLarge), // Error Title
+                  // Error Title
                   Text(
                     'order_failure.error_title'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.foreground(context),
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  ).heading3(context),
 
                   SizedBox(height: UIConfig.marginMedium),
 
                   // Error Message
-                  Text(
-                    error,
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.mutedForeground(context),
-                        fontSize: UIConfig.fontSizeMedium,
-                        height: 1.5,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(error).body(context),
 
                   SizedBox(height: UIConfig.marginXLarge),
 
@@ -101,7 +71,7 @@ class PaymentFailureScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.card(context),
                         borderRadius: BorderRadius.circular(
-                          UIConfig.borderRadiusLarge,
+                          AppTheme.globalRadius,
                         ),
                         border: Border.all(color: AppColors.border(context)),
                       ),
@@ -109,23 +79,15 @@ class PaymentFailureScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'order_failure.order_information'.tr,
-                            style: LocalizationService.getLocalizedTextStyle(
-                              context,
-                              TextStyle(
-                                color: AppColors.foreground(context),
-                                fontSize: UIConfig.fontSizeLarge,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
+                            'order_failure.order_information'.translate(),
+                          ).heading5(context),
 
                           SizedBox(height: UIConfig.marginMedium),
 
                           // Order ID
                           _buildDetailRow(
                             context,
-                            'order_failure.order_id'.tr,
+                            'order_failure.order_id'.translate(),
                             orderId,
                           ),
 
@@ -134,7 +96,7 @@ class PaymentFailureScreen extends StatelessWidget {
                           // Amount
                           _buildDetailRow(
                             context,
-                            'payment.amount'.tr,
+                            'payment.amount'.translate(),
                             '\$${amount.toStringAsFixed(2)}',
                           ),
 
@@ -143,8 +105,8 @@ class PaymentFailureScreen extends StatelessWidget {
                           // Status
                           _buildDetailRow(
                             context,
-                            'order_failure.status'.tr,
-                            'order_failure.payment_failed'.tr,
+                            'order_failure.status'.translate(),
+                            'order_failure.payment_failed'.translate(),
                             valueColor: Colors.red,
                           ),
                         ],
@@ -160,7 +122,7 @@ class PaymentFailureScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.orange.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(
-                        UIConfig.borderRadiusLarge,
+                        AppTheme.globalRadius,
                       ),
                       border: Border.all(color: Colors.orange.withOpacity(0.3)),
                     ),
@@ -168,30 +130,14 @@ class PaymentFailureScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'order_failure.what_can_you_do'.tr,
-                          style: LocalizationService.getLocalizedTextStyle(
-                            context,
-                            TextStyle(
-                              color: AppColors.foreground(context),
-                              fontSize: UIConfig.fontSizeMedium,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                          'order_failure.what_can_you_do'.translate(),
+                        ).heading5(context),
 
                         SizedBox(height: UIConfig.marginSmall),
 
                         Text(
-                          'order_failure.helpful_tips'.tr,
-                          style: LocalizationService.getLocalizedTextStyle(
-                            context,
-                            TextStyle(
-                              color: AppColors.mutedForeground(context),
-                              fontSize: UIConfig.fontSizeSmall,
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
+                          'order_failure.helpful_tips'.translate(),
+                        ).body(context),
                       ],
                     ),
                   ),
@@ -222,7 +168,7 @@ class PaymentFailureScreen extends StatelessWidget {
                         foregroundColor: AppColors.primaryForeground(context),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                            UIConfig.borderRadiusLarge,
+                            AppTheme.globalButtonsRadius,
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -230,15 +176,8 @@ class PaymentFailureScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'order_failure.retry_payment'.tr,
-                        style: LocalizationService.getLocalizedTextStyle(
-                          context,
-                          TextStyle(
-                            fontSize: UIConfig.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                        'order_failure.retry_payment'.translate(),
+                      ).button(context),
                     ),
                   ),
 
@@ -255,7 +194,7 @@ class PaymentFailureScreen extends StatelessWidget {
                       side: BorderSide(color: AppColors.border(context)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          UIConfig.borderRadiusLarge,
+                          AppTheme.globalButtonsRadius,
                         ),
                       ),
                       padding: EdgeInsets.symmetric(
@@ -263,37 +202,21 @@ class PaymentFailureScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'order_failure.try_different_method'.tr,
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.foreground(context),
-                          fontSize: UIConfig.fontSizeMedium,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
+                      'order_failure.try_different_method'.translate(),
+                    ).button(context),
                   ),
                 ),
 
-                SizedBox(height: UIConfig.marginMedium),
-
-                // Continue Shopping Button
+                SizedBox(
+                  height: UIConfig.marginMedium,
+                ), // Continue Shopping Button
                 TextButton(
                   onPressed: () {
                     Get.offAllNamed('/main-container');
                   },
                   child: Text(
-                    'order_failure.continue_shopping'.tr,
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.primary(context),
-                        fontSize: UIConfig.fontSizeSmall,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                    'order_failure.continue_shopping'.translate(),
+                  ).caption(context),
                 ),
               ],
             ),
@@ -315,28 +238,18 @@ class PaymentFailureScreen extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: AppColors.mutedForeground(context),
-                fontSize: UIConfig.fontSizeMedium,
-              ),
-            ),
-          ),
+            style: TextStyle(color: AppColors.mutedForeground(context)),
+          ).body(context),
         ),
         Expanded(
           child: Text(
             value,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: valueColor ?? AppColors.foreground(context),
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w500,
-              ),
+            style: TextStyle(
+              color: valueColor ?? AppColors.foreground(context),
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.end,
-          ),
+          ).body(context),
         ),
       ],
     );

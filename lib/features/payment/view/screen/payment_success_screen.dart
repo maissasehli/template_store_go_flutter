@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/theme/ui_config.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import '../../models/payment_result_model.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
@@ -23,18 +25,7 @@ class PaymentSuccessScreen extends StatelessWidget {
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(
-          'payment.payment_successful'.translate(),
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            TextStyle(
-              color: AppColors.foreground(context),
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
+        title: Text('payment.payment_successful'.translate()).heading5(context),
       ),
       body: Padding(
         padding: EdgeInsets.all(UIConfig.paddingLarge),
@@ -59,38 +50,15 @@ class PaymentSuccessScreen extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: UIConfig.marginXLarge),
-
-                  // Success Title
-                  Text(
-                    'payment.payment_success'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.foreground(context),
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  SizedBox(height: UIConfig.marginXLarge), // Success Title
+                  Text('payment.payment_success'.translate()).heading3(context),
 
                   SizedBox(height: UIConfig.marginMedium),
 
                   // Success Message
                   Text(
                     'order_confirmation.success_message'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.mutedForeground(context),
-                        fontSize: UIConfig.fontSizeMedium,
-                        height: 1.5,
-                      ),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  ).body(context),
 
                   SizedBox(height: UIConfig.marginXLarge),
 
@@ -101,7 +69,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: AppColors.card(context),
                       borderRadius: BorderRadius.circular(
-                        UIConfig.borderRadiusLarge,
+                        AppTheme.globalRadius,
                       ),
                       border: Border.all(color: AppColors.border(context)),
                     ),
@@ -110,17 +78,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                       children: [
                         Text(
                           'order_confirmation.order_details'.translate(),
-                          style: LocalizationService.getLocalizedTextStyle(
-                            context,
-                            TextStyle(
-                              color: AppColors.foreground(context),
-                              fontSize: UIConfig.fontSizeLarge,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+                        ).heading5(context),
 
-                        SizedBox(height: UIConfig.marginMedium),                        // Order ID
+                        SizedBox(height: UIConfig.marginMedium), // Order ID
                         if (orderId.isNotEmpty) ...[
                           _buildDetailRow(
                             context,
@@ -179,7 +139,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                         foregroundColor: AppColors.primaryForeground(context),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(
-                            UIConfig.borderRadiusLarge,
+                            AppTheme.globalButtonsRadius,
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -191,8 +151,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                         style: LocalizationService.getLocalizedTextStyle(
                           context,
                           TextStyle(
-                            fontSize: UIConfig.fontSizeMedium,
-                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryForeground(context),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -212,7 +173,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       side: BorderSide(color: AppColors.border(context)),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
-                          UIConfig.borderRadiusLarge,
+                          AppTheme.globalButtonsRadius,
                         ),
                       ),
                       padding: EdgeInsets.symmetric(
@@ -221,35 +182,24 @@ class PaymentSuccessScreen extends StatelessWidget {
                     ),
                     child: Text(
                       'order_confirmation.continue_shopping'.translate(),
-                      style: LocalizationService.getLocalizedTextStyle(
-                        context,
-                        TextStyle(
-                          color: AppColors.foreground(context),
-                          fontSize: UIConfig.fontSizeMedium,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
+                    ).button(context),
                   ),
                 ),
 
-                SizedBox(height: UIConfig.marginMedium),
-
-                // View Payment History Link
+                SizedBox(
+                  height: UIConfig.marginMedium,
+                ), // View Payment History Link
                 TextButton(
                   onPressed: () {
                     Get.toNamed('/payment-history');
                   },
                   child: Text(
                     'payment.payment_history'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.primary(context),
-                        fontSize: UIConfig.fontSizeSmall,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    style: LocalizationService.getLocalizedTextStyle(context, TextStyle(
+                      color: AppColors.primaryForeground(context),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    )),
                   ),
                 ),
               ],
@@ -272,28 +222,18 @@ class PaymentSuccessScreen extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: AppColors.mutedForeground(context),
-                fontSize: UIConfig.fontSizeMedium,
-              ),
-            ),
-          ),
+            style: TextStyle(color: AppColors.mutedForeground(context)),
+          ).body(context),
         ),
         Expanded(
           child: Text(
             value,
-            style: LocalizationService.getLocalizedTextStyle(
-              context,
-              TextStyle(
-                color: valueColor ?? AppColors.foreground(context),
-                fontSize: UIConfig.fontSizeMedium,
-                fontWeight: FontWeight.w500,
-              ),
+            style: TextStyle(
+              color: valueColor ?? AppColors.foreground(context),
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.end,
-          ),
+          ).body(context),
         ),
       ],
     );
