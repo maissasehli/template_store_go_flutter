@@ -16,25 +16,9 @@
         "success": "نجاح",
         "error": "خطأ",
         "optional": "اختياري",
-        "order_failure": {
-            "title": "فشل الدفع",
-            "error_title": "فشل الدفع",
-            "error_message": "حدث خطأ ما في الدفع. يرجى المحاولة مرة أخرى أو استخدام طريقة دفع مختلفة.",
-            "order_information": "معلومات الطلب",
-            "order_id": "رقم الطلب",
-            "status": "الحالة",
-            "payment_failed": "فشل الدفع",
-            "what_can_you_do": "ماذا يمكنك أن تفعل؟",
-            "helpful_tips": "• تحقق من تفاصيل بطاقتك وحاول مرة أخرى\n• تأكد من وجود رصيد كافي\n• جرب طريقة دفع مختلفة\n• اتصل بالبنك إذا استمرت المشكلة",
-            "retry_payment": "إعادة المحاولة",
-            "try_different_method": "تجربة طريقة مختلفة",
-            "continue_shopping": "مواصلة التسوق"
-        },
-        "date_format": {
-            "today": "اليوم",
-            "yesterday": "الأمس",
-            "days_ago": "منذ {count} أيام"
-        }
+        "today": "اليوم",
+        "yesterday": "الأمس",
+        "days_ago": "منذ {count} أيام"
     },
     "auth": {
         "login": "تسجيل الدخول",
@@ -308,7 +292,8 @@
         "error_message": "حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى.",
         "profile_incomplete_title": "الملف الشخصي غير مكتمل",
         "address_required": "يرجى إضافة عنوان للشحن للمتابعة",
-        "payment_method_required": "يرجى إضافة طريقة دفع للمتابعة"
+        "payment_method_required": "يرجى إضافة طريقة دفع للمتابعة",
+        "order_created_message": "تم إنشاء الطلب بنجاح"
     },
     "address": {
         "title": "العناوين",
@@ -359,7 +344,8 @@
             "cancelled": "ملغي",
             "placed": "تم الطلب",
             "confirmed": "تم التأكيد",
-            "returned": "تم الإرجاع"
+            "returned": "تم الإرجاع",
+            "returns": "المرتجعات"
         },
         "order_details": "تفاصيل الطلب",
         "order_summary": "ملخص الطلب",
@@ -386,16 +372,31 @@
         "total": "المجموع الكلي"
     },
     "order_confirmation": {
-        "title": "تم تأكيد الطلب",
+        "title": "تم تأكيد الطلب!",
+        "thank_you": "شكراً لك على طلبك",
+        "order_placed": "تم تأكيد طلبك بنجاح",
+        "order_number": "رقم الطلب",
+        "order_total": "إجمالي الطلب",
+        "order_date": "تاريخ الطلب",
+        "estimated_delivery": "التسليم المتوقع",
+        "order_summary": "ملخص الطلب",
+        "item_count": "{count} عنصر",
+        "item_count_plural": "{count} عناصر",
+        "what_next": "ما هو التالي؟",
+        "processing_info": "نحن نعالج طلبك وستتلقى رسالة تأكيد بالبريد الإلكتروني قريباً",
+        "shipping_info": "ستتلقى إشعار تتبع بمجرد شحن طلبك",
+        "continue_shopping": "مواصلة التسوق",
+        "track_order": "تتبع الطلب",
+        "view_order_details": "عرض تفاصيل الطلب",
+        "order_id": "رقم الطلب: #{orderId}",
+        "total_amount": "المبلغ الإجمالي: {amount}",
+        "delivery_info": "سيتم تسليم طلبك خلال 3-5 أيام عمل",
+        "customer_service": "إذا كان لديك أي أسئلة، اتصل بخدمة العملاء",
         "success_title": "تم إنشاء الطلب بنجاح!",
         "success_message": "شكراً لك على شرائك. تم تأكيد طلبك وهو الآن قيد المعالجة.",
         "order_details": "تفاصيل الطلب",
-        "order_id": "رقم الطلب",
-        "total_amount": "المبلغ الإجمالي",
         "payment_status": "حالة الدفع",
-        "order_status": "حالة الطلب",
-        "view_order_details": "عرض تفاصيل الطلب",
-        "continue_shopping": "مواصلة التسوق"
+        "order_status": "حالة الطلب"
     },
     "payment": {
         "title": "طرق الدفع",
@@ -409,6 +410,8 @@
         "cvv": "رمز الأمان",
         "cardholder_name": "اسم حامل البطاقة",
         "card_details": "تفاصيل البطاقة",
+        "enter_card_details": "أدخل تفاصيل بطاقتك",
+        "secure_stripe_encryption": "محمي بتشفير Stripe",
         "billing_address": "عنوان الفوترة",
         "save_card": "حفظ هذه البطاقة للمشتريات المستقبلية",
         "set_as_default": "تعيين كطريقة دفع افتراضية",
@@ -471,8 +474,10 @@
             "expiry_date_required": "تاريخ انتهاء الصلاحية مطلوب",
             "cvv_required": "رمز الأمان مطلوب",
             "cardholder_name_required": "اسم حامل البطاقة مطلوب",
+            "cardholder_required": "اسم حامل البطاقة مطلوب",
+            "complete_card_required": "يرجى إكمال جميع تفاصيل البطاقة",
             "invalid_card_format": "يرجى إدخال رقم بطاقة صحيح",
-            "invalid_expiry_format": "يرجى إدخال التنسيق شش/سس",
+            "invalid_expiry_format": "يرجى إدخال التنسيق شسش/سس",
             "invalid_cvv_format": "يرجى إدخال رمز أمان صحيح"
         },
         "success_messages": {
@@ -487,7 +492,14 @@
         "error_loading_history": "فشل في تحميل التاريخ",
         "receipt_opening": "جاري فتح الإيصال...",
         "default_label": "افتراضي",
-        "secure_payment": "دفعك آمن ومشفر"
+        "secure_payment": "دفعك آمن ومشفر",
+        "method": {
+            "credit_card": "بطاقة ائتمان",
+            "debit_card": "بطاقة مدين",
+            "paypal": "باي بال",
+            "apple_pay": "أبل باي",
+            "google_pay": "جوجل باي"
+        }
     },
     "order_failure": {
         "title": "فشل الدفع",

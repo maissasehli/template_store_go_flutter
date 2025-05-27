@@ -130,6 +130,43 @@ class PaymentController extends GetxController {
     }
   }
 
+  /// Create and save payment method from CardField
+  Future<bool> createAndSavePaymentMethodFromCardField({
+    required String cardholderName,
+    bool setAsDefault = false,
+  }) async {
+    try {
+      isLoading.value = true;
+
+      // Create payment method using Stripe CardField
+      final paymentMethod = await _paymentService
+          .createPaymentMethodFromCardField(
+            cardholderName: cardholderName,
+          ); // Save to backend
+      final savedMethod = await _paymentService.savePaymentMethodToBackend(
+        paymentMethodId: paymentMethod.id,
+        setAsDefault: setAsDefault,
+        cardholderName: cardholderName,
+      );
+
+      paymentMethods.add(savedMethod);
+
+      if (savedMethod.isDefault || paymentMethods.length == 1) {
+        selectedPaymentMethod.value = savedMethod;
+      }
+
+      _showSuccessSnackbar('Payment method added successfully');
+      _logger.i('Payment method created and saved: ${savedMethod.id}');
+      return true;
+    } catch (e) {
+      _logger.e('Error creating payment method: $e');
+      _showErrorSnackbar('Failed to add payment method');
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   /// Delete a payment method
   Future<bool> deletePaymentMethod(String paymentMethodId) async {
     try {

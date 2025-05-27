@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/app_theme.dart';
@@ -18,31 +18,17 @@ class AddCardPage extends StatefulWidget {
 
 class _AddCardPageState extends State<AddCardPage> {
   final _formKey = GlobalKey<FormState>();
-  final _cardNumberController = TextEditingController();
-  final _expiryController = TextEditingController();
-  final _cvvController = TextEditingController();
   final _cardholderNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _cardNumberFocus = FocusNode();
-  final _expiryFocus = FocusNode();
-  final _cvvFocus = FocusNode();
   final _cardholderNameFocus = FocusNode();
 
-  // Card will always be saved in this version, so we don't need this flag anymore
-  bool _setAsDefault = false;
+  // Stripe card details from CardField
+  CardFieldInputDetails? _cardDetails;
+  bool _cardComplete = false;
 
   final PaymentController _paymentController = Get.find<PaymentController>();
-
   @override
   void dispose() {
-    _cardNumberController.dispose();
-    _expiryController.dispose();
-    _cvvController.dispose();
     _cardholderNameController.dispose();
-    _emailController.dispose();
-    _cardNumberFocus.dispose();
-    _expiryFocus.dispose();
-    _cvvFocus.dispose();
     _cardholderNameFocus.dispose();
     super.dispose();
   }
@@ -81,22 +67,12 @@ class _AddCardPageState extends State<AddCardPage> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.only(top: 16.0 ,right: 16, left: 16),
+          padding: const EdgeInsets.only(top: 16.0, right: 16, left: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Card Number Field
-              _buildCardNumberField(),
-              const SizedBox(height: 16),
-
-              // CVV and Expiry Date in a row
-              Row(
-                children: [
-                  Expanded(child: _buildCvvField()),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildExpiryField()),
-                ],
-              ),
+              // Secure Stripe Card Field
+              _buildSecureCardField(),
               const SizedBox(height: 16),
 
               // Cardholder Name field
@@ -117,117 +93,73 @@ class _AddCardPageState extends State<AddCardPage> {
     );
   }
 
-  Widget _buildCardNumberField() {
+  Widget _buildSecureCardField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
-          controller: _cardNumberController,
-          focusNode: _cardNumberFocus,
-          keyboardType: TextInputType.number,
+        Text(
+          'payment.card_details'.translate(),
           style: LocalizationService.getLocalizedTextStyle(
             context,
-            Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.inputForeground(context),
+            Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.foreground(context),
                 ) ??
                 const TextStyle(),
           ),
-          decoration: _buildInputDecoration('payment.card_number'.translate()),
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(19),
-            _CardNumberInputFormatter(),
-          ],
-          validator: (value) {
-            if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.card_number_required'.translate();
-            }
-            if (!_paymentController.validateCardNumber(
-              value!.replaceAll(' ', ''),
-            )) {
-              return 'payment.form_validation.invalid_card_format'.translate();
-            }
-            return null;
-          },
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_cvvFocus);
-          },
         ),
-      ],
-    );
-  }
-
-  Widget _buildCvvField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextFormField(
-          controller: _cvvController,
-          focusNode: _cvvFocus,
-          keyboardType: TextInputType.number,
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.inputForeground(context),
-                ) ??
-                const TextStyle(),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.border(context)),
+            borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
           ),
-          decoration: _buildInputDecoration('payment.cvv'.translate()),
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(4),
-          ],
-          validator: (value) {
-            if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.cvv_required'.translate();
-            }
-            if (!_paymentController.validateCVC(value!)) {
-              return 'payment.form_validation.invalid_cvv_format'.translate();
-            }
-            return null;
-          },
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_expiryFocus);
-          },
+          child: CardField(
+            onCardChanged: (card) {
+              setState(() {
+                _cardDetails = card;
+                _cardComplete = card?.complete ?? false;
+              });
+            },
+            enablePostalCode: false,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(16),
+              hintText: 'payment.enter_card_details'.translate(),
+              hintStyle: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  color: AppColors.mutedForeground(context),
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            style: TextStyle(
+              fontSize: 16,
+              color: AppColors.foreground(context),
+            ),
+          ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildExpiryField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextFormField(
-          controller: _expiryController,
-          focusNode: _expiryFocus,
-          keyboardType: TextInputType.number,
-          style: LocalizationService.getLocalizedTextStyle(
-            context,
-            Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.inputForeground(context),
-                ) ??
-                const TextStyle(),
-          ),
-          decoration: _buildInputDecoration('payment.expiry_date'.translate()),
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(4),
-            _ExpiryDateInputFormatter(),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Icon(
+              Icons.security,
+              size: 16,
+              color: AppColors.mutedForeground(context),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'payment.secure_stripe_encryption'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(
+                  fontSize: 12,
+                  color: AppColors.mutedForeground(context),
+                ),
+              ),
+            ),
           ],
-          validator: (value) {
-            if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.expiry_required'.translate();
-            }
-            if (!_paymentController.validateExpiryDate(value!)) {
-              return 'payment.form_validation.invalid_expiry_format'
-                  .translate();
-            }
-            return null;
-          },
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(_cardholderNameFocus);
-          },
         ),
       ],
     );
@@ -341,74 +273,27 @@ class _AddCardPageState extends State<AddCardPage> {
   Future<void> _handleSaveCard() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final cardNumber = _cardNumberController.text.replaceAll(' ', '');
-    final expiry = _expiryController.text;
-    final expiryParts = expiry.split('/');
-    final expiryMonth = int.parse(expiryParts[0]);
-    final expiryYear = int.parse('20${expiryParts[1]}');
-    final cvv = _cvvController.text;
-    final cardholderName = _cardholderNameController.text;
-    // We don't have an email field in the simplified UI, so we'll pass null
-    final email = null;
+    if (_cardDetails == null || !_cardComplete) {
+      Get.snackbar(
+        'common.error'.translate(),
+        'payment.form_validation.complete_card_required'.translate(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Theme.of(context).colorScheme.error,
+        colorText: Theme.of(context).colorScheme.onError,
+      );
+      return;
+    }
 
-    final success = await _paymentController.createAndSavePaymentMethod(
-      cardNumber: cardNumber,
-      expiryMonth: expiryMonth,
-      expiryYear: expiryYear,
-      cvc: cvv,
-      cardholderName: cardholderName,
-      email: email,
-      setAsDefault: _setAsDefault, // Default to false
-    );
+    final cardholderName = _cardholderNameController.text;
+
+    final success = await _paymentController
+        .createAndSavePaymentMethodFromCardField(
+          cardholderName: cardholderName,
+          setAsDefault: false,
+        );
 
     if (success) {
       Get.back();
     }
-  }
-}
-
-// Input formatters
-class _CardNumberInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final text = newValue.text.replaceAll(' ', '');
-    final buffer = StringBuffer();
-
-    for (int i = 0; i < text.length; i++) {
-      if (i > 0 && i % 4 == 0) {
-        buffer.write(' ');
-      }
-      buffer.write(text[i]);
-    }
-
-    return TextEditingValue(
-      text: buffer.toString(),
-      selection: TextSelection.collapsed(offset: buffer.length),
-    );
-  }
-}
-
-class _ExpiryDateInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final text = newValue.text;
-
-    if (text.length <= 2) {
-      return newValue;
-    }
-
-    final month = text.substring(0, 2);
-    final year = text.substring(2);
-
-    return TextEditingValue(
-      text: '$month/$year',
-      selection: TextSelection.collapsed(offset: '$month/$year'.length),
-    );
   }
 }

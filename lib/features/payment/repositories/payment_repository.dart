@@ -18,7 +18,7 @@ class PaymentRepository {
   }) async {
     try {
       final response = await _apiClient.get(
-        '/api/mobile-app/payments',
+        '/payments',
         queryParameters: {'page': page, 'limit': limit},
       );
 
@@ -40,7 +40,7 @@ class PaymentRepository {
   /// Fetch all saved payment methods for the authenticated user
   Future<List<PaymentMethod>> getPaymentMethods() async {
     try {
-      final response = await _apiClient.get('/api/mobile-app/payments/methods');
+      final response = await _apiClient.get('/payments/methods');
 
       if (response.statusCode == 200) {
         final data = response.data['data'] as List;
@@ -61,22 +61,23 @@ class PaymentRepository {
   Future<PaymentMethod> addPaymentMethod({
     required String paymentMethodId,
     bool setAsDefault = false,
+    String type = 'credit_card',
+    String? cardholderName,
   }) async {
     try {
       final data = {
-        'payment_method_id': paymentMethodId,
-        'set_as_default': setAsDefault,
+        'type': type,
+        'paymentToken': paymentMethodId, // Corrected field name
+        'isDefault': setAsDefault, // Corrected field name
+        if (cardholderName != null) 'cardholderName': cardholderName,
       };
+      final response = await _apiClient.post('/payments/methods', data: data);
 
-      final response = await _apiClient.post(
-        '/api/mobile-app/payments/methods',
-        data: data,
-      );
-
-      if (response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         return PaymentMethod.fromJson(response.data['data']);
       } else {
         _logger.w('Failed to add payment method: ${response.statusCode}');
+        _logger.w('Response data: ${response.data}');
         throw Exception('Failed to add payment method: ${response.statusCode}');
       }
     } catch (e) {
@@ -89,7 +90,7 @@ class PaymentRepository {
   Future<void> deletePaymentMethod(String paymentMethodId) async {
     try {
       final response = await _apiClient.delete(
-        '/api/mobile-app/payments/methods/$paymentMethodId',
+        '/payments/methods/$paymentMethodId',
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
@@ -108,7 +109,7 @@ class PaymentRepository {
   Future<PaymentMethod> setDefaultPaymentMethod(String paymentMethodId) async {
     try {
       final response = await _apiClient.put(
-        '/api/mobile-app/payments/methods/$paymentMethodId/default',
+        '/payments/methods/$paymentMethodId/default',
       );
 
       if (response.statusCode == 200) {
@@ -145,9 +146,8 @@ class PaymentRepository {
         savePaymentMethod: savePaymentMethod,
         metadata: metadata,
       );
-
       final response = await _apiClient.post(
-        '/api/mobile-app/orders/$orderId/pay',
+        '/orders/$orderId/pay',
         data: paymentRequest.toJson(),
       );
 

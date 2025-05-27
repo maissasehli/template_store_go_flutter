@@ -125,6 +125,8 @@
         "cvv": "CVV",
         "cardholder_name": "Cardholder Name",
         "card_details": "Card Details",
+        "enter_card_details": "Enter your card details",
+        "secure_stripe_encryption": "Secured by Stripe encryption",
         "billing_address": "Billing Address",
         "save_card": "Save this card for future purchases",
         "set_as_default": "Set as default payment method",
@@ -187,6 +189,8 @@
             "expiry_date_required": "Expiry date is required",
             "cvv_required": "CVV is required",
             "cardholder_name_required": "Cardholder name is required",
+            "cardholder_required": "Cardholder name is required",
+            "complete_card_required": "Please complete all card details",
             "invalid_card_format": "Please enter a valid card number",
             "invalid_expiry_format": "Please enter MM/YY format",
             "invalid_cvv_format": "Please enter a valid CVV"

@@ -15,7 +15,10 @@
         "delete": "Supprimer",
         "success": "Succès",
         "error": "Erreur",
-        "optional": "Optionnel"
+        "optional": "Optionnel",
+        "today": "Aujourd'hui",
+        "yesterday": "Hier",
+        "days_ago": "{count} jours passés"
     },
     "auth": {
         "login": "Connexion",
@@ -122,6 +125,8 @@
         "cvv": "CVV",
         "cardholder_name": "Nom du Porteur",
         "card_details": "Détails de la Carte",
+        "enter_card_details": "Entrez les détails de votre carte",
+        "secure_stripe_encryption": "Sécurisé par le cryptage Stripe",
         "billing_address": "Adresse de Facturation",
         "save_card": "Sauvegarder cette carte pour les achats futurs",
         "set_as_default": "Définir comme méthode de paiement par défaut",
@@ -184,6 +189,8 @@
             "expiry_date_required": "La date d'expiration est requise",
             "cvv_required": "Le CVV est requis",
             "cardholder_name_required": "Le nom du porteur est requis",
+            "cardholder_required": "Le nom du porteur est requis",
+            "complete_card_required": "Veuillez compléter tous les détails de la carte",
             "invalid_card_format": "Veuillez entrer un numéro de carte valide",
             "invalid_expiry_format": "Veuillez entrer le format MM/AA",
             "invalid_cvv_format": "Veuillez entrer un CVV valide"
@@ -388,7 +395,8 @@
         "error_message": "Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.",
         "profile_incomplete_title": "Profil incomplet",
         "address_required": "Veuillez ajouter une adresse de livraison pour continuer",
-        "payment_method_required": "Veuillez ajouter une méthode de paiement pour continuer"
+        "payment_method_required": "Veuillez ajouter une méthode de paiement pour continuer",
+        "order_created_message": "Commande créée avec succès"
     },
     "address": {
         "title": "Adresses",
@@ -431,6 +439,7 @@
         "empty_orders": "Aucune commande pour le moment",
         "empty_orders_subtitle": "Commencez vos achats pour voir vos commandes ici",
         "status": {
+            "all": "Tout",
             "pending": "En attente",
             "processing": "En traitement",
             "shipped": "Expédié",
@@ -438,7 +447,8 @@
             "cancelled": "Annulé",
             "placed": "Placée",
             "confirmed": "Confirmée",
-            "returned": "Retournée"
+            "returned": "Retournée",
+            "returns": "Retours"
         },
         "order_details": "Détails de la commande",
         "order_summary": "Résumé de la commande",
@@ -484,7 +494,12 @@
         "order_id": "ID de commande: #{orderId}",
         "total_amount": "Montant total: {amount}",
         "delivery_info": "Votre commande sera livrée sous 3-5 jours ouvrables",
-        "customer_service": "Si vous avez des questions, contactez notre service client"
+        "customer_service": "Si vous avez des questions, contactez notre service client",
+        "success_title": "Commande Placée avec Succès!",
+        "success_message": "Merci pour votre achat. Votre commande a été confirmée et est en cours de traitement.",
+        "order_details": "Détails de la Commande",
+        "payment_status": "Statut du Paiement",
+        "order_status": "Statut de la Commande"
     },
     "order_failure": {
         "title": "Échec de la Commande",
@@ -507,11 +522,15 @@
         "order_id": "ID de commande: #{orderId}",
         "failed_amount": "Montant: {amount}",
         "help_text": "Si vous continuez à rencontrer des problèmes, notre équipe d'assistance est là pour vous aider",
-        "save_for_later": "Vos articles sont toujours dans votre panier et peuvent être commandés plus tard"
-    },
-    "date_format": {
-        "today": "Aujourd'hui",
-        "yesterday": "Hier",
-        "days_ago": "Il y a {count} jours"
+        "save_for_later": "Vos articles sont toujours dans votre panier et peuvent être commandés plus tard",
+        "error_title": "Échec du Paiement",
+        "error_message": "Quelque chose s'est mal passé avec votre paiement. Veuillez réessayer ou utiliser une méthode de paiement différente.",
+        "order_information": "Informations de Commande",
+        "status": "Statut",
+        "what_can_you_do": "Que pouvez-vous faire?",
+        "helpful_tips": "• Vérifiez les détails de votre carte et réessayez\n• Assurez-vous d'avoir des fonds suffisants\n• Essayez une méthode de paiement différente\n• Contactez votre banque si le problème persiste",
+        "retry_payment": "Réessayer le Paiement",
+        "try_different_method": "Essayer une Méthode Différente",
+        "continue_shopping": "Continuer les Achats"
     }
 }

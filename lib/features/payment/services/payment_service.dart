@@ -56,12 +56,11 @@ class PaymentService {
         expiryYear: expiryYear,
         cvc: cvc,
         billingDetails: billingDetails,
-      );
-
-      // Save to backend
+      ); // Save to backend
       final savedPaymentMethod = await _paymentRepository.addPaymentMethod(
         paymentMethodId: stripePaymentMethod.id,
         setAsDefault: setAsDefault,
+        cardholderName: cardholderName,
       );
 
       _logger.i('Payment method created and saved: ${savedPaymentMethod.id}');
@@ -69,6 +68,50 @@ class PaymentService {
     } catch (e) {
       _logger.e('Error creating and saving payment method: $e');
       throw Exception('Failed to create payment method: $e');
+    }
+  }
+
+  /// Create payment method from CardField
+  Future<PaymentMethod> createPaymentMethodFromCardField({
+    required String cardholderName,
+  }) async {
+    try {
+      // Create billing details
+      final billingDetails = BillingDetails(name: cardholderName);
+
+      // Create payment method using Stripe SDK with card from CardField
+      final paymentMethod = await Stripe.instance.createPaymentMethod(
+        params: PaymentMethodParams.card(
+          paymentMethodData: PaymentMethodData(billingDetails: billingDetails),
+        ),
+      );
+
+      _logger.i('Payment method created from CardField: ${paymentMethod.id}');
+      return paymentMethod;
+    } catch (e) {
+      _logger.e('Error creating payment method from CardField: $e');
+      throw Exception('Failed to create payment method: $e');
+    }
+  }
+
+  /// Save payment method to backend
+  Future<models.PaymentMethod> savePaymentMethodToBackend({
+    required String paymentMethodId,
+    bool setAsDefault = false,
+    String? cardholderName,
+  }) async {
+    try {
+      final savedMethod = await _paymentRepository.addPaymentMethod(
+        paymentMethodId: paymentMethodId,
+        setAsDefault: setAsDefault,
+        cardholderName: cardholderName,
+      );
+
+      _logger.i('Payment method saved to backend: ${savedMethod.id}');
+      return savedMethod;
+    } catch (e) {
+      _logger.e('Error saving payment method to backend: $e');
+      throw Exception('Failed to save payment method: $e');
     }
   }
 
