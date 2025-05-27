@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_color_extension.dart';
@@ -14,9 +15,12 @@ extension StyledButton on Widget {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        textStyle: const TextStyle(
-          fontSize: UIConfig.fontSizeMedium,
-          fontWeight: FontWeight.bold,
+        textStyle: LocalizationService.getLocalizedTextStyle(
+          context,
+          TextStyle(
+            fontSize: UIConfig.fontSizeMedium,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: colors?.primary,
         foregroundColor: colors?.primaryForeground,

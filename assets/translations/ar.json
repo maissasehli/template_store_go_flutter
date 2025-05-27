@@ -18,7 +18,8 @@
         "optional": "اختياري",
         "today": "اليوم",
         "yesterday": "الأمس",
-        "days_ago": "منذ {count} أيام"
+        "days_ago": "منذ {count} أيام",
+        "loading": "جاري التحميل..."
     },
     "auth": {
         "login": "تسجيل الدخول",

@@ -21,6 +21,8 @@ enum AppColorName {
   inputForeground,
   destructive,
   destructiveForeground,
+  success,
+  successForeground,
   productCard,
 }
 
@@ -66,6 +68,10 @@ extension AppColorExtensionUtils on AppColorExtension {
         return destructive;
       case AppColorName.destructiveForeground:
         return destructiveForeground;
+      case AppColorName.success:
+        return success;
+      case AppColorName.successForeground:
+        return successForeground;
       case AppColorName.productCard:
         return productCard;
     }
@@ -105,6 +111,10 @@ class AppColorUtils {
         return Theme.of(context).colorScheme.error;
       case AppColorName.destructiveForeground:
         return Theme.of(context).colorScheme.onError;
+      case AppColorName.success:
+        return const Color(0xFF22C55E); // Fallback green
+      case AppColorName.successForeground:
+        return Colors.white;
       default:
         return Theme.of(context).colorScheme.primary;
     }

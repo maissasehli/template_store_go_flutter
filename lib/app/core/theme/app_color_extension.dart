@@ -19,6 +19,8 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
   final Color inputForeground;
   final Color destructive;
   final Color destructiveForeground;
+  final Color success;
+  final Color successForeground;
   final Color productCard;
   AppColorExtension({
     required this.background,
@@ -38,6 +40,8 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
     required this.inputForeground,
     required this.destructive,
     required this.destructiveForeground,
+    required this.success,
+    required this.successForeground,
     required this.productCard,
   });
 
@@ -60,6 +64,8 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
     Color? inputForeground,
     Color? destructive,
     Color? destructiveForeground,
+    Color? success,
+    Color? successForeground,
     Color? productCard,
   }) {
     return AppColorExtension(
@@ -81,6 +87,8 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       destructive: destructive ?? this.destructive,
       destructiveForeground:
           destructiveForeground ?? this.destructiveForeground,
+      success: success ?? this.success,
+      successForeground: successForeground ?? this.successForeground,
       productCard: productCard ?? this.productCard,
     );
   }
@@ -116,6 +124,9 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       destructive: Color.lerp(destructive, other.destructive, t)!,
       destructiveForeground:
           Color.lerp(destructiveForeground, other.destructiveForeground, t)!,
+      success: Color.lerp(success, other.success, t)!,
+      successForeground:
+          Color.lerp(successForeground, other.successForeground, t)!,
       productCard: Color.lerp(productCard, other.productCard, t)!,
     );
   }
@@ -140,6 +151,8 @@ class AppColorExtension extends ThemeExtension<AppColorExtension> {
       inputForeground: colors.inputForeground,
       destructive: colors.destructive,
       destructiveForeground: colors.destructiveForeground,
+      success: colors.success,
+      successForeground: colors.successForeground,
       productCard: colors.productCard,
     );
   }

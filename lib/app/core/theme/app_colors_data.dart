@@ -19,6 +19,8 @@ class AppColorsData {
   final Color inputForeground;
   final Color destructive;
   final Color destructiveForeground;
+  final Color success;
+  final Color successForeground;
   final Color productCard;
 
   const AppColorsData({
@@ -39,6 +41,8 @@ class AppColorsData {
     required this.inputForeground,
     required this.destructive,
     required this.destructiveForeground,
+    required this.success,
+    required this.successForeground,
     required this.productCard,
   });
 }

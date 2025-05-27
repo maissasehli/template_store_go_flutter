@@ -43,12 +43,12 @@ class OrderConfirmationScreen extends StatelessWidget {
                       width: 100,
                       height: 100,
                       decoration: BoxDecoration(
-                        color: AppColors.accent(context),
+                        color: AppColors.success(context),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.check,
-                        color: AppColors.accentForeground(context),
+                        color: AppColors.successForeground(context),
                         size: 60,
                       ),
                     ),

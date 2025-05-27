@@ -18,7 +18,8 @@
         "optional": "Optionnel",
         "today": "Aujourd'hui",
         "yesterday": "Hier",
-        "days_ago": "{count} jours passés"
+        "days_ago": "{count} jours passés",
+        "loading": "Chargement..."
     },
     "auth": {
         "login": "Connexion",

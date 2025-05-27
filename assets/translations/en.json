@@ -18,7 +18,8 @@
         "optional": "Optional",
         "today": "Today",
         "yesterday": "Yesterday",
-        "days_ago": "{count} days ago"
+        "days_ago": "{count} days ago",
+        "loading": "Loading..."
     },
     "auth": {
         "login": "Login",

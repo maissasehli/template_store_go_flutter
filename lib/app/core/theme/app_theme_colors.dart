@@ -53,11 +53,12 @@ class AppColors {
 
   static Color destructiveForeground(BuildContext context) =>
       AppColorUtils.getThemeColor(context, AppColorName.destructiveForeground);
-
   static Color productCard(BuildContext context) =>
       AppColorUtils.getThemeColor(context, AppColorName.productCard);
 
-  static Color success(BuildContext context) => Colors.green;
+  static Color success(BuildContext context) =>
+      AppColorUtils.getThemeColor(context, AppColorName.success);
 
-  static Color successForeground(BuildContext context) => Colors.white;
+  static Color successForeground(BuildContext context) =>
+      AppColorUtils.getThemeColor(context, AppColorName.successForeground);
 }

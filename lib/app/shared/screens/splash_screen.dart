@@ -3,10 +3,13 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:store_go/app/core/config/routes_config.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/services/storage_service.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/auth/services/token_manager.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -105,7 +108,11 @@ class SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Your splash screen logo or animation
-            const Text("Splash Screen").heading1(context),
+            Text('common.loading'.translate(), style: LocalizationService.getLocalizedTextStyle(context, TextStyle(
+              fontSize: 24,
+              color: AppColors.foreground(context),
+              fontWeight: FontWeight.bold,
+            )),),
             const SizedBox(height: 20),
             const CircularProgressIndicator(),
           ],

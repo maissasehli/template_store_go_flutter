@@ -30,6 +30,8 @@ class AppTheme {
     inputForeground: Color(0xFF000000),
     destructive: Color(0xFFFF0000),
     destructiveForeground: Color(0xFFFFFFFF),
+    success: Color(0xFF22C55E),
+    successForeground: Color(0xFFFFFFFF),
     productCard: Color(0xFFF4F4F4),
   );
 
@@ -52,6 +54,8 @@ class AppTheme {
     inputForeground: Color(0xFFFFFFFF),
     destructive: Color(0xFFff1a1a),
     destructiveForeground: Color(0xFFFFFFFF),
+    success: Color(0xFF16A34A),
+    successForeground: Color(0xFFFFFFFF),
     productCard: Color(0xFF1E1E1E),
   );
   // Light theme text styles
