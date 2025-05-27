@@ -26,7 +26,7 @@ class ProfileMenuSection extends StatelessWidget {
           onTap: () => Get.toNamed('/orders'),
         ),
         ProfileMenuItem(
-          icon: AssetConfig.receipt,
+          icon: AssetConfig.coin,
           title: 'profile.payments'.translate(),
           onTap: () => Get.toNamed('/payments'),
         ),

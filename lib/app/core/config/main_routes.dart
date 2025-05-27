@@ -39,6 +39,7 @@ import 'package:store_go/features/order/view/screen/orders_details_screen.dart';
 import 'package:store_go/features/order/view/screen/orders_screen.dart';
 import 'package:store_go/features/order/view/screen/order_confirmation_screen.dart';
 import 'package:store_go/app/screens/order_failure_screen.dart';
+import 'package:store_go/features/payment/view/screen/add_card_page.dart';
 import 'package:store_go/features/payment/view/screen/payment_screen.dart';
 import 'package:store_go/features/payment/view/screen/payment_history_screen.dart';
 import 'package:store_go/features/payment/view/screen/payment_success_screen.dart';
@@ -224,6 +225,11 @@ List<GetPage<dynamic>>? routes = [
   GetPage(
     name: AppRoute.payments,
     page: () => const PaymentMethodPage(),
+    binding: PaymentBinding(),
+  ),
+  GetPage(
+    name: AppRoute.addPayment,
+    page: () => const AddCardPage(),
     binding: PaymentBinding(),
   ),
   GetPage(

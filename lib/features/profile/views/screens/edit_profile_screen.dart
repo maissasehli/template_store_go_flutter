@@ -82,7 +82,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               context,
               TextStyle(
                 color: AppColors.foreground(context),
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),

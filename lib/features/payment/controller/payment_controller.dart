@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import '../models/payment_method_model.dart';
 import '../models/payment_history_model.dart';
 import '../models/payment_result_model.dart';
@@ -304,8 +305,8 @@ class PaymentController extends GetxController {
   /// Helper methods for UI feedback
   void _showSuccessSnackbar(String message) {
     Get.snackbar(
-      'Success',
-      message,
+      'common.success'.translate(),
+      message.translate(),
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Get.theme.primaryColor,
       colorText: Get.theme.colorScheme.onPrimary,
@@ -314,8 +315,8 @@ class PaymentController extends GetxController {
 
   void _showErrorSnackbar(String message) {
     Get.snackbar(
-      'Error',
-      message,
+      'common.error'.translate(),
+      message.translate(),
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Get.theme.colorScheme.error,
       colorText: Get.theme.colorScheme.onError,

@@ -47,6 +47,7 @@ class AssetConfig {
   static const String backArrow = '$rootSvg/backArrow.svg';
   static const String arrowRight = '$rootSvg/arrow-right.svg';
   static const String arrowLeft = '$rootSvg/arrow-left.svg';
+  static const String coin = '$rootSvg/coin.svg';
 
   // Get all onboarding images as a list
   static List<String> get allOnboardingImages => [

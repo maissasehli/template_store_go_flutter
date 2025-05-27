@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/config/routes_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
+import 'package:store_go/app/core/theme/app_theme.dart';
+import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/payment/controller/payment_controller.dart';
-import '../widget/add_card_screen.dart';
 import '../widget/payment_method_card.dart';
 
 class PaymentMethodPage extends StatelessWidget {
@@ -17,37 +19,31 @@ class PaymentMethodPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.only(left: 16),
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            shape: BoxShape.circle,
+        backgroundColor: AppColors.background(context),
+        leading: IconButton(
+          icon: ThemeAwareSvg(
+            assetPath:
+                LocalizationService.isRtl(context)
+                    ? AssetConfig.arrowRight
+                    : AssetConfig.arrowLeft,
+            height: 24,
+            width: 24,
           ),
-          child: IconButton(
-            icon: ThemeAwareSvg(
-              assetPath: AssetConfig.backArrow,
-              height: 24,
-              width: 24,
-            ),
-            onPressed: () => Get.back(),
-          ),
+          onPressed: () => Get.back(),
         ),
-        centerTitle: true,
+        elevation: 0,
         title: Text(
           'payment.title'.translate(),
           style: LocalizationService.getLocalizedTextStyle(
             context,
-            Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontFamily: 'Poppins',
-                ) ??
-                const TextStyle(),
+            TextStyle(
+              color: AppColors.foreground(context),
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
+        centerTitle: true,
       ),
       body: Obx(
         () =>
@@ -58,11 +54,9 @@ class PaymentMethodPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 24),
-
-                      // Add Payment Method Button
+                      const SizedBox(height: 24), // Add Payment Method Button
                       GestureDetector(
-                        onTap: () => _showAddPaymentMethodBottomSheet(context),
+                        onTap: () => _navigateToAddCardPage(context),
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -71,7 +65,7 @@ class PaymentMethodPage extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppTheme.globalButtonsRadius),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -196,16 +190,9 @@ class PaymentMethodPage extends StatelessWidget {
     );
   }
 
-  void _showAddPaymentMethodBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      enableDrag: true,
-      // Use a value that ensures proper height
-      useSafeArea: true,
-      builder: (context) => AddCardScreen(),
-    );
+  void _navigateToAddCardPage(BuildContext context) {
+    // Navigate to add card page instead of showing bottom sheet
+    Get.toNamed(AppRoute.addPayment);
   }
 
   void _showDeleteConfirmation(
