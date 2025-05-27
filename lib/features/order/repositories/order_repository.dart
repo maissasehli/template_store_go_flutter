@@ -11,9 +11,13 @@ class OrderRepository {
   /// Create a new order from cart items
   Future<String> createOrder(OrderRequest orderRequest) async {
     try {
-      final response = await _apiClient.post(
-        '/orders',
-        data: orderRequest.toJson(),
+      final requestData = orderRequest.toJson();
+      _logger.i('Creating order with data: ${requestData}');
+
+      final response = await _apiClient.post('/orders', data: requestData);
+
+      _logger.i(
+        'Order creation response: ${response.statusCode} - ${response.data}',
       );
 
       if (response.statusCode == 200) {

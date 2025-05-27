@@ -158,53 +158,79 @@ class CheckoutScreen extends StatelessWidget {
     BuildContext context,
     CheckoutController controller,
   ) {
-    return InkWell(
-      onTap: () => Get.toNamed('/payments'),
-      borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-      child: Container(
-        padding: EdgeInsets.all(UIConfig.paddingMedium),
-        decoration: BoxDecoration(
-          color: AppColors.card(context),
-          borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-          border: Border.all(color: AppColors.border(context)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'checkout.payment_method'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.mutedForeground(context),
-                        fontSize: UIConfig.fontSizeMedium,
+    return Obx(
+      () => InkWell(
+        onTap: () => controller.navigateToPaymentMethodSelection(),
+        borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+        child: Container(
+          padding: EdgeInsets.all(UIConfig.paddingMedium),
+          decoration: BoxDecoration(
+            color: AppColors.card(context),
+            borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
+            border: Border.all(color: AppColors.border(context)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'checkout.payment_method'.translate(),
+                      style: LocalizationService.getLocalizedTextStyle(
+                        context,
+                        TextStyle(
+                          color: AppColors.mutedForeground(context),
+                          fontSize: UIConfig.fontSizeMedium,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'checkout.add_payment_method'.translate(),
-                    style: LocalizationService.getLocalizedTextStyle(
-                      context,
-                      TextStyle(
-                        color: AppColors.foreground(context),
-                        fontSize: UIConfig.fontSizeMedium,
-                        fontWeight: FontWeight.w500,
+                    SizedBox(height: 4),
+                    if (controller.isLoadingPaymentMethod.value)
+                      SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.foreground(context),
+                        ),
+                      )
+                    else if (controller.hasSelectedPaymentMethod)
+                      Text(
+                        controller.paymentMethodDisplayText,
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            color: AppColors.foreground(context),
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    else
+                      Text(
+                        'checkout.add_payment_method'.translate(),
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          TextStyle(
+                            color: AppColors.foreground(context),
+                            fontSize: UIConfig.fontSizeMedium,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: AppColors.muted(context),
-              size: 24,
-            ),
-          ],
+              Icon(
+                Icons.chevron_right,
+                color: AppColors.muted(context),
+                size: 24,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -414,10 +440,8 @@ class CheckoutScreen extends StatelessWidget {
         colorText: AppColors.destructiveForeground(context),
       );
       return false;
-    }
-
-    // Add validation for payment method selection
-    if (checkoutController.selectedPaymentMethod.value.isEmpty) {
+    } // Add validation for payment method selection
+    if (!checkoutController.hasSelectedPaymentMethod) {
       Get.snackbar(
         'checkout.error_title'.translate(),
         'checkout.payment_method_required'.translate(),

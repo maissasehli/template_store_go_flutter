@@ -48,18 +48,17 @@ class Address {
     'street': street,
     'city': city,
     'state': state,
-    'zipCode': zipCode,
+    'postalCode': zipCode, // Map zipCode to postalCode for API
     'country': country,
     'phone': phone,
   };
-
   factory Address.fromJson(Map<String, dynamic> json) => Address(
     firstName: json['firstName'] ?? '',
     lastName: json['lastName'] ?? '',
     street: json['street'] ?? '',
     city: json['city'] ?? '',
     state: json['state'] ?? '',
-    zipCode: json['zipCode'] ?? '',
+    zipCode: json['zipCode'] ?? json['postalCode'] ?? '',
     country: json['country'] ?? '',
     phone: json['phone'] ?? '',
   );

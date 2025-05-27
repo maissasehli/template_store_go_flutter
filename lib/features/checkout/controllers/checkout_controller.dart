@@ -11,6 +11,7 @@ import 'package:store_go/features/address/model/address_model.dart'
     as AddressModel;
 import 'package:store_go/features/auth/services/auth_service.dart';
 import 'package:store_go/features/profile/controllers/profile_controller.dart';
+import 'package:store_go/features/payment/controller/payment_controller.dart';
 
 class CheckoutController extends GetxController {
   // Use dependency injection instead of creating a new instance
@@ -24,12 +25,15 @@ class CheckoutController extends GetxController {
   final RxString selectedPaymentMethod = ''.obs;
   final RxString currentOrderId = ''.obs;
   final RxBool isLoadingAddress = false.obs;
+  final RxBool isLoadingPaymentMethod = false.obs;
   @override
   void onInit() {
     super.onInit();
     _ensureProfileController();
     _initializeDefaultAddress();
     _listenToAddressChanges();
+    _initializeDefaultPaymentMethod();
+    _listenToPaymentMethodChanges();
   }
 
   @override
@@ -102,6 +106,74 @@ class CheckoutController extends GetxController {
     }
   }
 
+  /// Initialize default payment method from payment controller
+  void _initializeDefaultPaymentMethod() async {
+    try {
+      isLoadingPaymentMethod.value = true;
+
+      // Ensure PaymentController is available
+      if (!Get.isRegistered<PaymentController>()) {
+        // PaymentController should be registered when navigating to payments
+        // For now, we'll just mark loading as false
+        print(
+          'PaymentController not registered, payment method selection needed',
+        );
+        isLoadingPaymentMethod.value = false;
+        return;
+      }
+
+      final paymentController = Get.find<PaymentController>();
+
+      // Ensure payment methods are loaded
+      await paymentController.fetchPaymentMethods();
+
+      // Update selected payment method
+      _updateSelectedPaymentMethod();
+    } catch (e) {
+      print('Error loading default payment method: $e');
+    } finally {
+      isLoadingPaymentMethod.value = false;
+    }
+  }
+
+  /// Listen to changes in the payment controller
+  void _listenToPaymentMethodChanges() {
+    try {
+      // Check if PaymentController is available
+      if (Get.isRegistered<PaymentController>()) {
+        final paymentController = Get.find<PaymentController>();
+
+        // Listen to payment method list changes
+        ever(paymentController.paymentMethods, (_) {
+          _updateSelectedPaymentMethod();
+        });
+
+        // Listen to selected payment method changes
+        ever(paymentController.selectedPaymentMethod, (_) {
+          _updateSelectedPaymentMethod();
+        });
+      }
+    } catch (e) {
+      print('Error setting up payment method change listener: $e');
+    }
+  }
+
+  /// Update selected payment method based on current payment methods
+  void _updateSelectedPaymentMethod() {
+    if (!Get.isRegistered<PaymentController>()) {
+      return;
+    }
+
+    final paymentController = Get.find<PaymentController>();
+
+    if (paymentController.selectedPaymentMethod.value != null) {
+      selectedPaymentMethod.value =
+          paymentController.selectedPaymentMethod.value!.id;
+    } else {
+      selectedPaymentMethod.value = '';
+    }
+  }
+
   /// Update selected address based on current addresses
   void _updateSelectedAddress() {
     final addressController = Get.find<AddressController>();
@@ -160,8 +232,24 @@ class CheckoutController extends GetxController {
   }
 
   void navigateToPaymentMethodSelection() {
-    // Navigate to payment method selection screen
-    Get.toNamed('/payments');
+    // Navigate to payment method selection screen and refresh when returning
+    Get.toNamed('/payments')?.then((_) {
+      // Refresh payment methods when returning from payment screen
+      refreshPaymentMethods();
+    });
+  }
+
+  /// Refresh payment methods and update selected payment method
+  Future<void> refreshPaymentMethods() async {
+    try {
+      if (Get.isRegistered<PaymentController>()) {
+        final paymentController = Get.find<PaymentController>();
+        await paymentController.fetchPaymentMethods();
+        _updateSelectedPaymentMethod();
+      }
+    } catch (e) {
+      print('Error refreshing payment methods: $e');
+    }
   }
 
   /// Enhanced checkout method that creates order and processes payment
@@ -188,8 +276,9 @@ class CheckoutController extends GetxController {
         total: total,
       );
 
-      currentOrderId.value =
-          orderId; // Step 2: Process payment if card details provided
+      currentOrderId.value = orderId;
+
+      // Step 2: Process payment if card details provided
       if (cardDetails != null) {
         final paymentResult = await processPaymentForOrder(
           orderId: orderId,
@@ -222,6 +311,7 @@ class CheckoutController extends GetxController {
 
       return orderId;
     } catch (e) {
+      print('Error in createOrderAndProcessPayment: $e');
       Get.snackbar(
         'checkout.error_title'.translate(),
         'checkout.error_message'.translate(),
@@ -245,24 +335,45 @@ class CheckoutController extends GetxController {
     required double total,
   }) async {
     try {
-      isProcessing.value = true; // Create order request
+      isProcessing.value = true;
+
+      // Validate addresses
+      if (selectedShippingAddress.value == null) {
+        throw Exception('Please select a shipping address');
+      }
+
+      // Validate user profile data
+      final userData = _getUserProfileData();
+      if (userData == null) {
+        throw Exception(
+          'User profile data not available. Please complete your profile.',
+        );
+      }
+
+      if (userData['email'] == null || userData['email']!.isEmpty) {
+        throw Exception('Email is required. Please update your profile.');
+      }
+
+      print(
+        'Creating order with shipping address: ${selectedShippingAddress.value!.formattedAddress}',
+      );
+      print('User data: $userData');
+
+      // Create order request
       final orderRequest = OrderRequest(
-        shippingAddress:
-            selectedShippingAddress.value != null
-                ? _convertToOrderAddress(selectedShippingAddress.value!)
-                : _getDefaultAddress(),
+        shippingAddress: _convertToOrderAddress(selectedShippingAddress.value!),
         billingAddress:
             selectedBillingAddress.value != null
                 ? _convertToOrderAddress(selectedBillingAddress.value!)
-                : (selectedShippingAddress.value != null
-                    ? _convertToOrderAddress(selectedShippingAddress.value!)
-                    : _getDefaultAddress()),
+                : _convertToOrderAddress(selectedShippingAddress.value!),
         paymentMethod:
             selectedPaymentMethod.value.isNotEmpty
                 ? selectedPaymentMethod.value
                 : 'credit_card',
         notes: '', // Add notes field if needed
       );
+
+      print('Order request JSON: ${orderRequest.toJson()}');
 
       // Call API to create order
       final orderId = await _orderRepository.createOrder(orderRequest);
@@ -279,9 +390,10 @@ class CheckoutController extends GetxController {
       Get.offAllNamed('/');
       return orderId;
     } catch (e) {
+      print('Error in createOrder: $e');
       Get.snackbar(
         'checkout.error_title'.translate(),
-        'checkout.error_message'.translate(),
+        'Error: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -370,8 +482,7 @@ class CheckoutController extends GetxController {
   }
 
   Address _getDefaultAddress() {
-    // No longer return hardcoded default address
-    // Force user to select a proper address instead of using fake data
+    // Updated to throw a more helpful error message
     throw Exception(
       'No shipping address selected. Please add or select a default address.',
     );
@@ -394,6 +505,13 @@ class CheckoutController extends GetxController {
       throw Exception('Email is required. Please update your profile.');
     }
 
+    // Get phone from profile data
+    String phone = userData['phone'] ?? '';
+
+    print(
+      'Converting address - firstName: ${userData['firstName']}, lastName: ${userData['lastName']}, phone: $phone',
+    );
+
     return Address(
       firstName:
           userData['firstName'] ?? 'Customer', // More professional fallback
@@ -403,7 +521,7 @@ class CheckoutController extends GetxController {
       state: address.state,
       zipCode: address.postalCode,
       country: address.country,
-      phone: userData['phone'] ?? '',
+      phone: phone,
     );
   }
 
@@ -447,6 +565,28 @@ class CheckoutController extends GetxController {
 
   /// Check if a default address is selected
   bool get hasSelectedAddress => selectedShippingAddress.value != null;
+
+  /// Check if a payment method is selected
+  bool get hasSelectedPaymentMethod {
+    if (!Get.isRegistered<PaymentController>()) {
+      return false;
+    }
+    final paymentController = Get.find<PaymentController>();
+    return paymentController.selectedPaymentMethod.value != null;
+  }
+
+  /// Get the display text for payment method section
+  String get paymentMethodDisplayText {
+    if (!Get.isRegistered<PaymentController>()) {
+      return 'checkout.add_payment_method'.translate();
+    }
+
+    final paymentController = Get.find<PaymentController>();
+    if (paymentController.selectedPaymentMethod.value != null) {
+      return paymentController.selectedPaymentMethod.value!.displayName;
+    }
+    return 'checkout.add_payment_method'.translate();
+  }
 
   /// Get user profile data for address completion
   /// Returns null if user data is not available
