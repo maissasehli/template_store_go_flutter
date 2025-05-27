@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import 'package:store_go/features/payment/controller/payment_controller.dart';
 import '../widget/add_card_screen.dart';
@@ -36,10 +38,14 @@ class PaymentMethodPage extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          'payment.title'.tr,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+          'payment.title'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
       ),
@@ -77,31 +83,39 @@ class PaymentMethodPage extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'payment.add_payment_method'.tr,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                  fontFamily: 'Gabarito',
-                                ),
+                                'payment.add_payment_method'.translate(),
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      Theme.of(
+                                            context,
+                                          ).textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onPrimary,
+                                            fontFamily: 'Gabarito',
+                                          ) ??
+                                          const TextStyle(),
+                                    ),
                               ),
                             ],
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 24),
 
                       // Saved Payment Methods Section
                       Text(
-                        'payment.saved_payment_methods'.tr,
-                        style: Theme.of(
+                        'payment.saved_payment_methods'.translate(),
+                        style: LocalizationService.getLocalizedTextStyle(
                           context,
-                        ).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Gabarito',
+                          Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Gabarito',
+                              ) ??
+                              const TextStyle(),
                         ),
                       ),
 
@@ -133,19 +147,27 @@ class PaymentMethodPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'payment.no_payment_methods'.tr,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.outline,
-              fontFamily: 'Poppins',
+            'payment.no_payment_methods'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.outline,
+                    fontFamily: 'Poppins',
+                  ) ??
+                  const TextStyle(),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'payment.add_new_method'.tr,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.outline,
-              fontFamily: 'Poppins',
+            'payment.add_new_method'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.outline,
+                    fontFamily: 'Poppins',
+                  ) ??
+                  const TextStyle(),
             ),
             textAlign: TextAlign.center,
           ),
@@ -190,12 +212,30 @@ class PaymentMethodPage extends StatelessWidget {
   ) {
     Get.dialog(
       AlertDialog(
-        title: Text('common.delete'.tr),
-        content: Text('payment.confirm_delete'.tr),
+        title: Text(
+          'common.delete'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.titleMedium ?? const TextStyle(),
+          ),
+        ),
+        content: Text(
+          'payment.confirm_delete'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium ?? const TextStyle(),
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('common.cancel'.tr),
+            child: Text(
+              'common.cancel'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                Theme.of(context).textTheme.labelLarge ?? const TextStyle(),
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -203,8 +243,11 @@ class PaymentMethodPage extends StatelessWidget {
               controller.deletePaymentMethod(paymentMethod.id);
             },
             child: Text(
-              'payment.delete_confirm'.tr,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              'payment.delete_confirm'.translate(),
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ),
           ),
         ],

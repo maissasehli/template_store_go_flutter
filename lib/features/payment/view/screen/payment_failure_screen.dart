@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 
 class PaymentFailureScreen extends StatelessWidget {
   const PaymentFailureScreen({super.key});
@@ -13,8 +14,8 @@ class PaymentFailureScreen extends StatelessWidget {
     final orderId = arguments['orderId'] as String? ?? '';
     final amount = arguments['amount'] as double? ?? 0.0;
     final error =
-        arguments['error'] as String? ?? 'order_failure.error_message'.tr;
-
+        arguments['error'] as String? ??
+        'order_failure.error_message'.translate();
 
     return Scaffold(
       backgroundColor: AppColors.background(context),
@@ -24,7 +25,7 @@ class PaymentFailureScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
-          'order_failure.title'.tr,
+          'order_failure.title'.translate(),
           style: LocalizationService.getLocalizedTextStyle(
             context,
             TextStyle(
@@ -59,11 +60,9 @@ class PaymentFailureScreen extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(height: UIConfig.marginXLarge),
-
-                  // Error Title
+                  SizedBox(height: UIConfig.marginXLarge), // Error Title
                   Text(
-                    'order_failure.error_title'.tr,
+                    'order_failure.error_title'.translate(),
                     style: LocalizationService.getLocalizedTextStyle(
                       context,
                       TextStyle(

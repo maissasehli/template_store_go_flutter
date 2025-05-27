@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import '../../models/payment_result_model.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
@@ -23,7 +24,7 @@ class PaymentSuccessScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: true,
         title: Text(
-          'payment.payment_successful'.tr,
+          'payment.payment_successful'.translate(),
           style: LocalizationService.getLocalizedTextStyle(
             context,
             TextStyle(
@@ -62,7 +63,7 @@ class PaymentSuccessScreen extends StatelessWidget {
 
                   // Success Title
                   Text(
-                    'payment.payment_success'.tr,
+                    'payment.payment_success'.translate(),
                     style: LocalizationService.getLocalizedTextStyle(
                       context,
                       TextStyle(
@@ -79,7 +80,7 @@ class PaymentSuccessScreen extends StatelessWidget {
 
                   // Success Message
                   Text(
-                    'order_confirmation.success_message'.tr,
+                    'order_confirmation.success_message'.translate(),
                     style: LocalizationService.getLocalizedTextStyle(
                       context,
                       TextStyle(
@@ -108,7 +109,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'order_confirmation.order_details'.tr,
+                          'order_confirmation.order_details'.translate(),
                           style: LocalizationService.getLocalizedTextStyle(
                             context,
                             TextStyle(
@@ -119,13 +120,11 @@ class PaymentSuccessScreen extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(height: UIConfig.marginMedium),
-
-                        // Order ID
+                        SizedBox(height: UIConfig.marginMedium),                        // Order ID
                         if (orderId.isNotEmpty) ...[
                           _buildDetailRow(
                             context,
-                            'order_confirmation.order_id'.tr,
+                            'order_confirmation.order_id'.translate(),
                             orderId,
                           ),
                           SizedBox(height: UIConfig.marginSmall),
@@ -134,7 +133,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                         // Amount
                         _buildDetailRow(
                           context,
-                          'payment.amount'.tr,
+                          'payment.amount'.translate(),
                           '\$${amount.toStringAsFixed(2)}',
                         ),
 
@@ -143,8 +142,8 @@ class PaymentSuccessScreen extends StatelessWidget {
                         // Payment Status
                         _buildDetailRow(
                           context,
-                          'payment.status'.tr,
-                          'payment.status.success'.tr,
+                          'payment.status'.translate(),
+                          'payment.status.success'.translate(),
                           valueColor: Colors.green,
                         ),
 
@@ -153,7 +152,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                           SizedBox(height: UIConfig.marginSmall),
                           _buildDetailRow(
                             context,
-                            'payment.payment_id'.tr,
+                            'payment.payment_id'.translate(),
                             paymentResult!.paymentIntentId!,
                           ),
                         ],
@@ -188,7 +187,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        'order_confirmation.view_order_details'.tr,
+                        'order_confirmation.view_order_details'.translate(),
                         style: LocalizationService.getLocalizedTextStyle(
                           context,
                           TextStyle(
@@ -221,7 +220,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      'order_confirmation.continue_shopping'.tr,
+                      'order_confirmation.continue_shopping'.translate(),
                       style: LocalizationService.getLocalizedTextStyle(
                         context,
                         TextStyle(
@@ -242,7 +241,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                     Get.toNamed('/payment-history');
                   },
                   child: Text(
-                    'payment.payment_history'.tr,
+                    'payment.payment_history'.translate(),
                     style: LocalizationService.getLocalizedTextStyle(
                       context,
                       TextStyle(

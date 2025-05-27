@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
 import '../../controller/payment_controller.dart';
@@ -67,10 +69,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
           ),
           centerTitle: true,
           title: Text(
-            'payment.add_payment_method'.tr,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
+            'payment.add_payment_method'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ) ??
+                  const TextStyle(),
             ),
           ),
         ),
@@ -86,9 +92,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 // Card Details Section
                 Text(
                   'payment.card_details'.tr,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Gabarito',
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Gabarito',
+                        ) ??
+                        const TextStyle(),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -152,10 +162,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'payment.card_number'.tr,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
+          'payment.card_number'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
         const SizedBox(height: 8),
@@ -171,12 +185,12 @@ class _AddCardScreenState extends State<AddCardScreen> {
           decoration: _buildInputDecoration('1234 5678 9012 3456'),
           validator: (value) {
             if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.card_number_required'.tr;
+              return 'payment.form_validation.card_number_required'.translate();
             }
             if (!_paymentController.validateCardNumber(
               value!.replaceAll(' ', ''),
             )) {
-              return 'payment.form_validation.invalid_card_format'.tr;
+              return 'payment.form_validation.invalid_card_format'.translate();
             }
             return null;
           },
@@ -196,10 +210,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'payment.expiry_date'.tr,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
+          'payment.expiry_date'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
         const SizedBox(height: 8),
@@ -215,10 +233,11 @@ class _AddCardScreenState extends State<AddCardScreen> {
           decoration: _buildInputDecoration('MM/YY'),
           validator: (value) {
             if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.expiry_date_required'.tr;
+              return 'payment.form_validation.expiry_date_required'.translate();
             }
             if (!_paymentController.validateExpiryDate(value!)) {
-              return 'payment.form_validation.invalid_expiry_format'.tr;
+              return 'payment.form_validation.invalid_expiry_format'
+                  .translate();
             }
             return null;
           },
@@ -235,10 +254,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'payment.cvv'.tr,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
+          'payment.cvv'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
         const SizedBox(height: 8),
@@ -253,10 +276,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
           decoration: _buildInputDecoration('123'),
           validator: (value) {
             if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.cvv_required'.tr;
+              return 'payment.form_validation.cvv_required'.translate();
             }
             if (!_paymentController.validateCVC(value!)) {
-              return 'payment.form_validation.invalid_cvv_format'.tr;
+              return 'payment.form_validation.invalid_cvv_format'.translate();
             }
             return null;
           },
@@ -273,10 +296,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'payment.cardholder_name'.tr,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
+          'payment.cardholder_name'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
         const SizedBox(height: 8),
@@ -287,7 +314,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
           decoration: _buildInputDecoration('John Doe'),
           validator: (value) {
             if (value?.isEmpty ?? true) {
-              return 'payment.form_validation.cardholder_name_required'.tr;
+              return 'payment.form_validation.cardholder_name_required'
+                  .translate();
             }
             return null;
           },
@@ -301,10 +329,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'auth.email'.tr + ' (${'common.optional'.tr})',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
+          'auth.email'.translate() + ' (${'common.optional'.translate()})',
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ) ??
+                const TextStyle(),
           ),
         ),
         const SizedBox(height: 8),
@@ -331,10 +363,14 @@ class _AddCardScreenState extends State<AddCardScreen> {
         ),
         Expanded(
           child: Text(
-            'payment.save_card'.tr,
-            style: Theme.of(
+            'payment.save_card'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
               context,
-            ).textTheme.bodyMedium?.copyWith(fontFamily: 'Poppins'),
+              Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontFamily: 'Poppins') ??
+                  const TextStyle(),
+            ),
           ),
         ),
       ],
@@ -357,10 +393,17 @@ class _AddCardScreenState extends State<AddCardScreen> {
         ),
         Expanded(
           child: Text(
-            'payment.set_as_default'.tr,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontFamily: 'Poppins',
-              color: _saveCard ? null : Theme.of(context).colorScheme.outline,
+            'payment.set_as_default'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontFamily: 'Poppins',
+                    color:
+                        _saveCard
+                            ? null
+                            : Theme.of(context).colorScheme.outline,
+                  ) ??
+                  const TextStyle(),
             ),
           ),
         ),
@@ -389,11 +432,15 @@ class _AddCardScreenState extends State<AddCardScreen> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
                 : Text(
-                  'common.save'.tr,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Poppins',
-                    color: Theme.of(context).colorScheme.onPrimary,
+                  'common.save'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins',
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ) ??
+                        const TextStyle(),
                   ),
                 ),
       ),
@@ -426,9 +473,13 @@ class _AddCardScreenState extends State<AddCardScreen> {
       filled: true,
       fillColor: Theme.of(context).colorScheme.surface,
       hintText: hint,
-      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: Theme.of(context).colorScheme.outline,
-        fontFamily: 'Poppins',
+      hintStyle: LocalizationService.getLocalizedTextStyle(
+        context,
+        Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.outline,
+              fontFamily: 'Poppins',
+            ) ??
+            const TextStyle(),
       ),
     );
   }

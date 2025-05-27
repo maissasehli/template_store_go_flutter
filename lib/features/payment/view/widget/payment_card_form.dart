@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:get/get.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
 
 class PaymentCardForm extends StatefulWidget {
   final Function(Map<String, dynamic>)? onCardChanged;
@@ -26,11 +28,14 @@ class _PaymentCardFormState extends State<PaymentCardForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Card Information',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
+          'payment.card_details'.tr,
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
           ),
         ),
         SizedBox(height: 12),
@@ -60,7 +65,10 @@ class _PaymentCardFormState extends State<PaymentCardForm> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(16),
               hintText: 'Enter card details',
-              hintStyle: TextStyle(color: Colors.grey.shade500),
+              hintStyle: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(color: Colors.grey.shade500),
+              ),
             ),
             style: TextStyle(fontSize: 16, color: Colors.black87),
           ),
@@ -71,8 +79,11 @@ class _PaymentCardFormState extends State<PaymentCardForm> {
             Icon(Icons.lock_outline, size: 16, color: Colors.grey.shade600),
             SizedBox(width: 4),
             Text(
-              'Your payment information is secure and encrypted',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              'payment.secure_payment'.tr,
+              style: LocalizationService.getLocalizedTextStyle(
+                context,
+                TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
             ),
           ],
         ),
@@ -93,7 +104,10 @@ class _PaymentCardFormState extends State<PaymentCardForm> {
               ),
               child: Text(
                 'Pay Now',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: LocalizationService.getLocalizedTextStyle(
+                  context,
+                  TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
               ),
             ),
           ),

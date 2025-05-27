@@ -363,12 +363,9 @@ class ThemeAwareSnackbarService {
     Duration duration = const Duration(seconds: 3),
   }) {
     // Get theme controller
-    final ThemeController themeController = Get.find<ThemeController>();
-    final ThemeData currentTheme = themeController.theme;
     final bool isRtl = LocalizationService.isRtl(Get.context!);
 
     // Get colors from theme extension
-    final appColors = currentTheme.extension<AppColorExtension>()!;
 
     // Use theme colors for success styling
     final backgroundColor = Colors.green;

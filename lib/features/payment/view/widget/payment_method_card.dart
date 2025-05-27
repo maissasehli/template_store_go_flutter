@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import '../../models/payment_method_model.dart';
 
 class PaymentMethodCard extends StatelessWidget {
@@ -54,19 +55,25 @@ class PaymentMethodCard extends StatelessWidget {
                     children: [
                       Text(
                         paymentMethod.displayName,
-                        style: Theme.of(
+                        style: LocalizationService.getLocalizedTextStyle(
                           context,
-                        ).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Poppins',
+                          Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Poppins',
+                              ) ??
+                              const TextStyle(),
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${paymentMethod.brand.toUpperCase()} • ${paymentMethod.formattedExpiry}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                          fontFamily: 'Poppins',
+                        style: LocalizationService.getLocalizedTextStyle(
+                          context,
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Theme.of(context).colorScheme.outline,
+                                fontFamily: 'Poppins',
+                              ) ??
+                              const TextStyle(),
                         ),
                       ),
                     ],
@@ -97,7 +104,17 @@ class PaymentMethodCard extends StatelessWidget {
                               children: [
                                 const Icon(Icons.star_outline),
                                 const SizedBox(width: 8),
-                                Text('payment.set_as_default'.tr),
+                                Text(
+                                  'payment.set_as_default'.translate(),
+                                  style:
+                                      LocalizationService.getLocalizedTextStyle(
+                                        context,
+                                        Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium ??
+                                            const TextStyle(),
+                                      ),
+                                ),
                               ],
                             ),
                           ),
@@ -111,10 +128,15 @@ class PaymentMethodCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'payment.delete_method'.tr,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
+                                'payment.delete_method'.translate(),
+                                style:
+                                    LocalizationService.getLocalizedTextStyle(
+                                      context,
+                                      TextStyle(
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    ),
                               ),
                             ],
                           ),
@@ -134,11 +156,15 @@ class PaymentMethodCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'payment.default_method'.tr,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Poppins',
+                  'payment.default_method'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Poppins',
+                        ) ??
+                        const TextStyle(),
                   ),
                 ),
               ),

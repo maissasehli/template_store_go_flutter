@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
+import 'package:store_go/app/core/localization/localization_service.dart';
+import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/cart/models/cart_model.dart';
 import 'package:store_go/features/checkout/controllers/checkout_controller.dart';
-import 'package:store_go/features/payment/view/widgets/payment_card_form.dart';
+import 'package:store_go/features/payment/view/widget/payment_card_form.dart';
 
 class PaymentProcessingScreen extends StatefulWidget {
   const PaymentProcessingScreen({Key? key}) : super(key: key);
@@ -63,12 +65,15 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         ),
         centerTitle: true,
         title: Text(
-          'Payment',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Poppins',
+          'payment.title'.translate(),
+          style: LocalizationService.getLocalizedTextStyle(
+            context,
+            TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
           ),
         ),
       ),
@@ -111,19 +116,20 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                 ),
                 Expanded(
                   child: Text(
-                    'Save this payment method for future purchases',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.foreground(context),
+                    'payment.save_card'.translate(),
+                    style: LocalizationService.getLocalizedTextStyle(
+                      context,
+                      TextStyle(
+                        fontSize: 14,
+                        color: AppColors.foreground(context),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
 
-            SizedBox(height: 24),
-
-            // Payment button
+            SizedBox(height: 24), // Payment button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -144,26 +150,30 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
                           strokeWidth: 2,
                         )
                         : Text(
-                          'Pay \$${amount.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                          '${'payment.processing_payment'.translate()} \$${amount.toStringAsFixed(2)}',
+                          style: LocalizationService.getLocalizedTextStyle(
+                            context,
+                            TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
               ),
             ),
 
-            SizedBox(height: 16),
-
-            // Security notice
+            SizedBox(height: 16), // Security notice
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.security, size: 16, color: Colors.grey.shade600),
                 SizedBox(width: 4),
                 Text(
-                  'Secured by Stripe',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  'payment.secure_payment'.translate(),
+                  style: LocalizationService.getLocalizedTextStyle(
+                    context,
+                    TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
                 ),
               ],
             ),
@@ -185,30 +195,32 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Order Summary',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.foreground(context),
+            'checkout.order_summary'.translate(),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.foreground(context),
+              ),
             ),
           ),
           SizedBox(height: 12),
-
           _buildSummaryRow(
-            'Subtotal',
+            'checkout.subtotal'.translate(),
             '\$${cartController.subtotal.value.toStringAsFixed(2)}',
           ),
           _buildSummaryRow(
-            'Shipping',
+            'checkout.shipping_cost'.translate(),
             '\$${cartController.shipping.value.toStringAsFixed(2)}',
           ),
           _buildSummaryRow(
-            'Tax',
+            'checkout.tax'.translate(),
             '\$${cartController.tax.value.toStringAsFixed(2)}',
           ),
           if (cartController.discount.value > 0)
             _buildSummaryRow(
-              'Discount',
+              'checkout.discount'.translate(),
               '-\$${cartController.discount.value.toStringAsFixed(2)}',
               color: Colors.green,
             ),
@@ -216,7 +228,7 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
           Divider(height: 24),
 
           _buildSummaryRow(
-            'Total',
+            'checkout.total'.translate(),
             '\$${cartController.total.value.toStringAsFixed(2)}',
             isTotal: true,
           ),
@@ -238,18 +250,24 @@ class _PaymentProcessingScreenState extends State<PaymentProcessingScreen> {
         children: [
           Text(
             label,
-            style: TextStyle(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
-              color: color ?? AppColors.foreground(context),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: isTotal ? 16 : 14,
+                fontWeight: isTotal ? FontWeight.w600 : FontWeight.w400,
+                color: color ?? AppColors.foreground(context),
+              ),
             ),
           ),
           Text(
             value,
-            style: TextStyle(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.w600 : FontWeight.w500,
-              color: color ?? AppColors.foreground(context),
+            style: LocalizationService.getLocalizedTextStyle(
+              context,
+              TextStyle(
+                fontSize: isTotal ? 16 : 14,
+                fontWeight: isTotal ? FontWeight.w600 : FontWeight.w500,
+                color: color ?? AppColors.foreground(context),
+              ),
             ),
           ),
         ],

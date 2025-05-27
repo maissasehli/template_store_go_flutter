@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
-import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/order/model/order_model.dart';
 
