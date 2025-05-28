@@ -71,4 +71,6 @@ class AppRoute {
   static const String notifications = "/notifications";
   static const String filter = "/filter";
   static const String subcategoryProducts = '/subcategory-products';
+  static const String promotionProducts = '/promotion-products';
+
 }

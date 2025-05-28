@@ -280,4 +280,5 @@ List<GetPage<dynamic>>? routes = [
     transition: Transition.cupertino,
     binding: CategoryProductsBinding() as Bindings,
   ),
+
 ];

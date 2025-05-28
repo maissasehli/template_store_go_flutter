@@ -1,5 +1,3 @@
-
-
 enum DiscountType {
   percentage,
   fixedAmount,
@@ -26,7 +24,7 @@ class Promotion {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  // Lists of product IDs and category IDs that this promotion applies to
+  // Listes des IDs de produits et catégories auxquels cette promotion s'applique
   final List<String> applicableProductIds;
   final List<String> applicableCategoryIds;
   final List<String> yApplicableProductIds;
@@ -57,7 +55,7 @@ class Promotion {
   });
 
   factory Promotion.fromJson(Map<String, dynamic> json) {
-    // Parse discount type from string to enum
+    // Analyser le type de remise depuis string vers enum
     DiscountType parseDiscountType(String type) {
       switch (type) {
         case 'percentage':
@@ -73,7 +71,7 @@ class Promotion {
       }
     }
 
-    // Parse the products array
+    // Analyser le tableau des produits
     List<String> parseProductIds(dynamic products) {
       if (products == null) return [];
       if (products is List) {
@@ -85,7 +83,7 @@ class Promotion {
       return [];
     }
 
-    // Parse the categories array
+    // Analyser le tableau des catégories
     List<String> parseCategoryIds(dynamic categories) {
       if (categories == null) return [];
       if (categories is List) {
@@ -151,18 +149,75 @@ class Promotion {
       case DiscountType.fixedAmount:
         return '\$${discountValue.toStringAsFixed(2)} OFF';
       case DiscountType.freeShipping:
-        return 'FREE SHIPPING';
+        return 'LIVRAISON GRATUITE';
       case DiscountType.buyXGetY:
-        return 'BUY $buyQuantity GET $getQuantity';
+        return 'ACHETEZ $buyQuantity OBTENEZ $getQuantity';
     }
   }
 
-  // Helper method to check if promotion applies to a specific product
+  // NOUVELLE MÉTHODE : Obtenir le pourcentage de remise
+  double get discountPercentage {
+    if (discountType == DiscountType.percentage) {
+      return discountValue;
+    }
+    return 0.0; // Pour les autres types de remise, retourner 0
+  }
+
+  // NOUVELLE MÉTHODE : Obtenir les catégories applicables (alias pour compatibilité)
+  List<String> get applicableCategories => applicableCategoryIds;
+
+  // NOUVELLE MÉTHODE : Calculer le prix avec remise
+  double calculateDiscountedPrice(double originalPrice) {
+    switch (discountType) {
+      case DiscountType.percentage:
+        return originalPrice * (1 - discountValue / 100);
+      case DiscountType.fixedAmount:
+        final discountedPrice = originalPrice - discountValue;
+        return discountedPrice > 0 ? discountedPrice : 0;
+      case DiscountType.freeShipping:
+        return originalPrice; // Le prix reste le même, seule la livraison est gratuite
+      case DiscountType.buyXGetY:
+        return originalPrice; // Logique complexe, à implémenter selon les besoins
+    }
+  }
+
+  // NOUVELLE MÉTHODE : Vérifier si la promotion est actuellement active
+  bool get isCurrentlyActive {
+    final now = DateTime.now();
+    return isActive && 
+           now.isAfter(startDate) && 
+           now.isBefore(endDate);
+  }
+
+  // NOUVELLE MÉTHODE : Obtenir les jours restants
+  int get daysRemaining {
+    final now = DateTime.now();
+    if (now.isAfter(endDate)) return 0;
+    return endDate.difference(now).inDays;
+  }
+
+  // NOUVELLE MÉTHODE : Formater la date d'expiration
+  String get formattedExpiryDate {
+    final now = DateTime.now();
+    final difference = endDate.difference(now).inDays;
+    
+    if (difference == 0) {
+      return 'Expire aujourd\'hui';
+    } else if (difference == 1) {
+      return 'Expire demain';
+    } else if (difference < 7) {
+      return 'Expire dans $difference jours';
+    } else {
+      return 'Expire le ${endDate.day}/${endDate.month}/${endDate.year}';
+    }
+  }
+
+  // Méthode helper pour vérifier si la promotion s'applique à un produit spécifique
   bool appliesToProduct(String productId) {
     return applicableProductIds.contains(productId);
   }
 
-  // Helper method to check if promotion applies to a specific category
+  // Méthode helper pour vérifier si la promotion s'applique à une catégorie spécifique
   bool appliesToCategory(String categoryId) {
     return applicableCategoryIds.contains(categoryId);
   }

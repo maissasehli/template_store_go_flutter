@@ -38,6 +38,8 @@ class PromotionRepository {
     }
   }
   
+  // Get all active promotions - NEW METHOD
+ 
   // Get promotions for a specific product
   Future<List<Promotion>> getPromotionsByProductId(
     String productId, {

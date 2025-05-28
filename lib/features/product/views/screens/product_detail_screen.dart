@@ -14,7 +14,7 @@ import 'package:store_go/features/product/views/widgets/product_detail/add_to_ca
 import 'package:store_go/features/product/views/widgets/product_detail/image_page_indicator.dart';
 import 'package:store_go/features/product/views/widgets/product_detail/draggable_info_sheet.dart';
 import 'package:store_go/features/promotion/controller/promotion_controller.dart';
-import 'package:store_go/features/promotion/views/product_promotion.dart';
+import 'package:store_go/features/promotion/views/screens/product_promotion.dart';
 import 'package:store_go/features/review/view/widgets/review_section/review_section.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
@@ -582,7 +582,7 @@ class ProductDetailScreenState extends State<ProductDetailScreen>
                   productId: product.id,
                   controller: promotionController,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Row(
                   textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
