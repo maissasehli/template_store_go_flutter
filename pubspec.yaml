@@ -50,6 +50,7 @@ dependencies:
       url: https://github.com/AbdoPrDZ/pusher_client_fixed.git
   connectivity_plus: ^5.0.1
   flutter_stripe: ^11.5.0
+  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:

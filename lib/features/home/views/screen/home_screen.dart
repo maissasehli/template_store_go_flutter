@@ -16,6 +16,7 @@ import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/features/promotion/controller/promotion_controller.dart';
 import 'package:store_go/features/promotion/models/promotion_model.dart';
+import 'package:store_go/features/promotion/views/widgets/promotion_product_page.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -135,11 +136,6 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildPromotionsSection(BuildContext context) {
     return Obx(() {
-      // Show skeleton loader while loading
-      if (promotionController.isLoadingHomePromotions) {
-        return const PromotionBannerSkeleton();
-      }
-
       // Only show promotions banner if there are promotions with images
       if (!promotionController.hasHomePromotions) {
         return const SizedBox.shrink();
@@ -147,10 +143,7 @@ class HomeScreen extends StatelessWidget {
 
       return PromotionBanner(
         promotions: promotionController.homePromotions,
-        onPromotionTap: (promotion) {
-          // Handle promotion tap - navigate to promotion details or products
-          _handlePromotionTap(promotion);
-        },
+        onPromotionTap: (promotion) => _navigateToPromotionProducts(promotion),
       );
     });
   }
@@ -225,111 +218,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void _handlePromotionTap(Promotion promotion) {
-    // Set the selected promotion
-    promotionController.setSelectedPromotion(promotion);
-    
-    // You can implement different actions based on promotion type:
-    switch (promotion.discountType) {
-      case DiscountType.percentage:
-      case DiscountType.fixedAmount:
-      case DiscountType.freeShipping:
-        // Navigate to products that this promotion applies to
-        _navigateToPromotionProducts(promotion);
-        break;
-      case DiscountType.buyXGetY:
-        // Show promotion details or navigate to specific products
-        _showPromotionDetails(promotion);
-        break;
-    }
-  }
-
+  // Navigate to promotion products page
   void _navigateToPromotionProducts(Promotion promotion) {
-    // If promotion applies to specific products
-    if (promotion.applicableProductIds.isNotEmpty) {
-      // Navigate to product list with these specific products
-      Get.toNamed('/products', arguments: {
-        'productIds': promotion.applicableProductIds,
-        'title': promotion.name,
-      });
-    }
-    // If promotion applies to specific categories
-    else if (promotion.applicableCategoryIds.isNotEmpty) {
-      // Navigate to category products
-      Get.toNamed('/category-products', arguments: {
-        'categoryIds': promotion.applicableCategoryIds,
-        'title': promotion.name,
-      });
-    }
-    // General promotion - navigate to all products
-    else {
-      Get.toNamed('/products', arguments: {
-        'promotion': promotion,
-        'title': promotion.name,
-      });
-    }
-  }
-
-  void _showPromotionDetails(Promotion promotion) {
-    // Show promotion details in a bottom sheet or navigate to details page
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(UIConfig.paddingLarge),
-        decoration: BoxDecoration(
-          color: AppColors.background(Get.context!),
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(UIConfig.borderRadiusLarge),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              promotion.name,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: UIConfig.paddingSmall),
-            if (promotion.description != null)
-              Text(
-                promotion.description!,
-                style: TextStyle(
-                  color: AppColors.mutedForeground(Get.context!),
-                ),
-              ),
-            const SizedBox(height: UIConfig.paddingMedium),
-            Container(
-              padding: const EdgeInsets.all(UIConfig.paddingMedium),
-              decoration: BoxDecoration(
-                color: AppColors.primary(Get.context!).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(UIConfig.borderRadiusMedium),
-              ),
-              child: Text(
-                promotion.getDiscountDisplay(),
-                style: TextStyle(
-                  color: AppColors.primary(Get.context!),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            const SizedBox(height: UIConfig.paddingLarge),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Get.back();
-                  _navigateToPromotionProducts(promotion);
-                },
-                child: const Text('View Products'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    Get.to(() => PromotionProductsPage(promotion: promotion));
   }
 }

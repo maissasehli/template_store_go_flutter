@@ -507,11 +507,12 @@ class ProductPromotionCard extends StatelessWidget {
   Color _getPromotionColor(Promotion promotion) {
     switch (promotion.discountType) {
       case DiscountType.percentage:
-        return const Color(0xFFFF6B35); // Orange moderne
-      case DiscountType.fixedAmount:
+        return const Color(0xFF4A90E2);  
+     case DiscountType.fixedAmount:
         return const Color(0xFF00C896); // Vert moderne
       case DiscountType.freeShipping:
-        return const Color(0xFF4A90E2); // Bleu moderne
+        return const Color(0xFFFF6B35); // Orange moderne
+ // Bleu moderne
       case DiscountType.buyXGetY:
         return const Color(0xFF8B5CF6); // Violet moderne
       default:

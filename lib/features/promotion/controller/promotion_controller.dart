@@ -236,7 +236,6 @@ class PromotionController extends GetxController {
       return null;
     }
   }
-  
 
   void updateCurrentPromotionIndex(int index) {
     state.setCurrentPromotionIndex(index);

@@ -48,6 +48,8 @@ import 'package:store_go/features/payment/binding/payment_binding.dart';
 import 'package:store_go/features/profile/views/screens/profile_screen.dart';
 import 'package:store_go/app/shared/layouts/main_container_screen.dart';
 import 'package:store_go/app/shared/screens/splash_screen.dart';
+import 'package:store_go/features/promotion/models/promotion_model.dart';
+import 'package:store_go/features/promotion/views/widgets/promotion_product_page.dart';
 import 'package:store_go/features/review/binding/review_binding.dart';
 import 'package:store_go/features/settings/views/setting_screen.dart';
 import 'package:store_go/features/subcategory/controllers/subcategory_controller.dart';
@@ -280,5 +282,13 @@ List<GetPage<dynamic>>? routes = [
     transition: Transition.cupertino,
     binding: CategoryProductsBinding() as Bindings,
   ),
-
+  GetPage(
+      name: AppRoute.promotionProducts,
+      page: () {
+        final Promotion promotion = Get.arguments as Promotion;
+        return PromotionProductsPage(promotion: promotion);
+      },
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 300),
+    ),
 ];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:store_go/features/promotion/models/promotion_model.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 
@@ -59,7 +60,12 @@ class PromotionBanner extends StatelessWidget {
 
   Widget _buildPromotionCard(BuildContext context, Promotion promotion) {
     return GestureDetector(
-      onTap: () => onPromotionTap?.call(promotion),
+      onTap: () {
+        // Call the custom callback if it exists
+        if (onPromotionTap != null) {
+          onPromotionTap!(promotion);
+        }
+      },
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(UIConfig.borderRadiusLarge),
@@ -97,6 +103,8 @@ class PromotionBanner extends StatelessWidget {
               
               // Promotion details overlay
               _buildPromotionOverlay(context, promotion),
+              
+              
             ],
           ),
         ),
@@ -157,9 +165,21 @@ class PromotionBanner extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Discount badge
-           
-  
+            
+            
+            // Discount info
+            if (promotion.discountPercentage > 0) ...[
+              const SizedBox(height: 4),
+              Text(
+                '${promotion.discountPercentage}% off',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+            
             // Expiry date
             Padding(
               padding: const EdgeInsets.only(top: 8),

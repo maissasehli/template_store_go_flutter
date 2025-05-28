@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:store_go/app/core/config/assets_config.dart';
 import 'package:store_go/app/core/theme/ui_config.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
-import 'package:store_go/app/core/theme/app_theme.dart';
 import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
 import 'package:store_go/app/shared/widgets/theme_aware_svg.dart';
@@ -12,7 +11,7 @@ import 'package:store_go/features/cart/controllers/cart_controller.dart';
 import 'package:store_go/features/checkout/controllers/checkout_controller.dart';
 
 class CheckoutScreen extends StatelessWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  const CheckoutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

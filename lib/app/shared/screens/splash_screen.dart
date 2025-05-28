@@ -7,7 +7,6 @@ import 'package:store_go/app/core/localization/localization_service.dart';
 import 'package:store_go/app/core/services/storage_service.dart';
 import 'package:store_go/app/core/theme/app_theme_colors.dart';
 import 'package:store_go/features/auth/services/auth_service.dart';
-import 'package:store_go/app/shared/extensions/text_extensions.dart';
 import 'package:store_go/features/auth/services/token_manager.dart';
 import 'package:store_go/app/core/localization/translation_extension.dart';
 
