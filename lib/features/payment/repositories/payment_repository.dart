@@ -193,9 +193,9 @@ class PaymentRepository {
         if (rootStatus.toLowerCase() == 'success') {
           final paymentData = responseData['data'] as Map<String, dynamic>;
           final paymentStatus = paymentData['status'] as String;
-
           switch (paymentStatus.toLowerCase()) {
             case 'succeeded':
+            case 'paid': // Add support for 'paid' status from server
               return PaymentResult.success(
                 paymentId: paymentData['paymentId'] as String?,
                 orderId: orderId,
@@ -234,9 +234,7 @@ class PaymentRepository {
           return PaymentResult.failed(
             orderId: orderId,
             error:
-                responseData['errors'] != null
-                    ? responseData['errors'].toString()
-                    : null,
+                responseData['errors']?.toString(),
             message: responseData['message'] as String? ?? 'Payment failed',
           );
         }
